@@ -7,6 +7,7 @@ public class Map : MonoBehaviour
     //sets orientation of hexes
     public bool isFlatTop = true;
 
+    //radius in hex count
     public int xSize = 50;
     public int ySize = 50;
 
@@ -21,45 +22,52 @@ public class Map : MonoBehaviour
 
     public float padding = 0.1f;
 
-    private Hex[,] hexGrid;
+    public Hex[,] hexGrid;
 
     // Start is called before the first frame update
     void Start()
     {
 
-        hexGrid = new Hex[xSize, ySize];
-
-        //not sure about this approach, but it works for now..
-        hexWidth += padding;
+        hexGrid = new Hex[xSize*2-1, ySize*2-1];
         hexHeight = hexWidth / 1.155f;
 
-        for (int x = 0; x < xSize; x++)
+        //not sure about this approach, but it works for now..
+        float paddedHexWidth = hexWidth + padding;
+        float paddedHexHeight = hexHeight + padding;
+        
+
+        for (int x = -xSize + 1; x < xSize; x++)
         {
-            for (int y = 0; y < ySize; y++)
+            for (int y = -ySize + 1; y < ySize; y++)
             {
                 float xPos;
                 if (isFlatTop)
                 {
-                    xPos =  x * (3f * hexWidth / 4.0f);
+                    xPos =  x * (3f * paddedHexWidth / 4.0f);
                 } else {
-                    xPos = y % 2 == 0 ? x * hexHeight : x * hexHeight + hexHeight / 2f;
+                    xPos = y % 2 == 0 ? x * paddedHexHeight : x * paddedHexHeight + paddedHexHeight / 2f;
                 }
-                xPos += Camera.main.ViewportToWorldPoint(Vector3.zero).x;
 
                 float yPos;
                 if (isFlatTop)
                 {
-                    yPos = x % 2 == 0 ? y * hexHeight : y * hexHeight + hexHeight / 2f;
+                    yPos = x % 2 == 0 ? y * paddedHexHeight : y * paddedHexHeight + paddedHexHeight / 2f;
                 }
                 else
                 {
-                    yPos = y * (3f * hexWidth / 4.0f);
+                    yPos = y * (3f * paddedHexWidth / 4.0f);
                 }
-                yPos += Camera.main.ViewportToWorldPoint(Vector3.zero).y;
 
                 Hex hex = (Hex)Instantiate(hexPrefab, new Vector3(xPos, yPos, 0), isFlatTop ? Quaternion.identity : Quaternion.AngleAxis(90, new Vector3(0,0,1)));
+                if (isFlatTop)
+                {
+                    hex.transform.localScale = new Vector3(hexWidth, hexWidth, 1);
+                } else
+                {
+                    hex.transform.localScale = new Vector3(hexWidth, hexWidth, 1);
+                }
                 hex.name = "Hex_" + x + "_" + y;
-                hexGrid[x, y] = hex;
+                hexGrid[x + xSize - 1, y + ySize - 1] = hex;
             }
         }
     }
@@ -68,5 +76,15 @@ public class Map : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public Hex GetHex(int x, int y)
+    {
+        return hexGrid[x + this.xSize - 1, y + this.ySize - 1];
+    }
+
+    public void SetHex(int x, int y, Hex h)
+    {
+        hexGrid[x + this.xSize - 1, y + this.ySize - 1] = h;
     }
 }

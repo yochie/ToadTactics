@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Hex : MonoBehaviour
 {
-    public int size = 0;
     // Start is called before the first frame update
     void Start()
     {
