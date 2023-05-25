@@ -67,6 +67,7 @@ public class Map : MonoBehaviour
                     hex.transform.localScale = new Vector3(hexWidth, hexWidth, 1);
                 }
                 hex.name = "Hex_" + x + "_" + y;
+                hex.transform.SetParent(this.transform);
                 hexGrid[x + xSize - 1, y + ySize - 1] = hex;
             }
         }
