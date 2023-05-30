@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapOutlineController : MonoBehaviour
+public class MapOutline : MonoBehaviour
 {
     public Map map;
     private Collider2D outlineCollider;

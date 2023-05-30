@@ -17,7 +17,7 @@ public class Map : MonoBehaviour
 
     public Hex hexPrefab;
 
-    public MapOutlineController outline;
+    public MapOutline outline;
 
     //geometric property of hexes
     private const float WIDTH_TO_HEIGHT_RATIO = 1.155f;
@@ -58,7 +58,6 @@ public class Map : MonoBehaviour
 
     private void GenerateHexes()
     {
-        //not sure about this approach, but it works for now..
         float paddedHexWidth = this.hexWidth + this.padding;
         float paddedHexHeight = this.hexHeight + this.padding;
         for (int x = -this.xSize + 1; x < this.xSize; x++)
@@ -97,6 +96,8 @@ public class Map : MonoBehaviour
                 hex.name = "Hex_" + x + "_" + y;
                 hex.transform.SetParent(this.transform);
                 hex.Init(this);
+
+                //offset by size to balance negative coordinates
                 this.hexGrid[x + this.xSize - 1, y + this.ySize - 1] = hex;
             }
         }
