@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MapOutlineController : MonoBehaviour
 {
-    private bool hasRun = false;
     public Map map;
     private Collider2D outlineCollider;
 
@@ -17,30 +16,32 @@ public class MapOutlineController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!hasRun)
+
+    }
+
+    public void deleteHexesOutside()
+    { 
+        List<Collider2D> results = new List<Collider2D>();
+        ContactFilter2D filter = new ContactFilter2D().NoFilter();
+        int collidingCount = Physics2D.OverlapCollider(this.outlineCollider, filter, results);
+        Debug.Log(collidingCount);
+
+        for (int x = -map.xSize + 1; x < map.xSize; x++)
         {
-            List<Collider2D> results = new List<Collider2D>();
-            ContactFilter2D filter = new ContactFilter2D().NoFilter();
-            int collidingCount = Physics2D.OverlapCollider(outlineCollider, filter, results);
-            Debug.Log(collidingCount);
-
-            for (int x = -map.xSize + 1; x < map.xSize; x++)
+            for (int y = -map.ySize + 1; y < map.ySize; y++)
             {
-                for (int y = -map.ySize + 1; y < map.ySize; y++)
-                {
-                    Hex h = map.GetHex(x, y);
-                    Collider2D hCollider = h.GetComponent<Collider2D>();
+                Hex h = map.GetHex(x, y);
+                Collider2D hCollider = h.GetComponent<Collider2D>();
 
-                    if (results.Contains(hCollider))
-                    {
-                        Debug.Log("get in here");
-                    } else
-                    {
-                        Destroy(h.gameObject);
-                    }
+                if (results.Contains(hCollider))
+                {
+                    Debug.Log("get in here");
+                }
+                else
+                {
+                    Destroy(h.gameObject);
                 }
             }
-            hasRun = true;
         }
     }
 }
