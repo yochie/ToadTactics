@@ -9,6 +9,9 @@ public class Map : MonoBehaviour
 
     //radius in hex count
     public int xSize = 50;
+
+
+
     public int ySize = 50;
 
     public Hex hexPrefab;
@@ -16,9 +19,9 @@ public class Map : MonoBehaviour
     public MapOutlineController outline;
 
     //geometric property of hexes
-    private const float WidthToHeightRatio = 1.155f;
+    private const float WIDTH_TO_HEIGHT_RATIO = 1.155f;
     //corner to corner, or width (two times side length)
-    //should correspond to unscaled sprite size
+    //should correspond to unscaled sprite width
     public float hexWidth = 1f;
 
     // flat to flat, or height, calculated on init by WidthToHeightRatio
@@ -26,8 +29,24 @@ public class Map : MonoBehaviour
 
     public float padding = 0.1f;
 
-    public Hex[,] hexGrid;
+    private Hex[,] hexGrid;
 
+    private Hex selectedHex;
+    public Hex SelectedHex
+    {
+        get { return this.selectedHex;  }
+        set {
+            if (this.selectedHex != null)
+            {
+                this.selectedHex.HexColor = MyUtility.hexBaseColor;
+            }
+            this.selectedHex = value;
+            if (value != null)
+            {
+                value.HexColor = MyUtility.hexSelectedColor;
+            }
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -36,15 +55,15 @@ public class Map : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void Initialize()
     {
-        hexGrid = new Hex[(xSize * 2) - 1, (ySize * 2) - 1];
-        this.hexHeight = this.hexWidth / WidthToHeightRatio;
+        this.hexGrid = new Hex[(this.xSize * 2) - 1, (this.ySize * 2) - 1];
+        this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
         this.GenerateHexes();
-        this.outline.deleteHexesOutside();
+        this.outline.DeleteHexesOutside();
     }
 
     private void GenerateHexes()
@@ -87,6 +106,7 @@ public class Map : MonoBehaviour
                 }
                 hex.name = "Hex_" + x + "_" + y;
                 hex.transform.SetParent(this.transform);
+                hex.Init(this);
                 this.hexGrid[x + this.xSize - 1, y + this.ySize - 1] = hex;
             }
         }
