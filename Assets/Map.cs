@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,17 +36,6 @@ public class Map : MonoBehaviour
     public Hex SelectedHex
     {
         get { return this.selectedHex;  }
-        set {
-            if (this.selectedHex != null)
-            {
-                this.selectedHex.HexColor = MyUtility.hexBaseColor;
-            }
-            this.selectedHex = value;
-            if (value != null)
-            {
-                value.HexColor = MyUtility.hexSelectedColor;
-            }
-        }
     }
     // Start is called before the first frame update
     void Start()
@@ -120,5 +110,21 @@ public class Map : MonoBehaviour
     public void SetHex(int x, int y, Hex h)
     {
         hexGrid[x + this.xSize - 1, y + this.ySize - 1] = h;
+    }
+
+    public void SelectHex(Hex h)
+    {
+        if (this.selectedHex != null)
+        {
+            UnselectHex();
+        }
+        this.selectedHex = h;
+        h.HexColor = MyUtility.hexSelectedColor;
+    }
+
+    public void UnselectHex()
+    {
+        this.selectedHex.HexColor = MyUtility.hexBaseColor;
+        this.selectedHex = null;
     }
 }

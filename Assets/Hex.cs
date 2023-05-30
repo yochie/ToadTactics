@@ -50,11 +50,10 @@ public class Hex : MonoBehaviour
     {
         if (this.map.SelectedHex != this)
         {
-            this.map.SelectedHex = this;
+            this.map.SelectHex(this);
         } else
         {
-            this.HexColor = MyUtility.hexBaseColor;
-            this.map.SelectedHex = null;
+            this.map.UnselectHex();
         }
     }
 
