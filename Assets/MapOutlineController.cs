@@ -7,20 +7,9 @@ public class MapOutlineController : MonoBehaviour
     public Map map;
     private Collider2D outlineCollider;
 
-    // Start is called before the first frame update
-    void Start()
+    public void deleteHexesOutside()
     {
         outlineCollider = this.GetComponent<Collider2D>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public void deleteHexesOutside()
-    { 
         List<Collider2D> results = new List<Collider2D>();
         ContactFilter2D filter = new ContactFilter2D().NoFilter();
         int collidingCount = Physics2D.OverlapCollider(this.outlineCollider, filter, results);

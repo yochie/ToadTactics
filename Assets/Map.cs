@@ -15,11 +15,13 @@ public class Map : MonoBehaviour
 
     public MapOutlineController outline;
 
+    //geometric property of hexes
+    private const float WidthToHeightRatio = 1.155f;
     //corner to corner, or width (two times side length)
     //should correspond to unscaled sprite size
     public float hexWidth = 1f;
 
-    // flat to flat, or height, calculated below by constant and width
+    // flat to flat, or height, calculated on init by WidthToHeightRatio
     private float hexHeight;
 
     public float padding = 0.1f;
@@ -29,8 +31,6 @@ public class Map : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        hexGrid = new Hex[xSize*2-1, ySize*2-1];
-        hexHeight = hexWidth / 1.155f;
     }
 
     // Update is called once per frame
@@ -41,6 +41,8 @@ public class Map : MonoBehaviour
 
     public void Initialize()
     {
+        hexGrid = new Hex[(xSize * 2) - 1, (ySize * 2) - 1];
+        this.hexHeight = this.hexWidth / WidthToHeightRatio;
         this.GenerateHexes();
         this.outline.deleteHexesOutside();
     }
