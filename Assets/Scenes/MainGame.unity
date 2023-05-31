@@ -453,7 +453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5592dcb51912c74aa8ad92365fa71cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isFlatTop: 0
+  isFlatTop: 1
   xSize: 16
   ySize: 8
   hexPrefab: {fileID: -5701741847756770074, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
