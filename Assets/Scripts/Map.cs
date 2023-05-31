@@ -34,6 +34,8 @@ public class Map : MonoBehaviour
     private Hex[,] hexGrid;
 
     private Hex selectedHex;
+    public Hex hoveredHex;
+
 
     //read only, to edit, use SelectHex() or UnselectHex()
     public Hex SelectedHex
@@ -94,7 +96,6 @@ public class Map : MonoBehaviour
 
                 //offset by size to balance negative coordinates
                 this.hexGrid[x + this.xSize - 1, y + this.ySize - 1] = hex;
-
 
             }
         }

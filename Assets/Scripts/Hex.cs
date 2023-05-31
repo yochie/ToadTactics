@@ -37,6 +37,7 @@ public class Hex : MonoBehaviour
     }
     private void OnMouseEnter() {
         this.HexColor = MyUtility.hexHoverColor;
+        map.hoveredHex = this;
     }
 
     private void OnMouseExit()
