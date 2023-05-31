@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class Map : MonoBehaviour
 {
@@ -14,6 +16,8 @@ public class Map : MonoBehaviour
 
     public Hex hexPrefab;
     public MapOutline outline;
+    public TextMeshProUGUI cellLabelPrefab;
+    public Canvas gridCanvas;
 
     //corner to corner, or width (two times side length)
     //should correspond to unscaled sprite width
@@ -39,6 +43,7 @@ public class Map : MonoBehaviour
 
     public void Initialize()
     {
+        gridCanvas = GetComponentInChildren<Canvas>();
         this.hexGrid = new Hex[(this.xSize * 2) - 1, (this.ySize * 2) - 1];
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
         this.GenerateHexes();
@@ -85,10 +90,12 @@ public class Map : MonoBehaviour
                     hex.transform.localScale = new Vector3(hexWidth, hexWidth, 1);
                 }
 
-                hex.Init(this, HexCoordinates.FromOffsetCoordinates(x,y), this.transform, "Hex_" + x + "_" + y);
+                hex.Init(this, HexCoordinates.FromOffsetCoordinates(x,y, isFlatTop), this.transform, "Hex_" + x + "_" + y);
 
                 //offset by size to balance negative coordinates
                 this.hexGrid[x + this.xSize - 1, y + this.ySize - 1] = hex;
+
+
             }
         }
     }

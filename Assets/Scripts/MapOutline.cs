@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class MapOutline : MonoBehaviour
 {
@@ -27,6 +28,15 @@ public class MapOutline : MonoBehaviour
                 {
                     map.SetHex(x,y,null);
                     Destroy(h.gameObject);
+                } else
+                {
+                    //coordinates hidden by default using canvas group alpha
+                    //use that component in editor mode to display
+                    TextMeshProUGUI label = Instantiate<TextMeshProUGUI>(map.cellLabelPrefab);
+                    label.rectTransform.SetParent(map.gridCanvas.transform, false);
+                    label.rectTransform.anchoredPosition =
+                        new Vector2(h.transform.position.x, h.transform.position.y);
+                    label.text = h.coordinates.ToStringOnLines();
                 }
             }
         }
