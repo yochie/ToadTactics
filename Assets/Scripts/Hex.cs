@@ -7,6 +7,7 @@ public class Hex : MonoBehaviour
     private Color hexColor;
     private SpriteRenderer sprite;
     private Map map;
+    public HexCoordinates coordinates;
 
     public Color HexColor {
         get { return this.HexColor; }

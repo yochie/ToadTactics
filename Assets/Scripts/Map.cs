@@ -6,21 +6,15 @@ using UnityEngine;
 public class Map : MonoBehaviour
 {
     //sets orientation of hexes
-    public bool isFlatTop = true;
+    public bool isFlatTop;
 
     //radius in hex count
-    public int xSize = 50;
-
-
-
-    public int ySize = 50;
+    public int xSize;
+    public int ySize;
 
     public Hex hexPrefab;
-
     public MapOutline outline;
 
-    //geometric property of hexes
-    private const float WIDTH_TO_HEIGHT_RATIO = 1.155f;
     //corner to corner, or width (two times side length)
     //should correspond to unscaled sprite width
     public float hexWidth = 1f;
@@ -28,24 +22,19 @@ public class Map : MonoBehaviour
     // flat to flat, or height, calculated on init by WidthToHeightRatio
     private float hexHeight;
 
+    //geometric property of hexes
+    private const float WIDTH_TO_HEIGHT_RATIO = 1.155f;
+
     public float padding = 0.1f;
 
     private Hex[,] hexGrid;
 
     private Hex selectedHex;
+
+    //read only, to edit, use SelectHex() or UnselectHex()
     public Hex SelectedHex
     {
         get { return this.selectedHex;  }
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     public void Initialize()
@@ -84,7 +73,9 @@ public class Map : MonoBehaviour
                     yPos = y * (3f * paddedHexWidth / 4.0f);
                 }
 
-                Hex hex = (Hex)Instantiate(this.hexPrefab, new Vector3(xPos, yPos, 0), isFlatTop ? Quaternion.identity : Quaternion.AngleAxis(90, new Vector3(0, 0, 1)));
+                //only rotate if not FlatTop since sprite is by default
+                Quaternion rotation = isFlatTop ? Quaternion.identity : Quaternion.AngleAxis(90, new Vector3(0, 0, 1));
+                Hex hex = (Hex)Instantiate(this.hexPrefab, new Vector3(xPos, yPos, 0), rotation);
                 if (isFlatTop)
                 {
                     hex.transform.localScale = new Vector3(hexWidth, hexWidth, 1);
