@@ -17,7 +17,8 @@ public class Map : MonoBehaviour
     public Hex hexPrefab;
     public MapOutline outline;
     public TextMeshProUGUI cellLabelPrefab;
-    public Canvas gridCanvas;
+    public Canvas coordCanvas;
+    public Canvas labelsCanvas;
 
     //corner to corner, or width (two times side length)
     //should correspond to unscaled sprite width
@@ -45,7 +46,6 @@ public class Map : MonoBehaviour
 
     public void Initialize()
     {
-        gridCanvas = GetComponentInChildren<Canvas>();
         this.hexGrid = new Hex[(this.xSize * 2) - 1, (this.ySize * 2) - 1];
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
         this.GenerateHexes();

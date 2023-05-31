@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Hex : MonoBehaviour
@@ -7,6 +8,7 @@ public class Hex : MonoBehaviour
     private Color hexColor;
     private SpriteRenderer sprite;
     private Map map;
+    private string labelString;
     public HexCoordinates coordinates;
 
     public Color HexColor {
@@ -15,6 +17,18 @@ public class Hex : MonoBehaviour
             this.hexColor = value;
             this.sprite.color = value;
         }
+    }
+
+    //should only be edited for initial setting of ref, thereafter use LabelString
+    //cant put in init because this happens afterwards
+    //TODO : find way to enforce this
+    public TextMeshProUGUI LabelRef { get; set; }
+    public string LabelString {
+        get { return labelString;  }
+        set { 
+            labelString = value;
+            LabelRef.text = value;
+        } 
     }
 
     // Start is called before the first frame update
@@ -37,7 +51,11 @@ public class Hex : MonoBehaviour
     }
     private void OnMouseEnter() {
         this.HexColor = MyUtility.hexHoverColor;
-        map.hoveredHex = this;
+        this.map.hoveredHex = this;
+        if (map.SelectedHex != null) {
+            this.LabelString = MyUtility.HexDistance(map.SelectedHex, this).ToString();
+            this.LabelRef.alpha = 1;
+        }
     }
 
     private void OnMouseExit()
@@ -49,6 +67,8 @@ public class Hex : MonoBehaviour
         {
             this.HexColor = MyUtility.hexSelectedColor;
         }
+
+        this.LabelRef.alpha = 0;
     }
 
     private void OnMouseDown()

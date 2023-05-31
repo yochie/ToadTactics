@@ -17,9 +17,9 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (map.SelectedHex != null && map.hoveredHex != null)
-        {
-            Debug.Log(MyUtility.HexDistance(map.SelectedHex, map.hoveredHex));
-        }
+        //if (map.SelectedHex != null && map.hoveredHex != null)
+        //{
+        //    Debug.Log(MyUtility.HexDistance(map.SelectedHex, map.hoveredHex));
+        //}
     }
 }

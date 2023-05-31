@@ -32,11 +32,21 @@ public class MapOutline : MonoBehaviour
                 {
                     //coordinates hidden by default using canvas group alpha
                     //use that component in editor mode to display
-                    TextMeshProUGUI label = Instantiate<TextMeshProUGUI>(map.cellLabelPrefab);
-                    label.rectTransform.SetParent(map.gridCanvas.transform, false);
-                    label.rectTransform.anchoredPosition =
+                    TextMeshProUGUI coordLabel = Instantiate<TextMeshProUGUI>(map.cellLabelPrefab);
+                    coordLabel.rectTransform.SetParent(map.coordCanvas.transform, false);
+                    coordLabel.rectTransform.anchoredPosition =
                         new Vector2(h.transform.position.x, h.transform.position.y);
-                    label.text = h.coordinates.ToStringOnLines();
+                    coordLabel.text = h.coordinates.ToStringOnLines();
+
+
+                    //labels to display single number during navigation (range, etc)
+                    TextMeshProUGUI numLabel = Instantiate<TextMeshProUGUI>(map.cellLabelPrefab);
+                    numLabel.fontSize = 4;
+                    numLabel.rectTransform.SetParent(map.labelsCanvas.transform, false);
+                    numLabel.rectTransform.anchoredPosition =
+                        new Vector2(h.transform.position.x, h.transform.position.y);
+                    h.LabelRef = numLabel;
+
                 }
             }
         }
