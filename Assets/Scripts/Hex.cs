@@ -23,9 +23,12 @@ public class Hex : MonoBehaviour
         
     }
 
-    public void Init(Map m) {
+    public void Init(Map m, HexCoordinates hc, Transform parent, string name) {
         this.sprite = this.GetComponent<SpriteRenderer>();
         this.map = m;
+        this.coordinates = hc;
+        this.name = name;
+        this.transform.SetParent(parent);
     }
     // Update is called once per frame
     void Update()

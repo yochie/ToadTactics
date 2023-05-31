@@ -84,9 +84,8 @@ public class Map : MonoBehaviour
                 {
                     hex.transform.localScale = new Vector3(hexWidth, hexWidth, 1);
                 }
-                hex.name = "Hex_" + x + "_" + y;
-                hex.transform.SetParent(this.transform);
-                hex.Init(this);
+
+                hex.Init(this, HexCoordinates.FromOffsetCoordinates(x,y), this.transform, "Hex_" + x + "_" + y);
 
                 //offset by size to balance negative coordinates
                 this.hexGrid[x + this.xSize - 1, y + this.ySize - 1] = hex;
