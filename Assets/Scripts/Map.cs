@@ -32,10 +32,14 @@ public class Map : MonoBehaviour
 
     public float padding = 0.1f;
 
+    public Color HEX_BASE_COLOR = Color.white;
+    public Color HEX_HOVER_COLOR = Color.cyan;
+    public Color HEX_SELECT_COLOR = Color.green;
+
     private Hex[,] hexGrid;
 
     private Hex selectedHex;
-    public Hex hoveredHex;
+    private Hex hoveredHex;
 
 
     //read only, to edit, use SelectHex() or UnselectHex()
@@ -111,6 +115,17 @@ public class Map : MonoBehaviour
         hexGrid[x + this.xSize - 1, y + this.ySize - 1] = h;
     }
 
+    public void clickHex(Hex h)
+    {
+        if (this.SelectedHex != h)
+        {
+            this.SelectHex(h);
+        }
+        else
+        {
+            this.UnselectHex();
+        }
+    }
     public void SelectHex(Hex h)
     {
         if (this.selectedHex != null)
@@ -118,19 +133,23 @@ public class Map : MonoBehaviour
             UnselectHex();
         }
         this.selectedHex = h;
-        h.HexColor = MyUtility.hexSelectedColor;
+        h.HexColor = this.HEX_SELECT_COLOR;
+        h.LabelTextMesh.alpha = 0;
     }
 
     public void UnselectHex()
     {
-        this.selectedHex.HexColor = MyUtility.hexBaseColor;
+        this.selectedHex.HexColor = this.HEX_BASE_COLOR;
+        Hex previouslySelected = this.selectedHex;
         this.selectedHex = null;
+        this.unhoverHex(previouslySelected);
+        
     }
 
     public void hoverHex(Hex h)
     {
         this.hoveredHex = h;
-        h.HexColor = MyUtility.hexHoverColor;
+        h.HexColor = this.HEX_HOVER_COLOR;
         if (this.SelectedHex != null)
         {
             h.LabelString = Map.HexDistance(this.SelectedHex, this.hoveredHex).ToString();
@@ -139,13 +158,18 @@ public class Map : MonoBehaviour
     }
     public void unhoverHex(Hex h)
     {
-        if (this.SelectedHex != h)
+        if (this.hoveredHex == h)
         {
-            h.HexColor = MyUtility.hexBaseColor;
+            this.hoveredHex = null;
+        }
+
+        if (h != this.SelectedHex)
+        {
+            h.HexColor = this.HEX_BASE_COLOR;
         }
         else
         {
-            h.HexColor = MyUtility.hexSelectedColor;
+            h.HexColor = this.HEX_SELECT_COLOR;
         }
 
         h.LabelTextMesh.alpha = 0;

@@ -61,13 +61,7 @@ public class Hex : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (this.map.SelectedHex != this)
-        {
-            this.map.SelectHex(this);
-        } else
-        {
-            this.map.UnselectHex();
-        }
+        this.map.clickHex(this);
     }
 
 }
