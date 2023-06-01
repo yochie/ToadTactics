@@ -45,7 +45,7 @@ public class MapOutline : MonoBehaviour
                     numLabel.rectTransform.SetParent(map.labelsCanvas.transform, false);
                     numLabel.rectTransform.anchoredPosition =
                         new Vector2(h.transform.position.x, h.transform.position.y);
-                    h.LabelRef = numLabel;
+                    h.LabelTextMesh = numLabel;
 
                 }
             }
