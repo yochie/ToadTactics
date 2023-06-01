@@ -9,6 +9,7 @@ public class Hex : MonoBehaviour
     private SpriteRenderer sprite;
     private string labelString;
     public HexCoordinates coordinates;
+    private Map map;
 
     public Color HexColor {
         get { return this.HexColor; }
@@ -30,7 +31,6 @@ public class Hex : MonoBehaviour
         } 
     }
 
-    private Map map;
 
     // Start is called before the first frame update
     void Start()
@@ -51,25 +51,12 @@ public class Hex : MonoBehaviour
 
     }
     private void OnMouseEnter() {
-        this.HexColor = MyUtility.hexHoverColor;
-        this.map.hoveredHex = this;
-        if (map.SelectedHex != null) {
-            this.LabelString = MyUtility.HexDistance(map.SelectedHex, this).ToString();
-            this.LabelTextMesh.alpha = 1;
-        }
+        this.map.hoverHex(this);
     }
 
     private void OnMouseExit()
     {
-        if (this.map.SelectedHex != this)
-        {
-            this.HexColor = MyUtility.hexBaseColor;
-        } else
-        {
-            this.HexColor = MyUtility.hexSelectedColor;
-        }
-
-        this.LabelTextMesh.alpha = 0;
+        this.map.unhoverHex(this);
     }
 
     private void OnMouseDown()

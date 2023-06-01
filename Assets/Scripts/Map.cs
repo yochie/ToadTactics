@@ -126,4 +126,38 @@ public class Map : MonoBehaviour
         this.selectedHex.HexColor = MyUtility.hexBaseColor;
         this.selectedHex = null;
     }
+
+    public void hoverHex(Hex h)
+    {
+        this.hoveredHex = h;
+        h.HexColor = MyUtility.hexHoverColor;
+        if (this.SelectedHex != null)
+        {
+            h.LabelString = Map.HexDistance(this.SelectedHex, this.hoveredHex).ToString();
+            h.LabelTextMesh.alpha = 1;
+        }
+    }
+    public void unhoverHex(Hex h)
+    {
+        if (this.SelectedHex != h)
+        {
+            h.HexColor = MyUtility.hexBaseColor;
+        }
+        else
+        {
+            h.HexColor = MyUtility.hexSelectedColor;
+        }
+
+        h.LabelTextMesh.alpha = 0;
+    }
+
+    public static float HexDistance(Hex h1, Hex h2)
+    {
+        HexCoordinates hc1 = h1.coordinates;
+        HexCoordinates hc2 = h2.coordinates;
+
+        Vector3 diff = new Vector3(hc1.Q, hc1.R, hc1.S) - new Vector3(hc2.Q, hc2.R, hc2.S);
+
+        return (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f;
+    }
 }
