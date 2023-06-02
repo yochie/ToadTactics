@@ -6,7 +6,7 @@
     private int damage;
     private int range;
     public delegate void Use(PlayerCharacter pc, Hex target);
-    Use use;
+    public Use use;
 
     public CharacterAbility(string name, string description, int damage, int range, int turnDuration, Use use )
     {

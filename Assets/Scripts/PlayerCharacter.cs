@@ -30,6 +30,7 @@ public class PlayerCharacter : MonoBehaviour
     }
 
     public void Initialize(CharacterClass charChlass, int owner) {
+        this.CharClass = charChlass;
         this.CurrentStats = charChlass.CharStats;
         this.Owner = owner;
         this.CurrentLife = CurrentStats.MaxHealth;

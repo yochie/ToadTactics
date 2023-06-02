@@ -16,11 +16,10 @@ public class GameController : MonoBehaviour
     {
         this.map.Initialize();
 
-        PlayerChars = new List<PlayerCharacter>();
         Classes = new Dictionary<string, CharacterClass>();
         //Instantiate all classes to set their definitions here
         //TODO: find better spot to do this
-        //maybe prefabs?
+        //probably should load from file (CSV)
 
         //BARB
         CharacterClass barbarian = new CharacterClass();
@@ -44,12 +43,12 @@ public class GameController : MonoBehaviour
             use: (PlayerCharacter pc, Hex target) => { Debug.Log("Barb has no usable ability. Should probably prevent this from being called."); });
         Classes.Add("barbarian", barbarian);
 
-
-
+        PlayerChars = new List<PlayerCharacter>();
         PlayerChars.Add(Instantiate(this.playerCharPrefab, new Vector3(0,0,-0.1f), Quaternion.identity, map.GetHex(0,0).transform));
         PlayerCharacter testPlayer = PlayerChars.GetRange(0, 1)[0];
         testPlayer.Initialize(this.Classes.GetValueOrDefault("barbarian"), 0);
 
+        testPlayer.CharClass.CharAbility.use(null, null);
 
     }
 
