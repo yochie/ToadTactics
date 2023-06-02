@@ -134,7 +134,7 @@ public class Map : MonoBehaviour
         }
         this.selectedHex = h;
         h.HexColor = this.HEX_SELECT_COLOR;
-        h.LabelTextMesh.alpha = 0;
+        h.HideLabel();
     }
 
     public void UnselectHex()
@@ -153,7 +153,7 @@ public class Map : MonoBehaviour
         if (this.SelectedHex != null)
         {
             h.LabelString = Map.HexDistance(this.SelectedHex, this.hoveredHex).ToString();
-            h.LabelTextMesh.alpha = 1;
+            h.ShowLabel();
         }
     }
     public void unhoverHex(Hex h)
@@ -172,7 +172,7 @@ public class Map : MonoBehaviour
             h.HexColor = this.HEX_SELECT_COLOR;
         }
 
-        h.LabelTextMesh.alpha = 0;
+        h.HideLabel();
     }
 
     public static float HexDistance(Hex h1, Hex h2)

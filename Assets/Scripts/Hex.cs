@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -22,7 +23,7 @@ public class Hex : MonoBehaviour
     //should only be edited for initial setting of ref, thereafter use LabelString
     //cant put in init because this happens afterwards
     //TODO : find way to enforce this
-    public TextMeshProUGUI LabelTextMesh { get; set; }
+    public TextMeshProUGUI LabelTextMesh { private get;  set; }
     public string LabelString {
         get { return labelString;  }
         set { 
@@ -30,6 +31,11 @@ public class Hex : MonoBehaviour
             LabelTextMesh.text = value;
         } 
     }
+
+    public PlayerCharacter HoldsCharacter { get; set; }
+    public Obstacle HoldsObstacle { get; set; }
+    public Hazard HoldsHazard { get; set; }
+    public bool holdsTreasure { get; set; }
 
 
     // Start is called before the first frame update
@@ -64,4 +70,13 @@ public class Hex : MonoBehaviour
         this.map.clickHex(this);
     }
 
+    internal void ShowLabel()
+    {
+        this.LabelTextMesh.alpha = 1;
+    }
+
+    internal void HideLabel()
+    {
+        this.LabelTextMesh.alpha = 0;
+    }
 }
