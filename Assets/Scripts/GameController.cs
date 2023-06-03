@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System;
 
 public class GameController : MonoBehaviour
 {
@@ -15,36 +16,7 @@ public class GameController : MonoBehaviour
     void Start()
     {
         this.map.Initialize();
-
-        Classes = new Dictionary<string, CharacterClass>();
-        //Instantiate all classes to set their definitions here
-        //TODO: find better spot to do this
-        //probably should load from file (CSV)
-
-        //BARB
-        CharacterClass barbarian = new CharacterClass();
-        barbarian.Description = "He strong.";
-        
-        barbarian.CharStats = new(
-            maxHealth: 10,
-            armor: 2,
-            damage: 5,
-            speed: 3,
-            initiative: 1,
-            range: 1,
-            damageIterations: 3);
-        
-
-        barbarian.CharAbility = new(
-            name: "NA",
-            description: "No active ability. Always attacks thrice.",
-            damage: 1,
-            range: 0,
-            turnDuration: 0,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");});
-        Classes.Add("barbarian", barbarian);
-
+        this.InitClasses();
 
         //Create char
         PlayerChars = new List<PlayerCharacter>();
@@ -60,6 +32,36 @@ public class GameController : MonoBehaviour
         //test ability
         testPlayer.CharClass.CharAbility.use(null, null);
 
+    }
+
+    //Instantiate all classes to set their definitions here
+    //TODO: find better spot to do this
+    //probably should load from file (CSV)
+    private void InitClasses()
+    {
+        Classes = new Dictionary<string, CharacterClass>();
+
+        //BARB
+        CharacterClass barbarian = new CharacterClass();
+        barbarian.Description = "He strong.";
+        barbarian.CharStats = new(
+            maxHealth: 10,
+            armor: 2,
+            damage: 5,
+            speed: 3,
+            initiative: 1,
+            range: 1,
+            damageIterations: 3);
+        barbarian.CharAbility = new(
+            name: "NA",
+            description: "No active ability. Always attacks thrice.",
+            damage: 1,
+            range: 0,
+            turnDuration: 0,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
+            });
+        Classes.Add("barbarian", barbarian);
     }
 
     // Update is called once per frame
