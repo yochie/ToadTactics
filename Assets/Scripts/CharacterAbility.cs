@@ -1,20 +1,21 @@
 ﻿public struct CharacterAbility
 {
-    private string name;
-    private string description;
-    private int turnDuration;
-    private int damage;
-    private int range;
+    public string Name { get; private set; }
+    public string Description { get; private set; }
+    public int TurnDuration { get; private set; }
+    public int Damage { get; private set; }
+    public int Range { get; private set; }
+
     public delegate void Use(PlayerCharacter pc, Hex target);
     public Use use;
 
     public CharacterAbility(string name, string description, int damage, int range, int turnDuration, Use use )
     {
-        this.name = name;
-        this.description = description;
-        this.damage = damage;
-        this.range = range;
-        this.turnDuration = turnDuration;
+        this.Name = name;
+        this.Description = description;
+        this.Damage = damage;
+        this.Range = range;
+        this.TurnDuration = turnDuration;
         this.use = use;
     }
 }

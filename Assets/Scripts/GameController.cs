@@ -34,20 +34,30 @@ public class GameController : MonoBehaviour
             range: 1,
             damageIterations: 3);
         
+
         barbarian.CharAbility = new(
             name: "NA",
             description: "No active ability. Always attacks thrice.",
-            damage: 0,
+            damage: 1,
             range: 0,
             turnDuration: 0,
-            use: (PlayerCharacter pc, Hex target) => { Debug.Log("Barb has no usable ability. Should probably prevent this from being called."); });
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");});
         Classes.Add("barbarian", barbarian);
 
+
+        //Create char
         PlayerChars = new List<PlayerCharacter>();
         PlayerChars.Add(Instantiate(this.playerCharPrefab, new Vector3(0,0,-0.1f), Quaternion.identity, map.GetHex(0,0).transform));
+
+
         PlayerCharacter testPlayer = PlayerChars.GetRange(0, 1)[0];
         testPlayer.Initialize(this.Classes.GetValueOrDefault("barbarian"), 0);
 
+        Hex startingHexPos = this.map.GetHex(0,-3);
+        this.map.PlacePlayerCharacter(testPlayer, startingHexPos);
+
+        //test ability
         testPlayer.CharClass.CharAbility.use(null, null);
 
     }

@@ -40,6 +40,7 @@ public class Map : MonoBehaviour
 
     private Hex selectedHex;
     private Hex hoveredHex;
+    private Dictionary<PlayerCharacter, Hex> characterPositions;
 
 
     //read only, to edit, use SelectHex() or UnselectHex()
@@ -54,6 +55,7 @@ public class Map : MonoBehaviour
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
         this.GenerateHexes();
         this.outline.DeleteHexesOutside();
+        this.characterPositions = new();
     }
 
     private void GenerateHexes()
@@ -183,5 +185,14 @@ public class Map : MonoBehaviour
         Vector3 diff = new Vector3(hc1.Q, hc1.R, hc1.S) - new Vector3(hc2.Q, hc2.R, hc2.S);
 
         return (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f;
+    }
+
+    public void PlacePlayerCharacter(PlayerCharacter pc, Hex position)
+    {
+        position.HoldsCharacter = pc;
+        this.characterPositions[pc] = position;
+
+        pc.transform.parent = position.transform;
+        pc.transform.localPosition = new Vector3(0, 0, -0.1f);
     }
 }
