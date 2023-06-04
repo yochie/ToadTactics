@@ -217,8 +217,8 @@ MonoBehaviour:
   autoStartServerBuild: 1
   autoConnectClientBuild: 0
   sendRate: 30
-  offlineScene: 
-  onlineScene: 
+  offlineScene: Assets/Scenes/Menu.unity
+  onlineScene: Assets/Scenes/MainGame.unity
   transport: {fileID: 64690902}
   networkAddress: localhost
   maxConnections: 100

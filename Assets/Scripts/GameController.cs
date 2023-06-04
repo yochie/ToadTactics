@@ -6,9 +6,9 @@ using System;
 
 public class GameController : MonoBehaviour
 {
-    public PlayerCharacter[] playerCharPrefab = new PlayerCharacter[10];
+    public PlayerCharacter[] AllPlayerCharPrefabs = new PlayerCharacter[10];
+    public Dictionary<string, CharacterClass> AllClasses { get; set; }
     public List<PlayerCharacter> PlayerChars { get; set; }
-    public Dictionary<string, CharacterClass> Classes { get; set; }
 
     public Map map;
 
@@ -18,20 +18,18 @@ public class GameController : MonoBehaviour
         this.map.Initialize();
         this.InitClasses();
 
-        //Create char
-        PlayerCharacter testPlayer;
-        PlayerChars = new List<PlayerCharacter>();
-        for (int i = 0; i < playerCharPrefab.Length; i++) {
-            PlayerChars.Add(Instantiate(this.playerCharPrefab[i], new Vector3(0,0,-0.1f), Quaternion.identity, map.GetHex(0,0).transform));
-            testPlayer = PlayerChars[i];
-            testPlayer.Initialize(this.Classes.GetValueOrDefault("barbarian"), 0);
-            Hex startingHexPos = this.map.GetHex(i- 6, 0);
-            this.map.PlacePlayerCharacter(testPlayer, startingHexPos);
-            //test ability
-            testPlayer.CharClass.CharAbility.use(null, null);
-        }
-
-
+        //Create char test
+        //PlayerCharacter testPlayer;
+        //PlayerChars = new List<PlayerCharacter>();
+        //for (int i = 0; i < AllPlayerCharPrefabs.Length; i++) {
+        //    PlayerChars.Add(Instantiate(this.AllPlayerCharPrefabs[i], new Vector3(0,0,-0.1f), Quaternion.identity, map.GetHex(0,0).transform));
+        //    testPlayer = PlayerChars[i];
+        //    testPlayer.Initialize(this.AllClasses.GetValueOrDefault("barbarian"), 0);
+        //    Hex startingHexPos = this.map.GetHex(i- 6, 0);
+        //    this.map.PlacePlayerCharacter(testPlayer, startingHexPos);
+        //    //test ability
+        //    testPlayer.CharClass.CharAbility.use(null, null);
+        //}
     }
 
     //Instantiate all classes to set their definitions here
@@ -39,7 +37,7 @@ public class GameController : MonoBehaviour
     //probably should load from file (CSV)
     private void InitClasses()
     {
-        Classes = new Dictionary<string, CharacterClass>();
+        AllClasses = new Dictionary<string, CharacterClass>();
 
         //BARB
         CharacterClass barbarian = new CharacterClass();
@@ -61,7 +59,7 @@ public class GameController : MonoBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
             });
-        Classes.Add("barbarian", barbarian);
+        AllClasses.Add("barbarian", barbarian);
     }
 
     // Update is called once per frame
