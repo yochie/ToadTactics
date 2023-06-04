@@ -6,7 +6,7 @@ using System;
 
 public class GameController : MonoBehaviour
 {
-    public PlayerCharacter playerCharPrefab;
+    public PlayerCharacter[] playerCharPrefab = new PlayerCharacter[10];
     public List<PlayerCharacter> PlayerChars { get; set; }
     public Dictionary<string, CharacterClass> Classes { get; set; }
 
@@ -19,18 +19,18 @@ public class GameController : MonoBehaviour
         this.InitClasses();
 
         //Create char
+        PlayerCharacter testPlayer;
         PlayerChars = new List<PlayerCharacter>();
-        PlayerChars.Add(Instantiate(this.playerCharPrefab, new Vector3(0,0,-0.1f), Quaternion.identity, map.GetHex(0,0).transform));
+        for (int i = 0; i < playerCharPrefab.Length; i++) {
+            PlayerChars.Add(Instantiate(this.playerCharPrefab[i], new Vector3(0,0,-0.1f), Quaternion.identity, map.GetHex(0,0).transform));
+            testPlayer = PlayerChars[i];
+            testPlayer.Initialize(this.Classes.GetValueOrDefault("barbarian"), 0);
+            Hex startingHexPos = this.map.GetHex(i- 6, 0);
+            this.map.PlacePlayerCharacter(testPlayer, startingHexPos);
+            //test ability
+            testPlayer.CharClass.CharAbility.use(null, null);
+        }
 
-
-        PlayerCharacter testPlayer = PlayerChars.GetRange(0, 1)[0];
-        testPlayer.Initialize(this.Classes.GetValueOrDefault("barbarian"), 0);
-
-        Hex startingHexPos = this.map.GetHex(0,-3);
-        this.map.PlacePlayerCharacter(testPlayer, startingHexPos);
-
-        //test ability
-        testPlayer.CharClass.CharAbility.use(null, null);
 
     }
 
