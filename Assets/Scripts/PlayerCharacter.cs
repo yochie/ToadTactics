@@ -11,8 +11,6 @@ public class PlayerCharacter : MonoBehaviour
     public CharacterStats CurrentStats { get; set; }
     public int Owner { get; set;  }
 
-    public Sprite sprite;
-
     public int CurrentLife
     {
         get => currentLife;

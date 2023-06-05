@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using Mirror;
 
-public class GameController : MonoBehaviour
+public class GameController : NetworkBehaviour
 {
-    public PlayerCharacter[] AllPlayerCharPrefabs = new PlayerCharacter[10];
+    public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
     public Dictionary<string, CharacterClass> AllClasses { get; set; }
-    public List<PlayerCharacter> PlayerChars { get; set; }
+    public List<PlayerCharacter> PlayerChars = new List<PlayerCharacter>();
 
     public Map map;
 
@@ -21,12 +22,13 @@ public class GameController : MonoBehaviour
         //Create char test
         //PlayerCharacter testPlayer;
         //PlayerChars = new List<PlayerCharacter>();
-        //for (int i = 0; i < AllPlayerCharPrefabs.Length; i++) {
-        //    PlayerChars.Add(Instantiate(this.AllPlayerCharPrefabs[i], new Vector3(0,0,-0.1f), Quaternion.identity, map.GetHex(0,0).transform));
+        //for (int i = 0; i < AllPlayerCharPrefabs.Length; i++)
+        //{
+        //    PlayerChars.Add(Instantiate(this.AllPlayerCharPrefabs[i], new Vector3(0, 0, -0.1f), Quaternion.identity, map.GetHex(0, 0).transform));
         //    testPlayer = PlayerChars[i];
         //    testPlayer.Initialize(this.AllClasses.GetValueOrDefault("barbarian"), 0);
-        //    Hex startingHexPos = this.map.GetHex(i- 6, 0);
-        //    this.map.PlacePlayerCharacter(testPlayer, startingHexPos);
+        //    Hex startingHexPos = this.map.GetHex(i - 6, 0);
+        //    this.map.PlacePlayerChar(testPlayer, startingHexPos);
         //    //test ability
         //    testPlayer.CharClass.CharAbility.use(null, null);
         //}

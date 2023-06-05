@@ -119,6 +119,15 @@ public class Map : MonoBehaviour
 
     public void clickHex(Hex h)
     {
+        //moves previously selected player character
+        if (this.selectedHex != null && this.SelectedHex.HoldsCharacter != null)
+        {
+            this.MovePlayerChar(this.SelectedHex, h);
+            this.UnselectHex();
+            this.unhoverHex(h);
+            return;
+        }
+
         if (this.SelectedHex != h)
         {
             this.SelectHex(h);
@@ -128,6 +137,17 @@ public class Map : MonoBehaviour
             this.UnselectHex();
         }
     }
+
+    public void MovePlayerChar(Hex source, Hex dest)
+    {
+        PlayerCharacter toMove = source.HoldsCharacter;
+        source.HoldsCharacter = null;
+
+        this.PlacePlayerChar(toMove, dest);
+
+        this.characterPositions[toMove] = dest;
+    }
+
     public void SelectHex(Hex h)
     {
         if (this.selectedHex != null)
@@ -187,12 +207,13 @@ public class Map : MonoBehaviour
         return (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f;
     }
 
-    public void PlacePlayerCharacter(PlayerCharacter pc, Hex position)
+    public void PlacePlayerChar(PlayerCharacter pc, Hex position)
     {
         position.HoldsCharacter = pc;
         this.characterPositions[pc] = position;
 
-        pc.transform.parent = position.transform;
+        pc.transform.SetParent(position.transform, false);
+        pc.transform.position = pc.transform.parent.position;
         pc.transform.localPosition = new Vector3(0, 0, -0.1f);
     }
 }
