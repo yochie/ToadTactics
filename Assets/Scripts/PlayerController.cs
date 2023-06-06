@@ -18,16 +18,6 @@ public class PlayerController : NetworkBehaviour
         //TODO remake player index by setting on server and syncing to clients
         this.playerIndex = numPlayers;
         PlayerController.numPlayers++;
-
-        //for now just choose random chars
-        //TODO : fill these using draft eventually
-        for(int i = 0; i < this.gc.CharacterSlotsUI.Length; i++)
-        {
-            int prefabIndex = Random.Range(0, this.gc.AllPlayerCharPrefabs.Length - 1);
-            PlayerCharacter newChar = this.gc.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
-            this.gc.CharacterSlotsUI[i].sprite = newChar.GetComponent<SpriteRenderer>().sprite;
-        }
-
     }
 
     public override void OnStopClient()
@@ -43,6 +33,15 @@ public class PlayerController : NetworkBehaviour
 
         Debug.Log("new locally owned player");
         this.CmdCreateChar();
+
+        //for now just choose random chars
+        //TODO : fill these using draft eventually
+        for (int i = 0; i < this.gc.CharacterSlotsUI.Length; i++)
+        {
+            int prefabIndex = Random.Range(0, this.gc.AllPlayerCharPrefabs.Length - 1);
+            PlayerCharacter newChar = this.gc.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
+            this.gc.CharacterSlotsUI[i].sprite = newChar.GetComponent<SpriteRenderer>().sprite;
+        }
     }
 
     [Command]
