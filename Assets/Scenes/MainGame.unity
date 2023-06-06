@@ -123,6 +123,88 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &211519240
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 211519243}
+  - component: {fileID: 211519245}
+  - component: {fileID: 211519246}
+  m_Layer: 0
+  m_Name: Start Zone Outline P1
+  m_TagString: P1
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &211519243
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211519240}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &211519245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211519240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55a80070307858e44b9685ba09f3dec3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  map: {fileID: 1982683008}
+  playerIndex: 0
+--- !u!60 &211519246
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211519240}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 16.113789, y: -16.252008}
+      - {x: 1.6088002, y: -27.717903}
+      - {x: 2.464301, y: -15.567442}
+      - {x: -2.3451784, y: -15.267622}
+      - {x: -1.7695186, y: -26.972008}
+      - {x: -15.987915, y: -15.876989}
+      - {x: -19.307371, y: -19.417677}
+      - {x: -1.8128364, y: -29.938015}
+      - {x: 2.3573036, y: -29.938015}
+      - {x: 18.374008, y: -18.951513}
 --- !u!1 &235931024
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,6 +1073,88 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &1914068964
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1914068967}
+  - component: {fileID: 1914068966}
+  - component: {fileID: 1914068965}
+  m_Layer: 0
+  m_Name: Start Zone Outline P2
+  m_TagString: P1
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!60 &1914068965
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914068964}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 16.113789, y: -16.252008}
+      - {x: 1.6088002, y: -27.717903}
+      - {x: 2.464301, y: -15.567442}
+      - {x: -2.3451784, y: -15.267622}
+      - {x: -1.7695186, y: -26.972008}
+      - {x: -15.987915, y: -15.876989}
+      - {x: -19.307371, y: -19.417677}
+      - {x: -1.8128364, y: -29.938015}
+      - {x: 2.3573036, y: -29.938015}
+      - {x: 18.374008, y: -18.951513}
+--- !u!114 &1914068966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914068964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55a80070307858e44b9685ba09f3dec3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  map: {fileID: 1982683008}
+  playerIndex: 1
+--- !u!4 &1914068967
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914068964}
+  m_LocalRotation: {x: 0, y: -0.01745245, z: 0.99984777, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 2, y: 0, z: 180}
 --- !u!1 &1915035252
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,9 +1276,13 @@ MonoBehaviour:
   cellLabelPrefab: {fileID: 6525404334361133443, guid: 68f45b61888877a4d8ae305dd024c3c3, type: 3}
   coordCanvas: {fileID: 1515437361}
   labelsCanvas: {fileID: 235931025}
+  startingZones:
+  - {fileID: 211519245}
+  - {fileID: 1914068966}
   hexWidth: 10
   padding: 1
   HEX_BASE_COLOR: {r: 1, g: 1, b: 1, a: 1}
+  HEX_START_BASE_COLOR: {r: 0, g: 0, b: 1, a: 1}
   HEX_HOVER_COLOR: {r: 0, g: 1, b: 1, a: 1}
   HEX_SELECT_COLOR: {r: 0, g: 1, b: 0, a: 1}
 --- !u!4 &1982683009

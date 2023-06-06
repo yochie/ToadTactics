@@ -21,6 +21,7 @@ public class Map : MonoBehaviour
     public TextMeshProUGUI cellLabelPrefab;
     public Canvas coordCanvas;
     public Canvas labelsCanvas;
+    public List<StartZone> startingZones;
 
     //corner to corner, or width (two times side length)
     //should correspond to unscaled sprite width
@@ -35,6 +36,7 @@ public class Map : MonoBehaviour
     public float padding = 0.1f;
 
     public Color HEX_BASE_COLOR = Color.white;
+    public Color HEX_START_BASE_COLOR = Color.blue;
     public Color HEX_HOVER_COLOR = Color.cyan;
     public Color HEX_SELECT_COLOR = Color.green;
 
@@ -57,6 +59,12 @@ public class Map : MonoBehaviour
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
         this.GenerateHexes();
         this.outline.DeleteHexesOutside();
+
+        for (int i = 0; i < this.startingZones.Count; i++)
+        {
+            this.startingZones[i].SetStartingZone();
+        }
+
         this.characterPositions = new();
     }
 
@@ -163,7 +171,7 @@ public class Map : MonoBehaviour
 
     public void UnselectHex()
     {
-        this.selectedHex.HexColor = this.HEX_BASE_COLOR;
+        this.selectedHex.HexColor = this.selectedHex.BaseColor;
         Hex previouslySelected = this.selectedHex;
         this.selectedHex = null;
         this.unhoverHex(previouslySelected);
@@ -189,7 +197,7 @@ public class Map : MonoBehaviour
 
         if (h != this.SelectedHex)
         {
-            h.HexColor = this.HEX_BASE_COLOR;
+            h.HexColor = h.BaseColor;
         }
         else
         {

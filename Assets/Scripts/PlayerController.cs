@@ -32,7 +32,7 @@ public class PlayerController : NetworkBehaviour
         base.OnStartLocalPlayer();
 
         Debug.Log("new locally owned player");
-        this.CmdCreateChar();
+        //this.CmdCreateChar();
 
         //for now just choose random chars
         //TODO : fill these using draft eventually
