@@ -3,15 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using UnityEngine.UI;
 using Mirror;
 
 public class GameController : NetworkBehaviour
 {
+    public static GameController Singleton { get; private set; }
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
     public Dictionary<string, CharacterClass> AllClasses { get; set; }
     public List<PlayerCharacter> PlayerChars = new List<PlayerCharacter>();
 
+    public const int charsPerPlayer = 3;
+    public Image[] CharacterSlotsUI = new Image[charsPerPlayer];
+
     public Map map;
+
+    private void Awake()
+    {
+        Singleton = this;
+    }
 
     // Start is called before the first frame update
     void Start()

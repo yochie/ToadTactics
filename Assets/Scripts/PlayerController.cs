@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Mirror;
+using UnityEngine;
 
 
 public class PlayerController : NetworkBehaviour
@@ -14,10 +12,22 @@ public class PlayerController : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+
+        this.gc = GameController.Singleton;
+
+        //TODO remake player index by setting on server and syncing to clients
         this.playerIndex = numPlayers;
         PlayerController.numPlayers++;
 
-        this.gc = GameObject.Find("GameController").GetComponent<GameController>();
+        //for now just choose random chars
+        //TODO : fill these using draft eventually
+        for(int i = 0; i < this.gc.CharacterSlotsUI.Length; i++)
+        {
+            int prefabIndex = Random.Range(0, this.gc.AllPlayerCharPrefabs.Length - 1);
+            PlayerCharacter newChar = this.gc.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
+            this.gc.CharacterSlotsUI[i].sprite = newChar.GetComponent<SpriteRenderer>().sprite;
+        }
+
     }
 
     public override void OnStopClient()

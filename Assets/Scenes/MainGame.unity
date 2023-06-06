@@ -458,6 +458,10 @@ MonoBehaviour:
   - {fileID: 7985195224116861791, guid: 1f6057fe4e07b6f449c2ea65c7d42948, type: 3}
   - {fileID: 789519074972966039, guid: 8a8ddefb9b083814a99ffd1803633341, type: 3}
   PlayerChars: []
+  CharacterSlotsUI:
+  - {fileID: 531675890}
+  - {fileID: 945329024}
+  - {fileID: 887638487}
   map: {fileID: 1982683008}
 --- !u!4 &726135995
 Transform:
