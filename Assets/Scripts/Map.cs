@@ -7,6 +7,8 @@ using TMPro;
 
 public class Map : MonoBehaviour
 {
+    public static Vector3 characterOffsetOnMap = new Vector3(0, 0, -0.1f);
+
     //sets orientation of hexes
     public bool isFlatTop;
 
@@ -207,13 +209,13 @@ public class Map : MonoBehaviour
         return (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f;
     }
 
-    public void PlacePlayerChar(PlayerCharacter pc, Hex position)
+    public void PlacePlayerChar(PlayerCharacter playerChar, Hex destination)
     {
-        position.HoldsCharacter = pc;
-        this.characterPositions[pc] = position;
+        destination.HoldsCharacter = playerChar;
+        this.characterPositions[playerChar] = destination;
 
-        pc.transform.SetParent(position.transform, false);
-        pc.transform.position = pc.transform.parent.position;
-        pc.transform.localPosition = new Vector3(0, 0, -0.1f);
+        //pc.transform.SetParent(position.transform, false);
+        playerChar.transform.position = destination.transform.position + characterOffsetOnMap;
+        //pc.transform.localPosition = new Vector3(0, 0, -0.1f);
     }
 }

@@ -53,9 +53,10 @@ public class PlayerController : NetworkBehaviour
     {
         //Debug.Log("calling rpc on client");
         //Debug.Log(gc.map.GetHex(this.playerIndex, 0));
-        character.transform.SetParent(gc.map.GetHex(this.playerIndex, 0).transform, false);
-        character.transform.position = character.transform.parent.position;
-        character.transform.localPosition = new Vector3(0, 0, -0.1f);
+        //character.transform.SetParent(gc.map.GetHex(this.playerIndex, 0).transform, false);
+        Hex destination = gc.map.GetHex(this.playerIndex, 0);
+        character.transform.position = destination.transform.position + Map.characterOffsetOnMap;
+        //character.transform.localPosition = new Vector3(0, 0, -0.1f);
 
     }
 
