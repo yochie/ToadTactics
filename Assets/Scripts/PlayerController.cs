@@ -40,8 +40,6 @@ public class PlayerController : NetworkBehaviour
     {
         GameObject newChar = 
             Instantiate(gc.AllPlayerCharPrefabs[this.playerIndex], new Vector3(0, 0, -0.1f), Quaternion.identity);
-        Debug.Log(this.gc.PlayerChars);
-        Debug.Log(newChar);
 
         NetworkServer.Spawn(newChar, connectionToClient);
 
@@ -51,13 +49,8 @@ public class PlayerController : NetworkBehaviour
     [ClientRpc]
     public void RpcPlaceChar(GameObject character)
     {
-        //Debug.Log("calling rpc on client");
-        //Debug.Log(gc.map.GetHex(this.playerIndex, 0));
-        //character.transform.SetParent(gc.map.GetHex(this.playerIndex, 0).transform, false);
         Hex destination = gc.map.GetHex(this.playerIndex, 0);
         character.transform.position = destination.transform.position + Map.characterOffsetOnMap;
-        //character.transform.localPosition = new Vector3(0, 0, -0.1f);
-
     }
 
     public override void OnStartServer() 
@@ -67,12 +60,6 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnStopServer() {
 
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
     }
 
     // Update is called once per frame
