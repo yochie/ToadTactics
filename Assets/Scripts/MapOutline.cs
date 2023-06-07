@@ -26,27 +26,7 @@ public class MapOutline : MonoBehaviour
 
                 if (!results.Contains(hCollider))
                 {
-                    map.SetHex(x,y,null);
-                    Destroy(h.gameObject);
-                } else
-                {
-                    //coordinates hidden by default using canvas group alpha
-                    //use that component in editor mode to display
-                    TextMeshProUGUI coordLabel = Instantiate<TextMeshProUGUI>(map.cellLabelPrefab);
-                    coordLabel.rectTransform.SetParent(map.coordCanvas.transform, false);
-                    coordLabel.rectTransform.anchoredPosition =
-                        new Vector2(h.transform.position.x, h.transform.position.y);
-                    coordLabel.text = h.coordinates.ToStringOnLines();
-
-
-                    //labels to display single number during navigation (range, etc)
-                    TextMeshProUGUI numLabel = Instantiate<TextMeshProUGUI>(map.cellLabelPrefab);
-                    numLabel.fontSize = 4;
-                    numLabel.rectTransform.SetParent(map.labelsCanvas.transform, false);
-                    numLabel.rectTransform.anchoredPosition =
-                        new Vector2(h.transform.position.x, h.transform.position.y);
-                    h.LabelTextMesh = numLabel;
-
+                    map.DeleteHex(x, y);
                 }
             }
         }

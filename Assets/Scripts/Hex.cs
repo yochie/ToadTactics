@@ -3,17 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Mirror;
 
 public class Hex : MonoBehaviour
 {
-    private Color hexColor;
-    private SpriteRenderer sprite;
-    private string labelString;
-    public HexCoordinates coordinates;
-    private Map map;
+    public HexCoordinates Coordinates { get; private set; }
 
+    private Color hexColor;
     public Color HexColor {
-        get { return this.HexColor; }
+        get { return this.hexColor; }
         set {
             this.hexColor = value;
             this.sprite.color = value;
@@ -22,46 +20,53 @@ public class Hex : MonoBehaviour
 
     public Color BaseColor { get; set; }
 
-    public bool IsStartingZone;
-
-    //should only be edited for initial setting of ref, thereafter use LabelString
-    //cant put in init because this happens afterwards
-    //TODO : find way to enforce this
-    public TextMeshProUGUI LabelTextMesh { private get;  set; }
+    private TextMeshProUGUI coordLabelTextMesh;
+    private TextMeshProUGUI labelTextMesh;
+    private string labelString;
     public string LabelString {
         get { return labelString;  }
         set { 
             labelString = value;
-            LabelTextMesh.text = value;
+            this.labelTextMesh.text = value;
         } 
     }
-
+    public bool IsStartingZone { get; set; }
     public PlayerCharacter HoldsCharacter { get; set; }
     public Obstacle HoldsObstacle { get; set; }
     public Hazard HoldsHazard { get; set; }
     public bool holdsTreasure { get; set; }
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private Map map;
+    private SpriteRenderer sprite;
 
     public void Init(Map m, HexCoordinates hc, Transform parent, string name) {
         this.sprite = this.GetComponent<SpriteRenderer>();
         this.map = m;
-        this.coordinates = hc;
+        this.Coordinates = hc;
         this.name = name;
-        this.transform.SetParent(parent);
+        //this.transform.SetParent(parent);
         this.BaseColor = map.HEX_BASE_COLOR;
         this.IsStartingZone = false;
-    }
-    // Update is called once per frame
-    void Update()
-    {
 
+        //coordinates hidden by default using canvas group alpha
+        //use that component in editor mode to display
+        TextMeshProUGUI coordLabel = Instantiate<TextMeshProUGUI>(this.map.cellLabelPrefab);
+        coordLabel.rectTransform.SetParent(this.map.coordCanvas.transform, false);
+        coordLabel.rectTransform.anchoredPosition =
+            new Vector2(this.transform.position.x, this.transform.position.y);
+        coordLabel.text = this.Coordinates.ToStringOnLines();
+        this.coordLabelTextMesh = coordLabel;
+
+
+        //labels to display single number during navigation (range, etc)
+        TextMeshProUGUI numLabel = Instantiate<TextMeshProUGUI>(map.cellLabelPrefab);
+        numLabel.fontSize = 4;
+        numLabel.rectTransform.SetParent(map.labelsCanvas.transform, false);
+        numLabel.rectTransform.anchoredPosition =
+            new Vector2(this.transform.position.x, this.transform.position.y);
+        this.labelTextMesh = numLabel;
     }
+
     private void OnMouseEnter() {
         this.map.hoverHex(this);
     }
@@ -78,11 +83,18 @@ public class Hex : MonoBehaviour
 
     internal void ShowLabel()
     {
-        this.LabelTextMesh.alpha = 1;
+        this.labelTextMesh.alpha = 1;
     }
 
     internal void HideLabel()
     {
-        this.LabelTextMesh.alpha = 0;
+        this.labelTextMesh.alpha = 0;
+    }
+
+    public void DeleteHex()
+    {
+        Destroy(this.coordLabelTextMesh.gameObject);
+        Destroy(this.labelTextMesh.gameObject);
+        Destroy(this.gameObject);
     }
 }

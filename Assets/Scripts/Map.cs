@@ -115,9 +115,16 @@ public class Map : MonoBehaviour
         return hexGrid[x + this.xSize - 1, y + this.ySize - 1];
     }
 
-    public void SetHex(int x, int y, Hex h)
+    private void SetHex(int x, int y, Hex h)
     {
         hexGrid[x + this.xSize - 1, y + this.ySize - 1] = h;
+    }
+
+    public void DeleteHex(int x, int y)
+    {
+        Hex toDelete = GetHex(x,y);
+        toDelete.DeleteHex();
+        hexGrid[x + this.xSize - 1, y + this.ySize - 1] = null;
     }
 
     public void clickHex(Hex h)
@@ -202,8 +209,8 @@ public class Map : MonoBehaviour
 
     public static float HexDistance(Hex h1, Hex h2)
     {
-        HexCoordinates hc1 = h1.coordinates;
-        HexCoordinates hc2 = h2.coordinates;
+        HexCoordinates hc1 = h1.Coordinates;
+        HexCoordinates hc2 = h2.Coordinates;
 
         Vector3 diff = new Vector3(hc1.Q, hc1.R, hc1.S) - new Vector3(hc2.Q, hc2.R, hc2.S);
 
