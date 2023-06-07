@@ -22,7 +22,7 @@ public class Hex : MonoBehaviour
 
     public Color BaseColor { get; set; }
 
-    public bool IsStartingZone { get; set; }
+    public bool IsStartingZone;
 
     //should only be edited for initial setting of ref, thereafter use LabelString
     //cant put in init because this happens afterwards
@@ -55,6 +55,7 @@ public class Hex : MonoBehaviour
         this.name = name;
         this.transform.SetParent(parent);
         this.BaseColor = map.HEX_BASE_COLOR;
+        this.IsStartingZone = false;
     }
     // Update is called once per frame
     void Update()

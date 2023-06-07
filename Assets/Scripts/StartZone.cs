@@ -17,7 +17,7 @@ public class StartZone : MonoBehaviour
         List<Collider2D> results = new List<Collider2D>();
         ContactFilter2D filter = new ContactFilter2D().NoFilter();
         int collidingCount = Physics2D.OverlapCollider(this.outlineCollider, filter, results);
-        Debug.Log(collidingCount);
+        //Debug.Log(collidingCount);
 
         for (int x = -map.xSize + 1; x < map.xSize; x++)
         {
@@ -35,15 +35,9 @@ public class StartZone : MonoBehaviour
                     h.IsStartingZone = true;
                     h.HexColor = map.HEX_START_BASE_COLOR;
                     h.BaseColor = map.HEX_START_BASE_COLOR;
-
-
-                } else
-                {
-                    h.IsStartingZone = false;
                 }
             }
         }
-
         this.gameObject.SetActive(false);
     }
 }

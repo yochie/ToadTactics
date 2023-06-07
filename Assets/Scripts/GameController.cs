@@ -14,7 +14,7 @@ public class GameController : NetworkBehaviour
     public List<PlayerCharacter> PlayerChars = new List<PlayerCharacter>();
 
     public const int charsPerPlayer = 3;
-    public Image[] CharacterSlotsUI = new Image[charsPerPlayer];
+    public CharacterSlotUI[] CharacterSlotsUI = new CharacterSlotUI[charsPerPlayer];
 
     public Map map;
 
@@ -72,10 +72,5 @@ public class GameController : NetworkBehaviour
                 Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
             });
         AllClasses.Add("barbarian", barbarian);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 }

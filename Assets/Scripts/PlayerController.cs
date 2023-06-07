@@ -1,5 +1,6 @@
 using Mirror;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class PlayerController : NetworkBehaviour
@@ -7,23 +8,17 @@ public class PlayerController : NetworkBehaviour
     public static int numPlayers = 0;
 
     GameController gc;
-    public int playerIndex;
 
     public override void OnStartClient()
     {
         base.OnStartClient();
 
         this.gc = GameController.Singleton;
-
-        //TODO remake player index by setting on server and syncing to clients
-        this.playerIndex = numPlayers;
-        PlayerController.numPlayers++;
     }
 
     public override void OnStopClient()
     {
         base.OnStopClient();
-        PlayerController.numPlayers--;
 
     }
 
@@ -31,8 +26,10 @@ public class PlayerController : NetworkBehaviour
     {
         base.OnStartLocalPlayer();
 
-        Debug.Log("new locally owned player");
-        //this.CmdCreateChar();
+        foreach (CharacterSlotUI slot in gc.CharacterSlotsUI)
+        {
+            slot.LocalPlayer = this;
+        }
 
         //for now just choose random chars
         //TODO : fill these using draft eventually
@@ -40,26 +37,29 @@ public class PlayerController : NetworkBehaviour
         {
             int prefabIndex = Random.Range(0, this.gc.AllPlayerCharPrefabs.Length - 1);
             PlayerCharacter newChar = this.gc.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
-            this.gc.CharacterSlotsUI[i].sprite = newChar.GetComponent<SpriteRenderer>().sprite;
+            CharacterSlotUI slot = this.gc.CharacterSlotsUI[i];
+
+            slot.GetComponent<Image>().sprite = newChar.GetComponent<SpriteRenderer>().sprite;
+
+            slot.HoldsPlayerCharacterWithIndex = prefabIndex;
         }
     }
 
     [Command]
-    public void CmdCreateChar()
+    public void CmdCreateChar(int playerCharacterIndex, Vector3 position)
     {
         GameObject newChar = 
-            Instantiate(gc.AllPlayerCharPrefabs[this.playerIndex], new Vector3(0, 0, -0.1f), Quaternion.identity);
+            Instantiate(gc.AllPlayerCharPrefabs[playerCharacterIndex], new Vector3(0, 0, 0), Quaternion.identity);
 
         NetworkServer.Spawn(newChar, connectionToClient);
 
-        this.RpcPlaceChar(newChar);
+        this.RpcPlaceChar(newChar, position);
     }
 
     [ClientRpc]
-    public void RpcPlaceChar(GameObject character)
+    public void RpcPlaceChar(GameObject character, Vector3 position)
     {
-        Hex destination = gc.map.GetHex(this.playerIndex, 0);
-        character.transform.position = destination.transform.position + Map.characterOffsetOnMap;
+        character.transform.position = position + Map.characterOffsetOnMap;
     }
 
     public override void OnStartServer() 
@@ -71,9 +71,4 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

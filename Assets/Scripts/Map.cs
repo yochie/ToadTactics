@@ -42,16 +42,9 @@ public class Map : MonoBehaviour
 
     private Hex[,] hexGrid;
 
-    private Hex selectedHex;
-    private Hex hoveredHex;
+    public Hex SelectedHex { get; set; }
+    public Hex HoveredHex { get; set; }
     private Dictionary<PlayerCharacter, Hex> characterPositions;
-
-
-    //read only, to edit, use SelectHex() or UnselectHex()
-    public Hex SelectedHex
-    {
-        get { return this.selectedHex;  }
-    }
 
     public void Initialize()
     {
@@ -130,7 +123,7 @@ public class Map : MonoBehaviour
     public void clickHex(Hex h)
     {
         //moves previously selected player character
-        if (this.selectedHex != null && this.SelectedHex.HoldsCharacter != null)
+        if (this.SelectedHex != null && this.SelectedHex.HoldsCharacter != null)
         {
             this.MovePlayerChar(this.SelectedHex, h);
             this.UnselectHex();
@@ -160,39 +153,39 @@ public class Map : MonoBehaviour
 
     public void SelectHex(Hex h)
     {
-        if (this.selectedHex != null)
+        if (this.SelectedHex != null)
         {
             UnselectHex();
         }
-        this.selectedHex = h;
+        this.SelectedHex = h;
         h.HexColor = this.HEX_SELECT_COLOR;
         h.HideLabel();
     }
 
     public void UnselectHex()
     {
-        this.selectedHex.HexColor = this.selectedHex.BaseColor;
-        Hex previouslySelected = this.selectedHex;
-        this.selectedHex = null;
+        this.SelectedHex.HexColor = this.SelectedHex.BaseColor;
+        Hex previouslySelected = this.SelectedHex;
+        this.SelectedHex = null;
         this.unhoverHex(previouslySelected);
         
     }
 
     public void hoverHex(Hex h)
     {
-        this.hoveredHex = h;
+        this.HoveredHex = h;
         h.HexColor = this.HEX_HOVER_COLOR;
         if (this.SelectedHex != null)
         {
-            h.LabelString = Map.HexDistance(this.SelectedHex, this.hoveredHex).ToString();
+            h.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
             h.ShowLabel();
         }
     }
     public void unhoverHex(Hex h)
     {
-        if (this.hoveredHex == h)
+        if (this.HoveredHex == h)
         {
-            this.hoveredHex = null;
+            this.HoveredHex = null;
         }
 
         if (h != this.SelectedHex)
