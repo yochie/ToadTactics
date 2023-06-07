@@ -27,7 +27,7 @@ public class Map : MonoBehaviour
     //should correspond to unscaled sprite width
     public float hexWidth = 1f;
 
-    // flat to flat, or height, calculated on init by WidthToHeightRatio
+    // flat to flat, or height, calculated on init by WIDTH_TO_HEIGHT_RATIO
     private float hexHeight;
 
     //geometric property of hexes
