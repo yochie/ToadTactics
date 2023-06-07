@@ -6,7 +6,7 @@ using System;
 using UnityEngine.UI;
 using Mirror;
 
-public class GameController : NetworkBehaviour
+public class GameController : MonoBehaviour
 {
     public static GameController Singleton { get; private set; }
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
@@ -28,20 +28,6 @@ public class GameController : NetworkBehaviour
     {
         this.map.Initialize();
         this.InitClasses();
-
-        //Create char test
-        //PlayerCharacter testPlayer;
-        //PlayerChars = new List<PlayerCharacter>();
-        //for (int i = 0; i < AllPlayerCharPrefabs.Length; i++)
-        //{
-        //    PlayerChars.Add(Instantiate(this.AllPlayerCharPrefabs[i], new Vector3(0, 0, -0.1f), Quaternion.identity, map.GetHex(0, 0).transform));
-        //    testPlayer = PlayerChars[i];
-        //    testPlayer.Initialize(this.AllClasses.GetValueOrDefault("barbarian"), 0);
-        //    Hex startingHexPos = this.map.GetHex(i - 6, 0);
-        //    this.map.PlacePlayerChar(testPlayer, startingHexPos);
-        //    //test ability
-        //    testPlayer.CharClass.CharAbility.use(null, null);
-        //}
     }
 
     //Instantiate all classes to set their definitions here

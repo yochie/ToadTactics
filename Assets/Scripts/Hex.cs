@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using Mirror;
 
-public class Hex : MonoBehaviour
+public class Hex : NetworkBehaviour
 {
     public HexCoordinates Coordinates { get; private set; }
 
