@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Mirror;
 
-public class Map : MonoBehaviour
+public class Map : NetworkBehaviour
 {
     public static Vector3 characterOffsetOnMap = new Vector3(0, 0, -0.1f);
 
@@ -16,7 +17,7 @@ public class Map : MonoBehaviour
     public int xSize;
     public int ySize;
 
-    public Hex hexPrefab;
+    public GameObject hexPrefab;
     public MapOutline outline;
     public TextMeshProUGUI cellLabelPrefab;
     public Canvas coordCanvas;
@@ -50,19 +51,22 @@ public class Map : MonoBehaviour
     {
         this.hexGrid = new Hex[(this.xSize * 2) - 1, (this.ySize * 2) - 1];
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
-        this.GenerateHexes();
-        this.outline.DeleteHexesOutside();
 
-        for (int i = 0; i < this.startingZones.Count; i++)
-        {
-            this.startingZones[i].SetStartingZone();
-        }
+        //only runs on server
+        this.GenerateHexes();
 
         this.characterPositions = new();
     }
 
     private void GenerateHexes()
     {
+        //let server handle this, clients will get results using RPC
+        if (!isServer)
+        {
+            Debug.Log("Skipping map init");
+            return;
+        }
+
         float paddedHexWidth = this.hexWidth + this.padding;
         float paddedHexHeight = this.hexHeight + this.padding;
         for (int x = -this.xSize + 1; x < this.xSize; x++)
@@ -89,25 +93,43 @@ public class Map : MonoBehaviour
                     yPos = y * (3f * paddedHexWidth / 4.0f);
                 }
 
+                Vector3 position = new Vector3(xPos, yPos, 0);
+
+                Vector3 scale = new Vector3(hexWidth, hexWidth, 1);
+
                 //only rotate if not FlatTop since sprite is by default
                 Quaternion rotation = isFlatTop ? Quaternion.identity : Quaternion.AngleAxis(90, new Vector3(0, 0, 1));
-                Hex hex = (Hex)Instantiate(this.hexPrefab, new Vector3(xPos, yPos, 0), rotation);
-                if (isFlatTop)
-                {
-                    hex.transform.localScale = new Vector3(hexWidth, hexWidth, 1);
-                }
-                else
-                {
-                    hex.transform.localScale = new Vector3(hexWidth, hexWidth, 1);
-                }
 
-                hex.Init(this, HexCoordinates.FromOffsetCoordinates(x,y, isFlatTop), this.transform, "Hex_" + x + "_" + y);
+                HexCoordinates coordinates = HexCoordinates.FromOffsetCoordinates(x, y, isFlatTop);
+
+                GameObject hex = Instantiate(this.hexPrefab, position, Quaternion.identity);
+                NetworkServer.Spawn(hex);
+                Hex h = hex.GetComponent<Hex>();
+                h.Init(this, coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
 
                 //offset by size to balance negative coordinates
-                this.hexGrid[x + this.xSize - 1, y + this.ySize - 1] = hex;
-
+                this.SetHex(x, y, h);
+                //
+                this.RpcPlaceHex(hex, coordinates, position, scale, rotation, x, y);
             }
         }
+
+        this.outline.DeleteHexesOutside();
+
+        for (int i = 0; i < this.startingZones.Count; i++)
+        {
+            this.startingZones[i].SetStartingZone();
+        }
+    }
+
+    [ClientRpc]
+    public void RpcPlaceHex(GameObject hex, HexCoordinates coordinates, Vector3 position, Vector3 scale, Quaternion rotation, int x, int y)
+    {
+        if (hex == null) { return; }
+        Hex h = hex.GetComponent<Hex>();
+        h.transform.position = position;
+        h.transform.localScale = scale;
+        h.transform.rotation = rotation;
     }
 
     public Hex GetHex(int x, int y)

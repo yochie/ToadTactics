@@ -6,7 +6,7 @@ using System;
 using UnityEngine.UI;
 using Mirror;
 
-public class GameController : MonoBehaviour
+public class GameController : NetworkBehaviour
 {
     public static GameController Singleton { get; private set; }
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
@@ -23,11 +23,17 @@ public class GameController : MonoBehaviour
         Singleton = this;
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        this.map.Initialize();
+        this.InitClasses();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        this.map.Initialize();
-        this.InitClasses();
+
     }
 
     //Instantiate all classes to set their definitions here

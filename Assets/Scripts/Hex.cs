@@ -39,7 +39,7 @@ public class Hex : NetworkBehaviour
     private Map map;
     private SpriteRenderer sprite;
 
-    public void Init(Map m, HexCoordinates hc, Transform parent, string name) {
+    public void Init(Map m, HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
         this.sprite = this.GetComponent<SpriteRenderer>();
         this.map = m;
         this.Coordinates = hc;
@@ -47,6 +47,9 @@ public class Hex : NetworkBehaviour
         //this.transform.SetParent(parent);
         this.BaseColor = map.HEX_BASE_COLOR;
         this.IsStartingZone = false;
+        this.transform.position = position;
+        this.transform.localScale = scale;
+        this.transform.rotation = rotation;
 
         //coordinates hidden by default using canvas group alpha
         //use that component in editor mode to display

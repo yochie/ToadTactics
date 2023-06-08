@@ -12,7 +12,6 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public PlayerController LocalPlayer { get; set; }
     void Start()
     {
-        this.map = GameObject.Find("Map").GetComponent<Map>();
     }
 
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
