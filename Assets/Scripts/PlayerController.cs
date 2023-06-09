@@ -46,16 +46,25 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
-    public void CmdCreateChar(int playerCharacterIndex, Vector3 position, Hex hexPosition)
+    public void CmdCreateChar(int playerCharacterIndex, Hex destinationHex)
     {
-        GameObject newChar = 
-            Instantiate(gc.AllPlayerCharPrefabs[playerCharacterIndex], new Vector3(0, 0, 0), Quaternion.identity);
+        //validate destination
+        if (destinationHex == null || !destinationHex.isStartingZone)
+        {
+            Debug.Log("Invalid character destination");
+            return;
+        }
 
+        Vector3 destinationWorldPos = destinationHex.transform.position;
+        GameObject newChar = 
+            Instantiate(gc.AllPlayerCharPrefabs[playerCharacterIndex], destinationWorldPos, Quaternion.identity);
+
+        //update Hex state, synced to clients by syncvar
+        destinationHex.holdsCharacter = newChar.GetComponent<PlayerCharacter>();
 
         NetworkServer.Spawn(newChar, connectionToClient);
-        hexPosition.holdsCharacter = newChar.GetComponent<PlayerCharacter>();
 
-        this.RpcPlaceChar(newChar, position);
+        this.RpcPlaceChar(newChar, destinationWorldPos);
     }
 
     [ClientRpc]

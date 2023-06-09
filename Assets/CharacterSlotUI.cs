@@ -28,14 +28,8 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         //Debug.Log(this.map);
         //Debug.Log(destinationHex);
         //Debug.Log(destinationHex.IsStartingZone);
-        if (destinationHex == null || !destinationHex.isStartingZone)
-        {
-            Debug.Log("Invalid character destination");
-            return;
-        }
-        Vector3 destination = destinationHex.transform.position;
         //Debug.Log(HoldsPlayerCharacterWithIndex);
         //Debug.Log(destination);
-        this.LocalPlayer.CmdCreateChar(HoldsPlayerCharacterWithIndex, destination, destinationHex);
+        this.LocalPlayer.CmdCreateChar(HoldsPlayerCharacterWithIndex, destinationHex);
     }
 }
