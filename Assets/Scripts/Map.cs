@@ -33,13 +33,14 @@ public class Map : NetworkBehaviour
 
     //geometric property of hexes
     private const float WIDTH_TO_HEIGHT_RATIO = 1.155f;
-
     public float padding = 0.1f;
 
-    public Color HEX_BASE_COLOR = Color.white;
-    public Color HEX_START_BASE_COLOR = Color.blue;
-    public Color HEX_HOVER_COLOR = Color.cyan;
-    public Color HEX_SELECT_COLOR = Color.green;
+    public readonly Color HEX_BASE_COLOR = Color.white;
+    public readonly Color HEX_START_BASE_COLOR = Color.blue;
+    public readonly Color HEX_HOVER_COLOR = Color.cyan;
+    public readonly Color HEX_SELECT_COLOR = Color.green;
+    public readonly Color HEX_OPPONENT_START_BASE_COLOR = Color.grey;
+
 
     private Hex[,] hexGrid;
 

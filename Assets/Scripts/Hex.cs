@@ -45,6 +45,10 @@ public class Hex : NetworkBehaviour
     public bool holdsTreasure;
     [SyncVar]
     public Color baseColor;
+    //0 is host
+    //1 is client
+    [SyncVar]
+    public int startZoneForPlayerIndex;
 
     public void Init(Map m, HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
         this.name = name;
@@ -53,6 +57,7 @@ public class Hex : NetworkBehaviour
 
         //default values
         this.isStartingZone = false;
+        this.startZoneForPlayerIndex = -1;
         this.holdsCharacter = null;
         this.holdsObstacle = Obstacle.none;
         this.holdsHazard = Hazard.none;
@@ -70,6 +75,19 @@ public class Hex : NetworkBehaviour
     {
         base.OnStartClient();
         this.sprite = this.GetComponent<SpriteRenderer>();
+
+        if(this.isStartingZone)
+        {
+            if ((this.isServer && this.startZoneForPlayerIndex == 0) || (!this.isServer && this.startZoneForPlayerIndex == 1))
+            {
+                this.baseColor = map.HEX_START_BASE_COLOR;
+
+            } else
+            {
+                this.baseColor = map.HEX_OPPONENT_START_BASE_COLOR;
+            }
+        }
+
         this.HexColor = this.baseColor;
 
         //coordinates hidden by default using canvas group alpha
@@ -89,6 +107,11 @@ public class Hex : NetworkBehaviour
         numLabel.rectTransform.anchoredPosition =
             new Vector2(this.transform.position.x, this.transform.position.y);
         this.labelTextMesh = numLabel;
+
+        if (isServer)
+        {
+
+        }
     }
 
     private void OnMouseEnter() {

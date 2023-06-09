@@ -1134,7 +1134,7 @@ GameObject:
   - component: {fileID: 1914068968}
   m_Layer: 0
   m_Name: Start Zone Outline P2
-  m_TagString: P1
+  m_TagString: P2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

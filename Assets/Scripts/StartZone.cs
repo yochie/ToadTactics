@@ -33,7 +33,7 @@ public class StartZone : MonoBehaviour
                 if (results.Contains(hCollider))
                 {
                     h.isStartingZone = true;
-                    h.baseColor = map.HEX_START_BASE_COLOR;
+                    h.startZoneForPlayerIndex = this.playerIndex;
                 }
             }
         }

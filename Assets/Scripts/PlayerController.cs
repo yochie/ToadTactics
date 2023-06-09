@@ -5,15 +5,29 @@ using UnityEngine.UI;
 
 public class PlayerController : NetworkBehaviour
 {
-    public static int numPlayers = 0;
-
     GameController gc;
+    //0 for host
+    //1 for client
+    public int playerIndex;
 
     public override void OnStartClient()
     {
         base.OnStartClient();
 
         this.gc = GameController.Singleton;
+
+        if (isServer && this.isOwned) {
+            this.playerIndex = 0;
+        } else if (isServer && !this.isOwned)
+        {
+            this.playerIndex = 1;
+        } else if (!isServer && this.isOwned)
+        {
+            this.playerIndex = 1;
+        } else if (!isServer && !this.isOwned)
+        {
+            this.playerIndex = 0;
+        }
     }
 
     public override void OnStopClient()
@@ -48,8 +62,11 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdCreateChar(int playerCharacterIndex, Hex destinationHex)
     {
+        Debug.Log(destinationHex.startZoneForPlayerIndex);
+        Debug.Log(this.playerIndex);
+        
         //validate destination
-        if (destinationHex == null || !destinationHex.isStartingZone)
+        if (destinationHex == null || !destinationHex.isStartingZone || destinationHex.startZoneForPlayerIndex != this.playerIndex)
         {
             Debug.Log("Invalid character destination");
             return;
@@ -58,11 +75,11 @@ public class PlayerController : NetworkBehaviour
         Vector3 destinationWorldPos = destinationHex.transform.position;
         GameObject newChar = 
             Instantiate(gc.AllPlayerCharPrefabs[playerCharacterIndex], destinationWorldPos, Quaternion.identity);
+        NetworkServer.Spawn(newChar, connectionToClient);
 
         //update Hex state, synced to clients by syncvar
         destinationHex.holdsCharacter = newChar.GetComponent<PlayerCharacter>();
 
-        NetworkServer.Spawn(newChar, connectionToClient);
 
         this.RpcPlaceChar(newChar, destinationWorldPos);
     }
