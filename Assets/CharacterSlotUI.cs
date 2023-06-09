@@ -6,10 +6,10 @@ using Mirror;
 
 public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public GameController gc;
     public Map map;
     private Vector3 startPosition;
     public int HoldsPlayerCharacterWithIndex { get; set; }
-    public PlayerController LocalPlayer { get; set; }
 
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
     {
@@ -31,6 +31,6 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         //Debug.Log(HoldsPlayerCharacterWithIndex);
         //Debug.Log(destination);
         if (destinationHex == null) { return; }
-        this.LocalPlayer.CmdCreateChar(HoldsPlayerCharacterWithIndex, destinationHex);
+        this.gc.LocalPlayer.CmdCreateChar(this.HoldsPlayerCharacterWithIndex, destinationHex);
     }
 }

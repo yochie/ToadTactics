@@ -40,10 +40,7 @@ public class PlayerController : NetworkBehaviour
     {
         base.OnStartLocalPlayer();
 
-        foreach (CharacterSlotUI slot in gc.CharacterSlotsUI)
-        {
-            slot.LocalPlayer = this;
-        }
+        this.gc.LocalPlayer = this;
 
         //for now just choose random chars
         //TODO : fill these using draft eventually

@@ -11,6 +11,8 @@ public class GameController : NetworkBehaviour
     public static GameController Singleton { get; private set; }
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
     public Dictionary<string, CharacterClass> AllClasses { get; set; }
+    public PlayerController LocalPlayer { get; set; }
+
     public List<PlayerCharacter> PlayerChars = new();
 
     public const int charsPerPlayer = 3;
