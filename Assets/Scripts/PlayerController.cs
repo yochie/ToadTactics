@@ -66,7 +66,10 @@ public class PlayerController : NetworkBehaviour
         Debug.Log(this.playerIndex);
         
         //validate destination
-        if (destinationHex == null || !destinationHex.isStartingZone || destinationHex.startZoneForPlayerIndex != this.playerIndex)
+        if (destinationHex == null ||
+            !destinationHex.isStartingZone ||
+            destinationHex.startZoneForPlayerIndex != this.playerIndex ||
+            destinationHex.holdsCharacter != null)
         {
             Debug.Log("Invalid character destination");
             return;
