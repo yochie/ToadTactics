@@ -46,7 +46,8 @@ public class Map : NetworkBehaviour
 
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
-    private Dictionary<PlayerCharacter, Hex> characterPositions;
+
+    private readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
 
     public void Initialize()
     {
@@ -58,8 +59,6 @@ public class Map : NetworkBehaviour
             this.hexGrid = new Hex[(this.xSize * 2) - 1, (this.ySize * 2) - 1];
 
             this.GenerateHexes();
-
-            this.characterPositions = new();
         }
     }
 
@@ -167,20 +166,20 @@ public class Map : NetworkBehaviour
         hexGrid[x + this.xSize - 1, y + this.ySize - 1] = null;
     }
 
-    public void ClickHex(Hex h)
+    public void ClickHex(Hex clickedHex)
     {
         //moves previously selected player character
         if (this.SelectedHex != null && this.SelectedHex.holdsCharacter != null)
         {
-            this.MovePlayerChar(this.SelectedHex, h);
+            this.MovePlayerChar(this.SelectedHex, clickedHex);
             this.UnselectHex();
-            this.UnhoverHex(h);
+            this.UnhoverHex(clickedHex);
             return;
         }
 
-        if (this.SelectedHex != h)
+        if (this.SelectedHex != clickedHex)
         {
-            this.SelectHex(h);
+            this.SelectHex(clickedHex);
         }
         else
         {
@@ -265,5 +264,11 @@ public class Map : NetworkBehaviour
         //pc.transform.SetParent(position.transform, false);
         playerChar.transform.position = destination.transform.position + characterOffsetOnMap;
         //pc.transform.localPosition = new Vector3(0, 0, -0.1f);
+    }
+
+    [ClientRpc]
+    public void RpcPlaceChar(GameObject character, Vector3 position)
+    {
+        character.transform.position = position + Map.characterOffsetOnMap;
     }
 }

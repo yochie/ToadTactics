@@ -62,8 +62,8 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdCreateChar(int playerCharacterIndex, Hex destinationHex)
     {
-        Debug.Log(destinationHex.startZoneForPlayerIndex);
-        Debug.Log(this.playerIndex);
+        //Debug.Log(destinationHex.startZoneForPlayerIndex);
+        //Debug.Log(this.playerIndex);
         
         //validate destination
         if (destinationHex == null ||
@@ -83,14 +83,10 @@ public class PlayerController : NetworkBehaviour
         //update Hex state, synced to clients by syncvar
         destinationHex.holdsCharacter = newChar.GetComponent<PlayerCharacter>();
 
+        //this.gc.map.PlacePlayerChar();
 
-        this.RpcPlaceChar(newChar, destinationWorldPos);
-    }
 
-    [ClientRpc]
-    public void RpcPlaceChar(GameObject character, Vector3 position)
-    {
-        character.transform.position = position + Map.characterOffsetOnMap;
+        this.gc.map.RpcPlaceChar(newChar, destinationWorldPos);
     }
 
     public override void OnStartServer() 
