@@ -8,8 +8,7 @@ using Mirror;
 
 public class Map : NetworkBehaviour
 {
-    public static Vector3 characterOffsetOnMap = new(0, 0, -0.1f);
-
+    public static readonly Vector3 characterOffsetOnMap = new(0, 0, -0.1f);
     //sets orientation of hexes
     public bool isFlatTop;
 
@@ -47,7 +46,7 @@ public class Map : NetworkBehaviour
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
 
-    private readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
+    public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
 
     public void Initialize()
     {
@@ -171,7 +170,7 @@ public class Map : NetworkBehaviour
         //moves previously selected player character
         if (this.SelectedHex != null && this.SelectedHex.holdsCharacter != null)
         {
-            this.MovePlayerChar(this.SelectedHex, clickedHex);
+            this.CmdMoveChar(this.SelectedHex, clickedHex);
             this.UnselectHex();
             this.UnhoverHex(clickedHex);
             return;
@@ -186,17 +185,6 @@ public class Map : NetworkBehaviour
             this.UnselectHex();
         }
     }
-
-    public void MovePlayerChar(Hex source, Hex dest)
-    {
-        PlayerCharacter toMove = source.holdsCharacter;
-        source.holdsCharacter = null;
-
-        this.PlacePlayerChar(toMove, dest);
-
-        this.characterPositions[toMove] = dest;
-    }
-
     public void SelectHex(Hex h)
     {
         if (this.SelectedHex != null)
@@ -256,14 +244,31 @@ public class Map : NetworkBehaviour
         return (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f;
     }
 
-    public void PlacePlayerChar(PlayerCharacter playerChar, Hex destination)
+    [Command(requiresAuthority = false)]
+    public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
-        destination.holdsCharacter = playerChar;
-        this.characterPositions[playerChar] = destination;
+        //Validation
+        //TODO: add pathing
+        if (source == null ||
+            source.holdsCharacter == null ||
+            source.holdsCharacter.netIdentity.connectionToClient != sender ||
+            dest.holdsObstacle != Obstacle.none ||
+            dest.holdsCharacter != null)
+        {
+            Debug.Log("Client requested invalid move");
+            return;
+        }
 
-        //pc.transform.SetParent(position.transform, false);
-        playerChar.transform.position = destination.transform.position + characterOffsetOnMap;
-        //pc.transform.localPosition = new Vector3(0, 0, -0.1f);
+        PlayerCharacter toMove = source.holdsCharacter;
+
+        source.holdsCharacter = null;
+
+        dest.holdsCharacter = toMove;
+
+        this.characterPositions[toMove] = dest;
+
+        this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
+
     }
 
     [ClientRpc]

@@ -75,6 +75,8 @@ public class PlayerController : NetworkBehaviour
         Vector3 destinationWorldPos = destinationHex.transform.position;
         GameObject newChar = 
             Instantiate(gc.AllPlayerCharPrefabs[playerCharacterIndex], destinationWorldPos, Quaternion.identity);
+        //TODO : Create other classes and set their name in prefabs
+        newChar.GetComponent<PlayerCharacter>().Initialize(this.gc.AllClasses["Barbarian"]);
         NetworkServer.Spawn(newChar, connectionToClient);
 
         //update Hex state, synced to clients by syncvar
@@ -94,5 +96,6 @@ public class PlayerController : NetworkBehaviour
     public override void OnStopServer() {
 
     }
+
 
 }

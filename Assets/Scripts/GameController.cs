@@ -59,6 +59,6 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
             });
-        AllClasses.Add("barbarian", barbarian);
+        AllClasses.Add("Barbarian", barbarian);
     }
 }

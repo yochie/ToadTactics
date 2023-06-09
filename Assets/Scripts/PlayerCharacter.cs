@@ -6,11 +6,9 @@ using Mirror;
 public class PlayerCharacter : NetworkBehaviour
 {
     private int currentLife;
-
     public CharacterClass CharClass { get; set; }
     public List<Treasure> EquippedTreasure { get; set; }
     public CharacterStats CurrentStats { get; set; }
-    public int Owner { get; set;  }
 
     public int CurrentLife
     {
@@ -28,10 +26,9 @@ public class PlayerCharacter : NetworkBehaviour
         }
     }
 
-    public void Initialize(CharacterClass charChlass, int owner) {
+    public void Initialize(CharacterClass charChlass) {
         this.CharClass = charChlass;
         this.CurrentStats = charChlass.CharStats;
-        this.Owner = owner;
         this.CurrentLife = CurrentStats.MaxHealth;
     }
 }
