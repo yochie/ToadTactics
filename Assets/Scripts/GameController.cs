@@ -11,7 +11,7 @@ public class GameController : NetworkBehaviour
     public static GameController Singleton { get; private set; }
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
     public Dictionary<string, CharacterClass> AllClasses { get; set; }
-    public List<PlayerCharacter> PlayerChars = new List<PlayerCharacter>();
+    public List<PlayerCharacter> PlayerChars = new();
 
     public const int charsPerPlayer = 3;
     public CharacterSlotUI[] CharacterSlotsUI = new CharacterSlotUI[charsPerPlayer];
@@ -30,12 +30,6 @@ public class GameController : NetworkBehaviour
         this.InitClasses();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     //Instantiate all classes to set their definitions here
     //TODO: find better spot to do this
     //probably should load from file (CSV)
@@ -44,7 +38,7 @@ public class GameController : NetworkBehaviour
         AllClasses = new Dictionary<string, CharacterClass>();
 
         //BARB
-        CharacterClass barbarian = new CharacterClass();
+        CharacterClass barbarian = new();
         barbarian.Description = "He strong.";
         barbarian.CharStats = new(
             maxHealth: 10,

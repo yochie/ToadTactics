@@ -8,7 +8,7 @@ using Mirror;
 
 public class Map : NetworkBehaviour
 {
-    public static Vector3 characterOffsetOnMap = new Vector3(0, 0, -0.1f);
+    public static Vector3 characterOffsetOnMap = new(0, 0, -0.1f);
 
     //sets orientation of hexes
     public bool isFlatTop;
@@ -98,9 +98,9 @@ public class Map : NetworkBehaviour
                     yPos = y * (3f * paddedHexWidth / 4.0f);
                 }
 
-                Vector3 position = new Vector3(xPos, yPos, 0);
+                Vector3 position = new(xPos, yPos, 0);
 
-                Vector3 scale = new Vector3(hexWidth, hexWidth, 1);
+                Vector3 scale = new(this.hexWidth, this.hexWidth, 1);
 
                 //only rotate if not FlatTop since sprite is by default
                 Quaternion rotation = isFlatTop ? Quaternion.identity : Quaternion.AngleAxis(90, new Vector3(0, 0, 1));
@@ -123,6 +123,8 @@ public class Map : NetworkBehaviour
             this.startingZones[i].SetStartingZone();
         }
 
+
+        //spawn all hexes now that weve cleaned up extras and set all initial state
         for (int x = -this.xSize + 1; x < this.xSize; x++)
         {
             for (int y = -this.ySize + 1; y < this.ySize; y++)
@@ -164,14 +166,14 @@ public class Map : NetworkBehaviour
         hexGrid[x + this.xSize - 1, y + this.ySize - 1] = null;
     }
 
-    public void clickHex(Hex h)
+    public void ClickHex(Hex h)
     {
         //moves previously selected player character
         if (this.SelectedHex != null && this.SelectedHex.holdsCharacter != null)
         {
             this.MovePlayerChar(this.SelectedHex, h);
             this.UnselectHex();
-            this.unhoverHex(h);
+            this.UnhoverHex(h);
             return;
         }
 
@@ -211,11 +213,11 @@ public class Map : NetworkBehaviour
         this.SelectedHex.HexColor = this.SelectedHex.baseColor;
         Hex previouslySelected = this.SelectedHex;
         this.SelectedHex = null;
-        this.unhoverHex(previouslySelected);
+        this.UnhoverHex(previouslySelected);
         
     }
 
-    public void hoverHex(Hex h)
+    public void HoverHex(Hex h)
     {
         this.HoveredHex = h;
         h.HexColor = this.HEX_HOVER_COLOR;
@@ -225,7 +227,7 @@ public class Map : NetworkBehaviour
             h.ShowLabel();
         }
     }
-    public void unhoverHex(Hex h)
+    public void UnhoverHex(Hex h)
     {
         if (this.HoveredHex == h)
         {

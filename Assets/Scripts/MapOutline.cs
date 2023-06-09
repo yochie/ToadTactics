@@ -14,7 +14,7 @@ public class MapOutline : MonoBehaviour
     {
         Debug.Log("Deleting hexes outside outline");
         outlineCollider = this.GetComponent<Collider2D>();
-        List<Collider2D> results = new List<Collider2D>();
+        List<Collider2D> results = new();
         ContactFilter2D filter = new ContactFilter2D().NoFilter();
         int collidingCount = Physics2D.OverlapCollider(this.outlineCollider, filter, results);
 

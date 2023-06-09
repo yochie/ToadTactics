@@ -92,17 +92,17 @@ public class Hex : NetworkBehaviour
     }
 
     private void OnMouseEnter() {
-        this.map.hoverHex(this);
+        this.map.HoverHex(this);
     }
 
     private void OnMouseExit()
     {
-        this.map.unhoverHex(this);
+        this.map.UnhoverHex(this);
     }
 
     private void OnMouseDown()
     {
-        this.map.clickHex(this);
+        this.map.ClickHex(this);
     }
 
     internal void ShowLabel()

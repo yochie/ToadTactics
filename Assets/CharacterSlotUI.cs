@@ -10,9 +10,6 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Vector3 startPosition;
     public int HoldsPlayerCharacterWithIndex { get; set; }
     public PlayerController LocalPlayer { get; set; }
-    void Start()
-    {
-    }
 
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
     {
