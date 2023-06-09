@@ -29,15 +29,13 @@ public class MapOutline : MonoBehaviour
             {
                 Hex h = map.GetHex(x, y);
                 //Debug.Log(map + " " + x + " " + y);
-                //Debug.Log(map.GetHex(x, y));
-                ////TODO make private
-          
+                //Debug.Log(map.GetHex(x, y));         
 
                 Collider2D hCollider = h.GetComponent<Collider2D>();
 
                 if (!results.Contains(hCollider))
                 {
-                    Debug.Log("Deleting hex");
+                    //Debug.Log("Deleting hex");
                     map.DeleteHex(x, y);
                 }
             }

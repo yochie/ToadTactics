@@ -49,15 +49,20 @@ public class Map : NetworkBehaviour
 
     public void Initialize()
     {
-        this.hexGrid = new Hex[(this.xSize * 2) - 1, (this.ySize * 2) - 1];
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
 
         //only runs on server
-        this.GenerateHexes();
+        if (isServer)
+        {
+            this.hexGrid = new Hex[(this.xSize * 2) - 1, (this.ySize * 2) - 1];
 
-        this.characterPositions = new();
+            this.GenerateHexes();
+
+            this.characterPositions = new();
+        }
     }
 
+    [Server]
     private void GenerateHexes()
     {
         //let server handle this, clients will get results using RPC
@@ -102,15 +107,12 @@ public class Map : NetworkBehaviour
 
                 HexCoordinates coordinates = HexCoordinates.FromOffsetCoordinates(x, y, isFlatTop);
 
-                GameObject hex = Instantiate(this.hexPrefab, position, Quaternion.identity);
-                NetworkServer.Spawn(hex);
+                GameObject hex = Instantiate(this.hexPrefab, position, rotation);
                 Hex h = hex.GetComponent<Hex>();
                 h.Init(this, coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
 
-                //offset by size to balance negative coordinates
                 this.SetHex(x, y, h);
-                //
-                this.RpcPlaceHex(hex, coordinates, position, scale, rotation, x, y);
+                //this.RpcPlaceHex(hex, coordinates, position, scale, rotation, x, y);
             }
         }
 
@@ -120,17 +122,30 @@ public class Map : NetworkBehaviour
         {
             this.startingZones[i].SetStartingZone();
         }
+
+        for (int x = -this.xSize + 1; x < this.xSize; x++)
+        {
+            for (int y = -this.ySize + 1; y < this.ySize; y++)
+            {
+                Hex h = GetHex(x, y);
+                if(h != null)
+                {
+                    NetworkServer.Spawn(h.gameObject);
+                }                
+            }
+        }
+
     }
 
-    [ClientRpc]
-    public void RpcPlaceHex(GameObject hex, HexCoordinates coordinates, Vector3 position, Vector3 scale, Quaternion rotation, int x, int y)
-    {
-        if (hex == null) { return; }
-        Hex h = hex.GetComponent<Hex>();
-        h.transform.position = position;
-        h.transform.localScale = scale;
-        h.transform.rotation = rotation;
-    }
+    //[ClientRpc]
+    //public void RpcPlaceHex(GameObject hex, HexCoordinates coordinates, Vector3 position, Vector3 scale, Quaternion rotation, int x, int y)
+    //{
+    //    if (hex == null) { return; }
+    //    Hex h = hex.GetComponent<Hex>();
+    //    h.transform.position = position;
+    //    h.transform.localScale = scale;
+    //    h.transform.rotation = rotation;
+    //}
 
     public Hex GetHex(int x, int y)
     {
@@ -152,7 +167,7 @@ public class Map : NetworkBehaviour
     public void clickHex(Hex h)
     {
         //moves previously selected player character
-        if (this.SelectedHex != null && this.SelectedHex.HoldsCharacter != null)
+        if (this.SelectedHex != null && this.SelectedHex.holdsCharacter != null)
         {
             this.MovePlayerChar(this.SelectedHex, h);
             this.UnselectHex();
@@ -172,8 +187,8 @@ public class Map : NetworkBehaviour
 
     public void MovePlayerChar(Hex source, Hex dest)
     {
-        PlayerCharacter toMove = source.HoldsCharacter;
-        source.HoldsCharacter = null;
+        PlayerCharacter toMove = source.holdsCharacter;
+        source.holdsCharacter = null;
 
         this.PlacePlayerChar(toMove, dest);
 
@@ -193,7 +208,7 @@ public class Map : NetworkBehaviour
 
     public void UnselectHex()
     {
-        this.SelectedHex.HexColor = this.SelectedHex.BaseColor;
+        this.SelectedHex.HexColor = this.SelectedHex.baseColor;
         Hex previouslySelected = this.SelectedHex;
         this.SelectedHex = null;
         this.unhoverHex(previouslySelected);
@@ -219,7 +234,7 @@ public class Map : NetworkBehaviour
 
         if (h != this.SelectedHex)
         {
-            h.HexColor = h.BaseColor;
+            h.HexColor = h.baseColor;
         }
         else
         {
@@ -231,8 +246,8 @@ public class Map : NetworkBehaviour
 
     public static float HexDistance(Hex h1, Hex h2)
     {
-        HexCoordinates hc1 = h1.Coordinates;
-        HexCoordinates hc2 = h2.Coordinates;
+        HexCoordinates hc1 = h1.coordinates;
+        HexCoordinates hc2 = h2.coordinates;
 
         Vector3 diff = new Vector3(hc1.Q, hc1.R, hc1.S) - new Vector3(hc2.Q, hc2.R, hc2.S);
 
@@ -241,7 +256,7 @@ public class Map : NetworkBehaviour
 
     public void PlacePlayerChar(PlayerCharacter playerChar, Hex destination)
     {
-        destination.HoldsCharacter = playerChar;
+        destination.holdsCharacter = playerChar;
         this.characterPositions[playerChar] = destination;
 
         //pc.transform.SetParent(position.transform, false);

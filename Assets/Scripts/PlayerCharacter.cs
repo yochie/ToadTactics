@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class PlayerCharacter : MonoBehaviour
+public class PlayerCharacter : NetworkBehaviour
 {
     private int currentLife;
 

@@ -7,8 +7,8 @@ using Mirror;
 
 public class Hex : NetworkBehaviour
 {
-    public HexCoordinates Coordinates { get; private set; }
-
+    //vars used by UI only, not synced
+    private SpriteRenderer sprite;
     private Color hexColor;
     public Color HexColor {
         get { return this.hexColor; }
@@ -17,9 +17,6 @@ public class Hex : NetworkBehaviour
             this.sprite.color = value;
         }
     }
-
-    public Color BaseColor { get; set; }
-
     private TextMeshProUGUI coordLabelTextMesh;
     private TextMeshProUGUI labelTextMesh;
     private string labelString;
@@ -28,28 +25,52 @@ public class Hex : NetworkBehaviour
         set { 
             labelString = value;
             this.labelTextMesh.text = value;
-        } 
+        }
     }
-    public bool IsStartingZone { get; set; }
-    public PlayerCharacter HoldsCharacter { get; set; }
-    public Obstacle HoldsObstacle { get; set; }
-    public Hazard HoldsHazard { get; set; }
-    public bool holdsTreasure { get; set; }
 
+    //state vars to sync
+    [SyncVar]
     private Map map;
-    private SpriteRenderer sprite;
+    [SyncVar]
+    public HexCoordinates coordinates;
+    [SyncVar]
+    public bool isStartingZone;
+    [SyncVar]
+    public PlayerCharacter holdsCharacter;
+    [SyncVar]
+    public Obstacle holdsObstacle;
+    [SyncVar]
+    public Hazard holdsHazard;
+    [SyncVar]
+    public bool holdsTreasure;
+    [SyncVar]
+    public Color baseColor;
 
     public void Init(Map m, HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
-        this.sprite = this.GetComponent<SpriteRenderer>();
-        this.map = m;
-        this.Coordinates = hc;
         this.name = name;
-        //this.transform.SetParent(parent);
-        this.BaseColor = map.HEX_BASE_COLOR;
-        this.IsStartingZone = false;
+        this.map = m; 
+        this.coordinates = hc;
+
+        //default values
+        this.isStartingZone = false;
+        this.holdsCharacter = null;
+        this.holdsObstacle = Obstacle.none;
+        this.holdsHazard = Hazard.none;
+        this.holdsTreasure = false;
+        this.baseColor = m.HEX_BASE_COLOR;
+
+        //not currently needed as its set during instatiation, but kept in case
+        //scale is needed
         this.transform.position = position;
         this.transform.localScale = scale;
         this.transform.rotation = rotation;
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        this.sprite = this.GetComponent<SpriteRenderer>();
+        this.HexColor = this.baseColor;
 
         //coordinates hidden by default using canvas group alpha
         //use that component in editor mode to display
@@ -57,7 +78,7 @@ public class Hex : NetworkBehaviour
         coordLabel.rectTransform.SetParent(this.map.coordCanvas.transform, false);
         coordLabel.rectTransform.anchoredPosition =
             new Vector2(this.transform.position.x, this.transform.position.y);
-        coordLabel.text = this.Coordinates.ToStringOnLines();
+        coordLabel.text = this.coordinates.ToStringOnLines();
         this.coordLabelTextMesh = coordLabel;
 
 
@@ -96,8 +117,15 @@ public class Hex : NetworkBehaviour
 
     public void DeleteHex()
     {
-        Destroy(this.coordLabelTextMesh.gameObject);
-        Destroy(this.labelTextMesh.gameObject);
+        if(this.coordLabelTextMesh != null) { 
+            Destroy(this.coordLabelTextMesh.gameObject); 
+        }
+        
+        if (this.labelTextMesh != null)
+        {
+            Destroy(this.labelTextMesh.gameObject);
+        }
+        
         Destroy(this.gameObject);
     }
 }
