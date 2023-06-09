@@ -36,6 +36,6 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         Vector3 destination = destinationHex.transform.position;
         //Debug.Log(HoldsPlayerCharacterWithIndex);
         //Debug.Log(destination);
-        this.LocalPlayer.CmdCreateChar(HoldsPlayerCharacterWithIndex, destination);
+        this.LocalPlayer.CmdCreateChar(HoldsPlayerCharacterWithIndex, destination, destinationHex);
     }
 }

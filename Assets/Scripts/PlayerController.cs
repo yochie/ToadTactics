@@ -46,12 +46,14 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
-    public void CmdCreateChar(int playerCharacterIndex, Vector3 position)
+    public void CmdCreateChar(int playerCharacterIndex, Vector3 position, Hex hexPosition)
     {
         GameObject newChar = 
             Instantiate(gc.AllPlayerCharPrefabs[playerCharacterIndex], new Vector3(0, 0, 0), Quaternion.identity);
 
+
         NetworkServer.Spawn(newChar, connectionToClient);
+        hexPosition.holdsCharacter = newChar.GetComponent<PlayerCharacter>();
 
         this.RpcPlaceChar(newChar, position);
     }
