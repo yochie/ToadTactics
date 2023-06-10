@@ -163,11 +163,10 @@ public class Map : NetworkBehaviour
         return this.hexGrid[(x, y)];
     }
 
-    public Hex GetHex(int q, int r, int s)
+    public Hex GetCubeHex(int q, int r)
     {
-        int x = 0;
-        int y = 0;
-        return hexGrid[(x,y)];
+        HexCoordinates toConvert = new(q, r, this.isFlatTop);
+        return hexGrid[(toConvert.X, toConvert.Y)];
     }
 
     private void SetHex(int x, int y, Hex h)

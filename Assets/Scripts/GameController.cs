@@ -30,6 +30,10 @@ public class GameController : NetworkBehaviour
         base.OnStartClient();
         this.map.Initialize();
         this.InitClasses();
+        //foreach(HexCoordinates hc in this.map.GetHex(0, 0).coordinates.Neighbours())
+        //{
+        //    Debug.Log(hc);
+        //} 
     }
 
     //Instantiate all classes to set their definitions here
