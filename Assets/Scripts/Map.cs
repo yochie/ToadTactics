@@ -44,7 +44,7 @@ public class Map : NetworkBehaviour
     public readonly Color HEX_SELECT_COLOR = Color.green;
     public readonly Color HEX_OPPONENT_START_BASE_COLOR = Color.grey;
 
-    private Hex[,] hexGrid;
+    private Dictionary<(int,int), Hex> hexGrid = new();
 
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
@@ -58,8 +58,6 @@ public class Map : NetworkBehaviour
         //only runs on server
         if (isServer)
         {
-            this.hexGrid = new Hex[(this.xSize * 2) - 1, (this.ySize * 2) - 1];
-
             this.GenerateHexes();
         }
     }
@@ -162,19 +160,26 @@ public class Map : NetworkBehaviour
 
     public Hex GetHex(int x, int y)
     {
-        return hexGrid[x + this.xSize - 1, y + this.ySize - 1];
+        return this.hexGrid[(x, y)];
+    }
+
+    public Hex GetHex(int q, int r, int s)
+    {
+        int x = 0;
+        int y = 0;
+        return hexGrid[(x,y)];
     }
 
     private void SetHex(int x, int y, Hex h)
     {
-        hexGrid[x + this.xSize - 1, y + this.ySize - 1] = h;
+        hexGrid[(x, y)] = h;
     }
 
     public void DeleteHex(int x, int y)
     {
         Hex toDelete = GetHex(x,y);
         toDelete.DeleteHex();
-        hexGrid[x + this.xSize - 1, y + this.ySize - 1] = null;
+        hexGrid[(x, y)] = null;
     }
 
     public void ClickHex(Hex clickedHex)
