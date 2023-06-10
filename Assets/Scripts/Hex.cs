@@ -49,6 +49,8 @@ public class Hex : NetworkBehaviour
     //1 is client
     [SyncVar]
     public int startZoneForPlayerIndex;
+    [SyncVar]
+    public int moveCost;
 
     public void Init(Map m, HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
         this.name = name;
@@ -63,6 +65,7 @@ public class Hex : NetworkBehaviour
         this.holdsHazard = Hazard.none;
         this.holdsTreasure = false;
         this.baseColor = m.HEX_BASE_COLOR;
+        this.moveCost = 1;
 
         //not currently needed as its set during instatiation, but kept in case
         //scale is needed

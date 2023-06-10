@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Mirror;
+using Utils;
 
 public class Map : NetworkBehaviour
 {
@@ -221,14 +222,21 @@ public class Map : NetworkBehaviour
         
     }
 
-    public void HoverHex(Hex h)
+    public void HoverHex(Hex hoveredHex)
     {
-        this.HoveredHex = h;
-        h.HexColor = this.HEX_HOVER_COLOR;
+        this.HoveredHex = hoveredHex;
+        hoveredHex.HexColor = this.HEX_HOVER_COLOR;
         if (this.SelectedHex != null)
         {
-            h.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
-            h.ShowLabel();
+            hoveredHex.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
+            hoveredHex.ShowLabel();
+
+            this.clearPaths();
+
+            List<Hex> path = this.FindMovementPath(this.SelectedHex, hoveredHex);
+            if (path!= null){
+                this.DisplayPath(path);
+            }
         }
     }
 
@@ -249,28 +257,136 @@ public class Map : NetworkBehaviour
         }
 
         h.HideLabel();
+
+        this.clearPaths();
     }
 
-    public static float HexDistance(Hex h1, Hex h2)
+    private void DisplayPath(List<Hex> path)
+    {
+        //Debug.Log("Found path");
+        //Debug.Log(path.Count);
+        int pathLength = 1;
+        foreach (Hex h in path)
+        {
+            h.LabelString = pathLength.ToString();
+            h.ShowLabel();
+            pathLength++;
+        }
+    }
+
+    private void clearPaths()
+    {
+        for (int x = -this.xSize + 1; x < this.xSize; x++)
+        {
+            for (int y = -this.ySize + 1; y < this.ySize; y++)
+            {
+                Hex h = GetHex(x, y);
+                if (h != null)
+                {
+                    h.HideLabel();
+                }
+
+            }
+        }
+    }
+
+    public static int HexDistance(Hex h1, Hex h2)
     {
         HexCoordinates hc1 = h1.coordinates;
         HexCoordinates hc2 = h2.coordinates;
 
         Vector3 diff = new Vector3(hc1.Q, hc1.R, hc1.S) - new Vector3(hc2.Q, hc2.R, hc2.S);
 
-        return (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f;
+        return (int) ((Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f);
     }
 
-    public Hex[] GetHexNeighbours(Hex h)
+    public List<Hex> GetHexNeighbours(Hex h)
     {
-        Hex[] toReturn = new Hex[6];
-        int i = 0;
+        List<Hex> toReturn = new();
         foreach (HexCoordinates neighbourCoord in h.coordinates.Neighbours())
         {
-            toReturn[i] =  GetHex(neighbourCoord.X, neighbourCoord.Y);
-            i++;
+            Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
+            if (neighbour != null)
+            {
+                toReturn.Add(neighbour);
+            }
         }
 
+        return toReturn;
+    }
+
+    public List<Hex> GetUnobstructedHexNeighbours(Hex h)
+    {
+        List<Hex> toReturn = new();
+        foreach (HexCoordinates neighbourCoord in h.coordinates.Neighbours())
+        {
+            Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
+            if (neighbour != null && !neighbour.holdsObstacle && !neighbour.holdsCharacter)
+            {
+                toReturn.Add(neighbour);
+            }
+        }
+
+        return toReturn;
+    }
+
+    public List<Hex> FindMovementPath(Hex start, Hex dest)
+    {
+        PriorityQueue<Hex, int> frontier = new();
+        frontier.Enqueue(start, 0);
+
+        Dictionary<Hex, Hex> cameFrom = new();
+        cameFrom[start] = null;
+
+        Dictionary<Hex, int> costsSoFar = new();
+        costsSoFar[start] = 0;
+
+        while (frontier.Count != 0)
+        {
+            Hex currentHex = frontier.Dequeue();
+
+            if(currentHex == dest)
+            {
+                break;
+            }
+
+            foreach (Hex next in this.GetUnobstructedHexNeighbours(currentHex))
+            {
+                //Debug.Log(costsSoFar);
+                //Debug.Log(currentHex);
+                //Debug.Log(costsSoFar[currentHex]);
+                //Debug.Log(next.moveCost);
+                int newCost = costsSoFar[currentHex] + next.moveCost;
+                if (!costsSoFar.ContainsKey(next) || newCost < costsSoFar[next])
+                {
+                    //Debug.Log("Adding hex to path");
+                    costsSoFar[next] = newCost;
+                    int priority = newCost + Map.HexDistance(next, dest);
+                    frontier.Enqueue(next, priority);
+                    cameFrom[next] = currentHex;
+                }
+            }
+        }
+        List<Hex> toReturn = this.FlattenPath(cameFrom, dest);
+        return toReturn;
+    }
+
+    private List<Hex> FlattenPath(Dictionary<Hex,Hex> path, Hex dest)
+    {
+        //no path to destination was found
+        if (!path.ContainsKey(dest))
+        {
+            return null;
+        }
+
+        List<Hex> toReturn = new();
+        Hex currentHex = dest;
+        while (path[currentHex] != null)
+        {
+            toReturn.Add(currentHex);
+            currentHex = path[currentHex];
+        }
+        toReturn.Reverse();
         return toReturn;
     }
 
