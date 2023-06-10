@@ -16,7 +16,11 @@ public class Map : NetworkBehaviour
     public int xSize;
     public int ySize;
 
+    public int obstacleSpawnChance;
+
     public GameObject hexPrefab;
+    public GameObject treePrefab;
+
     public MapOutline outline;
     public TextMeshProUGUI cellLabelPrefab;
     public Canvas coordCanvas;
@@ -39,7 +43,6 @@ public class Map : NetworkBehaviour
     public readonly Color HEX_HOVER_COLOR = Color.cyan;
     public readonly Color HEX_SELECT_COLOR = Color.green;
     public readonly Color HEX_OPPONENT_START_BASE_COLOR = Color.grey;
-
 
     private Hex[,] hexGrid;
 
@@ -64,13 +67,6 @@ public class Map : NetworkBehaviour
     [Server]
     private void GenerateHexes()
     {
-        //let server handle this, clients will get results using RPC
-        if (!isServer)
-        {
-            Debug.Log("Skipping map init");
-            return;
-        }
-
         float paddedHexWidth = this.hexWidth + this.padding;
         float paddedHexHeight = this.hexHeight + this.padding;
         for (int x = -this.xSize + 1; x < this.xSize; x++)
@@ -111,17 +107,20 @@ public class Map : NetworkBehaviour
                 h.Init(this, coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
 
                 this.SetHex(x, y, h);
-                //this.RpcPlaceHex(hex, coordinates, position, scale, rotation, x, y);
             }
         }
 
         this.outline.DeleteHexesOutside();
 
+        //sets flag on hexes that are starting zones
+        //also assigns player
         for (int i = 0; i < this.startingZones.Count; i++)
         {
             this.startingZones[i].SetStartingZone();
         }
 
+        //place random obstacles
+        this.GenerateTrees();
 
         //spawn all hexes now that weve cleaned up extras and set all initial state
         for (int x = -this.xSize + 1; x < this.xSize; x++)
@@ -138,15 +137,28 @@ public class Map : NetworkBehaviour
 
     }
 
-    //[ClientRpc]
-    //public void RpcPlaceHex(GameObject hex, HexCoordinates coordinates, Vector3 position, Vector3 scale, Quaternion rotation, int x, int y)
-    //{
-    //    if (hex == null) { return; }
-    //    Hex h = hex.GetComponent<Hex>();
-    //    h.transform.position = position;
-    //    h.transform.localScale = scale;
-    //    h.transform.rotation = rotation;
-    //}
+    [Server]
+    private void GenerateTrees()
+    {
+        for (int x = -this.xSize + 1; x < this.xSize; x++)
+        {
+            for (int y = -this.ySize + 1; y < this.ySize; y++)
+            {
+                Hex h = GetHex(x, y);
+                if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard == Hazard.none)
+                {
+                    if(UnityEngine.Random.Range(1, 100) <= this.obstacleSpawnChance)
+                    {
+                        Debug.Log("Spawning tree");
+                        GameObject tree = Instantiate(this.treePrefab, h.transform.position, Quaternion.identity);
+                        NetworkServer.Spawn(tree);
+                        h.holdsObstacle = tree.GetComponent<Obstacle>();
+                    }
+
+                }
+            }
+        }
+    }
 
     public Hex GetHex(int x, int y)
     {
@@ -215,6 +227,7 @@ public class Map : NetworkBehaviour
             h.ShowLabel();
         }
     }
+
     public void UnhoverHex(Hex h)
     {
         if (this.HoveredHex == h)
@@ -252,7 +265,7 @@ public class Map : NetworkBehaviour
         if (source == null ||
             source.holdsCharacter == null ||
             source.holdsCharacter.netIdentity.connectionToClient != sender ||
-            dest.holdsObstacle != Obstacle.none ||
+            dest.holdsObstacle != null ||
             dest.holdsCharacter != null)
         {
             Debug.Log("Client requested invalid move");

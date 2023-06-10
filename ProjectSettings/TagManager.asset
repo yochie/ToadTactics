@@ -40,6 +40,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: MapBg
+    uniqueID: 1635455935
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public enum Obstacle
+public class Obstacle : NetworkBehaviour
 {
-    tree, none
+    [SyncVar]
+    public ObstacleType type;
 }

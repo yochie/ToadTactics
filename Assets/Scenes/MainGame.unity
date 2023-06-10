@@ -1365,7 +1365,9 @@ MonoBehaviour:
   isFlatTop: 1
   xSize: 16
   ySize: 8
+  obstacleSpawnChance: 5
   hexPrefab: {fileID: 5749146893725706871, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
+  treePrefab: {fileID: 6994461756168707245, guid: 3f7607b4dff716845914240a21818a89, type: 3}
   outline: {fileID: 1411125705}
   cellLabelPrefab: {fileID: 6525404334361133443, guid: 68f45b61888877a4d8ae305dd024c3c3, type: 3}
   coordCanvas: {fileID: 1515437361}
