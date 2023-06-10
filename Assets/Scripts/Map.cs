@@ -163,11 +163,11 @@ public class Map : NetworkBehaviour
         return this.hexGrid[(x, y)];
     }
 
-    public Hex GetCubeHex(int q, int r)
-    {
-        HexCoordinates toConvert = new(q, r, this.isFlatTop);
-        return hexGrid[(toConvert.X, toConvert.Y)];
-    }
+    //public Hex GetCubeHex(int q, int r)
+    //{
+    //    HexCoordinates toConvert = new(q, r, this.isFlatTop);
+    //    return hexGrid[(toConvert.X, toConvert.Y)];
+    //}
 
     private void SetHex(int x, int y, Hex h)
     {
@@ -259,6 +259,19 @@ public class Map : NetworkBehaviour
         Vector3 diff = new Vector3(hc1.Q, hc1.R, hc1.S) - new Vector3(hc2.Q, hc2.R, hc2.S);
 
         return (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f;
+    }
+
+    public Hex[] GetHexNeighbours(Hex h)
+    {
+        Hex[] toReturn = new Hex[6];
+        int i = 0;
+        foreach (HexCoordinates neighbourCoord in h.coordinates.Neighbours())
+        {
+            toReturn[i] =  GetHex(neighbourCoord.X, neighbourCoord.Y);
+            i++;
+        }
+
+        return toReturn;
     }
 
     [Command(requiresAuthority = false)]

@@ -33,8 +33,8 @@ public struct HexCoordinates {
 	}
 
 	//offset coordinates
-	public int X { get { return this.isFlatTop ? this.Q : this.Q + (this.R - Math.Abs(this.R % 2)); } }
-	public int Y { get { return this.isFlatTop ? this.R  + (this.Q - Math.Abs(this.Q%2)) : this.R; } }
+	public int X { get { return this.isFlatTop ? this.Q : this.Q + (this.R - Math.Abs(this.R % 2)) / 2; } }
+	public int Y { get { return this.isFlatTop ? this.R  + (this.Q - Math.Abs(this.Q%2)) / 2 : this.R; } }
 
 
 	public HexCoordinates (int q, int r, bool isFlatTop) {
