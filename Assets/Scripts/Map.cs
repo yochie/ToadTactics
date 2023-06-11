@@ -48,7 +48,10 @@ public class Map : NetworkBehaviour
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
 
-    public readonly SyncDictionary<Vector2Int, Hex> hexGrid = new();
+    public readonly Dictionary<Vector2Int, Hex> hexGrid = new();
+    public readonly SyncDictionary<Vector2Int, uint> hexGridNetIds = new SyncDictionary<Vector2Int, uint>();
+
+    //TODO : fix using same strat as hexgrid
     public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
 
     public void Initialize()
@@ -130,10 +133,11 @@ public class Map : NetworkBehaviour
             for (int y = -this.ySize + 1; y < this.ySize; y++)
             {
                 Hex h = GetHex(x, y);
-                if(h != null)
+                if (h != null)
                 {
                     NetworkServer.Spawn(h.gameObject);
-                }                
+                    this.hexGridNetIds[new Vector2Int(x, y)] = h.gameObject.GetComponent<NetworkIdentity>().netId;
+                }
             }
         }
     }
@@ -148,7 +152,7 @@ public class Map : NetworkBehaviour
                 Hex h = GetHex(x, y);
                 if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard == Hazard.none)
                 {
-                    if(UnityEngine.Random.Range(1, 100) <= this.obstacleSpawnChance)
+                    if (UnityEngine.Random.Range(1, 100) <= this.obstacleSpawnChance)
                     {
                         Debug.Log("Spawning tree");
                         GameObject tree = Instantiate(this.treePrefab, h.transform.position, Quaternion.identity);
@@ -163,7 +167,13 @@ public class Map : NetworkBehaviour
 
     public Hex GetHex(int x, int y)
     {
-        return this.hexGrid[new Vector2Int(x, y)];
+        if (this.hexGrid.TryGetValue(new Vector2Int(x, y), out Hex toReturn))
+        {
+            return toReturn;
+        } else
+        {
+            return null;
+        }        
     }
 
     //public Hex GetCubeHex(int q, int r)
@@ -181,7 +191,7 @@ public class Map : NetworkBehaviour
     [Server]
     public void DeleteHex(int x, int y)
     {
-        Hex toDelete = GetHex(x,y);
+        Hex toDelete = GetHex(x, y);
         toDelete.DeleteHex();
         this.hexGrid[new Vector2Int(x, y)] = null;
     }
@@ -223,7 +233,7 @@ public class Map : NetworkBehaviour
         Hex previouslySelected = this.SelectedHex;
         this.SelectedHex = null;
         this.UnhoverHex(previouslySelected);
-        
+
     }
 
     public void HoverHex(Hex hoveredHex)
@@ -240,7 +250,8 @@ public class Map : NetworkBehaviour
             this.clearPaths();
 
             List<Hex> path = this.FindMovementPath(this.SelectedHex, hoveredHex);
-            if (path!= null){
+            if (path != null)
+            {
                 this.DisplayPath(path);
             }
         }
@@ -303,7 +314,7 @@ public class Map : NetworkBehaviour
 
         Vector3 diff = new Vector3(hc1.Q, hc1.R, hc1.S) - new Vector3(hc2.Q, hc2.R, hc2.S);
 
-        return (int) ((Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f);
+        return (int)((Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f);
     }
 
     public List<Hex> GetHexNeighbours(Hex h)
@@ -351,7 +362,7 @@ public class Map : NetworkBehaviour
         {
             Hex currentHex = frontier.Dequeue();
 
-            if(currentHex == dest)
+            if (currentHex == dest)
             {
                 break;
             }
@@ -377,7 +388,7 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
-    private List<Hex> FlattenPath(Dictionary<Hex,Hex> path, Hex dest)
+    private List<Hex> FlattenPath(Dictionary<Hex, Hex> path, Hex dest)
     {
         //no path to destination was found
         if (!path.ContainsKey(dest))
@@ -427,5 +438,55 @@ public class Map : NetworkBehaviour
     public void RpcPlaceChar(GameObject character, Vector3 position)
     {
         character.transform.position = position + Map.characterOffsetOnMap;
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        hexGridNetIds.Callback += OnHexGridNetIdsChange;
+        // Process initial SyncDictionary payload
+        foreach (KeyValuePair<Vector2Int, uint> kvp in hexGridNetIds)
+            OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
+    }
+
+    [Client]
+    void OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation op, Vector2Int key, uint netId)
+    {
+
+        switch (op)
+        {
+            case SyncDictionary<Vector2Int, uint>.Operation.OP_ADD:
+                // entry added
+                this.hexGrid[key] = null;
+
+                if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
+                {
+                    this.hexGrid[key] = identity.gameObject.GetComponent<Hex>();
+                } else
+                {
+                    StartCoroutine(HexFromNetIdCoroutine(key, netId));
+                }
+                break;
+            case SyncDictionary<Vector2Int, uint>.Operation.OP_SET:
+                // entry changed
+                break;
+            case SyncDictionary<Vector2Int, uint>.Operation.OP_REMOVE:
+                // entry removed
+                break;
+            case SyncDictionary<Vector2Int, uint>.Operation.OP_CLEAR:
+                // Dictionary was cleared
+                break;
+        }
+    }
+
+    [Client]
+    IEnumerator HexFromNetIdCoroutine(Vector2Int key, uint netId)
+    {
+        while (this.hexGrid[key] == null)
+        {
+            yield return null;
+            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
+                this.hexGrid[key] = identity.gameObject.GetComponent<Hex>();
+        }
     }
 }
