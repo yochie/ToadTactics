@@ -52,7 +52,7 @@ public class Map : NetworkBehaviour
     public readonly SyncDictionary<Vector2Int, uint> hexGridNetIds = new SyncDictionary<Vector2Int, uint>();
 
     //TODO : fix using same strat as hexgrid
-    public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
+    //public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
 
     public void Initialize()
     {
@@ -428,7 +428,7 @@ public class Map : NetworkBehaviour
 
         dest.holdsCharacter = toMove;
 
-        this.characterPositions[toMove] = dest;
+        //this.characterPositions[toMove] = dest;
 
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
 
