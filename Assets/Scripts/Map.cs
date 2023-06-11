@@ -104,6 +104,10 @@ public class Map : NetworkBehaviour
                 Hex h = hex.GetComponent<Hex>();
                 h.Init(this, coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
 
+
+                //TODO : Fix grid syncing so that client has access to latest version
+                //currently bugged on clients since Hex doesn't exist over there, should probably use strat showes in docs to sync using netid
+
                 this.SetHex(x, y, h);
             }
         }
