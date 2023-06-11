@@ -150,7 +150,7 @@ public class Map : NetworkBehaviour
             for (int y = -this.ySize + 1; y < this.ySize; y++)
             {
                 Hex h = GetHex(x, y);
-                if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard.type == HazardType.none)
+                if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard == null)
                 {
                     if (UnityEngine.Random.Range(1, 100) <= this.obstacleSpawnChance)
                     {
