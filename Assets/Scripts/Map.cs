@@ -96,7 +96,7 @@ public class Map : NetworkBehaviour
                 Vector3 scale = new(this.hexWidth, this.hexWidth, 1);
 
                 //only rotate if not FlatTop since sprite is by default
-                Quaternion rotation = isFlatTop ? Quaternion.identity : Quaternion.AngleAxis(90, new Vector3(0, 0, 1));
+                Quaternion rotation = this.isFlatTop ? Quaternion.identity : Quaternion.AngleAxis(90, new Vector3(0, 0, 1));
 
                 HexCoordinates coordinates = HexCoordinates.FromOffsetCoordinates(x, y, isFlatTop);
 
