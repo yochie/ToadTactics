@@ -45,11 +45,10 @@ public class Map : NetworkBehaviour
     public readonly Color HEX_SELECT_COLOR = Color.green;
     public readonly Color HEX_OPPONENT_START_BASE_COLOR = Color.grey;
 
-    private Dictionary<(int,int), Hex> hexGrid = new();
-
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
 
+    public readonly SyncDictionary<Vector2Int, Hex> hexGrid = new();
     public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
 
     public void Initialize()
@@ -133,7 +132,6 @@ public class Map : NetworkBehaviour
                 }                
             }
         }
-
     }
 
     [Server]
@@ -161,7 +159,7 @@ public class Map : NetworkBehaviour
 
     public Hex GetHex(int x, int y)
     {
-        return this.hexGrid[(x, y)];
+        return this.hexGrid[new Vector2Int(x, y)];
     }
 
     //public Hex GetCubeHex(int q, int r)
@@ -170,16 +168,18 @@ public class Map : NetworkBehaviour
     //    return hexGrid[(toConvert.X, toConvert.Y)];
     //}
 
+    [Server]
     private void SetHex(int x, int y, Hex h)
     {
-        hexGrid[(x, y)] = h;
+        this.hexGrid[new Vector2Int(x, y)] = h;
     }
 
+    [Server]
     public void DeleteHex(int x, int y)
     {
         Hex toDelete = GetHex(x,y);
         toDelete.DeleteHex();
-        hexGrid[(x, y)] = null;
+        this.hexGrid[new Vector2Int(x, y)] = null;
     }
 
     public void ClickHex(Hex clickedHex)
@@ -228,6 +228,8 @@ public class Map : NetworkBehaviour
         hoveredHex.HexColor = this.HEX_HOVER_COLOR;
         if (this.SelectedHex != null)
         {
+            Debug.Log(this.HoveredHex.coordinates);
+
             hoveredHex.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
             hoveredHex.ShowLabel();
 

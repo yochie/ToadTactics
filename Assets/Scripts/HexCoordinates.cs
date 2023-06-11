@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public struct HexCoordinates {
+public readonly struct HexCoordinates : IEquatable<HexCoordinates>
+{
 
 	public static Vector3[] directionVectors = {
 		new Vector3(1,0,-1),
@@ -15,11 +15,10 @@ public struct HexCoordinates {
 		new Vector3(-1,1,0)
 	};
 
-	private bool isFlatTop;
+	public readonly bool isFlatTop;
 
-	[SerializeField]
 	//cube coordinates
-	private int q, r;
+	public readonly int q, r;
 	public int Q { get { return this.q; } }
 
 	public int R { get { return this.r; } }
@@ -79,4 +78,16 @@ public struct HexCoordinates {
 		}
 		return toReturn;
 	}
+
+    public bool Equals(HexCoordinates other)
+    {
+        if (this.isFlatTop == other.isFlatTop && this.Q == other.Q && this.R == other.R)
+        {
+			return true;
+        } else
+        {
+			return false;
+        }
+
+    }
 }

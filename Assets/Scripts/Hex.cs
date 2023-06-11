@@ -30,7 +30,7 @@ public class Hex : NetworkBehaviour
 
     //state vars to sync
     [SyncVar]
-    private Map map;
+    public Map map;
     [SyncVar]
     public HexCoordinates coordinates;
     [SyncVar]
@@ -52,6 +52,7 @@ public class Hex : NetworkBehaviour
     [SyncVar]
     public int moveCost;
 
+    [Server]
     public void Init(Map m, HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
         this.name = name;
         this.map = m; 
@@ -77,6 +78,8 @@ public class Hex : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+
+        //Debug.LogFormat("Creating hex on client {0} {1} {2}",this.coordinates, this.coordinates.X, this.coordinates.Y);
         this.sprite = this.GetComponent<SpriteRenderer>();
 
         if(this.isStartingZone)
@@ -110,11 +113,6 @@ public class Hex : NetworkBehaviour
         numLabel.rectTransform.anchoredPosition =
             new Vector2(this.transform.position.x, this.transform.position.y);
         this.labelTextMesh = numLabel;
-
-        if (isServer)
-        {
-
-        }
     }
 
     private void OnMouseEnter() {
