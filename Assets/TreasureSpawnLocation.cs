@@ -5,7 +5,7 @@ using Mirror;
 
 public class TreasureSpawnLocation : NetworkBehaviour
 {
-    public Collider2D treasureLocation;
-    public Collider2D hazardLocation;
+    public Vector2Int treasureCoordinate;
+    public List<Vector2Int> hazardCoordinates;
 
 }

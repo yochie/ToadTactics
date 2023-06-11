@@ -2,14 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Mirror;
 
-public class MapOutline : MonoBehaviour
+public class MapOutline : NetworkBehaviour
 {
     public Map map;
     private Collider2D outlineCollider;
 
 
     //checks hexes in map overlapping this objects collider to destroy them
+    [Server]
     public void DeleteHexesOutside()
     {
         Debug.Log("Deleting hexes outside outline");

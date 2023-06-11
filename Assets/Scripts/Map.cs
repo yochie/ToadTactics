@@ -23,6 +23,8 @@ public class Map : NetworkBehaviour
     public GameObject treePrefab;
 
     public MapOutline outline;
+    public TreasureSpawner treasureSpawner;
+
     public TextMeshProUGUI cellLabelPrefab;
     public Canvas coordCanvas;
     public Canvas labelsCanvas;
@@ -58,10 +60,45 @@ public class Map : NetworkBehaviour
     {
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
 
-        //only runs on server
         if (isServer)
         {
-            this.GenerateHexes();
+            this.GenerateMap();
+        }
+    }
+
+    [Server]
+    private void GenerateMap()
+    {
+        this.GenerateHexes();
+
+        this.outline.DeleteHexesOutside();
+
+        //sets flag on hexes that are starting zones
+        //also assigns player
+        for (int i = 0; i < this.startingZones.Count; i++)
+        {
+            this.startingZones[i].SetStartingZone();
+        }
+
+        this.treasureSpawner.SpawnTreasure();
+
+        this.GenerateTrees();
+
+        //spawn all hexes on clients now that weve cleaned up extras and set all initial state
+        for (int x = -this.xSize + 1; x < this.xSize; x++)
+        {
+            for (int y = -this.ySize + 1; y < this.ySize; y++)
+            {
+                Hex h = GetHex(x, y);
+                if (h != null)
+                {
+                    NetworkServer.Spawn(h.gameObject);
+
+                    //used to sync hexGrid using coroutine callbacks on client
+                    //bypasses issues with syncing gameobjects that haven't been spawned yet
+                    this.hexGridNetIds[new Vector2Int(x, y)] = h.gameObject.GetComponent<NetworkIdentity>().netId;
+                }
+            }
         }
     }
 
@@ -107,37 +144,7 @@ public class Map : NetworkBehaviour
                 Hex h = hex.GetComponent<Hex>();
                 h.Init(this, coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
 
-
-                //TODO : Fix grid syncing so that client has access to latest version
-                //currently bugged on clients since Hex doesn't exist over there, should probably use strat showes in docs to sync using netid
-
                 this.SetHex(x, y, h);
-            }
-        }
-
-        this.outline.DeleteHexesOutside();
-
-        //sets flag on hexes that are starting zones
-        //also assigns player
-        for (int i = 0; i < this.startingZones.Count; i++)
-        {
-            this.startingZones[i].SetStartingZone();
-        }
-
-        //place random obstacles
-        this.GenerateTrees();
-
-        //spawn all hexes now that weve cleaned up extras and set all initial state
-        for (int x = -this.xSize + 1; x < this.xSize; x++)
-        {
-            for (int y = -this.ySize + 1; y < this.ySize; y++)
-            {
-                Hex h = GetHex(x, y);
-                if (h != null)
-                {
-                    NetworkServer.Spawn(h.gameObject);
-                    this.hexGridNetIds[new Vector2Int(x, y)] = h.gameObject.GetComponent<NetworkIdentity>().netId;
-                }
             }
         }
     }
@@ -150,14 +157,14 @@ public class Map : NetworkBehaviour
             for (int y = -this.ySize + 1; y < this.ySize; y++)
             {
                 Hex h = GetHex(x, y);
-                if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard == null)
+                if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard == HazardType.none)
                 {
                     if (UnityEngine.Random.Range(1, 100) <= this.obstacleSpawnChance)
                     {
                         Debug.Log("Spawning tree");
                         GameObject tree = Instantiate(this.treePrefab, h.transform.position, Quaternion.identity);
                         NetworkServer.Spawn(tree);
-                        h.holdsObstacle = tree.GetComponent<Obstacle>();
+                        h.holdsObstacle = ObstacleType.tree;
                     }
 
                 }
@@ -175,12 +182,6 @@ public class Map : NetworkBehaviour
             return null;
         }        
     }
-
-    //public Hex GetCubeHex(int q, int r)
-    //{
-    //    HexCoordinates toConvert = new(q, r, this.isFlatTop);
-    //    return hexGrid[(toConvert.X, toConvert.Y)];
-    //}
 
     [Server]
     private void SetHex(int x, int y, Hex h)
@@ -282,12 +283,12 @@ public class Map : NetworkBehaviour
     {
         //Debug.Log("Found path");
         //Debug.Log(path.Count);
-        int pathLength = 1;
+        int pathLength = 0;
         foreach (Hex h in path)
         {
+            pathLength += h.moveCost;
             h.LabelString = pathLength.ToString();
             h.ShowLabel();
-            pathLength++;
         }
     }
 
@@ -338,7 +339,7 @@ public class Map : NetworkBehaviour
         foreach (HexCoordinates neighbourCoord in h.coordinates.Neighbours())
         {
             Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
-            if (neighbour != null && !neighbour.holdsObstacle && !neighbour.holdsCharacter)
+            if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && !neighbour.holdsCharacter)
             {
                 toReturn.Add(neighbour);
             }
@@ -369,14 +370,9 @@ public class Map : NetworkBehaviour
 
             foreach (Hex next in this.GetUnobstructedHexNeighbours(currentHex))
             {
-                //Debug.Log(costsSoFar);
-                //Debug.Log(currentHex);
-                //Debug.Log(costsSoFar[currentHex]);
-                //Debug.Log(next.moveCost);
                 int newCost = costsSoFar[currentHex] + next.moveCost;
                 if (!costsSoFar.ContainsKey(next) || newCost < costsSoFar[next])
                 {
-                    //Debug.Log("Adding hex to path");
                     costsSoFar[next] = newCost;
                     int priority = newCost + Map.HexDistance(next, dest);
                     frontier.Enqueue(next, priority);
@@ -411,11 +407,10 @@ public class Map : NetworkBehaviour
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
         //Validation
-        //TODO: add pathing
         if (source == null ||
             source.holdsCharacter == null ||
             source.holdsCharacter.netIdentity.connectionToClient != sender ||
-            dest.holdsObstacle != null ||
+            dest.holdsObstacle != ObstacleType.none ||
             dest.holdsCharacter != null)
         {
             Debug.Log("Client requested invalid move");

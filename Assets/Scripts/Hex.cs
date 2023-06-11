@@ -38,9 +38,9 @@ public class Hex : NetworkBehaviour
     [SyncVar]
     public PlayerCharacter holdsCharacter;
     [SyncVar]
-    public Obstacle holdsObstacle;
+    public ObstacleType holdsObstacle;
     [SyncVar]
-    public Hazard holdsHazard;
+    public HazardType holdsHazard;
     [SyncVar]
     public bool holdsTreasure;
     [SyncVar]
@@ -62,8 +62,8 @@ public class Hex : NetworkBehaviour
         this.isStartingZone = false;
         this.startZoneForPlayerIndex = -1;
         this.holdsCharacter = null;
-        this.holdsObstacle = null;
-        this.holdsHazard = null;
+        this.holdsObstacle = ObstacleType.none;
+        this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
         this.baseColor = m.HEX_BASE_COLOR;
         this.moveCost = 1;
@@ -102,7 +102,7 @@ public class Hex : NetworkBehaviour
         coordLabel.rectTransform.SetParent(this.map.coordCanvas.transform, false);
         coordLabel.rectTransform.anchoredPosition =
             new Vector2(this.transform.position.x, this.transform.position.y);
-        coordLabel.text = this.coordinates.ToStringOnLines();
+        coordLabel.text = this.coordinates.X + " " + this.coordinates.Y;
         this.coordLabelTextMesh = coordLabel;
 
 

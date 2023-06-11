@@ -347,8 +347,6 @@ GameObject:
   - component: {fileID: 288615337}
   - component: {fileID: 288615336}
   - component: {fileID: 288615335}
-  - component: {fileID: 288615334}
-  - component: {fileID: 288615333}
   m_Layer: 0
   m_Name: TreasureSpawnLocation2
   m_TagString: Untagged
@@ -356,56 +354,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!60 &288615333
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 288615332}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -31.09749, y: 13.933077}
-      - {x: -28.52653, y: 9.875122}
-      - {x: -38.05827, y: 3.0289426}
-      - {x: -39.02306, y: 2.7395086}
-      - {x: -38.78841, y: -3.4179518}
-      - {x: -28.57459, y: -9.211849}
-      - {x: -31.69437, y: -13.793183}
-      - {x: -44.0497, y: -8.40292}
-      - {x: -43.89352, y: 7.7690687}
---- !u!58 &288615334
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 288615332}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -49.5, y: 0}
-  serializedVersion: 2
-  m_Radius: 3
 --- !u!114 &288615335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -421,8 +369,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  treasureLocation: {fileID: 288615334}
-  hazardLocation: {fileID: 288615333}
+  treasureCoordinate: {x: -6, y: 0}
+  hazardCoordinates:
+  - {x: -4, y: 1}
+  - {x: -5, y: 0}
+  - {x: -5, y: -1}
+  - {x: -4, y: -1}
 --- !u!114 &288615336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -845,9 +797,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30de7a90440370f44b8d550f60701154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   spawnLocations:
   - {fileID: 1473774573}
   - {fileID: 288615335}
+  hazardPrefabs:
+  - {fileID: 4066588543361744108, guid: 01536a0e1528faa4d89ccdf907dc8658, type: 3}
+  - {fileID: 1425512457202989034, guid: a472cd4c2cb296f4fb179cd4515a1506, type: 3}
+  treasurePrefab: {fileID: 4871840042056725829, guid: 2a6585b3be6749a45b193b9c94e79a6b, type: 3}
+  map: {fileID: 1982683008}
 --- !u!114 &916223307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -916,6 +876,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80ba30b295555c41b58abcb3d3304de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   map: {fileID: 1982683008}
 --- !u!60 &1411125706
 PolygonCollider2D:
@@ -996,8 +959,6 @@ GameObject:
   - component: {fileID: 1473774575}
   - component: {fileID: 1473774574}
   - component: {fileID: 1473774573}
-  - component: {fileID: 1473774572}
-  - component: {fileID: 1473774571}
   m_Layer: 0
   m_Name: TreasureSpawnLocation
   m_TagString: Untagged
@@ -1005,56 +966,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!60 &1473774571
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1473774570}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 31.097492, y: 13.933077}
-      - {x: 28.526527, y: 9.875122}
-      - {x: 38.058273, y: 3.0289426}
-      - {x: 39.023056, y: 2.7395086}
-      - {x: 38.788406, y: -3.4179518}
-      - {x: 28.574589, y: -9.211849}
-      - {x: 31.694368, y: -13.793183}
-      - {x: 44.0497, y: -8.40292}
-      - {x: 43.893524, y: 7.7690687}
---- !u!58 &1473774572
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1473774570}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 49.5, y: 0}
-  serializedVersion: 2
-  m_Radius: 3
 --- !u!114 &1473774573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1070,8 +981,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  treasureLocation: {fileID: 1473774572}
-  hazardLocation: {fileID: 1473774571}
+  treasureCoordinate: {x: 6, y: 0}
+  hazardCoordinates:
+  - {x: 4, y: 1}
+  - {x: 5, y: 0}
+  - {x: 5, y: -1}
+  - {x: 4, y: -1}
 --- !u!114 &1473774574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1672,6 +1587,7 @@ MonoBehaviour:
   hexPrefab: {fileID: 5749146893725706871, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
   treePrefab: {fileID: 6994461756168707245, guid: 3f7607b4dff716845914240a21818a89, type: 3}
   outline: {fileID: 1411125705}
+  treasureSpawner: {fileID: 916223306}
   cellLabelPrefab: {fileID: 6525404334361133443, guid: 68f45b61888877a4d8ae305dd024c3c3, type: 3}
   coordCanvas: {fileID: 1515437361}
   labelsCanvas: {fileID: 235931025}
