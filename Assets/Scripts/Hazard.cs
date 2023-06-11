@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public enum Hazard
+public class Hazard : NetworkBehaviour
 {
-    cold,fire,none
+    [SyncVar]
+    public HazardType type;
 }

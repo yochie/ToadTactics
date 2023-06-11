@@ -63,7 +63,7 @@ public class Hex : NetworkBehaviour
         this.startZoneForPlayerIndex = -1;
         this.holdsCharacter = null;
         this.holdsObstacle = null;
-        this.holdsHazard = Hazard.none;
+        this.holdsHazard = null;
         this.holdsTreasure = false;
         this.baseColor = m.HEX_BASE_COLOR;
         this.moveCost = 1;
