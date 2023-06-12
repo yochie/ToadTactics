@@ -28,12 +28,9 @@ public class GameController : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        this.map.Initialize();
         this.InitClasses();
-        //foreach (Hex h in this.map.GetHexNeighbours(this.map.GetHex(0,0)))
-        //{
-        //    Debug.Log(h);
-        //}
+
+        this.map.Initialize();
     }
 
     //Instantiate all classes to set their definitions here
@@ -41,16 +38,16 @@ public class GameController : NetworkBehaviour
     //probably should load from file (CSV)
     private void InitClasses()
     {
-        AllClasses = new Dictionary<string, CharacterClass>();
+        this.AllClasses = new Dictionary<string, CharacterClass>();
 
-        //BARB
+        //Barb
         CharacterClass barbarian = new();
-        barbarian.Description = "He strong.";
+        barbarian.Description = "Glass cannon, kill or get killed";
         barbarian.CharStats = new(
             maxHealth: 10,
             armor: 2,
             damage: 5,
-            speed: 3,
+            moveSpeed: 3,
             initiative: 1,
             range: 1,
             damageIterations: 3);
@@ -59,10 +56,223 @@ public class GameController : NetworkBehaviour
             description: "No active ability. Always attacks thrice.",
             damage: 1,
             range: 0,
+            aoe: 0,
             turnDuration: 0,
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
             });
-        AllClasses.Add("Barbarian", barbarian);
+        this.AllClasses.Add("Barbarian", barbarian);
+
+        //Cavalier
+        CharacterClass cavalier = new();
+        cavalier.Description = "Rapidly reaches the backline or treasure";
+        cavalier.CharStats = new(
+            maxHealth: 12,
+            armor: 3,
+            damage: 5,
+            moveSpeed: 3,
+            initiative: 2,
+            range: 2,
+            damageIterations: 1);
+        cavalier.CharAbility = new(
+            name: "Lance Throw",
+            description: "Throws a lance at an enemy in a 3 tile radius, dealing damage and stunning the target until next turn.",
+            damage: 5,
+            range: 3,
+            aoe: 0,
+            turnDuration: 1,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Cavalier", cavalier);
+
+        //Archer
+        CharacterClass archer = new();
+        archer.Description = "Evasive and deals ranged damage";
+        archer.CharStats = new(
+            maxHealth: 10,
+            armor: 2,
+            damage: 8,
+            moveSpeed: 1,
+            initiative: 3,
+            range: 3,
+            damageIterations: 1);
+        archer.CharAbility = new(
+            name: "Backflip + Root",
+            description: "Moves 3 tiles away from current position and roots the nearest enemy until next turn.",
+            damage: 0,
+            range: 3,
+            aoe:0,
+            turnDuration: 1,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Archer", archer);
+
+        //Rogue
+        CharacterClass rogue = new();
+        rogue.Description = "Can guarantee a treasure or a kill on low armor characters";
+        rogue.CharStats = new(
+            maxHealth: 10,
+            armor: 2,
+            damage: 7,
+            moveSpeed: 2,
+            initiative: 4,
+            range: 1,
+            damageIterations: 2);
+        rogue.CharAbility = new(
+            name: "Stealth",
+            description: "Can activate Stealth to become untargetable until he deals or is dealt damage.",
+            damage: 0,
+            range: 0,
+            aoe: 0,
+            turnDuration: 0,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Rogue", rogue);
+
+        //Warrior
+        CharacterClass warrior = new();
+        warrior.Description = "Tanky character with great mobility";
+        warrior.CharStats = new(
+            maxHealth: 15,
+            armor: 4,
+            damage: 5,
+            moveSpeed: 2,
+            initiative: 5,
+            range: 1,
+            damageIterations: 1);
+        warrior.CharAbility = new(
+            name: "Charge",
+            description: "Move towards an enemy and deal damage.",
+            damage: 5,
+            range: 3,
+            aoe: 0,
+            turnDuration: 0,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Warrior", warrior);
+
+        //Paladin
+        CharacterClass paladin = new();
+        paladin.Description = "Buffs allies and tanks";
+        paladin.CharStats = new(
+            maxHealth: 15,
+            armor: 4,
+            damage: 5,
+            moveSpeed: 2,
+            initiative: 6,
+            range: 1,
+            damageIterations: 1);
+        paladin.CharAbility = new(
+            name: "Blessing",
+            description: "Grants +2 to damage, health, armor and movement to all allies.",
+            damage: 0,
+            range: 0,
+            aoe: 0,
+            turnDuration: 2,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Paladin", paladin);
+
+        //Druid
+        CharacterClass druid = new();
+        druid.Description = "Impedes character movement, delaying damage or access to treasure";
+        druid.CharStats = new(
+            maxHealth: 10,
+            armor: 2,
+            damage: 5,
+            damageType: DamageType.magic,
+            moveSpeed: 1,
+            initiative: 7,
+            range: 2,
+            damageIterations: 1);
+        druid.CharAbility = new(
+            name: "Vine grasp",
+            description: "Targets a tile and roots all enemies in a 2 tile radius.",
+            damage: 0,
+            range: 0,
+            aoe: 2,
+            turnDuration: 1,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Druid", druid);
+
+        //Necromancer
+        CharacterClass necromancer = new();
+        necromancer.Description = "Enables constant damage on distant targets but deals low damage by himself";
+        necromancer.CharStats = new(
+            maxHealth: 8,
+            armor: 3,
+            damage: 3,
+            damageType: DamageType.magic,
+            moveSpeed: 1,
+            initiative: 8,
+            range: 999,
+            damageIterations: 1);
+        necromancer.CharAbility = new(
+            name: "Soul Projection",
+            description: "Targets any enemy and brings an effigy within two tiles that transfers received damage to targeted character until the next turn.",
+            damage: 0,
+            range: 2,
+            aoe: 0,
+            turnDuration: 1,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Necromancer", necromancer);
+
+        //Wizard
+        CharacterClass wizard = new();
+        wizard.Description = "Deals large ranged damage that ignores armor";
+        wizard.CharStats = new(
+            maxHealth: 8,
+            armor: 1,
+            damage: 5,
+            damageType: DamageType.magic,
+            moveSpeed: 1,
+            initiative: 9,
+            range: 3,
+            damageIterations: 1);
+        wizard.CharAbility = new(
+            name: "Fireball",
+            description: "Throws a fireball at target character that explodes on contact, dealing damage adjacent tiles.",
+            damage: 5,
+            damageType: DamageType.magic,
+            range: 3,
+            aoe: 1,
+            turnDuration: 0,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Wizard", wizard);
+
+        //Priest
+        CharacterClass priest = new();
+        priest.Description = "Healer";
+        priest.CharStats = new(
+            maxHealth: 9,
+            armor: 1,
+            damage: 5,
+            damageType: DamageType.healing,
+            moveSpeed: 2,
+            initiative: 10,
+            range: 3,
+            damageIterations: 1);
+        priest.CharAbility = new(
+            name: "Resurrect",
+            description: "Revives an ally at 50% of max HP.",
+            damage: 0,
+            range: 999,
+            aoe: 0,
+            turnDuration: 0,
+            use: (PlayerCharacter pc, Hex target) => {
+                Debug.Log("Need to implement");
+            });
+        this.AllClasses.Add("Priest", priest);
     }
 }

@@ -10,6 +10,8 @@ public class PlayerCharacter : NetworkBehaviour
     public List<Treasure> EquippedTreasure { get; set; }
     public CharacterStats CurrentStats { get; set; }
 
+    public string className;
+
     public int CurrentLife
     {
         get => currentLife;
@@ -19,9 +21,9 @@ public class PlayerCharacter : NetworkBehaviour
             {
                 this.currentLife = 0;
             }
-            else if (value > CurrentStats.MaxHealth)
+            else if (value > CurrentStats.maxHealth)
             {
-                this.currentLife = this.CurrentStats.MaxHealth;
+                this.currentLife = this.CurrentStats.maxHealth;
             }
         }
     }
@@ -29,6 +31,6 @@ public class PlayerCharacter : NetworkBehaviour
     public void Initialize(CharacterClass charChlass) {
         this.CharClass = charChlass;
         this.CurrentStats = charChlass.CharStats;
-        this.CurrentLife = CurrentStats.MaxHealth;
+        this.CurrentLife = CurrentStats.maxHealth;
     }
 }

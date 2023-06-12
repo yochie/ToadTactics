@@ -46,7 +46,7 @@ public class PlayerController : NetworkBehaviour
         //TODO : fill these using draft eventually
         for (int i = 0; i < this.gc.CharacterSlotsUI.Length; i++)
         {
-            int prefabIndex = Random.Range(0, this.gc.AllPlayerCharPrefabs.Length - 1);
+            int prefabIndex = Random.Range(0, this.gc.AllPlayerCharPrefabs.Length);
             PlayerCharacter newChar = this.gc.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
             CharacterSlotUI slot = this.gc.CharacterSlotsUI[i];
 
@@ -57,7 +57,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
-    public void CmdCreateChar(int playerCharacterIndex, Hex destinationHex)
+    public void CmdCreateChar(int characterPrefabIndex, Hex destinationHex)
     {
         //Debug.Log(destinationHex.startZoneForPlayerIndex);
         //Debug.Log(this.playerIndex);
@@ -72,11 +72,13 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
+        GameObject characterPrefab = gc.AllPlayerCharPrefabs[characterPrefabIndex];
+        string prefabClassName = characterPrefab.GetComponent<PlayerCharacter>().className;
         Vector3 destinationWorldPos = destinationHex.transform.position;
         GameObject newChar = 
-            Instantiate(gc.AllPlayerCharPrefabs[playerCharacterIndex], destinationWorldPos, Quaternion.identity);
+            Instantiate(characterPrefab, destinationWorldPos, Quaternion.identity);
         //TODO : Create other classes and set their name in prefabs
-        newChar.GetComponent<PlayerCharacter>().Initialize(this.gc.AllClasses["Barbarian"]);
+        newChar.GetComponent<PlayerCharacter>().Initialize(this.gc.AllClasses[prefabClassName]);
         NetworkServer.Spawn(newChar, connectionToClient);
 
         //update Hex state, synced to clients by syncvar

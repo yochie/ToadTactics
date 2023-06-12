@@ -1,22 +1,24 @@
 ﻿public struct CharacterStats
 {
-    public int MaxHealth { get; set; }
-    public int Armor { get; set; }
-    public int Damage { get; set; }
-    public int DamageIterations { get; set; }
-    public int Speed { get; set; }
-    public int Initiative { get; set; }
-    public int Range { get; set; }
+    public readonly int maxHealth;
+    public readonly int armor;
+    public readonly int damage;
+    public readonly DamageType damageType;
+    public readonly int damageIterations;
+    public readonly int moveSpeed;
+    public readonly int initiative;
+    public readonly int range;
 
-    public CharacterStats(int maxHealth, int armor, int damage, int speed, int initiative, int range = 1, int damageIterations = 1)
+    public CharacterStats(int maxHealth, int armor, int damage, int moveSpeed, int initiative, int range = 1, int damageIterations = 1, DamageType damageType = DamageType.normal)
     {
-        this.MaxHealth = maxHealth;
-        this.Armor = armor;
-        this.Damage = damage;
-        this.Speed = speed;
-        this.Initiative = initiative;
-        this.Range = range;
-        this.DamageIterations = damageIterations;
+        this.maxHealth = maxHealth;
+        this.armor = armor;
+        this.damage = damage;
+        this.damageType = damageType;
+        this.damageIterations = damageIterations;
+        this.moveSpeed = moveSpeed;
+        this.initiative = initiative;
+        this.range = range;
     }
 
 }
