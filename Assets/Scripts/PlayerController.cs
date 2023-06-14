@@ -46,6 +46,12 @@ public class PlayerController : NetworkBehaviour
         //for now just choose random chars
         //TODO : fill these using draft eventually
         List<int> usedPrefabs = new();
+
+        //remove characters used by other clients
+        foreach (int characterId in this.gc.characterOwners.Keys)
+        {
+            usedPrefabs.Add(characterId);
+        }
         for (int i = 0; i < this.gc.characterSlotsUI.Count; i++)
         {            
             int prefabIndex;
