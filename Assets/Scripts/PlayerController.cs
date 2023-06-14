@@ -56,6 +56,7 @@ public class PlayerController : NetworkBehaviour
             }
             while (usedPrefabs.Contains(prefabIndex));
             usedPrefabs.Add(prefabIndex);
+
             PlayerCharacter newChar = this.gc.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
             CharacterSlotUI slot = this.gc.characterSlotsUI[i];
 
@@ -67,6 +68,18 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    public override void OnStopLocalPlayer()
+    {
+        base.OnStopLocalPlayer();
+
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+        this.gc.RemoveAllMyChars(this.playerIndex);
+    }
+
     [Command]
     private void CmdAddCharToTurnOrder(int initiative, int prefabIndex)
     {
@@ -76,7 +89,7 @@ public class PlayerController : NetworkBehaviour
             Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
             return;
         }
-        this.gc.turnOrderSortedPrefabIds.Add(initiative, prefabIndex);
+        this.gc.AddMyChar(this.playerIndex, prefabIndex, initiative);
     }
 
     [Command]
@@ -112,15 +125,4 @@ public class PlayerController : NetworkBehaviour
 
         this.gc.map.RpcPlaceChar(newChar, destinationWorldPos);
     }
-
-    public override void OnStartServer() 
-    {
-
-    }
-
-    public override void OnStopServer() {
-
-    }
-
-
 }

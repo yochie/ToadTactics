@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class TurnOrderSlotUI : MonoBehaviour
 {
+    public int holdsPrefabWithIndex = -1;
 
 }

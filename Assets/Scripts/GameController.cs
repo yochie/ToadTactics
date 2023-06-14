@@ -13,7 +13,10 @@ public class GameController : NetworkBehaviour
     public Dictionary<string, CharacterClass> AllClasses { get; set; }
     public PlayerController LocalPlayer { get; set; }
 
-    public List<PlayerCharacter> PlayerChars = new();
+    //public List<PlayerCharacter> PlayerChars = new();
+
+    //maps prefab indexes to player indexes
+    public readonly SyncDictionary<int, int> characterOwners = new();
 
     //public const int charsPerPlayer = 3;
 
@@ -65,10 +68,63 @@ public class GameController : NetworkBehaviour
                 break;
             case SyncIDictionary<float, int>.Operation.OP_REMOVE:
                 // entry removed
+                Debug.LogFormat("Removing {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
+                foreach(TurnOrderSlotUI currentSlot in turnOrderSlotsUI)
+                {
+                    if(currentSlot.holdsPrefabWithIndex == value)
+                    {
+                        Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
+                        this.turnOrderSlotsUI.Remove(currentSlot);
+                        Destroy(currentSlot.gameObject);
+                        return;
+                    }
+                }                
                 break;
             case SyncIDictionary<float, int>.Operation.OP_CLEAR:
                 // Dictionary was cleared
                 break;
+        }
+    }
+
+
+
+    [Server]
+    internal void AddMyChar(int playerIndex, int prefabIndex, int initiative)
+    {
+        this.characterOwners.Add(prefabIndex, playerIndex);
+
+        //throws callback to update UI
+        this.turnOrderSortedPrefabIds.Add(initiative, prefabIndex);
+    }
+
+    [Server]
+    internal void RemoveAllMyChars(int playerIndex)
+    {
+        List<float> ownedToRemove = new();
+        foreach (int characterPrefabId in this.characterOwners.Keys)
+        {
+            if(this.characterOwners[characterPrefabId] == playerIndex)
+            {
+                List<float> turnToRemove = new();
+                foreach (float initiative in this.turnOrderSortedPrefabIds.Keys)
+                {
+                    if (this.turnOrderSortedPrefabIds[initiative] == characterPrefabId)
+                    {
+                        turnToRemove.Add(initiative);
+                    }
+                }
+                foreach (float toRemove in turnToRemove)
+                {
+                    this.turnOrderSortedPrefabIds.Remove(toRemove);
+                }
+
+                ownedToRemove.Add(characterPrefabId);                
+            }
+        }
+
+        foreach(int toRemove in ownedToRemove)
+        {
+            this.characterOwners.Remove(toRemove);
         }
     }
 
@@ -80,9 +136,12 @@ public class GameController : NetworkBehaviour
             //stops joining clients from trying to fill slots that weren't created yet
             if (i >= this.turnOrderSlotsUI.Count) return;
 
-            Image slotImage = this.turnOrderSlotsUI[i]. GetComponent<Image>();
+            TurnOrderSlotUI slot = this.turnOrderSlotsUI[i];
+            Image slotImage = slot.GetComponent<Image>();
+            int prefabId = this.turnOrderSortedPrefabIds[initiative];
+            slot.holdsPrefabWithIndex = prefabId;
 
-            slotImage.sprite = AllPlayerCharPrefabs[this.turnOrderSortedPrefabIds[initiative]].GetComponent<SpriteRenderer>().sprite;
+            slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
             i++;
         }
     }
