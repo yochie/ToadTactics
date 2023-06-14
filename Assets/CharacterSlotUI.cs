@@ -31,6 +31,6 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         //Debug.Log(HoldsPlayerCharacterWithIndex);
         //Debug.Log(destination);
         if (destinationHex == null) { return; }
-        this.gc.LocalPlayer.CmdCreateChar(this.HoldsPlayerCharacterWithIndex, destinationHex);
+        this.gc.LocalPlayer.CmdCreateCharOnBoard(this.HoldsPlayerCharacterWithIndex, destinationHex);
     }
 }

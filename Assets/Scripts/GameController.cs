@@ -15,8 +15,19 @@ public class GameController : NetworkBehaviour
 
     public List<PlayerCharacter> PlayerChars = new();
 
-    public const int charsPerPlayer = 3;
-    public CharacterSlotUI[] CharacterSlotsUI = new CharacterSlotUI[charsPerPlayer];
+    //public const int charsPerPlayer = 3;
+
+    //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
+    public List<CharacterSlotUI> characterSlotsUI = new();
+
+    //UI should be filled at runtime using prefabs, should be redefined at the start of each round
+    public GameObject turnOrderBar;
+    public GameObject turnOrderSlotUIPrefab;
+    public List<TurnOrderSlotUI> turnOrderSlotsUI = new();
+
+    //maps character initiative to prefab indexes for dsiplay their sprite in ui
+
+    public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIds = new SyncIDictionary<float,int>(new SortedList<float,int>());
 
     public Map map;
 
@@ -28,9 +39,52 @@ public class GameController : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        this.InitClasses();
 
+        turnOrderSortedPrefabIds.Callback += OnTurnOrderChanged;
+        foreach (KeyValuePair<float, int> kvp in turnOrderSortedPrefabIds)
+            OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
+
+        this.InitClasses();
         this.map.Initialize();
+    }
+
+    private void OnTurnOrderChanged(SyncIDictionary<float, int>.Operation op, float key, int value)
+    {
+        switch (op)
+        {
+            case SyncIDictionary<float, int>.Operation.OP_ADD:
+                // entry added
+                Debug.LogFormat("Adding {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
+                GameObject slot = Instantiate(this.turnOrderSlotUIPrefab, this.turnOrderBar.transform);
+                turnOrderSlotsUI.Add(slot.GetComponent<TurnOrderSlotUI>());
+                this.updateTurnOrderSlotsUI();
+
+                break;
+            case SyncIDictionary<float, int>.Operation.OP_SET:
+                // entry changed
+                break;
+            case SyncIDictionary<float, int>.Operation.OP_REMOVE:
+                // entry removed
+                break;
+            case SyncIDictionary<float, int>.Operation.OP_CLEAR:
+                // Dictionary was cleared
+                break;
+        }
+    }
+
+    private void updateTurnOrderSlotsUI()
+    {
+        int i = 0;
+        foreach(float initiative in this.turnOrderSortedPrefabIds.Keys)
+        {
+            //stops joining clients from trying to fill slots that weren't created yet
+            if (i >= this.turnOrderSlotsUI.Count) return;
+
+            Image slotImage = this.turnOrderSlotsUI[i]. GetComponent<Image>();
+
+            slotImage.sprite = AllPlayerCharPrefabs[this.turnOrderSortedPrefabIds[initiative]].GetComponent<SpriteRenderer>().sprite;
+            i++;
+        }
     }
 
     //Instantiate all classes to set their definitions here

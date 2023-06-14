@@ -1,7 +1,7 @@
 using Mirror;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 public class PlayerController : NetworkBehaviour
 {
@@ -9,6 +9,7 @@ public class PlayerController : NetworkBehaviour
     //0 for host
     //1 for client
     public int playerIndex;
+
 
     public override void OnStartClient()
     {
@@ -44,20 +45,42 @@ public class PlayerController : NetworkBehaviour
 
         //for now just choose random chars
         //TODO : fill these using draft eventually
-        for (int i = 0; i < this.gc.CharacterSlotsUI.Length; i++)
-        {
-            int prefabIndex = Random.Range(0, this.gc.AllPlayerCharPrefabs.Length);
+        List<int> usedPrefabs = new();
+        for (int i = 0; i < this.gc.characterSlotsUI.Count; i++)
+        {            
+            int prefabIndex;
+            do
+            {
+                prefabIndex = Random.Range(0, this.gc.AllPlayerCharPrefabs.Length);
+
+            }
+            while (usedPrefabs.Contains(prefabIndex));
+            usedPrefabs.Add(prefabIndex);
             PlayerCharacter newChar = this.gc.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
-            CharacterSlotUI slot = this.gc.CharacterSlotsUI[i];
+            CharacterSlotUI slot = this.gc.characterSlotsUI[i];
 
             slot.GetComponent<Image>().sprite = newChar.GetComponent<SpriteRenderer>().sprite;
 
             slot.HoldsPlayerCharacterWithIndex = prefabIndex;
+
+            CmdAddCharToTurnOrder(this.gc.AllClasses[newChar.className].CharStats.initiative, prefabIndex);
         }
     }
 
     [Command]
-    public void CmdCreateChar(int characterPrefabIndex, Hex destinationHex)
+    private void CmdAddCharToTurnOrder(int initiative, int prefabIndex)
+    {
+        if (Utility.ContainsValue(this.gc.turnOrderSortedPrefabIds, prefabIndex))
+        {
+            //Todo add support for this
+            Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
+            return;
+        }
+        this.gc.turnOrderSortedPrefabIds.Add(initiative, prefabIndex);
+    }
+
+    [Command]
+    public void CmdCreateCharOnBoard(int characterPrefabIndex, Hex destinationHex)
     {
         //Debug.Log(destinationHex.startZoneForPlayerIndex);
         //Debug.Log(this.playerIndex);
