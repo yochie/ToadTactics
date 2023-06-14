@@ -32,8 +32,14 @@ public class GameController : NetworkBehaviour
     //maps character initiative to prefab indexes
     public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIds = new SyncIDictionary<float,int>(new SortedList<float,int>());
 
-    [SyncVar(hook = nameof(OnTurnChanged))]
+    [SyncVar(hook = nameof(OnTurnCharacterChanged))]
+    public int currentTurnOrderIndex = 0;
+
+    [SyncVar(hook = nameof(OnTurnPlayerChanged))]
     public int currentTurnPlayer = 0;
+
+    [SyncVar]
+    public GameMode currentGameMode = GameMode.gameplay;
 
     public GameObject endTurnButton;
 
@@ -163,16 +169,53 @@ public class GameController : NetworkBehaviour
    [Command(requiresAuthority = false)]
     public void CmdEndTurn()
     {
-        if (this.currentTurnPlayer == 0)
+        if(this.currentGameMode == GameMode.draft ||
+            this.currentGameMode == GameMode.characterPlacement ||
+            this.currentGameMode == GameMode.treasurePick ||
+            this.currentGameMode == GameMode.treasurPlacement)
         {
-            this.currentTurnPlayer = 1;
-        } else
+            this.SwapPlayerTurn();
+        } else if(this.currentGameMode == GameMode.gameplay)
         {
-            this.currentTurnPlayer = 0;
+            this.NextTurnOrder();
         }
     }
 
-    public void OnTurnChanged(int _, int newPlayer)
+    private void OnTurnCharacterChanged(int prevTurnIndex, int newTurnIndex)
+    {
+        int prevTurnCharacterId = -1;
+        int newTurnCharacterId = -1;
+        int i = 0;
+        foreach (int prefab in this.turnOrderSortedPrefabIds.Values)
+        {
+            if (i == prevTurnIndex)
+            {
+                prevTurnCharacterId = prefab;
+            }
+            if (i == newTurnIndex)
+            {
+                newTurnCharacterId = prefab;
+            }
+            i++;
+        }
+
+
+        i = 0;
+        foreach(TurnOrderSlotUI slot in turnOrderSlots)
+        {
+            i++;
+            if (prevTurnCharacterId != -1 && slot.holdsPrefabWithIndex == prevTurnCharacterId)
+            {
+                slot.InitiativeLabel = i.ToString();
+            }
+            if (newTurnCharacterId != -1 && slot.holdsPrefabWithIndex == newTurnCharacterId)
+            {
+                slot.InitiativeLabel = i.ToString() + "*";
+            }            
+        }
+    }
+
+    private void OnTurnPlayerChanged(int _, int newPlayer)
     {
         if (newPlayer == this.LocalPlayer.playerIndex)
         {
@@ -180,7 +223,8 @@ public class GameController : NetworkBehaviour
 
             Debug.Log("Its your turn");
             this.endTurnButton.SetActive(true);
-        }  else
+        }
+        else
         {
             //display "Waiting for other player" msg
             Debug.Log("Waiting for other player to end their turn.");
@@ -189,9 +233,56 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    private void NextTurnOrder()
+    {
+        //loops through turn order        
+        this.currentTurnOrderIndex++;
+        if (this.currentTurnOrderIndex >= this.turnOrderSortedPrefabIds.Count)
+            this.currentTurnOrderIndex = 0;
+
+        //finds character prefab id for the next turn so that we can check who owns it
+        int currentCharacterPrefab = -1;
+        int i = 0;
+        foreach (int prefab in this.turnOrderSortedPrefabIds.Values)
+        {
+            if (i == this.currentTurnOrderIndex)
+            {
+                currentCharacterPrefab = prefab;
+            }
+            i++;
+        }
+        if(currentCharacterPrefab == -1)
+        {
+            Debug.Log("Error : Bad code for iterating turnOrderSortedPrefabIds");
+        }
+
+        //if we don't own that char, swap player turn
+        if(this.currentTurnPlayer != characterOwners[currentCharacterPrefab])
+        {
+            this.SwapPlayerTurn();
+        }
+    }
+
     public bool IsItMyTurn()
     {
         return this.LocalPlayer.playerIndex == this.currentTurnPlayer;
+    }
+
+    public bool IsItThisCharactersTurn(int prefabId)
+    {
+        return this.turnOrderSortedPrefabIds[this.currentTurnOrderIndex] == prefabId;
+    }
+
+    public void SwapPlayerTurn()
+    {
+        if (this.currentTurnPlayer == 0)
+        {
+            this.currentTurnPlayer = 1;
+        }
+        else
+        {
+            this.currentTurnPlayer = 0;
+        }
     }
 
     //Instantiate all classes to set their definitions here
