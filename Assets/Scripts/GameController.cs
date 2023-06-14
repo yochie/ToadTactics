@@ -140,6 +140,7 @@ public class GameController : NetworkBehaviour
             Image slotImage = slot.GetComponent<Image>();
             int prefabId = this.turnOrderSortedPrefabIds[initiative];
             slot.holdsPrefabWithIndex = prefabId;
+            slot.InitiativeLabel = initiative.ToString();
 
             slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
             i++;
