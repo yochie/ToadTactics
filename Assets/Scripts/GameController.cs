@@ -15,22 +15,27 @@ public class GameController : NetworkBehaviour
 
     //public List<PlayerCharacter> PlayerChars = new();
 
-    //maps prefab indexes to player indexes
-    public readonly SyncDictionary<int, int> characterOwners = new();
-
     //public const int charsPerPlayer = 3;
 
     //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
     public List<CharacterSlotUI> characterSlotsUI = new();
 
-    //UI should be filled at runtime using prefabs, should be redefined at the start of each round
+    //maps prefab indexes to player indexes
+    public readonly SyncDictionary<int, int> characterOwners = new();
+
+    public GameObject turnOrderSlotPrefab;
+    
     public GameObject turnOrderBar;
-    public GameObject turnOrderSlotUIPrefab;
-    public List<TurnOrderSlotUI> turnOrderSlotsUI = new();
+    
+    public List<TurnOrderSlotUI> turnOrderSlots = new();
 
-    //maps character initiative to prefab indexes for dsiplay their sprite in ui
-
+    //maps character initiative to prefab indexes
     public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIds = new SyncIDictionary<float,int>(new SortedList<float,int>());
+
+    [SyncVar(hook = nameof(OnTurnChanged))]
+    public int currentTurnPlayer = 0;
+
+    public GameObject endTurnButton;
 
     public Map map;
 
@@ -47,8 +52,15 @@ public class GameController : NetworkBehaviour
         foreach (KeyValuePair<float, int> kvp in turnOrderSortedPrefabIds)
             OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
-        this.InitClasses();
+        this.DefineClasses();
+
         this.map.Initialize();
+    }
+
+    public void Start()
+    {
+        if (!IsItMyTurn())
+            this.endTurnButton.SetActive(false);
     }
 
     private void OnTurnOrderChanged(SyncIDictionary<float, int>.Operation op, float key, int value)
@@ -58,35 +70,35 @@ public class GameController : NetworkBehaviour
             case SyncIDictionary<float, int>.Operation.OP_ADD:
                 // entry added
                 Debug.LogFormat("Adding {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
-                GameObject slot = Instantiate(this.turnOrderSlotUIPrefab, this.turnOrderBar.transform);
-                turnOrderSlotsUI.Add(slot.GetComponent<TurnOrderSlotUI>());
-                this.updateTurnOrderSlotsUI();
-
+                GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.turnOrderBar.transform);
+                turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
+                this.UpdateTurnOrderSlotsUI();
                 break;
+
             case SyncIDictionary<float, int>.Operation.OP_SET:
                 // entry changed
                 break;
+
             case SyncIDictionary<float, int>.Operation.OP_REMOVE:
                 // entry removed
                 Debug.LogFormat("Removing {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
-                foreach(TurnOrderSlotUI currentSlot in turnOrderSlotsUI)
+                foreach(TurnOrderSlotUI currentSlot in turnOrderSlots)
                 {
                     if(currentSlot.holdsPrefabWithIndex == value)
                     {
                         Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
-                        this.turnOrderSlotsUI.Remove(currentSlot);
+                        this.turnOrderSlots.Remove(currentSlot);
                         Destroy(currentSlot.gameObject);
                         return;
                     }
                 }                
                 break;
+
             case SyncIDictionary<float, int>.Operation.OP_CLEAR:
                 // Dictionary was cleared
                 break;
         }
     }
-
-
 
     [Server]
     internal void AddMyChar(int playerIndex, int prefabIndex, int initiative)
@@ -128,29 +140,64 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    private void updateTurnOrderSlotsUI()
+    private void UpdateTurnOrderSlotsUI()
     {
         int i = 0;
         foreach(float initiative in this.turnOrderSortedPrefabIds.Keys)
         {
             //stops joining clients from trying to fill slots that weren't created yet
-            if (i >= this.turnOrderSlotsUI.Count) return;
+            if (i >= this.turnOrderSlots.Count) return;
 
-            TurnOrderSlotUI slot = this.turnOrderSlotsUI[i];
+            TurnOrderSlotUI slot = this.turnOrderSlots[i];
             Image slotImage = slot.GetComponent<Image>();
             int prefabId = this.turnOrderSortedPrefabIds[initiative];
             slot.holdsPrefabWithIndex = prefabId;
-            slot.InitiativeLabel = initiative.ToString();
+            int labelIndex = i + 1;
+            slot.InitiativeLabel = labelIndex.ToString();
 
             slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
             i++;
         }
     }
 
+   [Command(requiresAuthority = false)]
+    public void CmdEndTurn()
+    {
+        if (this.currentTurnPlayer == 0)
+        {
+            this.currentTurnPlayer = 1;
+        } else
+        {
+            this.currentTurnPlayer = 0;
+        }
+    }
+
+    public void OnTurnChanged(int _, int newPlayer)
+    {
+        if (newPlayer == this.LocalPlayer.playerIndex)
+        {
+            //display "Its your turn" msg
+
+            Debug.Log("Its your turn");
+            this.endTurnButton.SetActive(true);
+        }  else
+        {
+            //display "Waiting for other player" msg
+            Debug.Log("Waiting for other player to end their turn.");
+            this.endTurnButton.SetActive(false);
+
+        }
+    }
+
+    public bool IsItMyTurn()
+    {
+        return this.LocalPlayer.playerIndex == this.currentTurnPlayer;
+    }
+
     //Instantiate all classes to set their definitions here
     //TODO: find better spot to do this
     //probably should load from file (CSV)
-    private void InitClasses()
+    private void DefineClasses()
     {
         this.AllClasses = new Dictionary<string, CharacterClass>();
 

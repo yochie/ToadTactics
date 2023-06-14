@@ -28,6 +28,8 @@ public class Hex : NetworkBehaviour
         }
     }
 
+    public bool isSelectable { get { return this.map.gc.IsItMyTurn(); } }
+
     //state vars to sync
     [SyncVar]
     public Map map;
@@ -126,7 +128,8 @@ public class Hex : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        this.map.ClickHex(this);
+        if(isSelectable)
+            this.map.ClickHex(this);
     }
 
     internal void ShowLabel()

@@ -29,6 +29,7 @@ public class Map : NetworkBehaviour
     public Canvas coordCanvas;
     public Canvas labelsCanvas;
     public List<StartZone> startingZones;
+    public GameController gc;
 
     //corner to corner, or width (two times side length)
     //should correspond to unscaled sprite width
