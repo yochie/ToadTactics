@@ -67,6 +67,9 @@ public class GameController : NetworkBehaviour
     {
         if (!IsItMyTurn())
             this.endTurnButton.SetActive(false);
+
+        //set initial turn UI for character turn 0
+        OnTurnCharacterChanged(-1, 0);
     }
 
     private void OnTurnOrderChanged(SyncIDictionary<float, int>.Operation op, float key, int value)
@@ -183,6 +186,7 @@ public class GameController : NetworkBehaviour
 
     private void OnTurnCharacterChanged(int prevTurnIndex, int newTurnIndex)
     {
+        Debug.Log("TurnCharacterChanged");
         int prevTurnCharacterId = -1;
         int newTurnCharacterId = -1;
         int i = 0;
@@ -199,7 +203,6 @@ public class GameController : NetworkBehaviour
             i++;
         }
 
-
         i = 0;
         foreach(TurnOrderSlotUI slot in turnOrderSlots)
         {
@@ -210,6 +213,7 @@ public class GameController : NetworkBehaviour
             }
             if (newTurnCharacterId != -1 && slot.holdsPrefabWithIndex == newTurnCharacterId)
             {
+                Debug.Log("Highlighting slot");
                 slot.InitiativeLabel = i.ToString() + "*";
             }            
         }
