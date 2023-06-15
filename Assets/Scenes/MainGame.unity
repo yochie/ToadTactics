@@ -566,7 +566,9 @@ MonoBehaviour:
   turnOrderSlotPrefab: {fileID: 7657153155894341130, guid: 58a805a353feeae47aa3d7b088821ad7, type: 3}
   turnOrderBar: {fileID: 1755582584}
   turnOrderSlots: []
-  currentTurnPlayer: 0
+  characterTurnOrderIndex: 0
+  playerTurn: 0
+  currentGameMode: 2
   endTurnButton: {fileID: 1106533433}
   map: {fileID: 1982683008}
 --- !u!4 &726135995
@@ -2002,7 +2004,6 @@ MonoBehaviour:
   startingZones:
   - {fileID: 211519245}
   - {fileID: 1914068966}
-  gc: {fileID: 726135994}
   hexWidth: 10
   padding: 1
 --- !u!4 &1982683009

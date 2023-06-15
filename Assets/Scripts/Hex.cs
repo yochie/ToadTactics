@@ -28,11 +28,9 @@ public class Hex : NetworkBehaviour
         }
     }
 
-    public bool isSelectable { get { return this.map.gc.IsItMyTurn(); } }
+    public bool isSelectable { get { return GameController.Singleton.IsItMyTurn(); } }
 
     //state vars to sync
-    [SyncVar]
-    public Map map;
     [SyncVar]
     public HexCoordinates coordinates;
     [SyncVar]
@@ -55,9 +53,8 @@ public class Hex : NetworkBehaviour
     public int moveCost;
 
     [Server]
-    public void Init(Map m, HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
+    public void Init(HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
         this.name = name;
-        this.map = m; 
         this.coordinates = hc;
 
         //default values
@@ -67,7 +64,7 @@ public class Hex : NetworkBehaviour
         this.holdsObstacle = ObstacleType.none;
         this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
-        this.baseColor = m.HEX_BASE_COLOR;
+        this.baseColor = Map.Singleton.HEX_BASE_COLOR;
         this.moveCost = 1;
 
         //not currently needed as its set during instatiation, but kept in case
@@ -88,11 +85,11 @@ public class Hex : NetworkBehaviour
         {
             if ((this.isServer && this.startZoneForPlayerIndex == 0) || (!this.isServer && this.startZoneForPlayerIndex == 1))
             {
-                this.baseColor = map.HEX_START_BASE_COLOR;
+                this.baseColor = Map.Singleton.HEX_START_BASE_COLOR;
 
             } else
             {
-                this.baseColor = map.HEX_OPPONENT_START_BASE_COLOR;
+                this.baseColor = Map.Singleton.HEX_OPPONENT_START_BASE_COLOR;
             }
         }
 
@@ -100,8 +97,8 @@ public class Hex : NetworkBehaviour
 
         //coordinates hidden by default using canvas group alpha
         //use that component in editor mode to display
-        TextMeshProUGUI coordLabel = Instantiate<TextMeshProUGUI>(this.map.cellLabelPrefab);
-        coordLabel.rectTransform.SetParent(this.map.coordCanvas.transform, false);
+        TextMeshProUGUI coordLabel = Instantiate<TextMeshProUGUI>(Map.Singleton.cellLabelPrefab);
+        coordLabel.rectTransform.SetParent(Map.Singleton.coordCanvas.transform, false);
         coordLabel.rectTransform.anchoredPosition =
             new Vector2(this.transform.position.x, this.transform.position.y);
         coordLabel.text = this.coordinates.X + " " + this.coordinates.Y;
@@ -109,27 +106,27 @@ public class Hex : NetworkBehaviour
 
 
         //labels to display single number during navigation (range, etc)
-        TextMeshProUGUI numLabel = Instantiate<TextMeshProUGUI>(map.cellLabelPrefab);
+        TextMeshProUGUI numLabel = Instantiate<TextMeshProUGUI>(Map.Singleton.cellLabelPrefab);
         numLabel.fontSize = 4;
-        numLabel.rectTransform.SetParent(map.labelsCanvas.transform, false);
+        numLabel.rectTransform.SetParent(Map.Singleton.labelsCanvas.transform, false);
         numLabel.rectTransform.anchoredPosition =
             new Vector2(this.transform.position.x, this.transform.position.y);
         this.labelTextMesh = numLabel;
     }
 
     private void OnMouseEnter() {
-        this.map.HoverHex(this);
+        Map.Singleton.HoverHex(this);
     }
 
     private void OnMouseExit()
     {
-        this.map.UnhoverHex(this);
+        Map.Singleton.UnhoverHex(this);
     }
 
     private void OnMouseDown()
     {
         if(isSelectable)
-            this.map.ClickHex(this);
+            Map.Singleton.ClickHex(this);
     }
 
     internal void ShowLabel()

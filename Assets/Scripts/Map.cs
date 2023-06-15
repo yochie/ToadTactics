@@ -9,6 +9,8 @@ using Utils;
 
 public class Map : NetworkBehaviour
 {
+    public static Map Singleton { get; private set; }
+
     public static readonly Vector3 characterOffsetOnMap = new(0, 0, -0.1f);
     //sets orientation of hexes
     public bool isFlatTop;
@@ -29,7 +31,6 @@ public class Map : NetworkBehaviour
     public Canvas coordCanvas;
     public Canvas labelsCanvas;
     public List<StartZone> startingZones;
-    public GameController gc;
 
     //corner to corner, or width (two times side length)
     //should correspond to unscaled sprite width
@@ -56,6 +57,11 @@ public class Map : NetworkBehaviour
 
     //TODO : fix using same strat as hexgrid
     //public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
+
+    private void Awake()
+    {
+        Singleton = this;
+    }
 
     public void Initialize()
     {
@@ -143,7 +149,7 @@ public class Map : NetworkBehaviour
 
                 GameObject hex = Instantiate(this.hexPrefab, position, rotation);
                 Hex h = hex.GetComponent<Hex>();
-                h.Init(this, coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
+                h.Init(coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
 
                 this.SetHex(x, y, h);
             }
