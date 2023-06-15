@@ -98,9 +98,10 @@ public class GameController : NetworkBehaviour
                         Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
                         this.turnOrderSlots.Remove(currentSlot);
                         Destroy(currentSlot.gameObject);
-                        return;
+                        break;
                     }
-                }                
+                }
+                this.UpdateTurnOrderSlotsUI();
                 break;
 
             case SyncIDictionary<float, int>.Operation.OP_CLEAR:
@@ -151,6 +152,7 @@ public class GameController : NetworkBehaviour
 
     private void UpdateTurnOrderSlotsUI()
     {
+        Debug.Log("Updating turnOrderSlots");
         int i = 0;
         foreach(float initiative in this.turnOrderSortedPrefabIds.Keys)
         {
@@ -174,8 +176,8 @@ public class GameController : NetworkBehaviour
     {
         if(this.currentGameMode == GameMode.draft ||
             this.currentGameMode == GameMode.characterPlacement ||
-            this.currentGameMode == GameMode.treasurePick ||
-            this.currentGameMode == GameMode.treasurPlacement)
+            this.currentGameMode == GameMode.treasureDraft ||
+            this.currentGameMode == GameMode.treasureEquip)
         {
             this.SwapPlayerTurn();
         } else if(this.currentGameMode == GameMode.gameplay)
@@ -303,6 +305,7 @@ public class GameController : NetworkBehaviour
             maxHealth: 10,
             armor: 2,
             damage: 5,
+            damageType: DamageType.normal,
             moveSpeed: 3,
             initiative: 1,
             range: 1,
