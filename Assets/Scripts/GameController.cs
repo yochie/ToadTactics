@@ -162,7 +162,7 @@ public class GameController : NetworkBehaviour
             int prefabId = this.turnOrderSortedPrefabIds[initiative];
             slot.holdsPrefabWithIndex = prefabId;
             int labelIndex = i + 1;
-            slot.InitiativeLabel = labelIndex.ToString();
+            slot.InitiativeLabel = this.currentTurnOrderIndex == i ? labelIndex.ToString() + "*" : labelIndex.ToString() ;
 
             slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
             i++;
