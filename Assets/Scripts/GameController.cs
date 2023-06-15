@@ -167,14 +167,15 @@ public class GameController : NetworkBehaviour
             int prefabId = this.turnOrderSortedPrefabIds[initiative];
             slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
             slot.holdsPrefabWithIndex = prefabId;
-            i++;
+            
             if (this.characterTurnOrderIndex == i)
             {
-                slot.HighlightAndLabel(i);
+                slot.HighlightAndLabel(i+1);
             } else
             {
-                slot.UnhighlightAndLabel(i);
+                slot.UnhighlightAndLabel(i+1);
             }
+            i++;
         }
     }
 
