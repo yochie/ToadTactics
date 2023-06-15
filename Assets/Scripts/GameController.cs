@@ -69,6 +69,8 @@ public class GameController : NetworkBehaviour
 
         //set initial turn UI for character turn 0
         OnCharacterTurnChanged(-1, 0);
+
+        ResetCharacterTurn();
     }
 
     //turnOrderSortedPrefabIds callback
@@ -271,6 +273,36 @@ public class GameController : NetworkBehaviour
 
         //if we don't own that char, swap player turn
         if(this.playerTurn != characterOwners[currentCharacterPrefab])
+        {
+            this.SwapPlayerTurn();
+        }
+    }
+
+    [Command(requiresAuthority = false)]
+    public void ResetCharacterTurn()
+    {
+        Debug.Log("Resetting turn data");
+        this.characterTurnOrderIndex = 0;
+        this.playerTurn = 0;
+
+        //finds character prefab id for the next turn so that we can check who owns it
+        int currentCharacterPrefab = -1;
+        int i = 0;
+        foreach (int prefab in this.turnOrderSortedPrefabIds.Values)
+        {
+            if (i == this.characterTurnOrderIndex)
+            {
+                currentCharacterPrefab = prefab;
+            }
+            i++;
+        }
+        if (currentCharacterPrefab == -1)
+        {
+            Debug.Log("Error : Bad code for iterating turnOrderSortedPrefabIds");
+        }
+
+        //if we don't own that char, swap player turn
+        if (this.playerTurn != characterOwners[currentCharacterPrefab])
         {
             this.SwapPlayerTurn();
         }

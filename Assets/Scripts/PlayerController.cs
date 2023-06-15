@@ -80,7 +80,9 @@ public class PlayerController : NetworkBehaviour
     public override void OnStopServer()
     {
         base.OnStopServer();
+        if (this == GameController.Singleton.LocalPlayer) return;
         GameController.Singleton.RemoveAllMyChars(this.playerIndex);
+        GameController.Singleton.ResetCharacterTurn();
     }
 
     [Command]
