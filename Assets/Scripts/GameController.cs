@@ -10,7 +10,7 @@ public class GameController : NetworkBehaviour
 {
     public static GameController Singleton { get; private set; }
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
-    public Dictionary<string, CharacterClass> AllClasses { get; set; }
+    public static Dictionary<string, CharacterClass> AllClasses { get; set; }
     public PlayerController LocalPlayer { get; set; }
 
     //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
@@ -57,14 +57,14 @@ public class GameController : NetworkBehaviour
         foreach (KeyValuePair<float, int> kvp in turnOrderSortedPrefabIds)
             OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
-        this.DefineClasses();
+        GameController.DefineClasses();
 
         this.map.Initialize();
     }
 
     public void Start()
     {
-        if (!IsItMyTurn())
+        if (!IsItMyClientsTurn())
             this.endTurnButton.SetActive(false);
 
         //set initial turn UI for character turn 0
@@ -201,18 +201,12 @@ public class GameController : NetworkBehaviour
     private void OnCharacterTurnChanged(int prevTurnIndex, int newTurnIndex)
     {
         Debug.Log("OnCharacterTurnChanged");
-        int newTurnCharacterId = -1;
-        int i = 0;
-        foreach (int prefab in this.turnOrderSortedPrefabIds.Values)
-        {
-            if (i == newTurnIndex)
-            {
-                newTurnCharacterId = prefab;
-            }
-            i++;
-        }
 
-        i = 0;
+        //finds prefab ID for character whose turn it is
+        int newTurnCharacterId = this.PrefabIdForPlayingCharacter();
+
+        //highlights turnOrderSlotUI for currentyl playing character
+        int i = 0;
         foreach(TurnOrderSlotUI slot in turnOrderSlots)
         {
             i++;
@@ -278,6 +272,19 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void SwapPlayerTurn()
+    {
+        if (this.playerTurn == 0)
+        {
+            this.playerTurn = 1;
+        }
+        else
+        {
+            this.playerTurn = 0;
+        }
+    }
+
     [Command(requiresAuthority = false)]
     public void ResetCharacterTurn()
     {
@@ -308,35 +315,43 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    public bool IsItMyTurn()
+    public bool IsItMyClientsTurn()
     {
         return this.LocalPlayer.playerIndex == this.playerTurn;
     }
 
     public bool IsItThisCharactersTurn(int prefabId)
     {
-        return this.turnOrderSortedPrefabIds[this.characterTurnOrderIndex] == prefabId;
+        return this.PrefabIdForPlayingCharacter() == prefabId;
     }
 
-    [Server]
-    public void SwapPlayerTurn()
+    private int PrefabIdForPlayingCharacter(int playingCharacterIndex = -1)
     {
-        if (this.playerTurn == 0)
+        //finds prefab ID for character whose turn it is
+        int currentyPlaying = (playingCharacterIndex == -1 ? this.characterTurnOrderIndex : playingCharacterIndex);
+        int i = 0;
+        foreach (int prefabId in this.turnOrderSortedPrefabIds.Values)
         {
-            this.playerTurn = 1;
+            if (i == currentyPlaying)
+            {
+                return prefabId;
+            } else
+            {
+                i++;
+            }
+            
         }
-        else
-        {
-            this.playerTurn = 0;
-        }
+
+        return -1;
     }
+
 
     //Instantiate all classes to set their definitions here
     //TODO: find better spot to do this
     //probably should load from file (CSV)
-    private void DefineClasses()
+    private static void DefineClasses()
     {
-        this.AllClasses = new Dictionary<string, CharacterClass>();
+        GameController.AllClasses = new Dictionary<string, CharacterClass>();
 
         //Barb
         CharacterClass barbarian = new();
@@ -360,7 +375,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
             });
-        this.AllClasses.Add("Barbarian", barbarian);
+        GameController.AllClasses.Add("Barbarian", barbarian);
 
         //Cavalier
         CharacterClass cavalier = new();
@@ -383,7 +398,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Cavalier", cavalier);
+        GameController.AllClasses.Add("Cavalier", cavalier);
 
         //Archer
         CharacterClass archer = new();
@@ -406,7 +421,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Archer", archer);
+        GameController.AllClasses.Add("Archer", archer);
 
         //Rogue
         CharacterClass rogue = new();
@@ -429,7 +444,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Rogue", rogue);
+        GameController.AllClasses.Add("Rogue", rogue);
 
         //Warrior
         CharacterClass warrior = new();
@@ -452,7 +467,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Warrior", warrior);
+        GameController.AllClasses.Add("Warrior", warrior);
 
         //Paladin
         CharacterClass paladin = new();
@@ -475,7 +490,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Paladin", paladin);
+        GameController.AllClasses.Add("Paladin", paladin);
 
         //Druid
         CharacterClass druid = new();
@@ -499,7 +514,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Druid", druid);
+        GameController.AllClasses.Add("Druid", druid);
 
         //Necromancer
         CharacterClass necromancer = new();
@@ -523,7 +538,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Necromancer", necromancer);
+        GameController.AllClasses.Add("Necromancer", necromancer);
 
         //Wizard
         CharacterClass wizard = new();
@@ -548,7 +563,7 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Wizard", wizard);
+        GameController.AllClasses.Add("Wizard", wizard);
 
         //Priest
         CharacterClass priest = new();
@@ -572,6 +587,6 @@ public class GameController : NetworkBehaviour
             use: (PlayerCharacter pc, Hex target) => {
                 Debug.Log("Need to implement");
             });
-        this.AllClasses.Add("Priest", priest);
+        GameController.AllClasses.Add("Priest", priest);
     }
 }

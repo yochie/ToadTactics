@@ -67,7 +67,7 @@ public class PlayerController : NetworkBehaviour
 
             slot.HoldsPlayerCharacterWithIndex = prefabIndex;
 
-            CmdAddCharToTurnOrder(GameController.Singleton.AllClasses[newChar.className].CharStats.initiative, prefabIndex);
+            CmdAddCharToTurnOrder(GameController.AllClasses[newChar.className].CharStats.initiative, prefabIndex);
         }
     }
 
@@ -119,7 +119,7 @@ public class PlayerController : NetworkBehaviour
         GameObject newChar = 
             Instantiate(characterPrefab, destinationWorldPos, Quaternion.identity);
         //TODO : Create other classes and set their name in prefabs
-        newChar.GetComponent<PlayerCharacter>().Initialize(GameController.Singleton.AllClasses[prefabClassName]);
+        newChar.GetComponent<PlayerCharacter>().Initialize(GameController.AllClasses[prefabClassName]);
         NetworkServer.Spawn(newChar, connectionToClient);
 
         //update Hex state, synced to clients by syncvar

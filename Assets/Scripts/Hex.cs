@@ -28,7 +28,7 @@ public class Hex : NetworkBehaviour
         }
     }
 
-    public bool isSelectable { get { return GameController.Singleton.IsItMyTurn(); } }
+    public bool isSelectable { get { return GameController.Singleton.IsItMyClientsTurn(); } }
 
     //state vars to sync
     [SyncVar]

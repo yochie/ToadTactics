@@ -40,6 +40,7 @@ Pour le workflow de contribution : https://www.atlassian.com/git/tutorials/compa
 * More needed... Its a bit hectic right now
 * Structs and enums are in their own file
 * Utility file for static functions that aren't really proper to any one class
+* -1 used as null value for integers (e.g. indexes that aren't found)
 
 ## Common patterns
 ### Networking

@@ -9,7 +9,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Vector3 startPosition;
     public int HoldsPlayerCharacterWithIndex { get; set; }
 
-    public bool IsDraggable {get { return GameController.Singleton.IsItMyTurn(); }}
+    public bool IsDraggable {get { return GameController.Singleton.IsItMyClientsTurn(); }}
 
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
     {
