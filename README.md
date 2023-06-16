@@ -18,25 +18,28 @@
 Pour plus de détails : https://medium.com/@linojon/git-and-unity-getting-started-ad7c42be8324
 Pour le workflow de contribution : https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow
 
-# Multiplayer
+# Multiplayer testing
 
 * Ctrl+B pour build le jeu, ça lance le jeu en version standalone
-**  Peut être convenient de forcer le jeu à rouler en windowed : "Edit" => "Project settings" => "Player" => "Resolution and Presentation"
+    *  Peut être convenient de forcer le jeu à rouler en windowed : "Edit" => "Project settings" => "Player" => "Resolution and Presentation"
 * Lancer le jeu dans Unity pour avoir une deuxième version qui roule
 * Cliquer sur start dans l'une des applications
 * Ensuite cliquer sur "Client" dans l'autre application
 
-# Naming conventions
 
+
+# Code conventions
+
+## Naming
 * fields use camelCase
 * methods use PascalCase
 * properties (using get/set) use PascalCase
 * classes used for UI are suffixed with "UI"
 
-# Code conventions
-
-*Needed... Its a bit hectic right now
-*
+## Structure
+* More needed... Its a bit hectic right now
+* Structs and enums are in their own file
+* Utility file for static functions that aren't really proper to any one class
 
 ## Common patterns
 ### Networking
