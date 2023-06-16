@@ -1,6 +1,4 @@
-
-
-==Installation==
+# Installation
 
 * Installer unity hub : https://unity.com/download
 * Depuis unity hub, installer la version de unity 2021.3.26f1
@@ -20,7 +18,7 @@
 Pour plus de détails : https://medium.com/@linojon/git-and-unity-getting-started-ad7c42be8324
 Pour le workflow de contribution : https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow
 
-==Pour tester le network==
+# Multiplayer
 
 * Ctrl+B pour build le jeu, ça lance le jeu en version standalone
 **  Peut être convenient de forcer le jeu à rouler en windowed : "Edit" => "Project settings" => "Player" => "Resolution and Presentation"
@@ -28,21 +26,21 @@ Pour le workflow de contribution : https://www.atlassian.com/git/tutorials/compa
 * Cliquer sur start dans l'une des applications
 * Ensuite cliquer sur "Client" dans l'autre application
 
-==Naming conventions==
+# Naming conventions
 
-*fields use camelCase
-*methods use PascalCase
-*properties (using get/set) use PascalCase
-*Classes used for UI are suffixed with "UI"
+* fields use camelCase
+* methods use PascalCase
+* properties (using get/set) use PascalCase
+* classes used for UI are suffixed with "UI"
 
-==Code conventions==
+# Code conventions
 
 *Needed... Its a bit hectic right now
 *
 
-==Common patterns==
-===Networking===
-*use Mirror SyncVars (or other Sync*) to store all gamestate (see GAMESTATE.txt file here)
-*Syncvars are modified server side only. Clients can use Mirror Commands to set those syncvars. Alternatively Server only objects (marked as such in their Network Identity component) can directly modify them. 
-*Any updates that should be made apparent to clients (UI, sprites, etc) should be done in callbacks hooked into relevant syncvars when those are modified
-*Remember to update syncvars or UI when clients join or exit
+## Common patterns
+### Networking
+* use Mirror SyncVars (or other Sync*) to store all gamestate (see GAMESTATE.txt file here)
+* Syncvars are modified server side only. Clients can use Mirror Commands to set those syncvars. Alternatively Server only objects (marked as such in their Network Identity component) can directly modify them. 
+* Any updates that should be made apparent to clients (UI, sprites, etc) should be done in callbacks hooked into relevant syncvars when those are modified
+* Remember to update syncvars or UI when clients join or exit
