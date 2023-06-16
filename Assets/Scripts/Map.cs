@@ -53,7 +53,7 @@ public class Map : NetworkBehaviour
     public Hex HoveredHex { get; set; }
 
     public readonly Dictionary<Vector2Int, Hex> hexGrid = new();
-    public readonly SyncDictionary<Vector2Int, uint> hexGridNetIds = new SyncDictionary<Vector2Int, uint>();
+    public readonly SyncDictionary<Vector2Int, uint> hexGridNetIds = new();
 
     //TODO : fix using same strat as hexgrid
     //public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
@@ -207,7 +207,7 @@ public class Map : NetworkBehaviour
     public void ClickHex(Hex clickedHex)
     {
         //moves previously selected player character
-        if (this.SelectedHex != null && this.SelectedHex.holdsCharacter != null)
+        if (this.SelectedHex != null && this.SelectedHex.holdsCharacterWithPrefabID != -1)
         {
             this.CmdMoveChar(this.SelectedHex, clickedHex);
             this.UnselectHex();
@@ -255,7 +255,7 @@ public class Map : NetworkBehaviour
             hoveredHex.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
             hoveredHex.ShowLabel();
 
-            this.clearPaths();
+            this.ClearPaths();
 
             List<Hex> path = this.FindMovementPath(this.SelectedHex, hoveredHex);
             if (path != null)
@@ -283,7 +283,7 @@ public class Map : NetworkBehaviour
 
         h.HideLabel();
 
-        this.clearPaths();
+        this.ClearPaths();
     }
 
     private void DisplayPath(List<Hex> path)
@@ -299,7 +299,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    private void clearPaths()
+    private void ClearPaths()
     {
         for (int x = -this.xSize + 1; x < this.xSize; x++)
         {
@@ -346,7 +346,7 @@ public class Map : NetworkBehaviour
         foreach (HexCoordinates neighbourCoord in h.coordinates.Neighbours())
         {
             Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
-            if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && !neighbour.holdsCharacter)
+            if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && neighbour.holdsCharacterWithPrefabID == -1)
             {
                 toReturn.Add(neighbour);
             }
@@ -413,24 +413,21 @@ public class Map : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
+        PlayerController senderPlayer = sender.identity.gameObject.GetComponent<PlayerController>();
         //Validation
         if (source == null ||
-            source.holdsCharacter == null ||
-            source.holdsCharacter.netIdentity.connectionToClient != sender ||
+            source.holdsCharacterWithPrefabID == -1 ||
+            GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithPrefabID) ||
             dest.holdsObstacle != ObstacleType.none ||
-            dest.holdsCharacter != null)
+            dest.holdsCharacterWithPrefabID != -1)
         {
             Debug.Log("Client requested invalid move");
             return;
-        }
+        }        
+        PlayerCharacter toMove = GameController.Singleton.AllPlayerCharacters[source.holdsCharacterWithPrefabID];
 
-        PlayerCharacter toMove = source.holdsCharacter;
-
-        source.holdsCharacter = null;
-
-        dest.holdsCharacter = toMove;
-
-        //this.characterPositions[toMove] = dest;
+        dest.holdsCharacterWithPrefabID = source.holdsCharacterWithPrefabID;
+        source.holdsCharacterWithPrefabID = -1;
 
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
 

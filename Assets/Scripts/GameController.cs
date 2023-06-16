@@ -25,6 +25,11 @@ public class GameController : NetworkBehaviour
     
     public List<TurnOrderSlotUI> turnOrderSlots = new();
 
+    //TODO : make this a netid syncronized var like map hexgrid
+    //should map prefabID to netid
+    public readonly SyncDictionary<int, uint> AllPlayerCharactersIDs = new();
+    public readonly Dictionary<int, PlayerCharacter> AllPlayerCharacters = new();
+
     //maps character initiative to prefab indexes
     public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIds = new SyncIDictionary<float,int>(new SortedList<float,int>());
 
@@ -53,6 +58,11 @@ public class GameController : NetworkBehaviour
     {
         base.OnStartClient();
 
+        this.AllPlayerCharactersIDs.Callback += OnAllPlayerCharacterIdsChange;
+        // Process initial SyncDictionary payload
+        foreach (KeyValuePair<int, uint> kvp in AllPlayerCharactersIDs)
+            OnAllPlayerCharacterIdsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
+
         turnOrderSortedPrefabIds.Callback += OnTurnOrderChanged;
         foreach (KeyValuePair<float, int> kvp in turnOrderSortedPrefabIds)
             OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
@@ -60,6 +70,47 @@ public class GameController : NetworkBehaviour
         GameController.DefineClasses();
 
         this.map.Initialize();
+    }
+
+    [Client]
+    private void OnAllPlayerCharacterIdsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netid)
+    {
+        switch (op)
+        {
+            case SyncDictionary<int, uint>.Operation.OP_ADD:
+                // entry added
+                this.AllPlayerCharacters[key] = null;
+
+                if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
+                {
+                    this.AllPlayerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+                }
+                else
+                {
+                    StartCoroutine(PlayerFromNetIDCoroutine(key, netId));
+                }
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_SET:
+                // entry changed
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_REMOVE:
+                // entry removed
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_CLEAR:
+                // Dictionary was cleared
+                break;
+        }
+    }
+
+    [Client]
+    private IEnumerator PlayerFromNetIDCoroutine(int key, uint netId)
+    {
+        while (this.AllPlayerCharacters[key] == null)
+        {
+            yield return null;
+            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
+                this.AllPlayerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+        }
     }
 
     public void Start()
@@ -320,9 +371,31 @@ public class GameController : NetworkBehaviour
         return this.LocalPlayer.playerIndex == this.playerTurn;
     }
 
-    public bool IsItThisCharactersTurn(int prefabId)
+    public bool IsItThisCharactersTurn(int prefabID)
     {
-        return this.PrefabIdForPlayingCharacter() == prefabId;
+        return this.PrefabIdForPlayingCharacter() == prefabID;
+    }
+
+    public bool DoIOwnThisCharacter(int prefabID)
+    {
+        if (this.characterOwners[prefabID] == this.LocalPlayer.playerIndex) {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public bool DoesHeOwnThisCharacter(int playerIndex, int prefabID)
+    {
+        if (this.characterOwners[prefabID] == playerIndex)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private int PrefabIdForPlayingCharacter(int playingCharacterIndex = -1)

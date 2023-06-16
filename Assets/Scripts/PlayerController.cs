@@ -65,7 +65,7 @@ public class PlayerController : NetworkBehaviour
 
             slot.GetComponent<Image>().sprite = newChar.GetComponent<SpriteRenderer>().sprite;
 
-            slot.HoldsPlayerCharacterWithIndex = prefabIndex;
+            slot.HoldsCharacterWithPrefabID = prefabIndex;
 
             CmdAddCharToTurnOrder(GameController.AllClasses[newChar.className].CharStats.initiative, prefabIndex);
         }
@@ -98,7 +98,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
-    public void CmdCreateCharOnBoard(int characterPrefabIndex, Hex destinationHex)
+    public void CmdCreateCharOnBoard(int characterPrefabID, Hex destinationHex)
     {
         //Debug.Log(destinationHex.startZoneForPlayerIndex);
         //Debug.Log(this.playerIndex);
@@ -107,13 +107,13 @@ public class PlayerController : NetworkBehaviour
         if (destinationHex == null ||
             !destinationHex.isStartingZone ||
             destinationHex.startZoneForPlayerIndex != this.playerIndex ||
-            destinationHex.holdsCharacter != null)
+            destinationHex.holdsCharacterWithPrefabID != -1)
         {
             Debug.Log("Invalid character destination");
             return;
         }
 
-        GameObject characterPrefab = GameController.Singleton.AllPlayerCharPrefabs[characterPrefabIndex];
+        GameObject characterPrefab = GameController.Singleton.AllPlayerCharPrefabs[characterPrefabID];
         string prefabClassName = characterPrefab.GetComponent<PlayerCharacter>().className;
         Vector3 destinationWorldPos = destinationHex.transform.position;
         GameObject newChar = 
@@ -121,9 +121,10 @@ public class PlayerController : NetworkBehaviour
         //TODO : Create other classes and set their name in prefabs
         newChar.GetComponent<PlayerCharacter>().Initialize(GameController.AllClasses[prefabClassName]);
         NetworkServer.Spawn(newChar, connectionToClient);
+        GameController.Singleton.AllPlayerCharactersIDs.Add(characterPrefabID, newChar.GetComponent<NetworkIdentity>().netId);
 
         //update Hex state, synced to clients by syncvar
-        destinationHex.holdsCharacter = newChar.GetComponent<PlayerCharacter>();
+        destinationHex.holdsCharacterWithPrefabID = characterPrefabID;
 
         //this.gc.map.PlacePlayerChar();
 

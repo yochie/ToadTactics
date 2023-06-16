@@ -28,15 +28,14 @@ public class Hex : NetworkBehaviour
         }
     }
 
-    public bool isSelectable { get { return GameController.Singleton.IsItMyClientsTurn(); } }
-
     //state vars to sync
     [SyncVar]
     public HexCoordinates coordinates;
     [SyncVar]
     public bool isStartingZone;
+
     [SyncVar]
-    public PlayerCharacter holdsCharacter;
+    public int holdsCharacterWithPrefabID;
     [SyncVar]
     public ObstacleType holdsObstacle;
     [SyncVar]
@@ -52,6 +51,36 @@ public class Hex : NetworkBehaviour
     [SyncVar]
     public int moveCost;
 
+    public bool IsSelectable
+    {
+        get
+        {
+            bool toReturn = false;
+            switch (GameController.Singleton.currentGameMode)
+            {
+                case GameMode.characterPlacement:
+                    toReturn = GameController.Singleton.IsItMyClientsTurn();
+                    break;
+                case GameMode.gameplay:
+                    if (this.holdsCharacterWithPrefabID != -1)
+                    {
+                        if (GameController.Singleton.IsItMyClientsTurn() &&
+                            GameController.Singleton.IsItThisCharactersTurn(this.holdsCharacterWithPrefabID))
+                        {
+                            toReturn = true;
+                        }
+                        else
+                        {
+                            toReturn = false;
+                        }
+                    } else { toReturn = true; }
+                    break;
+            }
+            return toReturn;
+        }
+    }
+
+
     [Server]
     public void Init(HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
         this.name = name;
@@ -60,7 +89,7 @@ public class Hex : NetworkBehaviour
         //default values
         this.isStartingZone = false;
         this.startZoneForPlayerIndex = -1;
-        this.holdsCharacter = null;
+        this.holdsCharacterWithPrefabID = -1;
         this.holdsObstacle = ObstacleType.none;
         this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
@@ -125,7 +154,7 @@ public class Hex : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        if(isSelectable)
+        if(IsSelectable)
             Map.Singleton.ClickHex(this);
     }
 
