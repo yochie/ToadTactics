@@ -28,7 +28,7 @@ public class GameController : NetworkBehaviour
     //TODO : make this a netid syncronized var like map hexgrid
     //should map prefabID to netid
     public readonly SyncDictionary<int, uint> AllPlayerCharactersIDs = new();
-    public readonly Dictionary<int, PlayerCharacter> AllPlayerCharacters = new();
+    public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
 
     //maps character initiative to prefab indexes
     public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIds = new SyncIDictionary<float,int>(new SortedList<float,int>());
@@ -73,21 +73,26 @@ public class GameController : NetworkBehaviour
     }
 
     [Client]
-    private void OnAllPlayerCharacterIdsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netid)
+    private void OnAllPlayerCharacterIdsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netidArg)
     {
         switch (op)
         {
             case SyncDictionary<int, uint>.Operation.OP_ADD:
                 // entry added
-                this.AllPlayerCharacters[key] = null;
+                Debug.Log("Callback for character being added to Gamecontroller main list has been called.");
+                Debug.LogFormat("Adding character with key {0}", key);
+                this.playerCharacters[key] = null;
 
-                if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
+                if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
                 {
-                    this.AllPlayerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+                    Debug.LogFormat("Actually adding character with key {0}", key);
+                    this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
                 }
                 else
                 {
-                    StartCoroutine(PlayerFromNetIDCoroutine(key, netId));
+                    Debug.LogFormat("Couldnt find character with key {0}, calling coroutine", key);
+
+                    StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
                 }
                 break;
             case SyncDictionary<int, uint>.Operation.OP_SET:
@@ -103,13 +108,17 @@ public class GameController : NetworkBehaviour
     }
 
     [Client]
-    private IEnumerator PlayerFromNetIDCoroutine(int key, uint netId)
+    private IEnumerator PlayerFromNetIDCoroutine(int key, uint netIdArg)
     {
-        while (this.AllPlayerCharacters[key] == null)
+        while (this.playerCharacters[key] == null)
         {
             yield return null;
-            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
-                this.AllPlayerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+            if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
+            {
+                Debug.LogFormat("Actually adding character with key {0} from coroutine", key);
+
+                this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+            }
         }
     }
 

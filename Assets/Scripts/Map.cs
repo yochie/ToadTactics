@@ -417,17 +417,28 @@ public class Map : NetworkBehaviour
         //Validation
         if (source == null ||
             source.holdsCharacterWithPrefabID == -1 ||
-            GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithPrefabID) ||
+            !GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithPrefabID) ||
             dest.holdsObstacle != ObstacleType.none ||
             dest.holdsCharacterWithPrefabID != -1)
         {
-            Debug.Log("Client requested invalid move");
+            //Debug.Log("Client requested invalid move");
+            //Debug.Log(source.holdsCharacterWithPrefabID);
+            //Debug.Log(GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithPrefabID));
+            //Debug.Log(dest.holdsObstacle);
+            //Debug.Log(dest.holdsCharacterWithPrefabID);
             return;
         }        
-        PlayerCharacter toMove = GameController.Singleton.AllPlayerCharacters[source.holdsCharacterWithPrefabID];
+        PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithPrefabID];
+
+        Debug.Log(source.holdsCharacterWithPrefabID);
+        Debug.Log(GameController.Singleton.playerCharacters.Count); ;
+        Debug.Log(toMove);
+        Debug.Log(toMove.gameObject);
+        Debug.Log(dest.transform.position);
 
         dest.holdsCharacterWithPrefabID = source.holdsCharacterWithPrefabID;
         source.holdsCharacterWithPrefabID = -1;
+
 
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
 
@@ -449,7 +460,7 @@ public class Map : NetworkBehaviour
     }
 
     [Client]
-    void OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation op, Vector2Int key, uint netId)
+    void OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation op, Vector2Int key, uint netIdArg)
     {
 
         switch (op)
@@ -458,12 +469,12 @@ public class Map : NetworkBehaviour
                 // entry added
                 this.hexGrid[key] = null;
 
-                if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
+                if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
                 {
                     this.hexGrid[key] = identity.gameObject.GetComponent<Hex>();
                 } else
                 {
-                    StartCoroutine(HexFromNetIdCoroutine(key, netId));
+                    StartCoroutine(HexFromNetIdCoroutine(key, netIdArg));
                 }
                 break;
             case SyncDictionary<Vector2Int, uint>.Operation.OP_SET:
@@ -479,12 +490,12 @@ public class Map : NetworkBehaviour
     }
 
     [Client]
-    IEnumerator HexFromNetIdCoroutine(Vector2Int key, uint netId)
+    IEnumerator HexFromNetIdCoroutine(Vector2Int key, uint netIdArg)
     {
         while (this.hexGrid[key] == null)
         {
             yield return null;
-            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
+            if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
                 this.hexGrid[key] = identity.gameObject.GetComponent<Hex>();
         }
     }
