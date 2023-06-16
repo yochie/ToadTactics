@@ -74,9 +74,6 @@ public class PlayerController : NetworkBehaviour
     public override void OnStopLocalPlayer()
     {
         base.OnStopLocalPlayer();
-        if (isServer || !NetworkServer.active) return;
-        GameController.Singleton.RemoveAllMyChars(this.playerIndex);
-        GameController.Singleton.ResetCharacterTurn();
 
     }
 
@@ -84,6 +81,11 @@ public class PlayerController : NetworkBehaviour
     public override void OnStopServer()
     {
         base.OnStopServer();
+
+        //removes clients player data when he exits as long as server is still running
+        if (!NetworkServer.active || GameController.Singleton.LocalPlayer == this) return;
+        GameController.Singleton.RemoveAllMyChars(this.playerIndex);
+        GameController.Singleton.ResetCharacterTurn();
 
     }
 

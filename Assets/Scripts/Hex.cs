@@ -59,7 +59,7 @@ public class Hex : NetworkBehaviour
             switch (GameController.Singleton.currentGameMode)
             {
                 case GameMode.characterPlacement:
-                    toReturn = GameController.Singleton.IsItMyClientsTurn();
+                    toReturn = false;
                     break;
                 case GameMode.gameplay:
                     if (this.holdsCharacterWithPrefabID != -1)

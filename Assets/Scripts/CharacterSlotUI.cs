@@ -18,7 +18,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     toReturn = GameController.Singleton.IsItMyClientsTurn();
                     break;
                 case GameMode.gameplay:
-                    toReturn = true;
+                    toReturn = false;
                     break;
             }
             return toReturn;
