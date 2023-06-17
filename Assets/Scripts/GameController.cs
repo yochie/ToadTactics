@@ -5,6 +5,7 @@ using UnityEditor;
 using System;
 using UnityEngine.UI;
 using Mirror;
+using System.IO;
 
 public class GameController : NetworkBehaviour
 {
@@ -20,18 +21,17 @@ public class GameController : NetworkBehaviour
     public readonly SyncDictionary<int, int> characterOwners = new();
 
     public GameObject turnOrderSlotPrefab;
-    
+
     public GameObject turnOrderBar;
-    
+
     public List<TurnOrderSlotUI> turnOrderSlots = new();
 
-    //TODO : make this a netid syncronized var like map hexgrid
-    //should map prefabID to netid
-    public readonly SyncDictionary<int, uint> AllPlayerCharactersIDs = new();
+    //maps prefabid to player characters
+    public readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
     public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
 
     //maps character initiative to prefab indexes
-    public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIds = new SyncIDictionary<float,int>(new SortedList<float,int>());
+    public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIds = new SyncIDictionary<float, int>(new SortedList<float, int>());
 
     //stores index of turn in turnOrderSortedPrefabIds
     //NOT the initiative used as keys, rather the index in the ordered list
@@ -43,7 +43,7 @@ public class GameController : NetworkBehaviour
     public int playerTurn = 0;
 
     [SyncVar]
-    public GameMode currentGameMode = GameMode.gameplay;
+    public GameMode currentGameMode = GameMode.characterPlacement;
 
     public GameObject endTurnButton;
 
@@ -58,9 +58,9 @@ public class GameController : NetworkBehaviour
     {
         base.OnStartClient();
 
-        this.AllPlayerCharactersIDs.Callback += OnAllPlayerCharacterIdsChange;
+        this.playerCharactersNetIDs.Callback += OnAllPlayerCharacterIdsChange;
         // Process initial SyncDictionary payload
-        foreach (KeyValuePair<int, uint> kvp in AllPlayerCharactersIDs)
+        foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
             OnAllPlayerCharacterIdsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
         turnOrderSortedPrefabIds.Callback += OnTurnOrderChanged;
@@ -153,9 +153,9 @@ public class GameController : NetworkBehaviour
             case SyncIDictionary<float, int>.Operation.OP_REMOVE:
                 // entry removed
                 Debug.LogFormat("Removing {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
-                foreach(TurnOrderSlotUI currentSlot in turnOrderSlots)
+                foreach (TurnOrderSlotUI currentSlot in turnOrderSlots)
                 {
-                    if(currentSlot.holdsPrefabWithIndex == value)
+                    if (currentSlot.holdsPrefabWithIndex == value)
                     {
                         Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
                         this.turnOrderSlots.Remove(currentSlot);
@@ -172,7 +172,7 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    //called by commands to modify turnOrderSortedPrefabIds
+    //called by commands to modify character lists
     [Server]
     internal void AddMyChar(int playerIndex, int prefabIndex, int initiative)
     {
@@ -189,7 +189,7 @@ public class GameController : NetworkBehaviour
         List<float> ownedToRemove = new();
         foreach (int characterPrefabId in this.characterOwners.Keys)
         {
-            if(this.characterOwners[characterPrefabId] == playerIndex)
+            if (this.characterOwners[characterPrefabId] == playerIndex)
             {
                 List<float> turnToRemove = new();
                 foreach (float initiative in this.turnOrderSortedPrefabIds.Keys)
@@ -204,11 +204,11 @@ public class GameController : NetworkBehaviour
                     this.turnOrderSortedPrefabIds.Remove(toRemove);
                 }
 
-                ownedToRemove.Add(characterPrefabId);                
+                ownedToRemove.Add(characterPrefabId);
             }
         }
 
-        foreach(int toRemove in ownedToRemove)
+        foreach (int toRemove in ownedToRemove)
         {
             this.characterOwners.Remove(toRemove);
         }
@@ -219,7 +219,7 @@ public class GameController : NetworkBehaviour
     {
         Debug.Log("Updating turnOrderSlots");
         int i = 0;
-        foreach(float initiative in this.turnOrderSortedPrefabIds.Keys)
+        foreach (float initiative in this.turnOrderSortedPrefabIds.Keys)
         {
             //stops joining clients from trying to fill slots that weren't created yet
             if (i >= this.turnOrderSlots.Count) return;
@@ -229,13 +229,14 @@ public class GameController : NetworkBehaviour
             int prefabId = this.turnOrderSortedPrefabIds[initiative];
             slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
             slot.holdsPrefabWithIndex = prefabId;
-            
+
             if (this.characterTurnOrderIndex == i)
             {
-                slot.HighlightAndLabel(i+1);
-            } else
+                slot.HighlightAndLabel(i + 1);
+            }
+            else
             {
-                slot.UnhighlightAndLabel(i+1);
+                slot.UnhighlightAndLabel(i + 1);
             }
             i++;
         }
@@ -245,13 +246,14 @@ public class GameController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdEndTurn()
     {
-        if(this.currentGameMode == GameMode.draft ||
+        if (this.currentGameMode == GameMode.draft ||
             this.currentGameMode == GameMode.characterPlacement ||
             this.currentGameMode == GameMode.treasureDraft ||
             this.currentGameMode == GameMode.treasureEquip)
         {
             this.SwapPlayerTurn();
-        } else if(this.currentGameMode == GameMode.gameplay)
+        }
+        else if (this.currentGameMode == GameMode.gameplay)
         {
             this.NextCharacterTurn();
         }
@@ -267,14 +269,15 @@ public class GameController : NetworkBehaviour
 
         //highlights turnOrderSlotUI for currentyl playing character
         int i = 0;
-        foreach(TurnOrderSlotUI slot in turnOrderSlots)
+        foreach (TurnOrderSlotUI slot in turnOrderSlots)
         {
             i++;
             if (slot.holdsPrefabWithIndex == newTurnCharacterId)
             {
                 Debug.Log("Highlighting slot");
                 slot.HighlightAndLabel(i);
-            } else
+            }
+            else
             {
                 slot.UnhighlightAndLabel(i);
 
@@ -320,13 +323,13 @@ public class GameController : NetworkBehaviour
             }
             i++;
         }
-        if(currentCharacterPrefab == -1)
+        if (currentCharacterPrefab == -1)
         {
             Debug.Log("Error : Bad code for iterating turnOrderSortedPrefabIds");
         }
 
         //if we don't own that char, swap player turn
-        if(this.playerTurn != characterOwners[currentCharacterPrefab])
+        if (this.playerTurn != characterOwners[currentCharacterPrefab])
         {
             this.SwapPlayerTurn();
         }
@@ -387,9 +390,11 @@ public class GameController : NetworkBehaviour
 
     public bool DoIOwnThisCharacter(int prefabID)
     {
-        if (this.characterOwners[prefabID] == this.LocalPlayer.playerIndex) {
+        if (this.characterOwners[prefabID] == this.LocalPlayer.playerIndex)
+        {
             return true;
-        } else
+        }
+        else
         {
             return false;
         }
@@ -417,11 +422,12 @@ public class GameController : NetworkBehaviour
             if (i == currentyPlaying)
             {
                 return prefabId;
-            } else
+            }
+            else
             {
                 i++;
             }
-            
+
         }
 
         return -1;
@@ -431,244 +437,303 @@ public class GameController : NetworkBehaviour
     //Instantiate all classes to set their definitions here
     //TODO: find better spot to do this
     //probably should load from file (CSV)
+    private static void DefineClassesFromCSV(string statsFilename, string abilitiesFilname, string classFilename)
+    {
+
+        //Read in character stats
+        string[] lines = File.ReadAllLines(statsFilename);
+        int i = 0;
+        foreach (string line in lines)
+        {
+            //process headers
+            if (i == 0)
+            {
+
+            }
+
+            string[] columns = line.Split(',');
+            foreach (string column in columns)
+            {
+                //add data to Classes array
+            }
+            i++;
+        }
+
+
+        //define all custom abilities for each class
+
+        //Read in character abilities and plug in custom abilities
+
+        //Read in class meta
+    }
     private static void DefineClasses()
     {
         GameController.AllClasses = new Dictionary<string, CharacterClass>();
 
         //Barb
-        CharacterClass barbarian = new();
-        barbarian.Description = "Glass cannon, kill or get killed";
-        barbarian.CharStats = new(
-            maxHealth: 10,
-            armor: 2,
-            damage: 5,
-            damageType: DamageType.normal,
-            moveSpeed: 3,
-            initiative: 1,
-            range: 1,
-            damageIterations: 3);
-        barbarian.CharAbility = new(
-            name: "NA",
-            description: "No active ability. Always attacks thrice.",
-            damage: 1,
-            range: 0,
-            aoe: 0,
-            turnDuration: 0,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
-            });
-        GameController.AllClasses.Add("Barbarian", barbarian);
+        CharacterClass barbarian = new(
+            name: "Barbarian",
+            description: "Glass cannon, kill or get killed",
+            stats: new(
+                maxHealth: 10,
+                armor: 2,
+                damage: 5,
+                damageType: DamageType.normal,
+                moveSpeed: 3,
+                initiative: 1,
+                range: 1,
+                damageIterations: 3),
+            ability: new(
+                name: "NA",
+                description: "No active ability. Always attacks thrice.",
+                damage: 1,
+                range: 0,
+                aoe: 0,
+                turnDuration: 0,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
+                })
+        );
+        GameController.AllClasses.Add(barbarian.className, barbarian);
 
         //Cavalier
-        CharacterClass cavalier = new();
-        cavalier.Description = "Rapidly reaches the backline or treasure";
-        cavalier.CharStats = new(
-            maxHealth: 12,
-            armor: 3,
-            damage: 5,
-            moveSpeed: 3,
-            initiative: 2,
-            range: 2,
-            damageIterations: 1);
-        cavalier.CharAbility = new(
-            name: "Lance Throw",
-            description: "Throws a lance at an enemy in a 3 tile radius, dealing damage and stunning the target until next turn.",
-            damage: 5,
-            range: 3,
-            aoe: 0,
-            turnDuration: 1,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Cavalier", cavalier);
+        CharacterClass cavalier = new(
+            name: "Cavalier",
+            description: "Rapidly reaches the backline or treasure",
+            stats: new(
+                maxHealth: 12,
+                armor: 3,
+                damage: 5,
+                moveSpeed: 3,
+                initiative: 2,
+                range: 2,
+                damageIterations: 1),
+            ability: new(
+                name: "Lance Throw",
+                description: "Throws a lance at an enemy in a 3 tile radius, dealing damage and stunning the target until next turn.",
+                damage: 5,
+                range: 3,
+                aoe: 0,
+                turnDuration: 1,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(cavalier.className, cavalier);
 
         //Archer
-        CharacterClass archer = new();
-        archer.Description = "Evasive and deals ranged damage";
-        archer.CharStats = new(
-            maxHealth: 10,
-            armor: 2,
-            damage: 8,
-            moveSpeed: 1,
-            initiative: 3,
-            range: 3,
-            damageIterations: 1);
-        archer.CharAbility = new(
-            name: "Backflip + Root",
-            description: "Moves 3 tiles away from current position and roots the nearest enemy until next turn.",
-            damage: 0,
-            range: 3,
-            aoe:0,
-            turnDuration: 1,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Archer", archer);
+        CharacterClass archer = new(
+            name: "Archer",
+            description: "Evasive and deals ranged damage",
+            stats: new(
+                maxHealth: 10,
+                armor: 2,
+                damage: 8,
+                moveSpeed: 1,
+                initiative: 3,
+                range: 3,
+                damageIterations: 1),
+            ability: new(
+                name: "Backflip + Root",
+                description: "Moves 3 tiles away from current position and roots the nearest enemy until next turn.",
+                damage: 0,
+                range: 3,
+                aoe: 0,
+                turnDuration: 1,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(archer.className, archer);
 
         //Rogue
-        CharacterClass rogue = new();
-        rogue.Description = "Can guarantee a treasure or a kill on low armor characters";
-        rogue.CharStats = new(
-            maxHealth: 10,
-            armor: 2,
-            damage: 7,
-            moveSpeed: 2,
-            initiative: 4,
-            range: 1,
-            damageIterations: 2);
-        rogue.CharAbility = new(
-            name: "Stealth",
-            description: "Can activate Stealth to become untargetable until he deals or is dealt damage.",
-            damage: 0,
-            range: 0,
-            aoe: 0,
-            turnDuration: 0,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Rogue", rogue);
+        CharacterClass rogue = new(
+            name: "Rogue",
+            description: "Can guarantee a treasure or a kill on low armor characters",
+            stats: new(
+                maxHealth: 10,
+                armor: 2,
+                damage: 7,
+                moveSpeed: 2,
+                initiative: 4,
+                range: 1,
+                damageIterations: 2),
+            ability: new(
+                name: "Stealth",
+                description: "Can activate Stealth to become untargetable until he deals or is dealt damage.",
+                damage: 0,
+                range: 0,
+                aoe: 0,
+                turnDuration: 0,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(rogue.className, rogue);
 
         //Warrior
-        CharacterClass warrior = new();
-        warrior.Description = "Tanky character with great mobility";
-        warrior.CharStats = new(
-            maxHealth: 15,
-            armor: 4,
-            damage: 5,
-            moveSpeed: 2,
-            initiative: 5,
-            range: 1,
-            damageIterations: 1);
-        warrior.CharAbility = new(
-            name: "Charge",
-            description: "Move towards an enemy and deal damage.",
-            damage: 5,
-            range: 3,
-            aoe: 0,
-            turnDuration: 0,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Warrior", warrior);
+        CharacterClass warrior = new(
+            name: "Warrior",
+            description: "Tanky character with great mobility",
+            stats: new(
+                maxHealth: 15,
+                armor: 4,
+                damage: 5,
+                moveSpeed: 2,
+                initiative: 5,
+                range: 1,
+                damageIterations: 1),
+            ability: new(
+                name: "Charge",
+                description: "Move towards an enemy and deal damage.",
+                damage: 5,
+                range: 3,
+                aoe: 0,
+                turnDuration: 0,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(warrior.className, warrior);
 
         //Paladin
-        CharacterClass paladin = new();
-        paladin.Description = "Buffs allies and tanks";
-        paladin.CharStats = new(
-            maxHealth: 15,
-            armor: 4,
-            damage: 5,
-            moveSpeed: 2,
-            initiative: 6,
-            range: 1,
-            damageIterations: 1);
-        paladin.CharAbility = new(
-            name: "Blessing",
-            description: "Grants +2 to damage, health, armor and movement to all allies.",
-            damage: 0,
-            range: 0,
-            aoe: 0,
-            turnDuration: 2,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Paladin", paladin);
+        CharacterClass paladin = new(
+            name: "Paladin",
+            description: "Buffs allies and tanks",
+            stats: new(
+                maxHealth: 15,
+                armor: 4,
+                damage: 5,
+                moveSpeed: 2,
+                initiative: 6,
+                range: 1,
+                damageIterations: 1),
+            ability: new(
+                name: "Blessing",
+                description: "Grants +2 to damage, health, armor and movement to all allies.",
+                damage: 0,
+                range: 0,
+                aoe: 0,
+                turnDuration: 2,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(paladin.className, paladin);
 
         //Druid
-        CharacterClass druid = new();
-        druid.Description = "Impedes character movement, delaying damage or access to treasure";
-        druid.CharStats = new(
-            maxHealth: 10,
-            armor: 2,
-            damage: 5,
-            damageType: DamageType.magic,
-            moveSpeed: 1,
-            initiative: 7,
-            range: 2,
-            damageIterations: 1);
-        druid.CharAbility = new(
-            name: "Vine grasp",
-            description: "Targets a tile and roots all enemies in a 2 tile radius.",
-            damage: 0,
-            range: 0,
-            aoe: 2,
-            turnDuration: 1,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Druid", druid);
+        CharacterClass druid = new(
+            name: "Druid",
+            description: "Impedes character movement, delaying damage or access to treasure",
+            stats: new(
+                maxHealth: 10,
+                armor: 2,
+                damage: 5,
+                damageType: DamageType.magic,
+                moveSpeed: 1,
+                initiative: 7,
+                range: 2,
+                damageIterations: 1),
+            ability: new(
+                name: "Vine grasp",
+                description: "Targets a tile and roots all enemies in a 2 tile radius.",
+                damage: 0,
+                range: 0,
+                aoe: 2,
+                turnDuration: 1,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(druid.className, druid);
 
         //Necromancer
-        CharacterClass necromancer = new();
-        necromancer.Description = "Enables constant damage on distant targets but deals low damage by himself";
-        necromancer.CharStats = new(
-            maxHealth: 8,
-            armor: 3,
-            damage: 3,
-            damageType: DamageType.magic,
-            moveSpeed: 1,
-            initiative: 8,
-            range: 999,
-            damageIterations: 1);
-        necromancer.CharAbility = new(
-            name: "Soul Projection",
-            description: "Targets any enemy and brings an effigy within two tiles that transfers received damage to targeted character until the next turn.",
-            damage: 0,
-            range: 2,
-            aoe: 0,
-            turnDuration: 1,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Necromancer", necromancer);
+        CharacterClass necromancer = new(
+            name: "Necromancer",
+            description: "Enables constant damage on distant targets but deals low damage by himself",
+            stats: new(
+                maxHealth: 8,
+                armor: 3,
+                damage: 3,
+                damageType: DamageType.magic,
+                moveSpeed: 1,
+                initiative: 8,
+                range: 999,
+                damageIterations: 1),
+            ability: new(
+                name: "Soul Projection",
+                description: "Targets any enemy and brings an effigy within two tiles that transfers received damage to targeted character until the next turn.",
+                damage: 0,
+                range: 2,
+                aoe: 0,
+                turnDuration: 1,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(necromancer.className, necromancer);
 
         //Wizard
-        CharacterClass wizard = new();
-        wizard.Description = "Deals large ranged damage that ignores armor";
-        wizard.CharStats = new(
-            maxHealth: 8,
-            armor: 1,
-            damage: 5,
-            damageType: DamageType.magic,
-            moveSpeed: 1,
-            initiative: 9,
-            range: 3,
-            damageIterations: 1);
-        wizard.CharAbility = new(
-            name: "Fireball",
-            description: "Throws a fireball at target character that explodes on contact, dealing damage adjacent tiles.",
-            damage: 5,
-            damageType: DamageType.magic,
-            range: 3,
-            aoe: 1,
-            turnDuration: 0,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Wizard", wizard);
+        CharacterClass wizard = new(
+            name: "Wizard",
+            description: "Deals large ranged damage that ignores armor",
+            stats: new(
+                maxHealth: 8,
+                armor: 1,
+                damage: 5,
+                damageType: DamageType.magic,
+                moveSpeed: 1,
+                initiative: 9,
+                range: 3,
+                damageIterations: 1),
+            ability: new(
+                name: "Fireball",
+                description: "Throws a fireball at target character that explodes on contact, dealing damage adjacent tiles.",
+                damage: 5,
+                damageType: DamageType.magic,
+                range: 3,
+                aoe: 1,
+                turnDuration: 0,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(wizard.className, wizard);
 
         //Priest
-        CharacterClass priest = new();
-        priest.Description = "Healer";
-        priest.CharStats = new(
-            maxHealth: 9,
-            armor: 1,
-            damage: 5,
-            damageType: DamageType.healing,
-            moveSpeed: 2,
-            initiative: 10,
-            range: 3,
-            damageIterations: 1);
-        priest.CharAbility = new(
-            name: "Resurrect",
-            description: "Revives an ally at 50% of max HP.",
-            damage: 0,
-            range: 999,
-            aoe: 0,
-            turnDuration: 0,
-            use: (PlayerCharacter pc, Hex target) => {
-                Debug.Log("Need to implement");
-            });
-        GameController.AllClasses.Add("Priest", priest);
+        CharacterClass priest = new(
+            name: "Priest",
+            description: "Healer",
+            stats: new(
+                maxHealth: 9,
+                armor: 1,
+                damage: 5,
+                damageType: DamageType.healing,
+                moveSpeed: 2,
+                initiative: 10,
+                range: 3,
+                damageIterations: 1),
+            ability: new(
+                name: "Resurrect",
+                description: "Revives an ally at 50% of max HP.",
+                damage: 0,
+                range: 999,
+                aoe: 0,
+                turnDuration: 0,
+                use: (PlayerCharacter pc, Hex target) =>
+                {
+                    Debug.Log("Need to implement");
+                })
+            );
+        GameController.AllClasses.Add(priest.className, priest);
     }
 }

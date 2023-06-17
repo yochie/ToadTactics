@@ -67,7 +67,7 @@ public class PlayerController : NetworkBehaviour
 
             slot.HoldsCharacterWithPrefabID = prefabIndex;
 
-            CmdAddCharToTurnOrder(GameController.AllClasses[newChar.className].CharStats.initiative, prefabIndex);
+            CmdAddCharToTurnOrder(GameController.AllClasses[newChar.className].charStats.initiative, prefabIndex);
         }
     }
 
@@ -92,7 +92,7 @@ public class PlayerController : NetworkBehaviour
     [Command]
     private void CmdAddCharToTurnOrder(int initiative, int prefabIndex)
     {
-        if (Utility.ContainsValue(GameController.Singleton.turnOrderSortedPrefabIds, prefabIndex))
+        if (Utility.DictContainsValue(GameController.Singleton.turnOrderSortedPrefabIds, prefabIndex))
         {
             //Todo add support for this
             Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
@@ -104,9 +104,6 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdCreateCharOnBoard(int characterPrefabID, Hex destinationHex)
     {
-        //Debug.Log(destinationHex.startZoneForPlayerIndex);
-        //Debug.Log(this.playerIndex);
-        
         //validate destination
         if (destinationHex == null ||
             !destinationHex.isStartingZone ||
@@ -125,7 +122,7 @@ public class PlayerController : NetworkBehaviour
         //TODO : Create other classes and set their name in prefabs
         newChar.GetComponent<PlayerCharacter>().Initialize(GameController.AllClasses[prefabClassName]);
         NetworkServer.Spawn(newChar, connectionToClient);
-        GameController.Singleton.AllPlayerCharactersIDs.Add(characterPrefabID, newChar.GetComponent<NetworkIdentity>().netId);
+        GameController.Singleton.playerCharactersNetIDs.Add(characterPrefabID, newChar.GetComponent<NetworkIdentity>().netId);
 
         //update Hex state, synced to clients by syncvar
         destinationHex.holdsCharacterWithPrefabID = characterPrefabID;

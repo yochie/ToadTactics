@@ -200,7 +200,7 @@ public class Map : NetworkBehaviour
     public void DeleteHex(int x, int y)
     {
         Hex toDelete = GetHex(x, y);
-        toDelete.DeleteHex();
+        toDelete.Delete();
         this.hexGrid[new Vector2Int(x, y)] = null;
     }
 

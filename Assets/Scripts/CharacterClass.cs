@@ -2,9 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterClass
+public readonly struct CharacterClass
 {
-    public string Description { get; set; }
-    public CharacterStats CharStats { get; set; }
-    public CharacterAbility CharAbility { get; set; }
+    public readonly string className;
+    public readonly string classDescription;
+    public readonly CharacterStats charStats;
+    public readonly CharacterAbility charAbility;
+
+    public CharacterClass(string name, string description, CharacterStats stats, CharacterAbility ability)
+    {
+        this.className = name;
+        this.classDescription = description;
+        this.charStats = stats;
+        this.charAbility = ability;
+    }
 }

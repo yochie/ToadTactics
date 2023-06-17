@@ -168,7 +168,7 @@ public class Hex : NetworkBehaviour
         this.labelTextMesh.alpha = 0;
     }
 
-    public void DeleteHex()
+    public void Delete()
     {
         if(this.coordLabelTextMesh != null) { 
             Destroy(this.coordLabelTextMesh.gameObject); 

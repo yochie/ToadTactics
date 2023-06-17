@@ -30,7 +30,7 @@ public class PlayerCharacter : NetworkBehaviour
 
     public void Initialize(CharacterClass charChlass) {
         this.CharClass = charChlass;
-        this.CurrentStats = charChlass.CharStats;
+        this.CurrentStats = charChlass.charStats;
         this.CurrentLife = CurrentStats.maxHealth;
     }
 }

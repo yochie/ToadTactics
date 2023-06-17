@@ -1,4 +1,4 @@
-﻿public struct CharacterStats
+﻿public readonly struct CharacterStats
 {
     public readonly int maxHealth;
     public readonly int armor;
