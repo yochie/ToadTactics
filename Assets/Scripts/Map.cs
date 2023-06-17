@@ -177,7 +177,7 @@ public class Map : NetworkBehaviour
                 {
                     if (UnityEngine.Random.Range(1, 100) <= this.obstacleSpawnChance)
                     {
-                        Debug.Log("Spawning tree");
+                        //Debug.Log("Spawning tree");
                         GameObject tree = Instantiate(this.treePrefab, h.transform.position, Quaternion.identity);
                         NetworkServer.Spawn(tree);
                         h.holdsObstacle = ObstacleType.tree;
@@ -260,7 +260,7 @@ public class Map : NetworkBehaviour
         hoveredHex.HexColor = this.HEX_HOVER_COLOR;
         if (this.SelectedHex != null)
         {
-            Debug.Log(this.HoveredHex.coordinates);
+            //Debug.Log(this.HoveredHex.coordinates);
 
             hoveredHex.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
             hoveredHex.ShowLabel();
@@ -441,11 +441,11 @@ public class Map : NetworkBehaviour
         }        
         PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithPrefabID];
 
-        Debug.Log(source.holdsCharacterWithPrefabID);
-        Debug.Log(GameController.Singleton.playerCharacters.Count); ;
-        Debug.Log(toMove);
-        Debug.Log(toMove.gameObject);
-        Debug.Log(dest.transform.position);
+        //Debug.Log(source.holdsCharacterWithPrefabID);
+        //Debug.Log(GameController.Singleton.playerCharacters.Count); ;
+        //Debug.Log(toMove);
+        //Debug.Log(toMove.gameObject);
+        //Debug.Log(dest.transform.position);
 
         dest.holdsCharacterWithPrefabID = source.holdsCharacterWithPrefabID;
         source.holdsCharacterWithPrefabID = -1;

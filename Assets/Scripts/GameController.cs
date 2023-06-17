@@ -94,7 +94,7 @@ public class GameController : NetworkBehaviour
         {
             case SyncIDictionary<float, int>.Operation.OP_ADD:
                 // entry added
-                Debug.LogFormat("Adding {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
+                //Debug.LogFormat("Adding {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
                 GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.turnOrderBar.transform);
                 turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
                 this.UpdateTurnOrderSlotsUI();
@@ -106,12 +106,12 @@ public class GameController : NetworkBehaviour
 
             case SyncIDictionary<float, int>.Operation.OP_REMOVE:
                 // entry removed
-                Debug.LogFormat("Removing {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
+                //Debug.LogFormat("Removing {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
                 foreach (TurnOrderSlotUI currentSlot in turnOrderSlots)
                 {
                     if (currentSlot.holdsPrefabWithIndex == value)
                     {
-                        Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
+                        //Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
                         this.turnOrderSlots.Remove(currentSlot);
                         Destroy(currentSlot.gameObject);
                         break;
@@ -129,7 +129,7 @@ public class GameController : NetworkBehaviour
     //callback for characterTurnOrderIndex
     private void OnCharacterTurnChanged(int prevTurnIndex, int newTurnIndex)
     {
-        Debug.Log("OnCharacterTurnChanged");
+        //Debug.Log("OnCharacterTurnChanged");
 
         //finds prefab ID for character whose turn it is
         int newTurnCharacterId = this.PrefabIdForPlayingCharacter();
@@ -141,7 +141,7 @@ public class GameController : NetworkBehaviour
             i++;
             if (slot.holdsPrefabWithIndex == newTurnCharacterId)
             {
-                Debug.Log("Highlighting slot");
+                //Debug.Log("Highlighting slot");
                 slot.HighlightAndLabel(i);
             }
             else
@@ -155,7 +155,7 @@ public class GameController : NetworkBehaviour
     //used to update UI from callback
     private void UpdateTurnOrderSlotsUI()
     {
-        Debug.Log("Updating turnOrderSlots");
+        //Debug.Log("Updating turnOrderSlots");
         int i = 0;
         foreach (float initiative in this.turnOrderSortedPrefabIDs.Keys)
         {
@@ -187,13 +187,13 @@ public class GameController : NetworkBehaviour
         {
             //display "Its your turn" msg
 
-            Debug.Log("Its your turn");
+            //Debug.Log("Its your turn");
             this.endTurnButton.SetActive(true);
         }
         else
         {
             //display "Waiting for other player" msg
-            Debug.Log("Waiting for other player to end their turn.");
+            //Debug.Log("Waiting for other player to end their turn.");
             this.endTurnButton.SetActive(false);
 
         }
@@ -207,18 +207,18 @@ public class GameController : NetworkBehaviour
         {
             case SyncDictionary<int, uint>.Operation.OP_ADD:
                 // entry added
-                Debug.Log("Callback for character being added to Gamecontroller main list has been called.");
-                Debug.LogFormat("Adding character with key {0}", key);
+                //Debug.Log("Callback for character being added to Gamecontroller main list has been called.");
+                //Debug.LogFormat("Adding character with key {0}", key);
                 this.playerCharacters[key] = null;
 
                 if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
                 {
-                    Debug.LogFormat("Actually adding character with key {0}", key);
+                    //Debug.LogFormat("Actually adding character with key {0}", key);
                     this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
                 }
                 else
                 {
-                    Debug.LogFormat("Couldnt find character with key {0}, calling coroutine", key);
+                    //Debug.LogFormat("Couldnt find character with key {0}, calling coroutine", key);
 
                     StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
                 }
@@ -244,7 +244,7 @@ public class GameController : NetworkBehaviour
             yield return null;
             if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
             {
-                Debug.LogFormat("Actually adding character with key {0} from coroutine", key);
+                //Debug.LogFormat("Actually adding character with key {0} from coroutine", key);
 
                 this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
             }
@@ -380,7 +380,7 @@ public class GameController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void ResetCharacterTurn()
     {
-        Debug.Log("Resetting turn data");
+        Debug.Log("Resetting turn");
         this.characterTurnOrderIndex = 0;
         this.playerTurn = 0;
 

@@ -14,7 +14,7 @@ public class MapOutline : NetworkBehaviour
     [Server]
     public void DeleteHexesOutside()
     {
-        Debug.Log("Deleting hexes outside outline");
+        //Debug.Log("Deleting hexes outside outline");
         outlineCollider = this.GetComponent<Collider2D>();
         List<Collider2D> results = new();
         ContactFilter2D filter = new ContactFilter2D().NoFilter();
