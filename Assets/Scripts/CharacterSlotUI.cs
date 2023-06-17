@@ -9,13 +9,22 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Vector3 startPosition;
     public int HoldsCharacterWithPrefabID { get; set; }
 
+    public bool hasBeenPlacedOnBoard = false;
+
     public bool IsDraggable {
         get {
             bool toReturn = false;
             switch (GameController.Singleton.currentGameMode)
             {
                 case GameMode.characterPlacement:
-                    toReturn = GameController.Singleton.IsItMyClientsTurn();
+                    if (GameController.Singleton.IsItMyClientsTurn() &&
+                        !this.hasBeenPlacedOnBoard)
+                    {
+                        toReturn = true;
+                    } else
+                    {
+                        toReturn = false;
+                    }
                     break;
                 case GameMode.gameplay:
                     toReturn = false;

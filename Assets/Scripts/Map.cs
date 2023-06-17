@@ -483,6 +483,21 @@ public class Map : NetworkBehaviour
         destinationHex.holdsCharacterWithPrefabID = characterPrefabID;
 
         Map.Singleton.RpcPlaceChar(newChar, destinationWorldPos);
+        this.markCharacterSlotAsPlaced(sender, characterPrefabID);
+
+        GameController.Singleton.EndTurn();
+    }
+
+    [TargetRpc]
+    public void markCharacterSlotAsPlaced(NetworkConnectionToClient target, int characterPrefabID)
+    {
+        foreach (CharacterSlotUI slot in GameController.Singleton.characterSlotsUI)
+        {
+            if(slot.HoldsCharacterWithPrefabID == characterPrefabID)
+            {
+                slot.hasBeenPlacedOnBoard = true;
+            }
+        }
     }
 
     [ClientRpc]

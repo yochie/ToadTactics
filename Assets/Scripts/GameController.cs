@@ -15,6 +15,7 @@ public class GameController : NetworkBehaviour
     public PlayerController LocalPlayer { get; set; }
 
     //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
+    //todo : move to playerController and init on local player start only
     public List<CharacterSlotUI> characterSlotsUI = new();
 
     //maps prefab indexes to player indexes
@@ -337,19 +338,36 @@ public class GameController : NetworkBehaviour
     }
 
     //modifies syncvars currentTurnPlayer and characterTurnOrderIndex
-    [Command(requiresAuthority = false)]
-    public void CmdEndTurn()
+    [Server]
+    public void EndTurn()
     {
-        if (this.currentGameMode == GameMode.draft ||
-            this.currentGameMode == GameMode.characterPlacement ||
-            this.currentGameMode == GameMode.treasureDraft ||
-            this.currentGameMode == GameMode.treasureEquip)
+        switch (this.currentGameMode)
         {
-            this.SwapPlayerTurn();
-        }
-        else if (this.currentGameMode == GameMode.gameplay)
-        {
-            this.NextCharacterTurn();
+            case GameMode.draft:
+                this.SwapPlayerTurn();
+                break;
+            case GameMode.characterPlacement:
+                //used to make sure 
+                if (!AllHisCharactersAreOnBoard(this.OtherPlayer(playerTurn)))
+                {
+                    this.SwapPlayerTurn();
+                }
+
+                if (AllCharactersAreOnBoard())
+                {
+                    this.currentGameMode = GameMode.gameplay;
+                    this.ResetCharacterTurn();
+                }
+                break;
+            case GameMode.gameplay:
+                this.NextCharacterTurn();
+                break;
+            case GameMode.treasureDraft:
+                this.SwapPlayerTurn();
+                break;
+            case GameMode.treasureEquip:
+                this.SwapPlayerTurn();
+                break;
         }
     }
 
@@ -417,9 +435,9 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    public bool DoesHeOwnThisCharacter(int playerIndex, int prefabID)
+    public bool DoesHeOwnThisCharacter(int playerID, int prefabID)
     {
-        if (this.characterOwners[prefabID] == playerIndex)
+        if (this.characterOwners[prefabID] == playerID)
         {
             return true;
         }
@@ -427,6 +445,34 @@ public class GameController : NetworkBehaviour
         {
             return false;
         }
+    }
+
+    public bool AllCharactersAreOnBoard() { 
+        foreach (int characterPrefabID in this.turnOrderSortedPrefabIDs.Values)
+        {
+            if (!this.playerCharacters.ContainsKey(characterPrefabID))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public bool IsThisCharacterPlacedOnBoard(int characterPrefabID)
+    {
+        return this.playerCharacters.ContainsKey(characterPrefabID);
+    }
+
+    public bool AllHisCharactersAreOnBoard(int playerID) {
+        foreach (int characterPrefabID in this.turnOrderSortedPrefabIDs.Values)
+        {
+            if (DoesHeOwnThisCharacter(playerID, characterPrefabID) &&
+                !IsThisCharacterPlacedOnBoard(characterPrefabID))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private int PrefabIdForPlayingCharacter(int playingCharacterIndex = -1)
@@ -448,6 +494,18 @@ public class GameController : NetworkBehaviour
         }
 
         return -1;
+    }
+
+    private int OtherPlayer (int playerID)
+    {
+        if (playerID == 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
 
