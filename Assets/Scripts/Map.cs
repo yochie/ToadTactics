@@ -63,6 +63,15 @@ public class Map : NetworkBehaviour
         Singleton = this;
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        hexGridNetIds.Callback += OnHexGridNetIdsChange;
+        // Process initial SyncDictionary payload
+        foreach (KeyValuePair<Vector2Int, uint> kvp in hexGridNetIds)
+            OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
+    }
+
     public void Initialize()
     {
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
@@ -179,17 +188,6 @@ public class Map : NetworkBehaviour
         }
     }
 
-    public Hex GetHex(int x, int y)
-    {
-        if (this.hexGrid.TryGetValue(new Vector2Int(x, y), out Hex toReturn))
-        {
-            return toReturn;
-        } else
-        {
-            return null;
-        }        
-    }
-
     [Server]
     private void SetHex(int x, int y, Hex h)
     {
@@ -202,6 +200,18 @@ public class Map : NetworkBehaviour
         Hex toDelete = GetHex(x, y);
         toDelete.Delete();
         this.hexGrid[new Vector2Int(x, y)] = null;
+    }
+
+    public Hex GetHex(int x, int y)
+    {
+        if (this.hexGrid.TryGetValue(new Vector2Int(x, y), out Hex toReturn))
+        {
+            return toReturn;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public void ClickHex(Hex clickedHex)
@@ -410,6 +420,7 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
+
     [Command(requiresAuthority = false)]
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
@@ -444,19 +455,40 @@ public class Map : NetworkBehaviour
 
     }
 
+    [Command(requiresAuthority = false)]
+    public void CmdCreateCharOnBoard(int characterPrefabID, Hex destinationHex, NetworkConnectionToClient sender = null)
+    {
+        int ownerPlayerIndex = sender.identity.gameObject.GetComponent<PlayerController>().playerIndex;
+        //validate destination
+        if (destinationHex == null ||
+            !destinationHex.isStartingZone ||
+            destinationHex.startZoneForPlayerIndex != ownerPlayerIndex ||
+            destinationHex.holdsCharacterWithPrefabID != -1)
+        {
+            Debug.Log("Invalid character destination");
+            return;
+        }
+
+        GameObject characterPrefab = GameController.Singleton.AllPlayerCharPrefabs[characterPrefabID];
+        string prefabClassName = characterPrefab.GetComponent<PlayerCharacter>().className;
+        Vector3 destinationWorldPos = destinationHex.transform.position;
+        GameObject newChar =
+            Instantiate(characterPrefab, destinationWorldPos, Quaternion.identity);
+        //TODO : Create other classes and set their name in prefabs
+        newChar.GetComponent<PlayerCharacter>().Initialize(GameController.AllClasses[prefabClassName]);
+        NetworkServer.Spawn(newChar, connectionToClient);
+        GameController.Singleton.playerCharactersNetIDs.Add(characterPrefabID, newChar.GetComponent<NetworkIdentity>().netId);
+
+        //update Hex state, synced to clients by syncvar
+        destinationHex.holdsCharacterWithPrefabID = characterPrefabID;
+
+        Map.Singleton.RpcPlaceChar(newChar, destinationWorldPos);
+    }
+
     [ClientRpc]
     public void RpcPlaceChar(GameObject character, Vector3 position)
     {
         character.transform.position = position + Map.characterOffsetOnMap;
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        hexGridNetIds.Callback += OnHexGridNetIdsChange;
-        // Process initial SyncDictionary payload
-        foreach (KeyValuePair<Vector2Int, uint> kvp in hexGridNetIds)
-            OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
     }
 
     [Client]

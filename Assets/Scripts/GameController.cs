@@ -43,7 +43,7 @@ public class GameController : NetworkBehaviour
     public int playerTurn = 0;
 
     [SyncVar]
-    public GameMode currentGameMode = GameMode.characterPlacement;
+    public GameMode currentGameMode;
 
     public GameObject endTurnButton;
 
@@ -57,6 +57,8 @@ public class GameController : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+
+        this.currentGameMode = GameMode.characterPlacement;
 
         this.playerCharactersNetIDs.Callback += OnPlayerCharactersNetIDsChange;
         // Process initial SyncDictionary payload
@@ -379,6 +381,18 @@ public class GameController : NetworkBehaviour
         {
             this.SwapPlayerTurn();
         }
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdAddCharToTurnOrder(int ownerPlayerIndex, int initiative, int prefabID)
+    {
+        if (Utility.DictContainsValue(GameController.Singleton.turnOrderSortedPrefabIDs, prefabID))
+        {
+            //Todo add support for this
+            Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
+            return;
+        }
+        GameController.Singleton.AddMyChar(ownerPlayerIndex, prefabID, initiative);
     }
 
     public bool IsItMyClientsTurn()

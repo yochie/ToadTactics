@@ -67,7 +67,7 @@ public class PlayerController : NetworkBehaviour
 
             slot.HoldsCharacterWithPrefabID = prefabIndex;
 
-            CmdAddCharToTurnOrder(GameController.AllClasses[newChar.className].charStats.initiative, prefabIndex);
+            GameController.Singleton.CmdAddCharToTurnOrder(this.playerIndex, GameController.AllClasses[newChar.className].charStats.initiative, prefabIndex);
         }
     }
 
@@ -76,7 +76,6 @@ public class PlayerController : NetworkBehaviour
         base.OnStopLocalPlayer();
 
     }
-
    
     public override void OnStopServer()
     {
@@ -87,49 +86,5 @@ public class PlayerController : NetworkBehaviour
         GameController.Singleton.RemoveAllMyChars(this.playerIndex);
         GameController.Singleton.ResetCharacterTurn();
 
-    }
-
-    [Command]
-    private void CmdAddCharToTurnOrder(int initiative, int prefabIndex)
-    {
-        if (Utility.DictContainsValue(GameController.Singleton.turnOrderSortedPrefabIDs, prefabIndex))
-        {
-            //Todo add support for this
-            Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
-            return;
-        }
-        GameController.Singleton.AddMyChar(this.playerIndex, prefabIndex, initiative);
-    }
-
-    [Command]
-    public void CmdCreateCharOnBoard(int characterPrefabID, Hex destinationHex)
-    {
-        //validate destination
-        if (destinationHex == null ||
-            !destinationHex.isStartingZone ||
-            destinationHex.startZoneForPlayerIndex != this.playerIndex ||
-            destinationHex.holdsCharacterWithPrefabID != -1)
-        {
-            Debug.Log("Invalid character destination");
-            return;
-        }
-
-        GameObject characterPrefab = GameController.Singleton.AllPlayerCharPrefabs[characterPrefabID];
-        string prefabClassName = characterPrefab.GetComponent<PlayerCharacter>().className;
-        Vector3 destinationWorldPos = destinationHex.transform.position;
-        GameObject newChar = 
-            Instantiate(characterPrefab, destinationWorldPos, Quaternion.identity);
-        //TODO : Create other classes and set their name in prefabs
-        newChar.GetComponent<PlayerCharacter>().Initialize(GameController.AllClasses[prefabClassName]);
-        NetworkServer.Spawn(newChar, connectionToClient);
-        GameController.Singleton.playerCharactersNetIDs.Add(characterPrefabID, newChar.GetComponent<NetworkIdentity>().netId);
-
-        //update Hex state, synced to clients by syncvar
-        destinationHex.holdsCharacterWithPrefabID = characterPrefabID;
-
-        //this.gc.map.PlacePlayerChar();
-
-
-        Map.Singleton.RpcPlaceChar(newChar, destinationWorldPos);
     }
 }

@@ -20,6 +20,12 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 case GameMode.gameplay:
                     toReturn = false;
                     break;
+                case GameMode.draft:
+                    break;
+                case GameMode.treasureDraft:
+                    break;
+                case GameMode.treasureEquip:
+                    break;
             }
             return toReturn;
         }
@@ -43,7 +49,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             this.transform.position = this.startPosition;
             Hex destinationHex = Map.Singleton.HoveredHex;
             if (destinationHex == null) { return; }
-            GameController.Singleton.LocalPlayer.CmdCreateCharOnBoard(this.HoldsCharacterWithPrefabID, destinationHex);
+            Map.Singleton.CmdCreateCharOnBoard(this.HoldsCharacterWithPrefabID, destinationHex);
         }
     }
 }
