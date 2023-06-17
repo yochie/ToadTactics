@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -82,9 +83,8 @@ public class PlayerController : NetworkBehaviour
         base.OnStopServer();
 
         //removes clients player data when he exits as long as server is still running
-        if (!NetworkServer.active || GameController.Singleton.LocalPlayer == this) return;
-        GameController.Singleton.RemoveAllMyChars(this.playerIndex);
-        GameController.Singleton.ResetCharacterTurn();
 
+        if (!NetworkServer.active || GameController.Singleton.LocalPlayer == this) return;
+        NetworkManager.singleton.StopHost();
     }
 }

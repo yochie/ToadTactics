@@ -96,7 +96,7 @@ public class GameController : NetworkBehaviour
         //set initial turn UI for character turn 0
         OnCharacterTurnChanged(-1, 0);
 
-        ResetCharacterTurn();
+        //this.InitCharacterTurns();
     }
 
     //callback for turnOrderSortedPrefabIDs
@@ -373,8 +373,7 @@ public class GameController : NetworkBehaviour
 
                 if (AllCharactersAreOnBoard())
                 {
-                    this.SetPhase(GameMode.gameplay);
-                    this.ResetCharacterTurn();
+                    this.SetPhase(GameMode.gameplay);                    
                 }
                 break;
             case GameMode.gameplay:
@@ -393,10 +392,17 @@ public class GameController : NetworkBehaviour
     private void SetPhase(GameMode phase)
     {
         this.currentGameMode = phase;
+
+        switch(phase)
+        {
+            case GameMode.gameplay:
+                this.InitCharacterTurns();
+                break;
+        }
     }
 
     [Command(requiresAuthority = false)]
-    public void ResetCharacterTurn()
+    public void InitCharacterTurns()
     {
         Debug.Log("Resetting turn");
         this.characterTurnOrderIndex = 0;
