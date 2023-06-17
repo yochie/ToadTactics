@@ -26,12 +26,12 @@ public class GameController : NetworkBehaviour
 
     public List<TurnOrderSlotUI> turnOrderSlots = new();
 
-    //maps prefabid to player characters
+    //maps prefabID to player characters
     public readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
     public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
 
     //maps character initiative to prefab indexes
-    public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIds = new SyncIDictionary<float, int>(new SortedList<float, int>());
+    public readonly SyncIDictionary<float, int> turnOrderSortedPrefabIDs = new SyncIDictionary<float, int>(new SortedList<float, int>());
 
     //stores index of turn in turnOrderSortedPrefabIds
     //NOT the initiative used as keys, rather the index in the ordered list
@@ -58,13 +58,13 @@ public class GameController : NetworkBehaviour
     {
         base.OnStartClient();
 
-        this.playerCharactersNetIDs.Callback += OnAllPlayerCharacterIdsChange;
+        this.playerCharactersNetIDs.Callback += OnPlayerCharactersNetIDsChange;
         // Process initial SyncDictionary payload
         foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
-            OnAllPlayerCharacterIdsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
+            OnPlayerCharactersNetIDsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
-        turnOrderSortedPrefabIds.Callback += OnTurnOrderChanged;
-        foreach (KeyValuePair<float, int> kvp in turnOrderSortedPrefabIds)
+        turnOrderSortedPrefabIDs.Callback += OnTurnOrderChanged;
+        foreach (KeyValuePair<float, int> kvp in turnOrderSortedPrefabIDs)
             OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
         GameController.DefineClasses();
@@ -72,55 +72,6 @@ public class GameController : NetworkBehaviour
         this.map.Initialize();
     }
 
-    [Client]
-    private void OnAllPlayerCharacterIdsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netidArg)
-    {
-        switch (op)
-        {
-            case SyncDictionary<int, uint>.Operation.OP_ADD:
-                // entry added
-                Debug.Log("Callback for character being added to Gamecontroller main list has been called.");
-                Debug.LogFormat("Adding character with key {0}", key);
-                this.playerCharacters[key] = null;
-
-                if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
-                {
-                    Debug.LogFormat("Actually adding character with key {0}", key);
-                    this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
-                }
-                else
-                {
-                    Debug.LogFormat("Couldnt find character with key {0}, calling coroutine", key);
-
-                    StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
-                }
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_SET:
-                // entry changed
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_REMOVE:
-                // entry removed
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_CLEAR:
-                // Dictionary was cleared
-                break;
-        }
-    }
-
-    [Client]
-    private IEnumerator PlayerFromNetIDCoroutine(int key, uint netIdArg)
-    {
-        while (this.playerCharacters[key] == null)
-        {
-            yield return null;
-            if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
-            {
-                Debug.LogFormat("Actually adding character with key {0} from coroutine", key);
-
-                this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
-            }
-        }
-    }
 
     public void Start()
     {
@@ -133,7 +84,7 @@ public class GameController : NetworkBehaviour
         ResetCharacterTurn();
     }
 
-    //turnOrderSortedPrefabIds callback
+    //callback for turnOrderSortedPrefabIDs
     private void OnTurnOrderChanged(SyncIDictionary<float, int>.Operation op, float key, int value)
     {
         switch (op)
@@ -172,93 +123,6 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    //called by commands to modify character lists
-    [Server]
-    internal void AddMyChar(int playerIndex, int prefabIndex, int initiative)
-    {
-        this.characterOwners.Add(prefabIndex, playerIndex);
-
-        //throws callback to update UI
-        this.turnOrderSortedPrefabIds.Add(initiative, prefabIndex);
-    }
-
-    //called by commands to modify turnOrderSortedPrefabIds
-    [Server]
-    internal void RemoveAllMyChars(int playerIndex)
-    {
-        List<float> ownedToRemove = new();
-        foreach (int characterPrefabId in this.characterOwners.Keys)
-        {
-            if (this.characterOwners[characterPrefabId] == playerIndex)
-            {
-                List<float> turnToRemove = new();
-                foreach (float initiative in this.turnOrderSortedPrefabIds.Keys)
-                {
-                    if (this.turnOrderSortedPrefabIds[initiative] == characterPrefabId)
-                    {
-                        turnToRemove.Add(initiative);
-                    }
-                }
-                foreach (float toRemove in turnToRemove)
-                {
-                    this.turnOrderSortedPrefabIds.Remove(toRemove);
-                }
-
-                ownedToRemove.Add(characterPrefabId);
-            }
-        }
-
-        foreach (int toRemove in ownedToRemove)
-        {
-            this.characterOwners.Remove(toRemove);
-        }
-    }
-
-    //used to update UI from callback
-    private void UpdateTurnOrderSlotsUI()
-    {
-        Debug.Log("Updating turnOrderSlots");
-        int i = 0;
-        foreach (float initiative in this.turnOrderSortedPrefabIds.Keys)
-        {
-            //stops joining clients from trying to fill slots that weren't created yet
-            if (i >= this.turnOrderSlots.Count) return;
-
-            TurnOrderSlotUI slot = this.turnOrderSlots[i];
-            Image slotImage = slot.GetComponent<Image>();
-            int prefabId = this.turnOrderSortedPrefabIds[initiative];
-            slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
-            slot.holdsPrefabWithIndex = prefabId;
-
-            if (this.characterTurnOrderIndex == i)
-            {
-                slot.HighlightAndLabel(i + 1);
-            }
-            else
-            {
-                slot.UnhighlightAndLabel(i + 1);
-            }
-            i++;
-        }
-    }
-
-    //modifies syncvars currentTurnPlayer and characterTurnOrderIndex
-    [Command(requiresAuthority = false)]
-    public void CmdEndTurn()
-    {
-        if (this.currentGameMode == GameMode.draft ||
-            this.currentGameMode == GameMode.characterPlacement ||
-            this.currentGameMode == GameMode.treasureDraft ||
-            this.currentGameMode == GameMode.treasureEquip)
-        {
-            this.SwapPlayerTurn();
-        }
-        else if (this.currentGameMode == GameMode.gameplay)
-        {
-            this.NextCharacterTurn();
-        }
-    }
-
     //callback for characterTurnOrderIndex
     private void OnCharacterTurnChanged(int prevTurnIndex, int newTurnIndex)
     {
@@ -284,6 +148,34 @@ public class GameController : NetworkBehaviour
             }
         }
     }
+   
+    //used to update UI from callback
+    private void UpdateTurnOrderSlotsUI()
+    {
+        Debug.Log("Updating turnOrderSlots");
+        int i = 0;
+        foreach (float initiative in this.turnOrderSortedPrefabIDs.Keys)
+        {
+            //stops joining clients from trying to fill slots that weren't created yet
+            if (i >= this.turnOrderSlots.Count) return;
+
+            TurnOrderSlotUI slot = this.turnOrderSlots[i];
+            Image slotImage = slot.GetComponent<Image>();
+            int prefabId = this.turnOrderSortedPrefabIDs[initiative];
+            slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
+            slot.holdsPrefabWithIndex = prefabId;
+
+            if (this.characterTurnOrderIndex == i)
+            {
+                slot.HighlightAndLabel(i + 1);
+            }
+            else
+            {
+                slot.UnhighlightAndLabel(i + 1);
+            }
+            i++;
+        }
+    }
 
     //callback for currentTurnPlayer
     private void OnPlayerTurnChanged(int _, int newPlayer)
@@ -304,18 +196,112 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    //callback for playerCharactersNetIDs
+    [Client]
+    private void OnPlayerCharactersNetIDsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netidArg)
+    {
+        switch (op)
+        {
+            case SyncDictionary<int, uint>.Operation.OP_ADD:
+                // entry added
+                Debug.Log("Callback for character being added to Gamecontroller main list has been called.");
+                Debug.LogFormat("Adding character with key {0}", key);
+                this.playerCharacters[key] = null;
+
+                if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
+                {
+                    Debug.LogFormat("Actually adding character with key {0}", key);
+                    this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
+                }
+                else
+                {
+                    Debug.LogFormat("Couldnt find character with key {0}, calling coroutine", key);
+
+                    StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
+                }
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_SET:
+                // entry changed
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_REMOVE:
+                // entry removed
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_CLEAR:
+                // Dictionary was cleared
+                break;
+        }
+    }
+
+    //coroutine for finishing playerCharacters dict sync
+    [Client]
+    private IEnumerator PlayerFromNetIDCoroutine(int key, uint netIdArg)
+    {
+        while (this.playerCharacters[key] == null)
+        {
+            yield return null;
+            if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
+            {
+                Debug.LogFormat("Actually adding character with key {0} from coroutine", key);
+
+                this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+            }
+        }
+    }
+
+    //called by commands to modify character lists
+    [Server]
+    internal void AddMyChar(int playerIndex, int prefabIndex, int initiative)
+    {
+        this.characterOwners.Add(prefabIndex, playerIndex);
+
+        //throws callback to update UI
+        this.turnOrderSortedPrefabIDs.Add(initiative, prefabIndex);
+    }
+
+    //called by commands to modify turnOrderSortedPrefabIds
+    [Server]
+    internal void RemoveAllMyChars(int playerIndex)
+    {
+        List<float> ownedToRemove = new();
+        foreach (int characterPrefabId in this.characterOwners.Keys)
+        {
+            if (this.characterOwners[characterPrefabId] == playerIndex)
+            {
+                List<float> turnToRemove = new();
+                foreach (float initiative in this.turnOrderSortedPrefabIDs.Keys)
+                {
+                    if (this.turnOrderSortedPrefabIDs[initiative] == characterPrefabId)
+                    {
+                        turnToRemove.Add(initiative);
+                    }
+                }
+                foreach (float toRemove in turnToRemove)
+                {
+                    this.turnOrderSortedPrefabIDs.Remove(toRemove);
+                }
+
+                ownedToRemove.Add(characterPrefabId);
+            }
+        }
+
+        foreach (int toRemove in ownedToRemove)
+        {
+            this.characterOwners.Remove(toRemove);
+        }
+    }
+
     [Server]
     private void NextCharacterTurn()
     {
         //loops through turn order        
         this.characterTurnOrderIndex++;
-        if (this.characterTurnOrderIndex >= this.turnOrderSortedPrefabIds.Count)
+        if (this.characterTurnOrderIndex >= this.turnOrderSortedPrefabIDs.Count)
             this.characterTurnOrderIndex = 0;
 
         //finds character prefab id for the next turn so that we can check who owns it
         int currentCharacterPrefab = -1;
         int i = 0;
-        foreach (int prefab in this.turnOrderSortedPrefabIds.Values)
+        foreach (int prefab in this.turnOrderSortedPrefabIDs.Values)
         {
             if (i == this.characterTurnOrderIndex)
             {
@@ -348,6 +334,23 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    //modifies syncvars currentTurnPlayer and characterTurnOrderIndex
+    [Command(requiresAuthority = false)]
+    public void CmdEndTurn()
+    {
+        if (this.currentGameMode == GameMode.draft ||
+            this.currentGameMode == GameMode.characterPlacement ||
+            this.currentGameMode == GameMode.treasureDraft ||
+            this.currentGameMode == GameMode.treasureEquip)
+        {
+            this.SwapPlayerTurn();
+        }
+        else if (this.currentGameMode == GameMode.gameplay)
+        {
+            this.NextCharacterTurn();
+        }
+    }
+
     [Command(requiresAuthority = false)]
     public void ResetCharacterTurn()
     {
@@ -358,7 +361,7 @@ public class GameController : NetworkBehaviour
         //finds character prefab id for the next turn so that we can check who owns it
         int currentCharacterPrefab = -1;
         int i = 0;
-        foreach (int prefab in this.turnOrderSortedPrefabIds.Values)
+        foreach (int prefab in this.turnOrderSortedPrefabIDs.Values)
         {
             if (i == this.characterTurnOrderIndex)
             {
@@ -417,7 +420,7 @@ public class GameController : NetworkBehaviour
         //finds prefab ID for character whose turn it is
         int currentyPlaying = (playingCharacterIndex == -1 ? this.characterTurnOrderIndex : playingCharacterIndex);
         int i = 0;
-        foreach (int prefabId in this.turnOrderSortedPrefabIds.Values)
+        foreach (int prefabId in this.turnOrderSortedPrefabIDs.Values)
         {
             if (i == currentyPlaying)
             {

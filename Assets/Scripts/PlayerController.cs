@@ -92,7 +92,7 @@ public class PlayerController : NetworkBehaviour
     [Command]
     private void CmdAddCharToTurnOrder(int initiative, int prefabIndex)
     {
-        if (Utility.DictContainsValue(GameController.Singleton.turnOrderSortedPrefabIds, prefabIndex))
+        if (Utility.DictContainsValue(GameController.Singleton.turnOrderSortedPrefabIDs, prefabIndex))
         {
             //Todo add support for this
             Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
