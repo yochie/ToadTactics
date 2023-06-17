@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public static class Utility
 {
@@ -17,5 +18,15 @@ public static class Utility
         }
 
         return false;
+    }
+
+    internal static Color SetHighlight(Color oldColor, bool state)
+    {
+        Color highlightOff = oldColor;
+        Color highlightOn = oldColor;
+        highlightOn.a = 0.5f;
+        highlightOff.a = 0f;
+        return state ? highlightOn : highlightOff;
+
     }
 }

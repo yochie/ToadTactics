@@ -28,11 +28,7 @@ public class TurnOrderSlotUI : MonoBehaviour
         {
             isHighlighted = value;
             Color oldColor = this.highlightImage.color;
-            Color invisibleColor = oldColor;
-            Color transparentColor = oldColor;
-            transparentColor.a = 0.5f;
-            invisibleColor.a = 0f;
-            this.highlightImage.color = value ? transparentColor : invisibleColor;
+            this.highlightImage.color = Utility.SetHighlight(oldColor, value);
         }
     }
 

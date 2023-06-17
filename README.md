@@ -1,7 +1,7 @@
 # Installation
 
 * Installer unity hub : https://unity.com/download
-* Depuis unity hub, installer la version de unity 2021.3.26f1
+* Depuis unity hub, installer la version de unity 2022.3.1f1
 * Créer un compte https://github.com/ et me demander l'accès à notre repo github
 * Installer https://gitforwindows.org/ 
 * Installer https://github.com/git-lfs/git-lfs/releases

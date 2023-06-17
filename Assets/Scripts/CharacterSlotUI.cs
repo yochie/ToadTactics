@@ -3,13 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Mirror;
+using UnityEngine.UI;
 
 public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private Vector3 startPosition;
     public int HoldsCharacterWithPrefabID { get; set; }
 
-    public bool hasBeenPlacedOnBoard = false;
+    private bool hasBeenPlacedOnBoard = false;
+    public bool HasBeenPlacedOnBoard
+    {
+        get { return this.hasBeenPlacedOnBoard; }
+        set { 
+            hasBeenPlacedOnBoard = value;
+            this.IsHighlighted = !value;
+        }
+    }
+
+    private Image highlightImage;
+    private bool isHighlighted = false;
+    public bool IsHighlighted
+    {
+        get { return isHighlighted; }
+        set
+        {
+            isHighlighted = value;
+            Color oldColor = this.highlightImage.color;
+            this.highlightImage.color = Utility.SetHighlight(oldColor, value); ;
+        }
+    }
 
     public bool IsDraggable {
         get {
@@ -18,7 +40,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             {
                 case GameMode.characterPlacement:
                     if (GameController.Singleton.IsItMyClientsTurn() &&
-                        !this.hasBeenPlacedOnBoard)
+                        !this.HasBeenPlacedOnBoard)
                     {
                         toReturn = true;
                     } else
@@ -37,6 +59,17 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     break;
             }
             return toReturn;
+        }
+    }
+
+    public void Awake()
+    {
+        foreach (Image child in this.GetComponentsInChildren<Image>())
+        {
+            if (child.gameObject.GetInstanceID() != this.gameObject.GetInstanceID())
+            {
+                this.highlightImage = child;
+            }
         }
     }
 

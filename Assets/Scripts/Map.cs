@@ -495,7 +495,7 @@ public class Map : NetworkBehaviour
         {
             if(slot.HoldsCharacterWithPrefabID == characterPrefabID)
             {
-                slot.hasBeenPlacedOnBoard = true;
+                slot.HasBeenPlacedOnBoard = true;
             }
         }
     }
