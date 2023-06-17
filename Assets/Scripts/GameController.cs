@@ -337,6 +337,12 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    [Command(requiresAuthority = false)]
+    public void CmdEndTurn()
+    {
+        this.EndTurn();
+    }
+
     //modifies syncvars currentTurnPlayer and characterTurnOrderIndex
     [Server]
     public void EndTurn()
