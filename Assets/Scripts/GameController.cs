@@ -6,9 +6,12 @@ using System;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using TMPro;
 
 public class GameController : NetworkBehaviour
 {
+    [SerializeField]
+    private TextMeshProUGUI phaseLabel;
     public static GameController Singleton { get; private set; }
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
     public static Dictionary<string, CharacterClass> AllClasses { get; set; }
@@ -43,8 +46,13 @@ public class GameController : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlayerTurnChanged))]
     public int playerTurn = 0;
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnPhaseChanged))]
     public GameMode currentGameMode;
+
+    private void OnPhaseChanged(GameMode oldPhase, GameMode newPhase)
+    {
+        this.phaseLabel.text = newPhase.ToString();
+    }
 
     public GameObject endTurnButton;
 
@@ -59,8 +67,6 @@ public class GameController : NetworkBehaviour
     {
         base.OnStartClient();
 
-        this.currentGameMode = GameMode.characterPlacement;
-
         this.playerCharactersNetIDs.Callback += OnPlayerCharactersNetIDsChange;
         // Process initial SyncDictionary payload
         foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
@@ -73,6 +79,12 @@ public class GameController : NetworkBehaviour
         GameController.DefineClasses();
 
         this.map.Initialize();
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        this.currentGameMode = GameMode.characterPlacement;
     }
 
 
@@ -361,7 +373,7 @@ public class GameController : NetworkBehaviour
 
                 if (AllCharactersAreOnBoard())
                 {
-                    this.currentGameMode = GameMode.gameplay;
+                    this.SetPhase(GameMode.gameplay);
                     this.ResetCharacterTurn();
                 }
                 break;
@@ -375,6 +387,12 @@ public class GameController : NetworkBehaviour
                 this.SwapPlayerTurn();
                 break;
         }
+    }
+
+    [Server]
+    private void SetPhase(GameMode phase)
+    {
+        this.currentGameMode = phase;
     }
 
     [Command(requiresAuthority = false)]
