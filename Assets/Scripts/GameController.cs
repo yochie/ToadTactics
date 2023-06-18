@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-using System;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
@@ -10,6 +8,7 @@ using TMPro;
 
 public class GameController : NetworkBehaviour
 {
+    #region Editor vars
     //EDITOR
     [SerializeField]
     private TextMeshProUGUI phaseLabel;
@@ -28,19 +27,20 @@ public class GameController : NetworkBehaviour
     //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
     //todo : move to PlayerController
     public List<CharacterSlotUI> characterSlots = new();
+    #endregion
 
-
-    //STATICS
+    #region Static vars
     public static GameController Singleton { get; private set; }
     public static Dictionary<string, CharacterClass> AllClasses { get; set; }
+    #endregion 
 
-
-    //RUNTIME
+    #region Runtime vars
     public PlayerController LocalPlayer { get; set; }
     private List<TurnOrderSlotUI> turnOrderSlots = new();
+    #endregion
 
+    #region Synced vars
 
-    //SYNCVARS
     //maps prefabID to playerID
     public readonly SyncDictionary<int, int> characterOwners = new();
 
@@ -61,7 +61,9 @@ public class GameController : NetworkBehaviour
 
     [SyncVar(hook = nameof(OnGameModeChanged))]
     public GameMode currentGameMode;
+    #endregion
 
+    #region Startup
 
     private void Awake()
     {
@@ -104,6 +106,9 @@ public class GameController : NetworkBehaviour
         //this.InitCharacterTurns();
     }
 
+    #endregion
+
+    #region Callbacks
     //callback for turn order bar contents
     [Client]
     private void OnTurnOrderChanged(SyncIDictionary<float, int>.Operation op, float key, int value)
@@ -276,6 +281,9 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    #endregion
+
+    #region Commands
     //called by commands to modify character lists
     [Server]
     internal void AddMyChar(int playerIndex, int prefabIndex, int initiative)
@@ -456,6 +464,10 @@ public class GameController : NetworkBehaviour
         GameController.Singleton.AddMyChar(ownerPlayerIndex, prefabID, initiative);
     }
 
+    #endregion
+
+    #region Utility
+
     public bool IsItMyClientsTurn()
     {
         return this.LocalPlayer.playerIndex == this.playerTurn;
@@ -550,7 +562,9 @@ public class GameController : NetworkBehaviour
             return 0;
         }
     }
+    #endregion
 
+    #region Static definitions
 
     //Instantiate all classes to set their definitions here
     //TODO: find better spot to do this
@@ -854,4 +868,5 @@ public class GameController : NetworkBehaviour
             );
         GameController.AllClasses.Add(priest.className, priest);
     }
+    #endregion
 }
