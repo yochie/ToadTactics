@@ -21,7 +21,7 @@ public class TurnOrderSlotUI : MonoBehaviour
         }
     }
     private bool isHighlighted = false;
-    public bool IsHighlighted
+    private bool IsHighlighted
     {
         get { return isHighlighted;  }
         set

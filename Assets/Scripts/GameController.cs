@@ -53,11 +53,11 @@ public class GameController : NetworkBehaviour
 
     //stores index of currently playing character during gameplay phase
     [SyncVar(hook = nameof(OnTurnOrderIndexChanged))]
-    public int turnOrderIndex = 0;
+    public int turnOrderIndex;
 
     //stores currently playerID
     [SyncVar(hook = nameof(OnPlayerTurnChanged))]
-    public int playerTurn = 0;
+    public int playerTurn;
 
     [SyncVar(hook = nameof(OnGameModeChanged))]
     public GameMode currentGameMode;
@@ -91,7 +91,11 @@ public class GameController : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
+
+        //init all syncvars that aren't readonly
         this.currentGameMode = GameMode.characterPlacement;
+        this.turnOrderIndex = -1;
+        this.playerTurn = 0;
     }
 
 
@@ -101,7 +105,7 @@ public class GameController : NetworkBehaviour
             this.endTurnButton.SetActive(false);
 
         //set initial turn UI for character turn 0
-        OnTurnOrderIndexChanged(-1, 0);
+        //OnTurnOrderIndexChanged(-1, 0);
 
         //this.InitCharacterTurns();
     }
@@ -158,7 +162,7 @@ public class GameController : NetworkBehaviour
         //finds prefab ID for character whose turn it is
         int newTurnCharacterId = this.PrefabIdForPlayingCharacter();
 
-        //highlights turnOrderSlotUI for currentyl playing character
+        //highlights turnOrderSlotUI for currently playing character
         int i = 0;
         foreach (TurnOrderSlotUI slot in turnOrderSlots)
         {
@@ -529,21 +533,22 @@ public class GameController : NetworkBehaviour
         }
         return true;
     }
-
+    
+    //return -1 if no character matches turn order index
     private int PrefabIdForPlayingCharacter(int playingCharacterIndex = -1)
     {
         //finds prefab ID for character whose turn it is
-        int currentyPlaying = (playingCharacterIndex == -1 ? this.turnOrderIndex : playingCharacterIndex);
-        int i = 0;
+        int currentTurnOrderIndex = (playingCharacterIndex == -1 ? this.turnOrderIndex : playingCharacterIndex);
+        int sortedTurnOrderIndex = 0;
         foreach (int prefabId in this.sortedTurnOrder.Values)
         {
-            if (i == currentyPlaying)
+            if (sortedTurnOrderIndex == currentTurnOrderIndex)
             {
                 return prefabId;
             }
             else
             {
-                i++;
+                sortedTurnOrderIndex++;
             }
 
         }
