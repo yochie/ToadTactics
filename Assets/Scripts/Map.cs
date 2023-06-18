@@ -335,6 +335,26 @@ public class Map : NetworkBehaviour
         return (int)((Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f);
     }
 
+    public List<Hex> RangeUnobstructed(Hex start, int distance)
+    {
+        List<Hex> toReturn = new();
+
+        for (int q = -distance; q <= distance; q++)
+        {
+            for (int r = Mathf.Max(-distance, -distance - q); r <=Mathf.Min(distance, -q + distance); r++ )
+            {
+                int s = -q - r;
+                HexCoordinates destCoords = HexCoordinates.Add(start.coordinates, new HexCoordinates(q, r, start.coordinates.isFlatTop));
+                Hex destHex = Map.Singleton.GetHex(destCoords.X, destCoords.Y);
+                if (destHex != null)
+                    toReturn.Add(destHex);
+            }
+        }
+        //Debug.Log(toReturn);
+        //Debug.Log(toReturn.Count);
+        return toReturn;
+    }
+
     public List<Hex> GetHexNeighbours(Hex h)
     {
         List<Hex> toReturn = new();
@@ -488,6 +508,7 @@ public class Map : NetworkBehaviour
         GameController.Singleton.EndTurn();
     }
 
+    //update client UI to prevent placing same character twice
     [TargetRpc]
     public void markCharacterSlotAsPlaced(NetworkConnectionToClient target, int characterPrefabID)
     {
@@ -500,12 +521,14 @@ public class Map : NetworkBehaviour
         }
     }
 
+    //update all clients UI to display character
     [ClientRpc]
     public void RpcPlaceChar(GameObject character, Vector3 position)
     {
         character.transform.position = position + Map.characterOffsetOnMap;
     }
 
+    //callback for syncing hex grid dict netids
     [Client]
     void OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation op, Vector2Int key, uint netIdArg)
     {
@@ -536,6 +559,7 @@ public class Map : NetworkBehaviour
         }
     }
 
+    //coroutine to finish matching netids
     [Client]
     IEnumerator HexFromNetIdCoroutine(Vector2Int key, uint netIdArg)
     {

@@ -20,18 +20,13 @@ public class MapOutline : NetworkBehaviour
         ContactFilter2D filter = new ContactFilter2D().NoFilter();
         int collidingCount = Physics2D.OverlapCollider(this.outlineCollider, filter, results);
 
-        //foreach (Collider2D result in results)
-        //{
-        //    Debug.Log(result);
-        //}
-
         for (int x = -map.xSize + 1; x < map.xSize; x++)
         {
             for (int y = -map.ySize + 1; y < map.ySize; y++)
             {
                 Hex h = map.GetHex(x, y);
                 //Debug.Log(map + " " + x + " " + y);
-                //Debug.Log(map.GetHex(x, y));         
+                //Debug.Log(map.GetHex(x, y));
 
                 Collider2D hCollider = h.GetComponent<Collider2D>();
 

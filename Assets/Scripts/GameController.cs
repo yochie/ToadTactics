@@ -86,6 +86,8 @@ public class GameController : NetworkBehaviour
         GameController.DefineClasses();
 
         Map.Singleton.Initialize();
+        //testing
+        //Map.Singleton.RangeUnobstructed(Map.Singleton.GetHex(0, 0), 1);
     }
 
     public override void OnStartServer()
@@ -108,6 +110,8 @@ public class GameController : NetworkBehaviour
         //OnTurnOrderIndexChanged(-1, 0);
 
         //this.InitCharacterTurns();
+
+
     }
 
     #endregion

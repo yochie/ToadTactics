@@ -90,4 +90,12 @@ public readonly struct HexCoordinates : IEquatable<HexCoordinates>
         }
 
     }
+	
+	public static HexCoordinates Add(HexCoordinates h1, HexCoordinates h2)
+    {
+		if (h1.isFlatTop != h2.isFlatTop)
+			throw new Exception("Attempting to add HexCoordinates with different flat top mode");
+
+		return new HexCoordinates(h1.Q + h2.Q, h1.R + h2.R, h1.isFlatTop);    
+	}
 }
