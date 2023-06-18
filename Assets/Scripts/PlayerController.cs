@@ -81,8 +81,5 @@ public class PlayerController : NetworkBehaviour
     public override void OnStopServer()
     {
         base.OnStopServer();
-
-        //if (!NetworkServer.active || GameController.Singleton.LocalPlayer == this) return;
-        MyNetworkManager.singleton.StopHost();
     }
 }

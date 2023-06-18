@@ -20,7 +20,6 @@ public class MyNetworkManager : NetworkManager
     /// </summary>
     public override void Awake()
     {
-        if (MyNetworkManager.singleton != null) { Destroy(this.gameObject); }
         base.Awake();
         singleton = this;
     }
@@ -161,6 +160,8 @@ public class MyNetworkManager : NetworkManager
     /// <param name="conn">Connection from client.</param>
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
+        if (conn != null && conn.identity != null && !conn.identity.isLocalPlayer)
+            this.StopHost();
         base.OnServerDisconnect(conn);
     }
 
