@@ -82,9 +82,7 @@ public class PlayerController : NetworkBehaviour
     {
         base.OnStopServer();
 
-        //removes clients player data when he exits as long as server is still running
-
-        if (!NetworkServer.active || GameController.Singleton.LocalPlayer == this) return;
-        NetworkManager.singleton.StopHost();
+        //if (!NetworkServer.active || GameController.Singleton.LocalPlayer == this) return;
+        MyNetworkManager.singleton.StopHost();
     }
 }

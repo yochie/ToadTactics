@@ -20,6 +20,7 @@ public class MyNetworkManager : NetworkManager
     /// </summary>
     public override void Awake()
     {
+        if (MyNetworkManager.singleton != null) { Destroy(this.gameObject); }
         base.Awake();
         singleton = this;
     }

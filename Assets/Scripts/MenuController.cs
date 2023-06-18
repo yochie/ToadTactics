@@ -9,7 +9,7 @@ public class MenuController : MonoBehaviour
     public void StartGame()
     {
 
-        NetworkManager.singleton.StartHost();
+        MyNetworkManager.singleton.StartHost();
         SceneManager.LoadScene("MainGame");
     }
     public void ExitGame()
