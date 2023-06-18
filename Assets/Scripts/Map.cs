@@ -491,7 +491,7 @@ public class Map : NetworkBehaviour
     [TargetRpc]
     public void markCharacterSlotAsPlaced(NetworkConnectionToClient target, int characterPrefabID)
     {
-        foreach (CharacterSlotUI slot in GameController.Singleton.characterSlotsUI)
+        foreach (CharacterSlotUI slot in GameController.Singleton.characterSlots)
         {
             if(slot.HoldsCharacterWithPrefabID == characterPrefabID)
             {

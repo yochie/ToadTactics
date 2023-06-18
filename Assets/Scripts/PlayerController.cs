@@ -50,7 +50,7 @@ public class PlayerController : NetworkBehaviour
         {
             usedPrefabs.Add(characterId);
         }
-        for (int i = 0; i < GameController.Singleton.characterSlotsUI.Count; i++)
+        for (int i = 0; i < GameController.Singleton.characterSlots.Count; i++)
         {            
             int prefabIndex;
             do
@@ -62,7 +62,7 @@ public class PlayerController : NetworkBehaviour
             usedPrefabs.Add(prefabIndex);
 
             PlayerCharacter newChar = GameController.Singleton.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
-            CharacterSlotUI slot = GameController.Singleton.characterSlotsUI[i];
+            CharacterSlotUI slot = GameController.Singleton.characterSlots[i];
 
             slot.GetComponent<Image>().sprite = newChar.GetComponent<SpriteRenderer>().sprite;
 
