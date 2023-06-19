@@ -86,8 +86,13 @@ public class GameController : NetworkBehaviour
         GameController.DefineClasses();
 
         Map.Singleton.Initialize();
+
         //testing
-        //Map.Singleton.RangeUnobstructed(Map.Singleton.GetHex(0, 0), 1);
+        //HashSet<Hex> inRange = Map.Singleton.RangeObstructed(Map.Singleton.GetHex(0, 0), 2);
+        //foreach (Hex h in inRange)
+        //{
+        //    h.baseColor = Color.magenta;
+        //}
     }
 
     public override void OnStartServer()

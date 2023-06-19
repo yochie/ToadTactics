@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using Mirror;
 
-public class Hex : NetworkBehaviour
+public class Hex : NetworkBehaviour, IEquatable<Hex>
 {
     //vars used by UI only, not synced
     private SpriteRenderer sprite;
@@ -180,5 +180,10 @@ public class Hex : NetworkBehaviour
         }
         
         Destroy(this.gameObject);
+    }
+
+    public bool Equals(Hex other)
+    {
+        return this.coordinates.Equals(other.coordinates);
     }
 }

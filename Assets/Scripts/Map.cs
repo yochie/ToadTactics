@@ -355,6 +355,33 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
+    public HashSet<Hex> RangeObstructed(Hex start, int distance)
+    {
+        HashSet<Hex> visited = new();
+        visited.Add(start);
+        List<List<Hex>> fringes = new();
+        fringes.Add(new List<Hex> { start });
+
+        for (int k = 1; k <= distance; k++)
+        {
+            fringes.Add(new List<Hex>());
+           foreach(Hex h in fringes[k - 1])
+            {
+                foreach (Hex neighbour in Map.Singleton.GetUnobstructedHexNeighbours(h))
+                {
+                    if (!visited.Contains(neighbour))
+                    {
+                        visited.Add(neighbour);
+                        fringes[k].Add(neighbour);
+                    }
+                    
+                }
+            }
+        }
+
+        return visited;
+    }
+
     public List<Hex> GetHexNeighbours(Hex h)
     {
         List<Hex> toReturn = new();
@@ -370,6 +397,7 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
+    //removes hexes with hazards, obstacles or players
     public List<Hex> GetUnobstructedHexNeighbours(Hex h)
     {
         List<Hex> toReturn = new();
