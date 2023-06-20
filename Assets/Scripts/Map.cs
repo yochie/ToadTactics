@@ -58,6 +58,7 @@ public class Map : NetworkBehaviour
     public Hex HoveredHex { get; set; }
 
     private HashSet<Hex> displayedRange = new();
+    private List<Hex> displayedPath = new();
 
     #endregion
 
@@ -103,6 +104,8 @@ public class Map : NetworkBehaviour
             this.startingZones[i].SetStartingZone();
         }
 
+        this.RpcInitHexBaseColors();
+
         this.treasureSpawner.SpawnTreasure();
 
         this.GenerateTrees();
@@ -116,6 +119,26 @@ public class Map : NetworkBehaviour
                 if (h != null)
                 {
                     NetworkServer.Spawn(h.gameObject);
+
+                    //used to sync hexGrid using coroutine callbacks on client
+                    //bypasses issues with syncing gameobjects that haven't been spawned yet
+                    this.hexGridNetIds[new Vector2Int(x, y)] = h.gameObject.GetComponent<NetworkIdentity>().netId;
+                }
+            }
+        }
+    }
+
+    [ClientRpc]
+    private void RpcInitHexBaseColors()
+    {
+        for (int x = -this.xSize + 1; x < this.xSize; x++)
+        {
+            for (int y = -this.ySize + 1; y < this.ySize; y++)
+            {
+                Hex h = GetHex(x, y);
+                if (h != null)
+                {
+                    h.InitBaseColor();
 
                     //used to sync hexGrid using coroutine callbacks on client
                     //bypasses issues with syncing gameobjects that haven't been spawned yet
@@ -226,6 +249,15 @@ public class Map : NetworkBehaviour
     public void ClickHex(Hex clickedHex)
     {
         Hex previouslySelected = this.SelectedHex;
+
+        //moves previously selected player character
+        if (previouslySelected != null && previouslySelected.HoldsCharacter())
+        {
+            this.CmdMoveChar(previouslySelected, clickedHex);
+            this.UnselectHex();
+            return;
+        }
+
         if (previouslySelected != clickedHex)
         {
             this.UnselectHex();
@@ -236,92 +268,45 @@ public class Map : NetworkBehaviour
             this.UnselectHex();
         }
 
-        //moves previously selected player character
-        if (previouslySelected != null && previouslySelected.holdsCharacterWithPrefabID != -1)
-        {
-            this.ChangeState(clickedHex, clickedHex.ColorState, HexColorState.hovered);
-            this.CmdMoveChar(previouslySelected, clickedHex);
-            return;
-        }
-
-
+        
     }
 
     public void SelectHex(Hex h)
     {
         this.SelectedHex = h;
+        h.Select(true);
 
-        HexColorState oldState = h.ColorState;
-        switch (oldState)
+        if (h.HoldsCharacter())
         {
-            case HexColorState.hovered:
-                this.ChangeState(h, oldState, HexColorState.selectedAndHovered);
-                break;
-            default:
-                Debug.Log("Unexpected HexColorState transition;");
-                break;
-        }
-
-        //we only want pathing labels for other hexes in path
-        h.HideLabel();
-
-        int holdsCharacter = h.holdsCharacterWithPrefabID;
-        if (holdsCharacter != -1)
-        {
-            CharacterClass charClass = GameController.Singleton.playerCharacters[holdsCharacter].CharClass;
+            int heldCharacter = h.holdsCharacterWithPrefabID;
+            CharacterClass charClass = GameController.Singleton.playerCharacters[heldCharacter].CharClass;
             this.DisplayMovementRange(h, charClass.charStats.moveSpeed);
         }
     }
 
     public void UnselectHex()
     {
-        if(this.SelectedHex == null) { return; }
-        HexColorState oldState = this.SelectedHex.ColorState;
-        switch (oldState)
-        {
-            case HexColorState.selectedAndHovered:
-                this.ChangeState(this.SelectedHex, oldState, HexColorState.hovered);
-                break;
-            case HexColorState.selected:
-                this.ChangeState(this.SelectedHex, oldState, HexColorState.idle);
-                break;
-            default:
-                Debug.Log("Unexpected HexColorState transition;");
-                break;
-        }
-        
-        this.SelectedHex = null;
-        
+        Debug.Log("Unselecting hex");
+        this.HideMovementRange();
+        this.HidePath();
+        if (this.SelectedHex == null) { return; }
+        this.SelectedHex.Select(false);
+        this.SelectedHex = null;        
     }
 
     public void HoverHex(Hex hoveredHex)
     {
         this.HoveredHex = hoveredHex;
-        HexColorState oldState = hoveredHex.ColorState;
-        switch (oldState)
-        {
-            case HexColorState.idle:
-                this.ChangeState(hoveredHex, oldState, HexColorState.hovered);
-                break;
-            case HexColorState.selected:
-                this.ChangeState(hoveredHex, oldState, HexColorState.selectedAndHovered);
-                break;
-            case HexColorState.ranging:
-                this.ChangeState(hoveredHex, oldState, HexColorState.rangingAndHovered);
-                break;
-        }
+        hoveredHex.Hover(true);
 
+        //find path to hex if we have selected another hex
         if (this.SelectedHex != null)
         {
-            //Debug.Log(this.HoveredHex.coordinates);
-
-            hoveredHex.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
-
+            this.HidePath();
+            //hoveredHex.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
             List<Hex> path = this.FindMovementPath(this.SelectedHex, hoveredHex);
             if (path != null)
             {
-                //removes previous path
-                this.HidePath();
                 this.DisplayPath(path);
             }
         }
@@ -333,20 +318,7 @@ public class Map : NetworkBehaviour
         {
             this.HoveredHex = null;
         }
-
-        HexColorState oldState = h.ColorState;
-        switch (oldState)
-        {
-            case HexColorState.hovered:
-                this.ChangeState(h, oldState, HexColorState.idle);
-                break;
-            case HexColorState.selectedAndHovered:
-                this.ChangeState(h, oldState, HexColorState.selected);
-                break;
-            case HexColorState.rangingAndHovered:
-                this.ChangeState(h, oldState, HexColorState.ranging);
-                break;
-        }
+        h.Hover(false);
 
         //h.HideLabel();
 
@@ -361,16 +333,7 @@ public class Map : NetworkBehaviour
             //selected hex stays at selected color state
             if(h != position)
             {
-                HexColorState oldState = h.ColorState;
-                switch (oldState)
-                {
-                    case HexColorState.idle:
-                        this.ChangeState(h, oldState, HexColorState.ranging);
-                        break;
-                    default:
-                        Debug.Log("Unexpected HexColorState transition;");
-                        break;
-                }
+                h.DisplayRange(true);
             }
         }
     }
@@ -379,56 +342,32 @@ public class Map : NetworkBehaviour
     {
         foreach (Hex h in this.displayedRange)
         {
-            HexColorState oldState = h.ColorState;
-            switch (oldState)
-            {
-                case HexColorState.selected:
-                    this.ChangeState(h, oldState, HexColorState.idle);
-                    break;
-                case HexColorState.ranging:
-                    this.ChangeState(h, oldState, HexColorState.idle);
-                    break;
-                case HexColorState.rangingAndHovered:
-                    this.ChangeState(h, oldState, HexColorState.hovered);
-                    break;
-                default:
-                    Debug.Log("Unexpected HexColorState transition;");
-                    break;
-            }
+            h.DisplayRange(false);
         }
-    }
-
-    private void ChangeState(Hex h, HexColorState oldState, HexColorState newState)
-    {
-        Hex.ValideAndLogStateChange(oldState, newState);
-        h.ColorState = newState;
     }
 
     private void DisplayPath(List<Hex> path)
     {
-        //Debug.Log("Found path");
-        //Debug.Log(path.Count);
+        this.displayedPath = path;
         int pathLength = 0;
         foreach (Hex h in path)
         {
             pathLength += h.moveCost;
-            h.LabelString = pathLength.ToString();
-            h.ShowLabel();
+
+            //skip starting hex label
+            if (pathLength != 0)
+            {
+                h.LabelString = pathLength.ToString();
+                h.ShowLabel();
+            }
         }
     }
 
     private void HidePath()
     {
-        for (int x = -this.xSize + 1; x < this.xSize; x++)
+        foreach (Hex h in this.displayedPath)
         {
-            for (int y = -this.ySize + 1; y < this.ySize; y++)
-            {
-                Hex h = GetHex(x, y);
-                if (h != null)
-                {
-                    h.HideLabel();
-                }
-            }
+            h.HideLabel();
         }
     }
     #endregion
