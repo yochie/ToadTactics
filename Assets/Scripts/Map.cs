@@ -251,7 +251,7 @@ public class Map : NetworkBehaviour
         Hex previouslySelected = this.SelectedHex;
 
         //moves previously selected player character
-        if (previouslySelected != null && previouslySelected.HoldsCharacter())
+        if (previouslySelected != null && previouslySelected.HoldsACharacter())
         {
             this.CmdMoveChar(previouslySelected, clickedHex);
             this.UnselectHex();
@@ -276,7 +276,7 @@ public class Map : NetworkBehaviour
         this.SelectedHex = h;
         h.Select(true);
 
-        if (h.HoldsCharacter())
+        if (h.HoldsACharacter())
         {
             int heldCharacter = h.holdsCharacterWithPrefabID;
             CharacterClass charClass = GameController.Singleton.playerCharacters[heldCharacter].CharClass;
@@ -327,7 +327,7 @@ public class Map : NetworkBehaviour
 
     private void DisplayMovementRange(Hex position, int moveSpeed)
     {
-        this.displayedRange = RangeObstructed(position, moveSpeed);
+        this.displayedRange = RangeWithObstaclesAndCost(position, moveSpeed);
         foreach (Hex h in this.displayedRange)
         {
             //selected hex stays at selected color state
@@ -352,7 +352,7 @@ public class Map : NetworkBehaviour
         int pathLength = 0;
         foreach (Hex h in path)
         {
-            pathLength += h.moveCost;
+            pathLength += h.MoveCost;
 
             //skip starting hex label
             if (pathLength != 0)
@@ -391,7 +391,6 @@ public class Map : NetworkBehaviour
         {
             for (int r = Mathf.Max(-distance, -distance - q); r <= Mathf.Min(distance, -q + distance); r++)
             {
-                int s = -q - r;
                 HexCoordinates destCoords = HexCoordinates.Add(start.coordinates, new HexCoordinates(q, r, start.coordinates.isFlatTop));
                 Hex destHex = Map.Singleton.GetHex(destCoords.X, destCoords.Y);
                 if (destHex != null)
@@ -403,7 +402,7 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
-    public HashSet<Hex> RangeObstructed(Hex start, int distance)
+    public HashSet<Hex> RangeWithObstacles(Hex start, int distance)
     {
         HashSet<Hex> visited = new();
         visited.Add(start);
@@ -420,7 +419,41 @@ public class Map : NetworkBehaviour
                     if (!visited.Contains(neighbour))
                     {
                         visited.Add(neighbour);
-                        fringes[k].Add(neighbour);
+                        fringes[k - 1 + neighbour.MoveCost].Add(neighbour);
+                    }
+
+                }
+            }
+        }
+
+        return visited;
+    }
+
+    public HashSet<Hex> RangeWithObstaclesAndCost(Hex start, int distance)
+    {
+        HashSet<Hex> visited = new();
+        visited.Add(start);
+        List<List<Hex>> fringes = new();
+        fringes.Add(new List<Hex> { start });
+        Dictionary<Hex, int> costsSoFar = new();
+        costsSoFar[start] = 0;
+
+        for (int k = 1; k <= distance; k++)
+        {
+            fringes.Add(new List<Hex>());
+            foreach (Hex h in fringes[k - 1])
+            {
+                foreach (Hex neighbour in Map.Singleton.GetUnobstructedHexNeighbours(h))
+                {
+                    int costToNeighbour = costsSoFar[h] + neighbour.MoveCost;
+                    if (!costsSoFar.ContainsKey(neighbour) || costsSoFar[neighbour] > costToNeighbour)
+                    {
+                        if (costToNeighbour <= distance)
+                        {
+                            costsSoFar[neighbour] = costToNeighbour;
+                            visited.Add(neighbour);
+                            fringes[k].Add(neighbour);
+                        }
                     }
 
                 }
@@ -461,7 +494,19 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
-    public List<Hex> FindMovementPath(Hex start, Hex dest)
+    private int PathCost(List<Hex> path)
+    {
+        int pathCost = 0;
+
+        foreach(Hex h in path)
+        {
+            pathCost += h.MoveCost;
+        }
+
+        return pathCost;
+    }
+
+    private List<Hex> FindMovementPath(Hex start, Hex dest)
     {
         PriorityQueue<Hex, int> frontier = new();
         frontier.Enqueue(start, 0);
@@ -483,7 +528,7 @@ public class Map : NetworkBehaviour
 
             foreach (Hex next in this.GetUnobstructedHexNeighbours(currentHex))
             {
-                int newCost = costsSoFar[currentHex] + next.moveCost;
+                int newCost = costsSoFar[currentHex] + next.MoveCost;
                 if (!costsSoFar.ContainsKey(next) || newCost < costsSoFar[next])
                 {
                     costsSoFar[next] = newCost;
@@ -497,7 +542,7 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
-    private List<Hex> FlattenPath(Dictionary<Hex, Hex> path, Hex dest)
+    private  List<Hex> FlattenPath(Dictionary<Hex, Hex> path, Hex dest)
     {
         //no path to destination was found
         if (!path.ContainsKey(dest))
@@ -521,15 +566,16 @@ public class Map : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
-        PlayerController senderPlayer = sender.identity.gameObject.GetComponent<PlayerController>();
+        PlayerController senderPlayer = sender.identity.gameObject.GetComponent<PlayerController>();        
         //Validation
         if (source == null ||
-            source.holdsCharacterWithPrefabID == -1 ||
+            !source.HoldsACharacter() ||
             !GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithPrefabID) ||
             dest.holdsObstacle != ObstacleType.none ||
-            dest.holdsCharacterWithPrefabID != -1)
+            dest.HoldsACharacter()           
+            )
         {
-            //Debug.Log("Client requested invalid move");
+            Debug.Log("Client requested invalid move");
             //Debug.Log(source.holdsCharacterWithPrefabID);
             //Debug.Log(GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithPrefabID));
             //Debug.Log(dest.holdsObstacle);
@@ -537,7 +583,10 @@ public class Map : NetworkBehaviour
             return;
         }
         PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithPrefabID];
-
+        if (PathCost(FindMovementPath(source, dest)) > toMove.CharClass.charStats.moveSpeed) {
+            Debug.Log("Client requested move outside character range");
+            return;
+        }
         //Debug.Log(source.holdsCharacterWithPrefabID);
         //Debug.Log(GameController.Singleton.playerCharacters.Count); ;
         //Debug.Log(toMove);

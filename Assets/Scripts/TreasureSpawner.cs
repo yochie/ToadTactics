@@ -32,10 +32,6 @@ public class TreasureSpawner : NetworkBehaviour
             GameObject hazardObject = Instantiate(randomHazardPrefab, hazardHex.transform.position, Quaternion.identity);
             NetworkServer.Spawn(hazardObject);
             hazardHex.holdsHazard = randomHazard.type;
-            if(randomHazard.type == HazardType.cold)
-            {
-                hazardHex.moveCost = 2;
-            }
         }
     }
 }

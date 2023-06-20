@@ -12,7 +12,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     public static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
     public static readonly Color HEX_HOVER_COLOR = Color.cyan;
     public static readonly Color HEX_SELECT_COLOR = Color.green;
-    public static readonly Color HEX_RANGE_COLOR = new Color(0.6940628f, 0.9433962f, 0.493058f);
+    public static readonly Color HEX_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
 
     //vars used by UI only, not synced
     private SpriteRenderer sprite;
@@ -38,6 +38,20 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         }
     }
 
+    public int MoveCost
+    {
+        get { 
+            switch (this.holdsHazard)
+            {
+                case HazardType.cold:
+                    return 2;
+                default:
+                    return 1;
+            }
+        
+        }        
+    }
+
     //state vars to sync
     [SyncVar]
     public HexCoordinates coordinates;
@@ -61,9 +75,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     //1 is client
     [SyncVar]
     public int startZoneForPlayerIndex;
-
-    [SyncVar]
-    public int moveCost;
 
     public bool IsSelectable
     {
@@ -108,7 +119,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
         this.baseColor = Hex.HEX_DEFAULT_COLOR;
-        this.moveCost = 1;
 
         //not currently needed as its set during instatiation, but kept in case
         //scale is needed
@@ -199,7 +209,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     }
 
     public void Hover(bool mode) {
-        //if (mode) { this.unHoveredColor = this.HexColor; }
+        if (mode) { this.unHoveredColor = this.HexColor; }
         this.HexColor = mode ? Hex.HEX_HOVER_COLOR : this.unHoveredColor;
     }
 
@@ -227,7 +237,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     {
         return this.coordinates.Equals(other.coordinates);
     }
-    public bool HoldsCharacter()
+    public bool HoldsACharacter()
     {
         return (this.holdsCharacterWithPrefabID != -1);
     }
