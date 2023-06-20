@@ -7,10 +7,17 @@ using Mirror;
 
 public class Hex : NetworkBehaviour, IEquatable<Hex>
 {
+    public static readonly Color HEX_BASE_COLOR = Color.white;
+    public static readonly Color HEX_START_BASE_COLOR = Color.blue;
+    public static readonly Color HEX_HOVER_COLOR = Color.cyan;
+    public static readonly Color HEX_SELECT_COLOR = Color.green;
+    public static readonly Color HEX_OPPONENT_START_BASE_COLOR = Color.grey;
+    public static readonly Color HEX_RANGE_COLOR = new Color(0.6940628f, 0.9433962f, 0.493058f);
+
     //vars used by UI only, not synced
     private SpriteRenderer sprite;
     private Color hexColor;
-    public Color HexColor {
+    private Color HexColor {
         get { return this.hexColor; }
         set {
             this.hexColor = value;
@@ -31,23 +38,27 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     //state vars to sync
     [SyncVar]
     public HexCoordinates coordinates;
+
     [SyncVar]
     public bool isStartingZone;
 
     [SyncVar]
     public int holdsCharacterWithPrefabID;
+
     [SyncVar]
     public ObstacleType holdsObstacle;
+
     [SyncVar]
     public HazardType holdsHazard;
+
     [SyncVar]
     public bool holdsTreasure;
-    [SyncVar]
-    public Color baseColor;
+
     //0 is host
     //1 is client
     [SyncVar]
     public int startZoneForPlayerIndex;
+
     [SyncVar]
     public int moveCost;
 
@@ -80,6 +91,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         }
     }
 
+    public HexColorState ColorState { get; set; }
 
     [Server]
     public void Init(HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
@@ -93,7 +105,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.holdsObstacle = ObstacleType.none;
         this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
-        this.baseColor = Map.Singleton.HEX_BASE_COLOR;
+        this.ColorState = HexColorState.idle;
         this.moveCost = 1;
 
         //not currently needed as its set during instatiation, but kept in case
@@ -110,19 +122,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         //Debug.LogFormat("Creating hex on client {0} {1} {2}",this.coordinates, this.coordinates.X, this.coordinates.Y);
         this.sprite = this.GetComponent<SpriteRenderer>();
 
-        if(this.isStartingZone)
-        {
-            if ((this.isServer && this.startZoneForPlayerIndex == 0) || (!this.isServer && this.startZoneForPlayerIndex == 1))
-            {
-                this.baseColor = Map.Singleton.HEX_START_BASE_COLOR;
-
-            } else
-            {
-                this.baseColor = Map.Singleton.HEX_OPPONENT_START_BASE_COLOR;
-            }
-        }
-
-        this.HexColor = this.baseColor;
+        this.ColorState = HexColorState.idle;
 
         //coordinates hidden by default using canvas group alpha
         //use that component in editor mode to display
@@ -185,5 +185,119 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     public bool Equals(Hex other)
     {
         return this.coordinates.Equals(other.coordinates);
+    }
+
+    public static void ValideAndLogStateChange(HexColorState prevState, HexColorState newState)
+    {
+        if (!Hex.ValidateStateChange(prevState, newState))
+            Debug.Log("Unexpected HexColorState transition;");
+    }
+
+    public static bool ValidateStateChange(HexColorState prevState, HexColorState newState)
+    {
+        switch (prevState)
+        {
+            case HexColorState.idle:
+                switch (newState)
+                {
+                    case HexColorState.hovered:
+                        return true;
+                    case HexColorState.ranging:
+                        return true;                        
+                    case HexColorState.selected:
+                        //happens when focus is retaken by clicking on a hex
+                        return true;
+                    default:
+                        return false;
+                }
+            case HexColorState.selected:
+                switch (newState)
+                {
+                    case HexColorState.selectedAndHovered:
+                        return true;
+                    case HexColorState.idle:
+                        return true;
+                    default:
+                        return false;
+                }                
+            case HexColorState.hovered:
+                switch (newState)
+                {
+                    case HexColorState.selectedAndHovered:
+                        return true;
+                    case HexColorState.idle:
+                        return true;
+                    default:
+                        return false;
+                }
+            case HexColorState.ranging:
+                switch (newState)
+                {
+                    case HexColorState.idle:
+                        return true;
+                    case HexColorState.rangingAndHovered:
+                        return true;
+                    default:
+                        return false;
+                }
+            case HexColorState.rangingAndHovered:
+                switch (newState)
+                {
+                    case HexColorState.hovered:
+                        return true;
+                    case HexColorState.ranging:
+                        return true;
+                    default:
+                        return false;
+                }
+            case HexColorState.selectedAndHovered:
+                switch (newState)
+                {
+                    case HexColorState.hovered:
+                        return true;
+                    case HexColorState.selected:
+                        return true;
+                    default:
+                        return false;
+                }
+            default:
+                return false;
+        }        
+    }
+
+    public void Update()
+    {
+        switch (this.ColorState)
+        {
+            case HexColorState.idle:
+                if (this.isStartingZone)
+                {
+                    if ((this.isServer && this.startZoneForPlayerIndex == 0) || (!this.isServer && this.startZoneForPlayerIndex == 1))
+                    {
+                        this.HexColor = Hex.HEX_START_BASE_COLOR;
+                    }
+                    else
+                    {
+                        this.HexColor = Hex.HEX_OPPONENT_START_BASE_COLOR;
+                    }
+                }
+                else
+                {
+                    this.HexColor = Hex.HEX_BASE_COLOR;
+                }
+                break;
+            case HexColorState.selected:
+                this.HexColor = Hex.HEX_SELECT_COLOR;
+                break;
+            case HexColorState.hovered:
+                this.HexColor = Hex.HEX_HOVER_COLOR;
+                break;
+            case HexColorState.ranging:
+                this.HexColor = Hex.HEX_RANGE_COLOR;
+                break;
+            case HexColorState.rangingAndHovered:
+                this.HexColor = Hex.HEX_HOVER_COLOR;
+                break;
+        }
     }
 }

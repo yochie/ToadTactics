@@ -9,10 +9,8 @@ using Utils;
 
 public class Map : NetworkBehaviour
 {
-    public static Map Singleton { get; private set; }
 
-    public static readonly Vector3 characterOffsetOnMap = new(0, 0, -0.1f);
-    //sets orientation of hexes
+    #region Editor vars
     public bool isFlatTop;
 
     //radius in hex count
@@ -35,29 +33,35 @@ public class Map : NetworkBehaviour
     //corner to corner, or width (two times side length)
     //should correspond to unscaled sprite width
     public float hexWidth = 1f;
-
-    // flat to flat, or height, calculated on init by WIDTH_TO_HEIGHT_RATIO
+    //flat to flat, or height, calculated on init by WIDTH_TO_HEIGHT_RATIO
     private float hexHeight;
 
+    public float padding = 0.1f;
+    #endregion
+
+    #region Constant vars
     //geometric property of hexes
     private const float WIDTH_TO_HEIGHT_RATIO = 1.155f;
-    public float padding = 0.1f;
+    #endregion
 
-    public readonly Color HEX_BASE_COLOR = Color.white;
-    public readonly Color HEX_START_BASE_COLOR = Color.blue;
-    public readonly Color HEX_HOVER_COLOR = Color.cyan;
-    public readonly Color HEX_SELECT_COLOR = Color.green;
-    public readonly Color HEX_OPPONENT_START_BASE_COLOR = Color.grey;
-
-    public Hex SelectedHex { get; set; }
-    public Hex HoveredHex { get; set; }
-
+    #region Synced vars
     public readonly Dictionary<Vector2Int, Hex> hexGrid = new();
     public readonly SyncDictionary<Vector2Int, uint> hexGridNetIds = new();
 
     //TODO : fix using same strat as hexgrid
     //public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
+    #endregion
 
+    #region Runtime state vars
+    public static Map Singleton { get; private set; }
+    public Hex SelectedHex { get; set; }
+    public Hex HoveredHex { get; set; }
+
+    private HashSet<Hex> displayedRange = new();
+
+    #endregion
+
+    #region Startup
     private void Awake()
     {
         Singleton = this;
@@ -82,6 +86,9 @@ public class Map : NetworkBehaviour
         }
     }
 
+    #endregion
+
+    #region Generation
     [Server]
     private void GenerateMap()
     {
@@ -201,7 +208,9 @@ public class Map : NetworkBehaviour
         toDelete.Delete();
         this.hexGrid[new Vector2Int(x, y)] = null;
     }
+    #endregion
 
+    #region State management
     public Hex GetHex(int x, int y)
     {
         if (this.hexGrid.TryGetValue(new Vector2Int(x, y), out Hex toReturn))
@@ -216,60 +225,103 @@ public class Map : NetworkBehaviour
 
     public void ClickHex(Hex clickedHex)
     {
-        //moves previously selected player character
-        if (this.SelectedHex != null && this.SelectedHex.holdsCharacterWithPrefabID != -1)
+        Hex previouslySelected = this.SelectedHex;
+        if (previouslySelected != clickedHex)
         {
-            this.CmdMoveChar(this.SelectedHex, clickedHex);
             this.UnselectHex();
-            this.UnhoverHex(clickedHex);
-            return;
-        }
-
-        if (this.SelectedHex != clickedHex)
-        {
             this.SelectHex(clickedHex);
         }
         else
         {
             this.UnselectHex();
         }
+
+        //moves previously selected player character
+        if (previouslySelected != null && previouslySelected.holdsCharacterWithPrefabID != -1)
+        {
+            this.ChangeState(clickedHex, clickedHex.ColorState, HexColorState.hovered);
+            this.CmdMoveChar(previouslySelected, clickedHex);
+            return;
+        }
+
+
     }
+
     public void SelectHex(Hex h)
     {
-        if (this.SelectedHex != null)
-        {
-            UnselectHex();
-        }
         this.SelectedHex = h;
-        h.HexColor = this.HEX_SELECT_COLOR;
+
+        HexColorState oldState = h.ColorState;
+        switch (oldState)
+        {
+            case HexColorState.hovered:
+                this.ChangeState(h, oldState, HexColorState.selectedAndHovered);
+                break;
+            default:
+                Debug.Log("Unexpected HexColorState transition;");
+                break;
+        }
+
+        //we only want pathing labels for other hexes in path
         h.HideLabel();
+
+        int holdsCharacter = h.holdsCharacterWithPrefabID;
+        if (holdsCharacter != -1)
+        {
+            CharacterClass charClass = GameController.Singleton.playerCharacters[holdsCharacter].CharClass;
+            this.DisplayMovementRange(h, charClass.charStats.moveSpeed);
+        }
     }
 
     public void UnselectHex()
     {
-        this.SelectedHex.HexColor = this.SelectedHex.baseColor;
-        Hex previouslySelected = this.SelectedHex;
+        if(this.SelectedHex == null) { return; }
+        HexColorState oldState = this.SelectedHex.ColorState;
+        switch (oldState)
+        {
+            case HexColorState.selectedAndHovered:
+                this.ChangeState(this.SelectedHex, oldState, HexColorState.hovered);
+                break;
+            case HexColorState.selected:
+                this.ChangeState(this.SelectedHex, oldState, HexColorState.idle);
+                break;
+            default:
+                Debug.Log("Unexpected HexColorState transition;");
+                break;
+        }
+        
         this.SelectedHex = null;
-        this.UnhoverHex(previouslySelected);
-
+        
     }
 
     public void HoverHex(Hex hoveredHex)
     {
         this.HoveredHex = hoveredHex;
-        hoveredHex.HexColor = this.HEX_HOVER_COLOR;
+        HexColorState oldState = hoveredHex.ColorState;
+        switch (oldState)
+        {
+            case HexColorState.idle:
+                this.ChangeState(hoveredHex, oldState, HexColorState.hovered);
+                break;
+            case HexColorState.selected:
+                this.ChangeState(hoveredHex, oldState, HexColorState.selectedAndHovered);
+                break;
+            case HexColorState.ranging:
+                this.ChangeState(hoveredHex, oldState, HexColorState.rangingAndHovered);
+                break;
+        }
+
         if (this.SelectedHex != null)
         {
             //Debug.Log(this.HoveredHex.coordinates);
 
             hoveredHex.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
-            hoveredHex.ShowLabel();
-
-            this.ClearPaths();
 
             List<Hex> path = this.FindMovementPath(this.SelectedHex, hoveredHex);
             if (path != null)
             {
+                //removes previous path
+                this.HidePath();
                 this.DisplayPath(path);
             }
         }
@@ -282,18 +334,74 @@ public class Map : NetworkBehaviour
             this.HoveredHex = null;
         }
 
-        if (h != this.SelectedHex)
+        HexColorState oldState = h.ColorState;
+        switch (oldState)
         {
-            h.HexColor = h.baseColor;
-        }
-        else
-        {
-            h.HexColor = this.HEX_SELECT_COLOR;
+            case HexColorState.hovered:
+                this.ChangeState(h, oldState, HexColorState.idle);
+                break;
+            case HexColorState.selectedAndHovered:
+                this.ChangeState(h, oldState, HexColorState.selected);
+                break;
+            case HexColorState.rangingAndHovered:
+                this.ChangeState(h, oldState, HexColorState.ranging);
+                break;
         }
 
-        h.HideLabel();
+        //h.HideLabel();
 
-        this.ClearPaths();
+        //this.HidePath();
+    }
+
+    private void DisplayMovementRange(Hex position, int moveSpeed)
+    {
+        this.displayedRange = RangeObstructed(position, moveSpeed);
+        foreach (Hex h in this.displayedRange)
+        {
+            //selected hex stays at selected color state
+            if(h != position)
+            {
+                HexColorState oldState = h.ColorState;
+                switch (oldState)
+                {
+                    case HexColorState.idle:
+                        this.ChangeState(h, oldState, HexColorState.ranging);
+                        break;
+                    default:
+                        Debug.Log("Unexpected HexColorState transition;");
+                        break;
+                }
+            }
+        }
+    }
+
+    private void HideMovementRange()
+    {
+        foreach (Hex h in this.displayedRange)
+        {
+            HexColorState oldState = h.ColorState;
+            switch (oldState)
+            {
+                case HexColorState.selected:
+                    this.ChangeState(h, oldState, HexColorState.idle);
+                    break;
+                case HexColorState.ranging:
+                    this.ChangeState(h, oldState, HexColorState.idle);
+                    break;
+                case HexColorState.rangingAndHovered:
+                    this.ChangeState(h, oldState, HexColorState.hovered);
+                    break;
+                default:
+                    Debug.Log("Unexpected HexColorState transition;");
+                    break;
+            }
+        }
+    }
+
+    private void ChangeState(Hex h, HexColorState oldState, HexColorState newState)
+    {
+        Hex.ValideAndLogStateChange(oldState, newState);
+        h.ColorState = newState;
     }
 
     private void DisplayPath(List<Hex> path)
@@ -309,7 +417,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    private void ClearPaths()
+    private void HidePath()
     {
         for (int x = -this.xSize + 1; x < this.xSize; x++)
         {
@@ -320,11 +428,12 @@ public class Map : NetworkBehaviour
                 {
                     h.HideLabel();
                 }
-
             }
         }
     }
+    #endregion
 
+    #region Pathing
     public static int HexDistance(Hex h1, Hex h2)
     {
         HexCoordinates hc1 = h1.coordinates;
@@ -341,7 +450,7 @@ public class Map : NetworkBehaviour
 
         for (int q = -distance; q <= distance; q++)
         {
-            for (int r = Mathf.Max(-distance, -distance - q); r <=Mathf.Min(distance, -q + distance); r++ )
+            for (int r = Mathf.Max(-distance, -distance - q); r <= Mathf.Min(distance, -q + distance); r++)
             {
                 int s = -q - r;
                 HexCoordinates destCoords = HexCoordinates.Add(start.coordinates, new HexCoordinates(q, r, start.coordinates.isFlatTop));
@@ -365,7 +474,7 @@ public class Map : NetworkBehaviour
         for (int k = 1; k <= distance; k++)
         {
             fringes.Add(new List<Hex>());
-           foreach(Hex h in fringes[k - 1])
+            foreach (Hex h in fringes[k - 1])
             {
                 foreach (Hex neighbour in Map.Singleton.GetUnobstructedHexNeighbours(h))
                 {
@@ -374,7 +483,7 @@ public class Map : NetworkBehaviour
                         visited.Add(neighbour);
                         fringes[k].Add(neighbour);
                     }
-                    
+
                 }
             }
         }
@@ -467,8 +576,9 @@ public class Map : NetworkBehaviour
         toReturn.Reverse();
         return toReturn;
     }
+    #endregion
 
-
+    #region Commands
     [Command(requiresAuthority = false)]
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
@@ -486,7 +596,7 @@ public class Map : NetworkBehaviour
             //Debug.Log(dest.holdsObstacle);
             //Debug.Log(dest.holdsCharacterWithPrefabID);
             return;
-        }        
+        }
         PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithPrefabID];
 
         //Debug.Log(source.holdsCharacterWithPrefabID);
@@ -535,14 +645,16 @@ public class Map : NetworkBehaviour
 
         GameController.Singleton.EndTurn();
     }
+    #endregion
 
+    #region RPCs
     //update client UI to prevent placing same character twice
     [TargetRpc]
     public void markCharacterSlotAsPlaced(NetworkConnectionToClient target, int characterPrefabID)
     {
         foreach (CharacterSlotUI slot in GameController.Singleton.characterSlots)
         {
-            if(slot.HoldsCharacterWithPrefabID == characterPrefabID)
+            if (slot.HoldsCharacterWithPrefabID == characterPrefabID)
             {
                 slot.HasBeenPlacedOnBoard = true;
             }
@@ -553,7 +665,7 @@ public class Map : NetworkBehaviour
     [ClientRpc]
     public void RpcPlaceChar(GameObject character, Vector3 position)
     {
-        character.transform.position = position + Map.characterOffsetOnMap;
+        character.transform.position = position;
     }
 
     //callback for syncing hex grid dict netids
@@ -570,7 +682,8 @@ public class Map : NetworkBehaviour
                 if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
                 {
                     this.hexGrid[key] = identity.gameObject.GetComponent<Hex>();
-                } else
+                }
+                else
                 {
                     StartCoroutine(HexFromNetIdCoroutine(key, netIdArg));
                 }
@@ -598,4 +711,5 @@ public class Map : NetworkBehaviour
                 this.hexGrid[key] = identity.gameObject.GetComponent<Hex>();
         }
     }
+    #endregion
 }
