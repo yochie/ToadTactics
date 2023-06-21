@@ -593,8 +593,9 @@ public class Map : NetworkBehaviour
         //Debug.Log(toMove.gameObject);
         //Debug.Log(dest.transform.position);
 
+        toMove.hasMoved = true;
         dest.holdsCharacterWithPrefabID = source.holdsCharacterWithPrefabID;
-        source.holdsCharacterWithPrefabID = -1;
+        source.clearCharacter();
 
 
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);

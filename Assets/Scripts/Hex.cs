@@ -241,4 +241,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     {
         return (this.holdsCharacterWithPrefabID != -1);
     }
+
+    internal void clearCharacter()
+    {
+        this.holdsCharacterWithPrefabID = -1;
+    }
 }

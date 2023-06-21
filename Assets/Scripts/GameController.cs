@@ -363,6 +363,9 @@ public class GameController : NetworkBehaviour
             Debug.Log("Error : Bad code for iterating turnOrderSortedPrefabIds");
         }
 
+        PlayerCharacter currentPlayer = this.playerCharacters[currentCharacterPrefab];
+        currentPlayer.NextTurn();
+
         //if we don't own that char, swap player turn
         if (this.playerTurn != characterOwners[currentCharacterPrefab])
         {

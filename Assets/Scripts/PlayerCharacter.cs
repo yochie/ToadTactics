@@ -5,12 +5,25 @@ using Mirror;
 
 public class PlayerCharacter : NetworkBehaviour
 {
+    //TODO : charability should be stored via ID (enum type) for syncvar purposes
+    public CharacterClass CharClass;
+    [SyncVar]
     private int currentLife;
-    public CharacterClass CharClass { get; set; }
-    public List<Treasure> EquippedTreasure { get; set; }
-    public CharacterStats CurrentStats { get; set; }
-
+    [SyncVar]
+    public List<TreasureID> EquippedTreasure;
+    [SyncVar]
+    public CharacterStats CurrentStats;
+    [SyncVar]
     public string className;
+    [SyncVar]
+    public bool hasMoved = false;
+    [SyncVar]
+    public bool hasAttacked = false;
+    [SyncVar]
+    public bool hasUsedAbility = false;
+    [SyncVar]
+    public bool hasUsedTreasure = false;
+
 
     public int CurrentLife
     {
@@ -32,5 +45,19 @@ public class PlayerCharacter : NetworkBehaviour
         this.CharClass = charChlass;
         this.CurrentStats = charChlass.charStats;
         this.CurrentLife = CurrentStats.maxHealth;
+    }
+
+   public bool HasRemainingActions()
+    {
+        if (this.hasMoved && this.hasAttacked && this.hasUsedAbility && this.hasUsedTreasure)
+            return false;
+        else
+            return true;
+    }
+
+    public void NextTurn()
+    {
+        this.hasMoved = false;
+        this.hasAttacked = false;
     }
 }
