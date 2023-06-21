@@ -134,6 +134,8 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         //Debug.LogFormat("Creating hex on client {0} {1} {2}",this.coordinates, this.coordinates.X, this.coordinates.Y);
         this.sprite = this.GetComponent<SpriteRenderer>();
 
+        this.InitBaseColor();
+
         //coordinates hidden by default using canvas group alpha
         //use that component in editor mode to display
         TextMeshProUGUI coordLabel = Instantiate<TextMeshProUGUI>(Map.Singleton.cellLabelPrefab);

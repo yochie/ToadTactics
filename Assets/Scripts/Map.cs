@@ -104,8 +104,6 @@ public class Map : NetworkBehaviour
             this.startingZones[i].SetStartingZone();
         }
 
-        this.RpcInitHexBaseColors();
-
         this.treasureSpawner.SpawnTreasure();
 
         this.GenerateTrees();
@@ -119,26 +117,6 @@ public class Map : NetworkBehaviour
                 if (h != null)
                 {
                     NetworkServer.Spawn(h.gameObject);
-
-                    //used to sync hexGrid using coroutine callbacks on client
-                    //bypasses issues with syncing gameobjects that haven't been spawned yet
-                    this.hexGridNetIds[new Vector2Int(x, y)] = h.gameObject.GetComponent<NetworkIdentity>().netId;
-                }
-            }
-        }
-    }
-
-    [ClientRpc]
-    private void RpcInitHexBaseColors()
-    {
-        for (int x = -this.xSize + 1; x < this.xSize; x++)
-        {
-            for (int y = -this.ySize + 1; y < this.ySize; y++)
-            {
-                Hex h = GetHex(x, y);
-                if (h != null)
-                {
-                    h.InitBaseColor();
 
                     //used to sync hexGrid using coroutine callbacks on client
                     //bypasses issues with syncing gameobjects that haven't been spawned yet
