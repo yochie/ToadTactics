@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
-using System.IO;
 using TMPro;
 
 public class GameController : NetworkBehaviour
@@ -31,24 +30,25 @@ public class GameController : NetworkBehaviour
 
     #region Static vars
     public static GameController Singleton { get; private set; }
-    public static Dictionary<string, CharacterClass> AllClasses { get; set; }
-    #endregion 
+    #endregion
 
     #region Runtime vars
+    //Maps classID to CharacterClass
+    public Dictionary<int, CharacterClass> AllClasses { get; set; }
     public PlayerController LocalPlayer { get; set; }
-    private List<TurnOrderSlotUI> turnOrderSlots = new();
+    private readonly List<TurnOrderSlotUI> turnOrderSlots = new();
     #endregion
 
     #region Synced vars
 
-    //maps prefabID to playerID
+    //maps classID to playerID
     public readonly SyncDictionary<int, int> characterOwners = new();
 
-    //maps prefabID to PlayerCharacter
+    //maps classID to PlayerCharacter
     public readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
     public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
 
-    //maps character initiative to prefabID
+    //maps character initiative to classID
     public readonly SyncIDictionary<float, int> sortedTurnOrder = new SyncIDictionary<float, int>(new SortedList<float, int>());
 
     //stores index of currently playing character during gameplay phase
@@ -83,7 +83,7 @@ public class GameController : NetworkBehaviour
         foreach (KeyValuePair<float, int> kvp in sortedTurnOrder)
             OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
-        GameController.DefineClasses();
+        this.AllClasses =  CharacterClass.DefineClasses();
 
         Map.Singleton.Initialize();
 
@@ -145,7 +145,7 @@ public class GameController : NetworkBehaviour
                 //Debug.LogFormat("Removing {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
                 foreach (TurnOrderSlotUI currentSlot in turnOrderSlots)
                 {
-                    if (currentSlot.holdsPrefabWithIndex == value)
+                    if (currentSlot.holdsCharacterWithClassID == value)
                     {
                         //Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
                         this.turnOrderSlots.Remove(currentSlot);
@@ -169,14 +169,14 @@ public class GameController : NetworkBehaviour
         //Debug.Log("OnCharacterTurnChanged");
 
         //finds prefab ID for character whose turn it is
-        int newTurnCharacterId = this.PrefabIdForPlayingCharacter();
+        int newTurnCharacterId = this.ClassIdForPlayingCharacter();
 
         //highlights turnOrderSlotUI for currently playing character
         int i = 0;
         foreach (TurnOrderSlotUI slot in turnOrderSlots)
         {
             i++;
-            if (slot.holdsPrefabWithIndex == newTurnCharacterId)
+            if (slot.holdsCharacterWithClassID == newTurnCharacterId)
             {
                 //Debug.Log("Highlighting slot");
                 slot.HighlightAndLabel(i);
@@ -202,9 +202,9 @@ public class GameController : NetworkBehaviour
 
             TurnOrderSlotUI slot = this.turnOrderSlots[i];
             Image slotImage = slot.GetComponent<Image>();
-            int prefabId = this.sortedTurnOrder[initiative];
-            slotImage.sprite = AllPlayerCharPrefabs[prefabId].GetComponent<SpriteRenderer>().sprite;
-            slot.holdsPrefabWithIndex = prefabId;
+            int classID = this.sortedTurnOrder[initiative];
+            slotImage.sprite = AllPlayerCharPrefabs[classID].GetComponent<SpriteRenderer>().sprite;
+            slot.holdsCharacterWithClassID = classID;
 
             if (this.turnOrderIndex == i)
             {
@@ -299,27 +299,26 @@ public class GameController : NetworkBehaviour
     #region Commands
     //called by commands to modify character lists
     [Server]
-    internal void AddMyChar(int playerIndex, int prefabIndex, int initiative)
+    internal void AddMyChar(int playerIndex, int classID, int initiative)
     {
-        this.characterOwners.Add(prefabIndex, playerIndex);
+        this.characterOwners.Add(classID, playerIndex);
 
         //throws callback to update UI
-        this.sortedTurnOrder.Add(initiative, prefabIndex);
+        this.sortedTurnOrder.Add(initiative, classID);
     }
 
-    //called by commands to modify turnOrderSortedPrefabIds
     [Server]
-    internal void RemoveAllMyChars(int playerIndex)
+    internal void RemoveAllMyCharsFromTurnOrder(int playerIndex)
     {
         List<float> ownedToRemove = new();
-        foreach (int characterPrefabId in this.characterOwners.Keys)
+        foreach (int characterClassID in this.characterOwners.Keys)
         {
-            if (this.characterOwners[characterPrefabId] == playerIndex)
+            if (this.characterOwners[characterClassID] == playerIndex)
             {
                 List<float> turnToRemove = new();
                 foreach (float initiative in this.sortedTurnOrder.Keys)
                 {
-                    if (this.sortedTurnOrder[initiative] == characterPrefabId)
+                    if (this.sortedTurnOrder[initiative] == characterClassID)
                     {
                         turnToRemove.Add(initiative);
                     }
@@ -329,7 +328,7 @@ public class GameController : NetworkBehaviour
                     this.sortedTurnOrder.Remove(toRemove);
                 }
 
-                ownedToRemove.Add(characterPrefabId);
+                ownedToRemove.Add(characterClassID);
             }
         }
 
@@ -348,26 +347,26 @@ public class GameController : NetworkBehaviour
             this.turnOrderIndex = 0;
 
         //finds character prefab id for the next turn so that we can check who owns it
-        int currentCharacterPrefab = -1;
+        int currentCharacterClassID = -1;
         int i = 0;
-        foreach (int prefab in this.sortedTurnOrder.Values)
+        foreach (int classID in this.sortedTurnOrder.Values)
         {
             if (i == this.turnOrderIndex)
             {
-                currentCharacterPrefab = prefab;
+                currentCharacterClassID = classID;
             }
             i++;
         }
-        if (currentCharacterPrefab == -1)
+        if (currentCharacterClassID == -1)
         {
-            Debug.Log("Error : Bad code for iterating turnOrderSortedPrefabIds");
+            Debug.Log("Error : Bad code for iterating turn order");
         }
 
-        PlayerCharacter currentPlayer = this.playerCharacters[currentCharacterPrefab];
+        PlayerCharacter currentPlayer = this.playerCharacters[currentCharacterClassID];
         currentPlayer.NextTurn();
 
         //if we don't own that char, swap player turn
-        if (this.playerTurn != characterOwners[currentCharacterPrefab])
+        if (this.playerTurn != characterOwners[currentCharacterClassID])
         {
             this.SwapPlayerTurn();
         }
@@ -445,58 +444,69 @@ public class GameController : NetworkBehaviour
         this.turnOrderIndex = 0;
         this.playerTurn = 0;
 
-        //finds character prefab id for the next turn so that we can check who owns it
-        int currentCharacterPrefab = -1;
+        //finds character class id for the next turn so that we can check who owns it
+        int currentCharacterClassID = -1;
         int i = 0;
-        foreach (int prefab in this.sortedTurnOrder.Values)
+        foreach (int classID in this.sortedTurnOrder.Values)
         {
             if (i == this.turnOrderIndex)
             {
-                currentCharacterPrefab = prefab;
+                currentCharacterClassID = classID;
             }
             i++;
         }
-        if (currentCharacterPrefab == -1)
+        if (currentCharacterClassID == -1)
         {
-            Debug.Log("Error : Bad code for iterating turnOrderSortedPrefabIds");
+            Debug.Log("Error : Bad code for iterating turn order");
         }
 
         //if we don't own that char, swap player turn
-        if (this.playerTurn != characterOwners[currentCharacterPrefab])
+        if (this.playerTurn != characterOwners[currentCharacterClassID])
         {
             this.SwapPlayerTurn();
         }
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdAddCharToTurnOrder(int ownerPlayerIndex, int initiative, int prefabID)
+    public void CmdAddCharToTurnOrder(int ownerPlayerIndex, int initiative, int classID)
     {
-        if (Utility.DictContainsValue(GameController.Singleton.sortedTurnOrder, prefabID))
+        if (Utility.DictContainsValue(GameController.Singleton.sortedTurnOrder, classID))
         {
             //Todo add support for this
             Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
             return;
         }
-        GameController.Singleton.AddMyChar(ownerPlayerIndex, prefabID, initiative);
+        GameController.Singleton.AddMyChar(ownerPlayerIndex, classID, initiative);
     }
 
     #endregion
 
     #region Utility
 
+    public GameObject GetCharPrefabWithClassID(int classID)
+    {
+        foreach (GameObject prefab in this.AllPlayerCharPrefabs)
+        {
+            if (prefab.GetComponent<PlayerCharacter>().charClassID == classID)
+                return prefab;
+        }
+        Debug.Log("Couldn't find any prefabs with given classID");
+        return null;
+    }
+
     public bool IsItMyClientsTurn()
     {
         return this.LocalPlayer.playerIndex == this.playerTurn;
     }
 
-    public bool IsItThisCharactersTurn(int prefabID)
+    public bool IsItThisCharactersTurn(int classID)
     {
-        return this.PrefabIdForPlayingCharacter() == prefabID;
+        return this.ClassIdForPlayingCharacter() == classID;
     }
 
-    public bool DoIOwnThisCharacter(int prefabID)
+    public bool DoIOwnThisCharacter(int classID)
     {
-        if (this.characterOwners[prefabID] == this.LocalPlayer.playerIndex)
+        if (this.characterOwners[classID] == this.LocalPlayer.playerIndex)
         {
             return true;
         }
@@ -506,9 +516,9 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    public bool DoesHeOwnThisCharacter(int playerID, int prefabID)
+    public bool DoesHeOwnThisCharacter(int playerID, int classID)
     {
-        if (this.characterOwners[prefabID] == playerID)
+        if (this.characterOwners[classID] == playerID)
         {
             return true;
         }
@@ -519,9 +529,9 @@ public class GameController : NetworkBehaviour
     }
 
     public bool AllCharactersAreOnBoard() { 
-        foreach (int characterPrefabID in this.sortedTurnOrder.Values)
+        foreach (int classID in this.sortedTurnOrder.Values)
         {
-            if (!this.playerCharacters.ContainsKey(characterPrefabID))
+            if (!this.playerCharacters.ContainsKey(classID))
             {
                 return false;
             }
@@ -529,16 +539,16 @@ public class GameController : NetworkBehaviour
         return true;
     }
 
-    public bool IsThisCharacterPlacedOnBoard(int characterPrefabID)
+    public bool IsThisCharacterPlacedOnBoard(int classID)
     {
-        return this.playerCharacters.ContainsKey(characterPrefabID);
+        return this.playerCharacters.ContainsKey(classID);
     }
 
     public bool AllHisCharactersAreOnBoard(int playerID) {
-        foreach (int characterPrefabID in this.sortedTurnOrder.Values)
+        foreach (int classID in this.sortedTurnOrder.Values)
         {
-            if (DoesHeOwnThisCharacter(playerID, characterPrefabID) &&
-                !IsThisCharacterPlacedOnBoard(characterPrefabID))
+            if (DoesHeOwnThisCharacter(playerID, classID) &&
+                !IsThisCharacterPlacedOnBoard(classID))
             {
                 return false;
             }
@@ -547,16 +557,16 @@ public class GameController : NetworkBehaviour
     }
     
     //return -1 if no character matches turn order index
-    private int PrefabIdForPlayingCharacter(int playingCharacterIndex = -1)
+    private int ClassIdForPlayingCharacter(int playingCharacterIndex = -1)
     {
         //finds prefab ID for character whose turn it is
         int currentTurnOrderIndex = (playingCharacterIndex == -1 ? this.turnOrderIndex : playingCharacterIndex);
         int sortedTurnOrderIndex = 0;
-        foreach (int prefabId in this.sortedTurnOrder.Values)
+        foreach (int classID in this.sortedTurnOrder.Values)
         {
             if (sortedTurnOrderIndex == currentTurnOrderIndex)
             {
-                return prefabId;
+                return classID;
             }
             else
             {
@@ -578,312 +588,6 @@ public class GameController : NetworkBehaviour
         {
             return 0;
         }
-    }
-    #endregion
-
-    #region Static definitions
-
-    //Instantiate all classes to set their definitions here
-    //TODO: find better spot to do this
-    //probably should load from file (CSV)
-    private static void DefineClassesFromCSV(string statsFilename, string abilitiesFilname, string classFilename)
-    {
-
-        //Read in character stats
-        string[] lines = File.ReadAllLines(statsFilename);
-        int i = 0;
-        foreach (string line in lines)
-        {
-            //process headers
-            if (i == 0)
-            {
-
-            }
-
-            string[] columns = line.Split(',');
-            foreach (string column in columns)
-            {
-                //add data to Classes array
-            }
-            i++;
-        }
-
-
-        //define all custom abilities for each class
-
-        //Read in character abilities and plug in custom abilities
-
-        //Read in class meta
-    }
-    private static void DefineClasses()
-    {
-        GameController.AllClasses = new Dictionary<string, CharacterClass>();
-
-        //Barb
-        CharacterClass barbarian = new(
-            name: "Barbarian",
-            description: "Glass cannon, kill or get killed",
-            stats: new(
-                maxHealth: 10,
-                armor: 2,
-                damage: 5,
-                damageType: DamageType.normal,
-                moveSpeed: 3,
-                initiative: 1,
-                range: 1,
-                damageIterations: 3),
-            ability: new(
-                name: "NA",
-                description: "No active ability. Always attacks thrice.",
-                damage: 1,
-                range: 0,
-                aoe: 0,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
-                })
-        );
-        GameController.AllClasses.Add(barbarian.className, barbarian);
-
-        //Cavalier
-        CharacterClass cavalier = new(
-            name: "Cavalier",
-            description: "Rapidly reaches the backline or treasure",
-            stats: new(
-                maxHealth: 12,
-                armor: 3,
-                damage: 5,
-                moveSpeed: 3,
-                initiative: 2,
-                range: 2,
-                damageIterations: 1),
-            ability: new(
-                name: "Lance Throw",
-                description: "Throws a lance at an enemy in a 3 tile radius, dealing damage and stunning the target until next turn.",
-                damage: 5,
-                range: 3,
-                aoe: 0,
-                turnDuration: 1,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(cavalier.className, cavalier);
-
-        //Archer
-        CharacterClass archer = new(
-            name: "Archer",
-            description: "Evasive and deals ranged damage",
-            stats: new(
-                maxHealth: 10,
-                armor: 2,
-                damage: 8,
-                moveSpeed: 1,
-                initiative: 3,
-                range: 3,
-                damageIterations: 1),
-            ability: new(
-                name: "Backflip + Root",
-                description: "Moves 3 tiles away from current position and roots the nearest enemy until next turn.",
-                damage: 0,
-                range: 3,
-                aoe: 0,
-                turnDuration: 1,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(archer.className, archer);
-
-        //Rogue
-        CharacterClass rogue = new(
-            name: "Rogue",
-            description: "Can guarantee a treasure or a kill on low armor characters",
-            stats: new(
-                maxHealth: 10,
-                armor: 2,
-                damage: 7,
-                moveSpeed: 2,
-                initiative: 4,
-                range: 1,
-                damageIterations: 2),
-            ability: new(
-                name: "Stealth",
-                description: "Can activate Stealth to become untargetable until he deals or is dealt damage.",
-                damage: 0,
-                range: 0,
-                aoe: 0,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(rogue.className, rogue);
-
-        //Warrior
-        CharacterClass warrior = new(
-            name: "Warrior",
-            description: "Tanky character with great mobility",
-            stats: new(
-                maxHealth: 15,
-                armor: 4,
-                damage: 5,
-                moveSpeed: 2,
-                initiative: 5,
-                range: 1,
-                damageIterations: 1),
-            ability: new(
-                name: "Charge",
-                description: "Move towards an enemy and deal damage.",
-                damage: 5,
-                range: 3,
-                aoe: 0,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(warrior.className, warrior);
-
-        //Paladin
-        CharacterClass paladin = new(
-            name: "Paladin",
-            description: "Buffs allies and tanks",
-            stats: new(
-                maxHealth: 15,
-                armor: 4,
-                damage: 5,
-                moveSpeed: 2,
-                initiative: 6,
-                range: 1,
-                damageIterations: 1),
-            ability: new(
-                name: "Blessing",
-                description: "Grants +2 to damage, health, armor and movement to all allies.",
-                damage: 0,
-                range: 0,
-                aoe: 0,
-                turnDuration: 2,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(paladin.className, paladin);
-
-        //Druid
-        CharacterClass druid = new(
-            name: "Druid",
-            description: "Impedes character movement, delaying damage or access to treasure",
-            stats: new(
-                maxHealth: 10,
-                armor: 2,
-                damage: 5,
-                damageType: DamageType.magic,
-                moveSpeed: 1,
-                initiative: 7,
-                range: 2,
-                damageIterations: 1),
-            ability: new(
-                name: "Vine grasp",
-                description: "Targets a tile and roots all enemies in a 2 tile radius.",
-                damage: 0,
-                range: 0,
-                aoe: 2,
-                turnDuration: 1,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(druid.className, druid);
-
-        //Necromancer
-        CharacterClass necromancer = new(
-            name: "Necromancer",
-            description: "Enables constant damage on distant targets but deals low damage by himself",
-            stats: new(
-                maxHealth: 8,
-                armor: 3,
-                damage: 3,
-                damageType: DamageType.magic,
-                moveSpeed: 1,
-                initiative: 8,
-                range: 999,
-                damageIterations: 1),
-            ability: new(
-                name: "Soul Projection",
-                description: "Targets any enemy and brings an effigy within two tiles that transfers received damage to targeted character until the next turn.",
-                damage: 0,
-                range: 2,
-                aoe: 0,
-                turnDuration: 1,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(necromancer.className, necromancer);
-
-        //Wizard
-        CharacterClass wizard = new(
-            name: "Wizard",
-            description: "Deals large ranged damage that ignores armor",
-            stats: new(
-                maxHealth: 8,
-                armor: 1,
-                damage: 5,
-                damageType: DamageType.magic,
-                moveSpeed: 1,
-                initiative: 9,
-                range: 3,
-                damageIterations: 1),
-            ability: new(
-                name: "Fireball",
-                description: "Throws a fireball at target character that explodes on contact, dealing damage adjacent tiles.",
-                damage: 5,
-                damageType: DamageType.magic,
-                range: 3,
-                aoe: 1,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(wizard.className, wizard);
-
-        //Priest
-        CharacterClass priest = new(
-            name: "Priest",
-            description: "Healer",
-            stats: new(
-                maxHealth: 9,
-                armor: 1,
-                damage: 5,
-                damageType: DamageType.healing,
-                moveSpeed: 2,
-                initiative: 10,
-                range: 3,
-                damageIterations: 1),
-            ability: new(
-                name: "Resurrect",
-                description: "Revives an ally at 50% of max HP.",
-                damage: 0,
-                range: 999,
-                aoe: 0,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
-            );
-        GameController.AllClasses.Add(priest.className, priest);
     }
     #endregion
 }

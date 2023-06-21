@@ -60,7 +60,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     public bool isStartingZone;
 
     [SyncVar]
-    public int holdsCharacterWithPrefabID;
+    public int holdsCharacterWithClassID;
 
     [SyncVar]
     public ObstacleType holdsObstacle;
@@ -87,10 +87,10 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
                     toReturn = false;
                     break;
                 case GameMode.gameplay:
-                    if (this.holdsCharacterWithPrefabID != -1)
+                    if (this.holdsCharacterWithClassID != -1)
                     {
                         if (GameController.Singleton.IsItMyClientsTurn() &&
-                            GameController.Singleton.IsItThisCharactersTurn(this.holdsCharacterWithPrefabID))
+                            GameController.Singleton.IsItThisCharactersTurn(this.holdsCharacterWithClassID))
                         {
                             toReturn = true;
                         }
@@ -114,7 +114,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         //default values
         this.isStartingZone = false;
         this.startZoneForPlayerIndex = -1;
-        this.holdsCharacterWithPrefabID = -1;
+        this.holdsCharacterWithClassID = -1;
         this.holdsObstacle = ObstacleType.none;
         this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
@@ -239,11 +239,11 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     }
     public bool HoldsACharacter()
     {
-        return (this.holdsCharacterWithPrefabID != -1);
+        return (this.holdsCharacterWithClassID != -1);
     }
 
     internal void clearCharacter()
     {
-        this.holdsCharacterWithPrefabID = -1;
+        this.holdsCharacterWithClassID = -1;
     }
 }

@@ -43,32 +43,33 @@ public class PlayerController : NetworkBehaviour
 
         //for now just choose random chars
         //TODO : fill these using draft eventually
-        List<int> usedPrefabs = new();
+        List<int> usedClasses = new();
 
-        //remove characters used by other clients
-        foreach (int characterId in GameController.Singleton.characterOwners.Keys)
+        //make characters used by other clients unavailable
+        foreach (int classID in GameController.Singleton.characterOwners.Keys)
         {
-            usedPrefabs.Add(characterId);
+            usedClasses.Add(classID);
         }
         for (int i = 0; i < GameController.Singleton.characterSlots.Count; i++)
         {            
-            int prefabIndex;
+            int classID;
+            List<int> classIDs = new();
+            GameController.Singleton.AllClasses.Keys.CopyTo<int>(classIDs);
             do
             {
-                prefabIndex = Random.Range(0, GameController.Singleton.AllPlayerCharPrefabs.Length);
-
+                classID = classIDs[Random.Range(0, classIDs.Count)];
             }
-            while (usedPrefabs.Contains(prefabIndex));
-            usedPrefabs.Add(prefabIndex);
+            while (usedClasses.Contains(classID));
+            usedClasses.Add(classID);
 
-            PlayerCharacter newChar = GameController.Singleton.AllPlayerCharPrefabs[prefabIndex].GetComponent<PlayerCharacter>();
-            CharacterSlotUI slot = GameController.Singleton.characterSlots[i];
+            CharacterClass newCharClass = GameController.Singleton.AllClasses[classID];
+            CharacterSlotUI characterSlot = GameController.Singleton.characterSlots[i];
 
-            slot.GetComponent<Image>().sprite = newChar.GetComponent<SpriteRenderer>().sprite;
+            characterSlot.GetComponent<Image>().sprite = GameController.Singleton.GetCharPrefabWithClassID(classID).GetComponent<SpriteRenderer>().sprite;
 
-            slot.HoldsCharacterWithPrefabID = prefabIndex;
+            characterSlot.HoldsCharacterWithClassID = classID;
 
-            GameController.Singleton.CmdAddCharToTurnOrder(this.playerIndex, GameController.AllClasses[newChar.className].charStats.initiative, prefabIndex);
+            GameController.Singleton.CmdAddCharToTurnOrder(this.playerIndex, newCharClass.charStats.initiative, classID);
         }
     }
 

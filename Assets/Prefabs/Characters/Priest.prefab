@@ -49,7 +49,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  className: Priest
+  charClassID: 9
+  equippedTreasureIDs: 
+  hasMoved: 0
+  hasAttacked: 0
+  hasUsedAbility: 0
+  hasUsedTreasure: 0
 --- !u!212 &5537270529434640789
 SpriteRenderer:
   m_ObjectHideFlags: 0

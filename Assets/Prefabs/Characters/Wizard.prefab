@@ -49,7 +49,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  className: Wizard
+  charClassID: 8
+  equippedTreasureIDs: 
+  hasMoved: 0
+  hasAttacked: 0
+  hasUsedAbility: 0
+  hasUsedTreasure: 0
 --- !u!212 &6636920602658802812
 SpriteRenderer:
   m_ObjectHideFlags: 0

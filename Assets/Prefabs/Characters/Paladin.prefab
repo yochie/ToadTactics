@@ -49,7 +49,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  className: Paladin
+  charClassID: 5
+  equippedTreasureIDs: 
+  hasMoved: 0
+  hasAttacked: 0
+  hasUsedAbility: 0
+  hasUsedTreasure: 0
 --- !u!212 &1336760199067128837
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -9,7 +9,7 @@ public class TurnOrderSlotUI : MonoBehaviour
 {
     private Image highlightImage;
 
-    public int holdsPrefabWithIndex = -1;
+    public int holdsCharacterWithClassID = -1;
 
     private string initiativeLabel;
     public string InitiativeLabel

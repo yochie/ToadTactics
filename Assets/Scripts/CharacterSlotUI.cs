@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private Vector3 startPosition;
-    public int HoldsCharacterWithPrefabID { get; set; }
+    public int HoldsCharacterWithClassID { get; set; }
 
     private bool hasBeenPlacedOnBoard = false;
     public bool HasBeenPlacedOnBoard
@@ -91,7 +91,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             this.transform.position = this.startPosition;
             Hex destinationHex = Map.Singleton.HoveredHex;
             if (destinationHex == null) { return; }
-            Map.Singleton.CmdCreateCharOnBoard(this.HoldsCharacterWithPrefabID, destinationHex);
+            Map.Singleton.CmdCreateCharOnBoard(this.HoldsCharacterWithClassID, destinationHex);
         }
     }
 }

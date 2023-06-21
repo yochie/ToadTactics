@@ -49,7 +49,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  className: Necromancer
+  charClassID: 7
+  equippedTreasureIDs: 
+  hasMoved: 0
+  hasAttacked: 0
+  hasUsedAbility: 0
+  hasUsedTreasure: 0
 --- !u!212 &5429631281560572632
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class PlayerCharacter : NetworkBehaviour
 {
-    //TODO : charability should be stored via ID (enum type) for syncvar purposes
-    public CharacterClass CharClass;
+    public CharacterClass charClass;
+
+    [SyncVar(hook = nameof(OnCharClassIDChanged))]
+    public int charClassID;
     [SyncVar]
     private int currentLife;
+    //treasureID
     [SyncVar]
-    public List<TreasureID> EquippedTreasure;
+    public List<uint> equippedTreasureIDs;
     [SyncVar]
-    public CharacterStats CurrentStats;
-    [SyncVar]
-    public string className;
+    public CharacterStats currentStats;
     [SyncVar]
     public bool hasMoved = false;
     [SyncVar]
@@ -34,20 +36,30 @@ public class PlayerCharacter : NetworkBehaviour
             {
                 this.currentLife = 0;
             }
-            else if (value > CurrentStats.maxHealth)
+            else if (value > currentStats.maxHealth)
             {
-                this.currentLife = this.CurrentStats.maxHealth;
+                this.currentLife = this.currentStats.maxHealth;
             }
         }
     }
 
-    public void Initialize(CharacterClass charChlass) {
-        this.CharClass = charChlass;
-        this.CurrentStats = charChlass.charStats;
-        this.CurrentLife = CurrentStats.maxHealth;
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        this.OnCharClassIDChanged(-1, this.charClassID);
     }
 
-   public bool HasRemainingActions()
+    private void OnCharClassIDChanged(int _, int newID)
+    {
+        this.charClass = null;
+
+        if (GameController.Singleton.AllClasses[this.charClassID] != null)
+            this.charClass = GameController.Singleton.AllClasses[this.charClassID];
+        else
+            Debug.Log("Couldn't find corresponding class for classID");
+    }
+
+    public bool HasRemainingActions()
     {
         if (this.hasMoved && this.hasAttacked && this.hasUsedAbility && this.hasUsedTreasure)
             return false;

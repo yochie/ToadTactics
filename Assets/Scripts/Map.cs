@@ -278,8 +278,8 @@ public class Map : NetworkBehaviour
 
         if (h.HoldsACharacter())
         {
-            int heldCharacter = h.holdsCharacterWithPrefabID;
-            CharacterClass charClass = GameController.Singleton.playerCharacters[heldCharacter].CharClass;
+            int heldCharacter = h.holdsCharacterWithClassID;
+            CharacterClass charClass = GameController.Singleton.playerCharacters[heldCharacter].charClass;
             this.DisplayMovementRange(h, charClass.charStats.moveSpeed);
         }
     }
@@ -485,7 +485,7 @@ public class Map : NetworkBehaviour
         foreach (HexCoordinates neighbourCoord in h.coordinates.Neighbours())
         {
             Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
-            if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && neighbour.holdsCharacterWithPrefabID == -1)
+            if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && neighbour.holdsCharacterWithClassID == -1)
             {
                 toReturn.Add(neighbour);
             }
@@ -570,31 +570,22 @@ public class Map : NetworkBehaviour
         //Validation
         if (source == null ||
             !source.HoldsACharacter() ||
-            !GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithPrefabID) ||
+            !GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithClassID) ||
             dest.holdsObstacle != ObstacleType.none ||
             dest.HoldsACharacter()           
             )
         {
             Debug.Log("Client requested invalid move");
-            //Debug.Log(source.holdsCharacterWithPrefabID);
-            //Debug.Log(GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithPrefabID));
-            //Debug.Log(dest.holdsObstacle);
-            //Debug.Log(dest.holdsCharacterWithPrefabID);
             return;
         }
-        PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithPrefabID];
-        if (PathCost(FindMovementPath(source, dest)) > toMove.CharClass.charStats.moveSpeed) {
+        PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        if (PathCost(FindMovementPath(source, dest)) > toMove.charClass.charStats.moveSpeed) {
             Debug.Log("Client requested move outside character range");
             return;
         }
-        //Debug.Log(source.holdsCharacterWithPrefabID);
-        //Debug.Log(GameController.Singleton.playerCharacters.Count); ;
-        //Debug.Log(toMove);
-        //Debug.Log(toMove.gameObject);
-        //Debug.Log(dest.transform.position);
 
         toMove.hasMoved = true;
-        dest.holdsCharacterWithPrefabID = source.holdsCharacterWithPrefabID;
+        dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
         source.clearCharacter();
 
 
@@ -603,34 +594,31 @@ public class Map : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdCreateCharOnBoard(int characterPrefabID, Hex destinationHex, NetworkConnectionToClient sender = null)
+    public void CmdCreateCharOnBoard(int characterClassID, Hex destinationHex, NetworkConnectionToClient sender = null)
     {
         int ownerPlayerIndex = sender.identity.gameObject.GetComponent<PlayerController>().playerIndex;
         //validate destination
         if (destinationHex == null ||
             !destinationHex.isStartingZone ||
             destinationHex.startZoneForPlayerIndex != ownerPlayerIndex ||
-            destinationHex.holdsCharacterWithPrefabID != -1)
+            destinationHex.holdsCharacterWithClassID != -1)
         {
             Debug.Log("Invalid character destination");
             return;
         }
 
-        GameObject characterPrefab = GameController.Singleton.AllPlayerCharPrefabs[characterPrefabID];
-        string prefabClassName = characterPrefab.GetComponent<PlayerCharacter>().className;
+        GameObject characterPrefab = GameController.Singleton.GetCharPrefabWithClassID(characterClassID);
         Vector3 destinationWorldPos = destinationHex.transform.position;
         GameObject newChar =
             Instantiate(characterPrefab, destinationWorldPos, Quaternion.identity);
-        //TODO : Create other classes and set their name in prefabs
-        newChar.GetComponent<PlayerCharacter>().Initialize(GameController.AllClasses[prefabClassName]);
         NetworkServer.Spawn(newChar, connectionToClient);
-        GameController.Singleton.playerCharactersNetIDs.Add(characterPrefabID, newChar.GetComponent<NetworkIdentity>().netId);
+        GameController.Singleton.playerCharactersNetIDs.Add(characterClassID, newChar.GetComponent<NetworkIdentity>().netId);
 
         //update Hex state, synced to clients by syncvar
-        destinationHex.holdsCharacterWithPrefabID = characterPrefabID;
+        destinationHex.holdsCharacterWithClassID = characterClassID;
 
         Map.Singleton.RpcPlaceChar(newChar, destinationWorldPos);
-        this.markCharacterSlotAsPlaced(sender, characterPrefabID);
+        this.markCharacterSlotAsPlaced(sender, characterClassID);
 
         GameController.Singleton.EndTurn();
     }
@@ -639,11 +627,11 @@ public class Map : NetworkBehaviour
     #region RPCs
     //update client UI to prevent placing same character twice
     [TargetRpc]
-    public void markCharacterSlotAsPlaced(NetworkConnectionToClient target, int characterPrefabID)
+    public void markCharacterSlotAsPlaced(NetworkConnectionToClient target, int classID)
     {
         foreach (CharacterSlotUI slot in GameController.Singleton.characterSlots)
         {
-            if (slot.HoldsCharacterWithPrefabID == characterPrefabID)
+            if (slot.HoldsCharacterWithClassID == classID)
             {
                 slot.HasBeenPlacedOnBoard = true;
             }
