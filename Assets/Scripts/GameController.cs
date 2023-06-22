@@ -576,7 +576,10 @@ public class GameController : NetworkBehaviour
     public void TestButton()
     {
         //testing
-        Map.Singleton.LOSReaches(Map.Singleton.GetHex(0, 0), Map.Singleton.GetHex(2, 1));
+        Hex target = Map.Singleton.GetHex(2, 1);
+        target.AttackHover(true);
+        bool result = Map.Singleton.LOSReaches(Map.Singleton.GetHex(0, 0), target, 10);
+        Debug.Log(result);
     }
 
 }

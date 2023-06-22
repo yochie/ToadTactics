@@ -354,6 +354,15 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         return GameController.Singleton.playerCharacters[this.holdsCharacterWithClassID];
     }
 
+    public bool BreaksLOS(int targetClassID)
+    {
+        if ((this.HoldsACharacter() && this.holdsCharacterWithClassID != targetClassID) ||
+            this.holdsObstacle != ObstacleType.none )
+            return true;
+        else
+            return false;
+    }
+
     #endregion
 
 }

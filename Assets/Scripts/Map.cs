@@ -557,24 +557,29 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
-    public bool LOSReaches(Hex source, Hex dest)
+    public bool LOSReaches(Hex source, Hex target, int range)
     {
+        if (Map.HexDistance(source, target) > range)
+            return false;
+
+        bool unobstructed = true;
         RaycastHit2D[] hits;
         Vector2 sourcePos = source.transform.position;
-        Vector2 destPos = dest.transform.position;
+        Vector2 destPos = target.transform.position;
         Vector2 direction = destPos - sourcePos;
 
-        hits = Physics2D.RaycastAll(sourcePos, direction, 999, hexMask);
+        hits = Physics2D.RaycastAll(sourcePos, direction, direction.magnitude, hexMask);
         foreach(RaycastHit2D hit in hits)
         {
             GameObject hitObject = hit.collider.gameObject;
             Hex hitHex = hitObject.GetComponent<Hex>();
-            if (hitHex != null)
+            if (hitHex != null && hitHex.BreaksLOS(target.HoldsACharacter() ? target.holdsCharacterWithClassID : -1))
             {
                 hitHex.DisplayLOSObstruction(true);
+                unobstructed = false;
             }
         }
-        return false;
+        return unobstructed;
     }
     #endregion
 
