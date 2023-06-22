@@ -105,7 +105,6 @@ public class GameController : NetworkBehaviour
         this.playerTurn = 0;
     }
 
-
     public void Start()
     {
         if (!IsItMyClientsTurn())
@@ -297,46 +296,6 @@ public class GameController : NetworkBehaviour
     #endregion
 
     #region Commands
-    //called by commands to modify character lists
-    [Server]
-    internal void AddMyChar(int playerIndex, int classID, int initiative)
-    {
-        this.characterOwners.Add(classID, playerIndex);
-
-        //throws callback to update UI
-        this.sortedTurnOrder.Add(initiative, classID);
-    }
-
-    [Server]
-    internal void RemoveAllMyCharsFromTurnOrder(int playerIndex)
-    {
-        List<float> ownedToRemove = new();
-        foreach (int characterClassID in this.characterOwners.Keys)
-        {
-            if (this.characterOwners[characterClassID] == playerIndex)
-            {
-                List<float> turnToRemove = new();
-                foreach (float initiative in this.sortedTurnOrder.Keys)
-                {
-                    if (this.sortedTurnOrder[initiative] == characterClassID)
-                    {
-                        turnToRemove.Add(initiative);
-                    }
-                }
-                foreach (float toRemove in turnToRemove)
-                {
-                    this.sortedTurnOrder.Remove(toRemove);
-                }
-
-                ownedToRemove.Add(characterClassID);
-            }
-        }
-
-        foreach (int toRemove in ownedToRemove)
-        {
-            this.characterOwners.Remove(toRemove);
-        }
-    }
 
     [Server]
     private void NextCharacterTurn()
@@ -385,13 +344,13 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    //Used by End turn button
     [Command(requiresAuthority = false)]
     public void CmdEndTurn()
     {
         this.EndTurn();
     }
 
-    //modifies syncvars currentTurnPlayer and characterTurnOrderIndex
     [Server]
     public void EndTurn()
     {
@@ -425,20 +384,20 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
-    private void SetPhase(GameMode phase)
+    private void SetPhase(GameMode newPhase)
     {
-        this.currentGameMode = phase;
+        this.currentGameMode = newPhase;
 
-        switch(phase)
+        switch(newPhase)
         {
             case GameMode.gameplay:
-                this.InitCharacterTurns();
+                this.InitGameplayMode();
                 break;
         }
     }
 
     [Command(requiresAuthority = false)]
-    public void InitCharacterTurns()
+    public void InitGameplayMode()
     {
         Debug.Log("Resetting turn");
         this.turnOrderIndex = 0;
@@ -476,7 +435,10 @@ public class GameController : NetworkBehaviour
             Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
             return;
         }
-        GameController.Singleton.AddMyChar(ownerPlayerIndex, classID, initiative);
+        this.characterOwners.Add(classID, ownerPlayerIndex);
+
+        //throws callback to update UI
+        this.sortedTurnOrder.Add(initiative, classID);
     }
 
     #endregion
