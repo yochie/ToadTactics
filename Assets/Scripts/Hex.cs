@@ -2,8 +2,9 @@ using System;
 using TMPro;
 using UnityEngine;
 using Mirror;
+using UnityEngine.EventSystems;
 
-public class Hex : NetworkBehaviour, IEquatable<Hex>
+public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     #region Constant vars
 
@@ -39,6 +40,56 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             this.labelTextMesh.text = value;
         }
     }
+
+    private Vector3 dragStartPosition;
+    private bool draggingStarted;
+    public bool IsSelectable
+    {
+        get
+        {
+            bool toReturn = false;
+            switch (GameController.Singleton.currentGameMode)
+            {
+                case GameMode.characterPlacement:
+                    toReturn = false;
+                    break;
+                case GameMode.gameplay:
+                    if (this.HoldsACharacter())
+                    {
+                        if (GameController.Singleton.IsItMyClientsTurn() &&
+                            GameController.Singleton.IsItThisCharactersTurn(this.holdsCharacterWithClassID) &&
+                            Map.Singleton.controlMode == ControlMode.move
+                            )
+                        {
+                            toReturn = true;
+                        }
+                        else
+                        {
+                            toReturn = false;
+                        }
+                    }
+                    else
+                    {
+                        toReturn = true;
+                    }
+                    break;
+            }
+            return toReturn;
+        }
+    }
+
+    public bool IsDraggable
+    {
+        get
+        {
+            //use same criteria as selection except we can't drag empty hexes
+            if (!this.HoldsACharacter())
+                return false;
+            else
+                return this.IsSelectable;
+        }
+    }
+
     #endregion
 
     #region Sync vars
@@ -68,34 +119,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     #endregion
 
     #region State vars
-    public bool IsSelectable
-    {
-        get
-        {
-            bool toReturn = false;
-            switch (GameController.Singleton.currentGameMode)
-            {
-                case GameMode.characterPlacement:
-                    toReturn = false;
-                    break;
-                case GameMode.gameplay:
-                    if (this.holdsCharacterWithClassID != -1)
-                    {
-                        if (GameController.Singleton.IsItMyClientsTurn() &&
-                            GameController.Singleton.IsItThisCharactersTurn(this.holdsCharacterWithClassID))
-                        {
-                            toReturn = true;
-                        }
-                        else
-                        {
-                            toReturn = false;
-                        }
-                    } else { toReturn = true; }
-                    break;
-            }
-            return toReturn;
-        }
-    }
     public int MoveCost
     {
         get
@@ -109,7 +132,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             }
 
         }
-    }
+    }    
     #endregion
 
     #region Startup
@@ -220,10 +243,38 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         Map.Singleton.UnhoverHex(this);
     }
 
-    private void OnMouseDown()
+    void IPointerClickHandler.OnPointerClick (PointerEventData eventData)
     {
         if(IsSelectable)
             Map.Singleton.ClickHex(this);
+    }
+
+    void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
+    {
+        if (this.IsDraggable)
+        {
+            this.dragStartPosition = this.transform.position;
+            this.draggingStarted = true;
+            Map.Singleton.StartDragHex(this);
+        }
+    }
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (this.draggingStarted)
+        {
+            PlayerCharacter heldCharacter = this.GetHeldCharacterObject();
+            heldCharacter.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, Camera.main.nearClipPlane));
+        }
+    }
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (this.draggingStarted)
+        {
+            this.draggingStarted = false;
+            PlayerCharacter heldCharacter = this.GetHeldCharacterObject();
+            heldCharacter.transform.position = this.dragStartPosition;
+            Map.Singleton.EndDragHex(this);
+        }
     }
     #endregion
 
@@ -267,6 +318,16 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     {
         return (this.holdsCharacterWithClassID != -1);
     }
+
+    public PlayerCharacter GetHeldCharacterObject()
+    {
+        if (!this.HoldsACharacter()) {
+            Debug.Log("Trying to get held character from hex without one.");
+            return null; 
+        }
+        return GameController.Singleton.playerCharacters[this.holdsCharacterWithClassID];
+    }
+
     #endregion
 
 }

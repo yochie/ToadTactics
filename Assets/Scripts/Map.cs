@@ -56,9 +56,9 @@ public class Map : NetworkBehaviour
     public static Map Singleton { get; private set; }
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
-
     private HashSet<Hex> displayedRange = new();
     private List<Hex> displayedPath = new();
+    public ControlMode controlMode;
 
     #endregion
 
@@ -71,6 +71,9 @@ public class Map : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+
+        this.controlMode = ControlMode.move;
+
         hexGridNetIds.Callback += OnHexGridNetIdsChange;
         // Process initial SyncDictionary payload
         foreach (KeyValuePair<Vector2Int, uint> kvp in hexGridNetIds)
@@ -224,11 +227,24 @@ public class Map : NetworkBehaviour
         }
     }
 
+
+    public void StartDragHex(Hex draggedHex)
+    {
+        this.UnselectHex();
+        this.SelectHex(draggedHex);
+    }
+
+    public void EndDragHex(Hex startHex)
+    {
+        Hex endHex = this.HoveredHex;               
+        this.CmdMoveChar(startHex, endHex);
+        this.UnselectHex();
+    }
+
     public void ClickHex(Hex clickedHex)
     {
         Hex previouslySelected = this.SelectedHex;
 
-        //moves previously selected player character
         if (previouslySelected != null && previouslySelected.HoldsACharacter())
         {
             this.CmdMoveChar(previouslySelected, clickedHex);
@@ -245,8 +261,6 @@ public class Map : NetworkBehaviour
         {
             this.UnselectHex();
         }
-
-        
     }
 
     public void SelectHex(Hex h)
@@ -303,9 +317,9 @@ public class Map : NetworkBehaviour
         //this.HidePath();
     }
 
-    private void DisplayMovementRange(Hex position, int moveSpeed)
+    private void DisplayMovementRange(Hex position, int moveDistance)
     {
-        this.displayedRange = RangeWithObstaclesAndCost(position, moveSpeed);
+        this.displayedRange = RangeWithObstaclesAndCost(position, moveDistance);
         foreach (Hex h in this.displayedRange)
         {
             //selected hex stays at selected color state
@@ -546,11 +560,13 @@ public class Map : NetworkBehaviour
     {
         PlayerController senderPlayer = sender.identity.gameObject.GetComponent<PlayerController>();        
         //Validation
-        if (source == null ||
+        if (dest == null ||
+            source == null ||
+            source == dest ||
             !source.HoldsACharacter() ||
             !GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithClassID) ||
             dest.holdsObstacle != ObstacleType.none ||
-            dest.HoldsACharacter()           
+            dest.HoldsACharacter()        
             )
         {
             Debug.Log("Client requested invalid move");
@@ -620,6 +636,15 @@ public class Map : NetworkBehaviour
     {
         character.transform.position = position;
     }
+
+    [ClientRpc]
+    public void RpcClearState()
+    {
+        this.UnselectHex();
+        this.HidePath();
+        this.HideMovementRange();        
+    }
+
 
     //callback for syncing hex grid dict netids
     [Client]

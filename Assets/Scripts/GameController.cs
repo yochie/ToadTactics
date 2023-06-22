@@ -300,6 +300,8 @@ public class GameController : NetworkBehaviour
     [Server]
     private void NextCharacterTurn()
     {
+        Map.Singleton.RpcClearState();
+
         //loops through turn order        
         this.turnOrderIndex++;
         if (this.turnOrderIndex >= this.sortedTurnOrder.Count)
