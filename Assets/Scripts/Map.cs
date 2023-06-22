@@ -255,7 +255,7 @@ public class Map : NetworkBehaviour
         {
             int heldCharacterID = h.holdsCharacterWithClassID;
             PlayerCharacter heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
-            this.DisplayMovementRange(h, heldCharacter.remainingMoves);
+            this.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
         }
 
         this.SelectedHex = h;
@@ -361,7 +361,7 @@ public class Map : NetworkBehaviour
         return (int)((Mathf.Abs(diff.x) + Mathf.Abs(diff.y) + Mathf.Abs(diff.z)) / 2f);
     }
 
-    public List<Hex> RangeUnobstructed(Hex start, int distance)
+    public List<Hex> RangeIgnoringObstacles(Hex start, int distance)
     {
         List<Hex> toReturn = new();
 
@@ -558,13 +558,11 @@ public class Map : NetworkBehaviour
         }
         PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
         int moveCost = PathCost(FindMovementPath(source, dest));
-        if (moveCost > (toMove.hasMoved ? toMove.remainingMoves : toMove.currentStats.moveSpeed)) {
+        if (moveCost > toMove.CanMoveDistance()) {
             Debug.Log("Client requested move outside his current range");
             return;
         }
-
-        toMove.hasMoved = true;
-        toMove.remainingMoves -= moveCost;
+        toMove.UseMoves(moveCost);
         dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
         source.clearCharacter();
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);

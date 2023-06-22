@@ -25,7 +25,7 @@ public class PlayerCharacter : NetworkBehaviour
     [SyncVar]
     public bool hasUsedTreasure = false;
     [SyncVar]
-    public int remainingMoves = 0;
+    private int remainingMoves = 0;
 
     public int CurrentLife
     {
@@ -86,7 +86,23 @@ public class PlayerCharacter : NetworkBehaviour
         else
             return true;
     }
-
+    public int CanMoveDistance()
+    {
+        if (hasMoved && (hasAttacked || hasUsedAbility || hasUsedTreasure))
+            return 0;
+        else
+            return remainingMoves;
+    }
+    public void UseMoves(int moveDistance)
+    {
+        if (this.CanMoveDistance() < moveDistance)
+        {
+            Debug.LogFormat("Attempting to move {0} by {1} while it only has {2} moves left. You should validate move beforehand.", this.charClass.className, moveDistance, this.CanMoveDistance());
+            return;
+        }
+        this.remainingMoves -= moveDistance;
+        this.hasMoved = true;
+    }
     [Server]
     public void NewTurn()
     {
@@ -94,5 +110,7 @@ public class PlayerCharacter : NetworkBehaviour
         this.hasAttacked = false;
         this.remainingMoves = this.currentStats.moveSpeed;
     }
+
+
     
 }
