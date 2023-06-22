@@ -1,20 +1,22 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Mirror;
 
 public class Hex : NetworkBehaviour, IEquatable<Hex>
 {
+    #region Constant vars
+
     public static readonly Color HEX_DEFAULT_COLOR = Color.white;
     public static readonly Color HEX_START_COLOR = Color.blue;
     public static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
     public static readonly Color HEX_HOVER_COLOR = Color.cyan;
     public static readonly Color HEX_SELECT_COLOR = Color.green;
     public static readonly Color HEX_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+    #endregion
 
-    //vars used by UI only, not synced
+    #region UI vars
+
     private SpriteRenderer sprite;
 
     public Color baseColor = Hex.HEX_DEFAULT_COLOR;
@@ -37,22 +39,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             this.labelTextMesh.text = value;
         }
     }
+    #endregion
 
-    public int MoveCost
-    {
-        get { 
-            switch (this.holdsHazard)
-            {
-                case HazardType.cold:
-                    return 2;
-                default:
-                    return 1;
-            }
-        
-        }        
-    }
-
-    //state vars to sync
+    #region Sync vars
     [SyncVar]
     public HexCoordinates coordinates;
 
@@ -76,6 +65,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     [SyncVar]
     public int startZoneForPlayerIndex;
 
+    #endregion
+
+    #region State vars
     public bool IsSelectable
     {
         get
@@ -104,7 +96,23 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             return toReturn;
         }
     }
+    public int MoveCost
+    {
+        get
+        {
+            switch (this.holdsHazard)
+            {
+                case HazardType.cold:
+                    return 2;
+                default:
+                    return 1;
+            }
 
+        }
+    }
+    #endregion
+
+    #region Startup
 
     [Server]
     public void Init(HexCoordinates hc, string name, Vector3 position, Vector3 scale, Quaternion rotation) {
@@ -177,7 +185,31 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
 
         this.HexColor = this.baseColor;
         this.unHoveredColor = this.baseColor;
-}
+    }
+    #endregion
+
+    #region State
+    internal void clearCharacter()
+    {
+        this.holdsCharacterWithClassID = -1;
+    }
+    public void Delete()
+    {
+        if (this.coordLabelTextMesh != null)
+        {
+            Destroy(this.coordLabelTextMesh.gameObject);
+        }
+
+        if (this.labelTextMesh != null)
+        {
+            Destroy(this.labelTextMesh.gameObject);
+        }
+
+        Destroy(this.gameObject);
+    }
+    #endregion
+
+    #region Events
 
     private void OnMouseEnter() {
         Map.Singleton.HoverHex(this);
@@ -193,6 +225,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         if(IsSelectable)
             Map.Singleton.ClickHex(this);
     }
+    #endregion
+
+    #region UI state
 
     internal void ShowLabel()
     {
@@ -220,20 +255,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.unHoveredColor = mode ? Hex.HEX_RANGE_COLOR : this.baseColor;
         this.HexColor = mode ? Hex.HEX_RANGE_COLOR : this.baseColor;
     }
+    #endregion
 
-    public void Delete()
-    {
-        if(this.coordLabelTextMesh != null) { 
-            Destroy(this.coordLabelTextMesh.gameObject); 
-        }
-        
-        if (this.labelTextMesh != null)
-        {
-            Destroy(this.labelTextMesh.gameObject);
-        }
-        
-        Destroy(this.gameObject);
-    }
+    #region Utility
 
     public bool Equals(Hex other)
     {
@@ -243,9 +267,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     {
         return (this.holdsCharacterWithClassID != -1);
     }
+    #endregion
 
-    internal void clearCharacter()
-    {
-        this.holdsCharacterWithClassID = -1;
-    }
 }

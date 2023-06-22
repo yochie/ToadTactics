@@ -10,7 +10,6 @@ public class PlayerController : NetworkBehaviour
     //1 for client
     public int playerIndex;
 
-
     public override void OnStartClient()
     {
         base.OnStartClient();

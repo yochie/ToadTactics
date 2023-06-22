@@ -12,7 +12,6 @@ public class PlayerCharacter : NetworkBehaviour
     public int charClassID;
     [SyncVar]
     private int currentLife;
-    //treasureID
     [SyncVar]
     public List<uint> equippedTreasureIDs;
     [SyncVar]
@@ -25,7 +24,8 @@ public class PlayerCharacter : NetworkBehaviour
     public bool hasUsedAbility = false;
     [SyncVar]
     public bool hasUsedTreasure = false;
-
+    [SyncVar]
+    public int remainingMoves = 0;
 
     public int CurrentLife
     {
@@ -49,14 +49,34 @@ public class PlayerCharacter : NetworkBehaviour
         this.OnCharClassIDChanged(-1, this.charClassID);
     }
 
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+    }
+
+    [Client]
     private void OnCharClassIDChanged(int _, int newID)
     {
         this.charClass = null;
 
         if (GameController.Singleton.AllClasses[this.charClassID] != null)
+        {
             this.charClass = GameController.Singleton.AllClasses[this.charClassID];
+            this.CmdInitCurrentStats();
+        }
         else
+        {
             Debug.Log("Couldn't find corresponding class for classID");
+        }
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdInitCurrentStats()
+    {
+        this.currentStats = this.charClass.charStats;
+
+        //now that we have current stats we can init turn data (including remaining moves)
+        this.NewTurn();
     }
 
     public bool HasRemainingActions()
@@ -67,9 +87,12 @@ public class PlayerCharacter : NetworkBehaviour
             return true;
     }
 
-    public void NextTurn()
+    [Server]
+    public void NewTurn()
     {
         this.hasMoved = false;
         this.hasAttacked = false;
+        this.remainingMoves = this.currentStats.moveSpeed;
     }
+    
 }

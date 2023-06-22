@@ -251,15 +251,15 @@ public class Map : NetworkBehaviour
 
     public void SelectHex(Hex h)
     {
-        this.SelectedHex = h;
-        h.Select(true);
-
         if (h.HoldsACharacter())
         {
-            int heldCharacter = h.holdsCharacterWithClassID;
-            CharacterClass charClass = GameController.Singleton.playerCharacters[heldCharacter].charClass;
-            this.DisplayMovementRange(h, charClass.charStats.moveSpeed);
+            int heldCharacterID = h.holdsCharacterWithClassID;
+            PlayerCharacter heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
+            this.DisplayMovementRange(h, heldCharacter.remainingMoves);
         }
+
+        this.SelectedHex = h;
+        h.Select(true);
     }
 
     public void UnselectHex()
@@ -557,16 +557,16 @@ public class Map : NetworkBehaviour
             return;
         }
         PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
-        if (PathCost(FindMovementPath(source, dest)) > toMove.charClass.charStats.moveSpeed) {
-            Debug.Log("Client requested move outside character range");
+        int moveCost = PathCost(FindMovementPath(source, dest));
+        if (moveCost > (toMove.hasMoved ? toMove.remainingMoves : toMove.currentStats.moveSpeed)) {
+            Debug.Log("Client requested move outside his current range");
             return;
         }
 
         toMove.hasMoved = true;
+        toMove.remainingMoves -= moveCost;
         dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
         source.clearCharacter();
-
-
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
 
     }

@@ -322,7 +322,7 @@ public class GameController : NetworkBehaviour
         }
 
         PlayerCharacter currentPlayer = this.playerCharacters[currentCharacterClassID];
-        currentPlayer.NextTurn();
+        currentPlayer.NewTurn();
 
         //if we don't own that char, swap player turn
         if (this.playerTurn != characterOwners[currentCharacterClassID])
@@ -360,7 +360,6 @@ public class GameController : NetworkBehaviour
                 this.SwapPlayerTurn();
                 break;
             case GameMode.characterPlacement:
-                //used to make sure 
                 if (!AllHisCharactersAreOnBoard(this.OtherPlayer(playerTurn)))
                 {
                     this.SwapPlayerTurn();
