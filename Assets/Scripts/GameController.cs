@@ -37,6 +37,8 @@ public class GameController : NetworkBehaviour
     public Dictionary<int, CharacterClass> AllClasses { get; set; }
     public PlayerController LocalPlayer { get; set; }
     private readonly List<TurnOrderSlotUI> turnOrderSlots = new();
+
+    private bool waitingForClientSetup;
     #endregion
 
     #region Synced vars
@@ -68,6 +70,7 @@ public class GameController : NetworkBehaviour
     private void Awake()
     {
         Singleton = this;
+        this.waitingForClientSetup = true;
     }
 
     public override void OnStartClient()
@@ -86,35 +89,18 @@ public class GameController : NetworkBehaviour
         this.AllClasses =  CharacterClass.DefineClasses();
 
         Map.Singleton.Initialize();
-
-        //testing
-        //HashSet<Hex> inRange = Map.Singleton.RangeObstructed(Map.Singleton.GetHex(0, 0), 2);
-        //foreach (Hex h in inRange)
-        //{
-        //    h.baseColor = Color.magenta;
-        //}
     }
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-
-        //init all syncvars that aren't readonly
-        this.currentGameMode = GameMode.characterPlacement;
+        this.currentGameMode = GameMode.waitingForClient;
         this.turnOrderIndex = -1;
-        this.playerTurn = 0;
+        this.playerTurn = -1;
     }
 
     public void Start()
     {
-        if (!IsItMyClientsTurn())
-            this.endTurnButton.SetActive(false);
-
-        //set initial turn UI for character turn 0
-        //OnTurnOrderIndexChanged(-1, 0);
-
-        //this.InitCharacterTurns();
-
 
     }
 
@@ -221,6 +207,9 @@ public class GameController : NetworkBehaviour
     [Client]
     private void OnPlayerTurnChanged(int _, int newPlayer)
     {
+        if (newPlayer == -1)
+            //we havent started game yet
+            return;
         if (newPlayer == this.LocalPlayer.playerIndex)
         {
             //todo: display "Its your turn" msg
@@ -230,7 +219,6 @@ public class GameController : NetworkBehaviour
         {
             //todo : display "Waiting for other player" msg            
             this.endTurnButton.SetActive(false);
-
         }
     }
 
@@ -293,9 +281,25 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    private void RpcActivateEndTurnButton()
+    {
+        if (IsItMyClientsTurn())
+            this.endTurnButton.SetActive(true);
+    }
+
     #endregion
 
     #region Commands
+
+    //ACTUAL GAME START once everything is ready on client
+    [Command(requiresAuthority = false)]
+    private void CmdStartPlaying()
+    {        
+        this.currentGameMode = GameMode.characterPlacement;
+        this.playerTurn = 0;
+        this.RpcActivateEndTurnButton();
+    }
 
     [Server]
     private void NextCharacterTurn()
@@ -553,4 +557,26 @@ public class GameController : NetworkBehaviour
         }
     }
     #endregion
+
+    private void Update()
+    {
+        if (isServer && this.waitingForClientSetup)
+        {
+
+            if (Map.Singleton.hexesSpawnedOnClient && NetworkManager.singleton.numPlayers == 2)
+            {
+                this.waitingForClientSetup = false;
+                this.CmdStartPlaying();
+            }
+
+        }
+    }
+
+    //used for testing functionnalities without waiting for client setup
+    public void TestButton()
+    {
+        //testing
+        Map.Singleton.LOSReaches(Map.Singleton.GetHex(0, 0), Map.Singleton.GetHex(2, 1));
+    }
+
 }

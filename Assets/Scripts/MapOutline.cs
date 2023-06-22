@@ -6,7 +6,6 @@ using Mirror;
 
 public class MapOutline : NetworkBehaviour
 {
-    public Map map;
     private Collider2D outlineCollider;
 
 
@@ -14,6 +13,7 @@ public class MapOutline : NetworkBehaviour
     [Server]
     public void DeleteHexesOutside()
     {
+        Map map = Map.Singleton;
         //Debug.Log("Deleting hexes outside outline");
         outlineCollider = this.GetComponent<Collider2D>();
         List<Collider2D> results = new();

@@ -14,6 +14,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
     public static readonly Color HEX_HOVER_COLOR = Color.cyan;
     public static readonly Color HEX_SELECT_COLOR = Color.green;
     public static readonly Color HEX_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+    public static readonly Color HEX_LOS_OBSTRUCT_COLOR = Color.yellow;
+    public static readonly Color HEX_ATTACK_COLOR = Color.red;
+
     #endregion
 
     #region UI vars
@@ -116,6 +119,8 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
     [SyncVar]
     public int startZoneForPlayerIndex;
 
+    [SyncVar]
+    public bool hasBeenSpawnedOnClient;
     #endregion
 
     #region State vars
@@ -150,6 +155,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
         this.baseColor = Hex.HEX_DEFAULT_COLOR;
+        this.hasBeenSpawnedOnClient = false;
 
         //not currently needed as its set during instatiation, but kept in case
         //scale is needed
@@ -184,9 +190,12 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         numLabel.rectTransform.anchoredPosition =
             new Vector2(this.transform.position.x, this.transform.position.y);
         this.labelTextMesh = numLabel;
+
+        if (isClientOnly)
+            this.CmdMarkAsSpawned();
     }
 
-    internal void InitBaseColor()
+    private void InitBaseColor()
     {
         if (this.isStartingZone)
         {
@@ -208,6 +217,12 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 
         this.HexColor = this.baseColor;
         this.unHoveredColor = this.baseColor;
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdMarkAsSpawned()
+    {
+        this.hasBeenSpawnedOnClient = true;
     }
     #endregion
 
@@ -296,7 +311,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         this.HexColor = mode ? Hex.HEX_SELECT_COLOR : this.baseColor;
     }
 
-    public void Hover(bool mode) {
+    public void MoveHover(bool mode) {
         if (mode) { this.unHoveredColor = this.HexColor; }
         this.HexColor = mode ? Hex.HEX_HOVER_COLOR : this.unHoveredColor;
     }
@@ -305,6 +320,17 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
     {
         this.unHoveredColor = mode ? Hex.HEX_RANGE_COLOR : this.baseColor;
         this.HexColor = mode ? Hex.HEX_RANGE_COLOR : this.baseColor;
+    }
+
+    public void DisplayLOSObstruction(bool mode)
+    {
+        this.HexColor = Hex.HEX_LOS_OBSTRUCT_COLOR;
+    }
+
+    public void AttackHover(bool mode)
+    {
+        this.unHoveredColor = this.baseColor;
+        this.HexColor = Hex.HEX_ATTACK_COLOR;
     }
     #endregion
 

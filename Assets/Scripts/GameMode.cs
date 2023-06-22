@@ -1,4 +1,4 @@
 ﻿public enum GameMode
 {
-    draft, characterPlacement, gameplay, treasureDraft, treasureEquip
+    waitingForClient, draft, characterPlacement, gameplay, treasureDraft, treasureEquip
 }

@@ -37,6 +37,8 @@ public class Map : NetworkBehaviour
     private float hexHeight;
 
     public float padding = 0.1f;
+
+    public LayerMask hexMask;
     #endregion
 
     #region Constant vars
@@ -59,6 +61,7 @@ public class Map : NetworkBehaviour
     private HashSet<Hex> displayedRange = new();
     private List<Hex> displayedPath = new();
     public ControlMode controlMode;
+    public bool hexesSpawnedOnClient;
 
     #endregion
 
@@ -66,6 +69,7 @@ public class Map : NetworkBehaviour
     private void Awake()
     {
         Singleton = this;
+        hexesSpawnedOnClient = false;
     }
 
     public override void OnStartClient()
@@ -210,7 +214,7 @@ public class Map : NetworkBehaviour
     {
         Hex toDelete = GetHex(x, y);
         toDelete.Delete();
-        this.hexGrid[new Vector2Int(x, y)] = null;
+        this.hexGrid.Remove(new Vector2Int(x, y));
     }
     #endregion
 
@@ -289,7 +293,7 @@ public class Map : NetworkBehaviour
     public void HoverHex(Hex hoveredHex)
     {
         this.HoveredHex = hoveredHex;
-        hoveredHex.Hover(true);
+        hoveredHex.MoveHover(true);
 
         //find path to hex if we have selected another hex
         if (this.SelectedHex != null)
@@ -310,7 +314,7 @@ public class Map : NetworkBehaviour
         {
             this.HoveredHex = null;
         }
-        h.Hover(false);
+        h.MoveHover(false);
 
         //h.HideLabel();
 
@@ -552,6 +556,26 @@ public class Map : NetworkBehaviour
         toReturn.Reverse();
         return toReturn;
     }
+
+    public bool LOSReaches(Hex source, Hex dest)
+    {
+        RaycastHit2D[] hits;
+        Vector2 sourcePos = source.transform.position;
+        Vector2 destPos = dest.transform.position;
+        Vector2 direction = destPos - sourcePos;
+
+        hits = Physics2D.RaycastAll(sourcePos, direction, 999, hexMask);
+        foreach(RaycastHit2D hit in hits)
+        {
+            GameObject hitObject = hit.collider.gameObject;
+            Hex hitHex = hitObject.GetComponent<Hex>();
+            if (hitHex != null)
+            {
+                hitHex.DisplayLOSObstruction(true);
+            }
+        }
+        return false;
+    }
     #endregion
 
     #region Commands
@@ -690,4 +714,20 @@ public class Map : NetworkBehaviour
         }
     }
     #endregion
+
+    public void Update()
+    {
+        if (isServer && this.hexGrid != null)
+        {
+            foreach (Hex h in this.hexGrid.Values)
+            {
+                if (h == null || !h.hasBeenSpawnedOnClient)
+                {
+                    //client isn't ready
+                    return;
+                }
+            }
+            this.hexesSpawnedOnClient = true;
+        }
+    }
 }
