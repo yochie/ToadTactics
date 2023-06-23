@@ -223,7 +223,7 @@ public class GameController : NetworkBehaviour
             this.endTurnButton.SetActive(true);
             if(this.currentGameMode == GameMode.gameplay)
             {
-                this.activatetGameplayButtons(true);
+                this.SetActiveGameplayButtons(true);
             }
         }
         else
@@ -232,7 +232,7 @@ public class GameController : NetworkBehaviour
             this.endTurnButton.SetActive(false);
             if (this.currentGameMode == GameMode.gameplay)
             {
-                this.activatetGameplayButtons(false);
+                this.SetActiveGameplayButtons(false);
             }
         }
     }
@@ -297,19 +297,41 @@ public class GameController : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcActivateGameplayButtons()
+    private void RpcResetActiveGameplayButtons()
     {
         if (playerTurn == this.LocalPlayer.playerID)
         {
-            this.activatetGameplayButtons(true);
+            this.SetActiveGameplayButtons(true);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcResetInteractableGameplayButtons()
+    {
+        if (playerTurn == this.LocalPlayer.playerID)
+        {
+            this.setInteractableGameplayButtons(true);
         }
     }
 
     [Client]
-    private void activatetGameplayButtons(bool state)
+    private void setInteractableGameplayButtons(bool state)
+    {
+        this.moveButton.GetComponent<Button>().interactable = state;
+        this.attackButton.GetComponent<Button>().interactable = state;
+    }
+
+    [Client]
+    private void SetActiveGameplayButtons(bool state)
     {
         this.moveButton.SetActive(state);
         this.attackButton.SetActive(state);
+    }
+
+    [TargetRpc]
+    public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
+    {
+        this.moveButton.GetComponent<Button>().interactable = false;
     }
     #endregion
 
@@ -334,7 +356,7 @@ public class GameController : NetworkBehaviour
         if (this.turnOrderIndex >= this.sortedTurnOrder.Count)
             this.turnOrderIndex = 0;
 
-        //finds character prefab id for the next turn so that we can check who owns it
+        //finds character class id for the next turn so that we can check who owns it
         int currentCharacterClassID = -1;
         int i = 0;
         foreach (int classID in this.sortedTurnOrder.Values)
@@ -350,14 +372,16 @@ public class GameController : NetworkBehaviour
             Debug.Log("Error : Bad code for iterating turn order");
         }
 
-        PlayerCharacter currentPlayer = this.playerCharacters[currentCharacterClassID];
-        currentPlayer.NewTurn();
+        PlayerCharacter currentCharacter = this.playerCharacters[currentCharacterClassID];
+        currentCharacter.NewTurn();
 
         //if we don't own that char, swap player turn
         if (this.playerTurn != characterOwners[currentCharacterClassID])
         {
             this.SwapPlayerTurn();
         }
+
+        this.RpcResetInteractableGameplayButtons();
     }
 
     public bool CanIMoveThisCharacter(int classID, int playerID = -1)
@@ -467,7 +491,7 @@ public class GameController : NetworkBehaviour
             this.SwapPlayerTurn();
         }
 
-        this.RpcActivateGameplayButtons();
+        this.RpcResetActiveGameplayButtons();
     }
 
     [Command(requiresAuthority = false)]

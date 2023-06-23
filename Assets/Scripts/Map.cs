@@ -241,7 +241,7 @@ public class Map : NetworkBehaviour
         {
             this.UnselectHex();
             this.SelectHex(draggedHex);
-        }           
+        }
     }
 
     //only used for movement
@@ -284,8 +284,8 @@ public class Map : NetworkBehaviour
                         return;
                     }
                     else
-                    {                        
-                        if(previouslySelected == clickedHex)
+                    {
+                        if (previouslySelected == clickedHex)
                         {
                             this.UnselectHex();
                         } else
@@ -360,7 +360,7 @@ public class Map : NetworkBehaviour
             case ControlMode.attack:
                 hoveredHex.AttackHover(true);
                 break;
-        }       
+        }
     }
 
     public void UnhoverHex(Hex unhoveredHex)
@@ -391,7 +391,7 @@ public class Map : NetworkBehaviour
         foreach (Hex h in this.displayedRange)
         {
             //selected hex stays at selected color state
-            if(h != position)
+            if (h != position)
             {
                 h.DisplayRange(true);
             }
@@ -570,8 +570,8 @@ public class Map : NetworkBehaviour
 
     private int PathCost(List<Hex> path)
     {
-        int pathCost = 0;        
-        foreach(Hex h in path)
+        int pathCost = 0;
+        foreach (Hex h in path)
         {
             pathCost += h.MoveCost();
         }
@@ -615,7 +615,7 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
-    private  List<Hex> FlattenPath(Dictionary<Hex, Hex> path, Hex dest)
+    private List<Hex> FlattenPath(Dictionary<Hex, Hex> path, Hex dest)
     {
         //no path to destination was found
         if (!path.ContainsKey(dest))
@@ -646,7 +646,7 @@ public class Map : NetworkBehaviour
         Vector2 direction = destPos - sourcePos;
 
         hits = Physics2D.RaycastAll(sourcePos, direction, direction.magnitude, hexMask);
-        foreach(RaycastHit2D hit in hits)
+        foreach (RaycastHit2D hit in hits)
         {
             GameObject hitObject = hit.collider.gameObject;
             Hex hitHex = hitObject.GetComponent<Hex>();
@@ -687,6 +687,12 @@ public class Map : NetworkBehaviour
         }
 
         toMove.UseMoves(moveCost);
+        if (toMove.CanMoveDistance() == 0)
+        {
+            GameController.Singleton.RpcGrayOutMoveButton(sender);
+            this.RpcSetControlMode(sender, ControlMode.attack);
+        }
+
         dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
         source.clearCharacter();
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
@@ -750,7 +756,8 @@ public class Map : NetworkBehaviour
     {
         this.UnselectHex();
         this.HidePath();
-        this.HideMovementRange();        
+        this.HideMovementRange();
+        this.controlMode = ControlMode.move;
     }
 
 
@@ -796,6 +803,12 @@ public class Map : NetworkBehaviour
             if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
                 this.hexGrid[key] = identity.gameObject.GetComponent<Hex>();
         }
+    }
+
+    [TargetRpc]
+    private void RpcSetControlMode(NetworkConnectionToClient target, ControlMode mode)
+    {
+        this.controlMode = mode;
     }
     #endregion
 
