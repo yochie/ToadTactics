@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using System;
 
 public class GameController : NetworkBehaviour
 {
@@ -210,7 +211,7 @@ public class GameController : NetworkBehaviour
         if (newPlayer == -1)
             //we havent started game yet
             return;
-        if (newPlayer == this.LocalPlayer.playerIndex)
+        if (newPlayer == this.LocalPlayer.playerID)
         {
             //todo: display "Its your turn" msg
             this.endTurnButton.SetActive(true);
@@ -284,7 +285,7 @@ public class GameController : NetworkBehaviour
     [ClientRpc]
     private void RpcActivateEndTurnButton()
     {
-        if (IsItMyClientsTurn())
+        if (IsItMyTurn())
             this.endTurnButton.SetActive(true);
     }
 
@@ -335,6 +336,20 @@ public class GameController : NetworkBehaviour
         {
             this.SwapPlayerTurn();
         }
+    }
+
+    public bool CanIMoveThisCharacter(int classID, int playerID = -1)
+    {
+        if(playerID == -1)
+        {
+            playerID = this.LocalPlayer.playerID;
+        }
+        if (this.IsItThisPlayersTurn(playerID) &&
+            this.IsItThisCharactersTurn(classID) &&
+            this.DoesHeOwnThisCharacter(playerID, classID))
+            return true;
+        else
+            return false;
     }
 
     [Server]
@@ -461,9 +476,14 @@ public class GameController : NetworkBehaviour
         return null;
     }
 
-    public bool IsItMyClientsTurn()
+    public bool IsItMyTurn()
     {
-        return this.LocalPlayer.playerIndex == this.playerTurn;
+        return this.LocalPlayer.playerID == this.playerTurn;
+    }
+
+    public bool IsItThisPlayersTurn(int playerID)
+    {
+        return playerID == this.playerTurn;
     }
 
     public bool IsItThisCharactersTurn(int classID)
@@ -473,7 +493,7 @@ public class GameController : NetworkBehaviour
 
     public bool DoIOwnThisCharacter(int classID)
     {
-        if (this.characterOwners[classID] == this.LocalPlayer.playerIndex)
+        if (this.characterOwners[classID] == this.LocalPlayer.playerID)
         {
             return true;
         }
@@ -576,10 +596,11 @@ public class GameController : NetworkBehaviour
     public void TestButton()
     {
         //testing
-        Hex target = Map.Singleton.GetHex(2, 1);
-        target.AttackHover(true);
-        bool result = Map.Singleton.LOSReaches(Map.Singleton.GetHex(0, 0), target, 10);
-        Debug.Log(result);
+        //Hex target = Map.Singleton.GetHex(2, 1);
+        //target.AttackHover(true);
+        //bool result = Map.Singleton.LOSReaches(Map.Singleton.GetHex(0, 0), target, 10);
+        //Debug.Log(result);
+
     }
 
 }

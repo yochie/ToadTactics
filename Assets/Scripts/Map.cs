@@ -231,16 +231,31 @@ public class Map : NetworkBehaviour
         }
     }
 
-
+    //only used for movement
     public void StartDragHex(Hex draggedHex)
     {
-        this.UnselectHex();
-        this.SelectHex(draggedHex);
+        if (draggedHex == null || !draggedHex.IsValidMoveSource())
+        {
+            this.UnselectHex();
+        } else
+        {
+            this.UnselectHex();
+            this.SelectHex(draggedHex);
+        }           
     }
 
+    //only used for movement
     public void EndDragHex(Hex startHex)
     {
-        Hex endHex = this.HoveredHex;               
+
+        Hex endHex = this.HoveredHex;
+
+        if (endHex == null || !this.IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, startHex, endHex))
+        {
+            this.UnselectHex();
+            return;
+        }
+
         this.CmdMoveChar(startHex, endHex);
         this.UnselectHex();
     }
@@ -249,76 +264,125 @@ public class Map : NetworkBehaviour
     {
         Hex previouslySelected = this.SelectedHex;
 
-        if (previouslySelected != null && previouslySelected.HoldsACharacter())
+        switch (this.controlMode)
         {
-            this.CmdMoveChar(previouslySelected, clickedHex);
-            this.UnselectHex();
-            return;
-        }
+            case ControlMode.move:
 
-        if (previouslySelected != clickedHex)
-        {
-            this.UnselectHex();
-            this.SelectHex(clickedHex);
-        }
-        else
-        {
-            this.UnselectHex();
+                if (previouslySelected == null)
+                {
+                    //FIRST CLICK
+                    this.SelectHex(clickedHex);
+                    return;
+                } else
+                {
+                    //SECOND CLICK
+                    if (IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
+                    {
+                        //move
+                        this.CmdMoveChar(previouslySelected, clickedHex);
+                        this.UnselectHex();
+                        return;
+                    }
+                    else
+                    {                        
+                        if(previouslySelected == clickedHex)
+                        {
+                            this.UnselectHex();
+                        } else
+                        {
+                            this.UnselectHex();
+                            this.SelectHex(clickedHex);
+                        }
+                        return;
+                    }
+                }
+            case ControlMode.attack:
+                //TODO : IMPLEMENT ATTACK if previously selected is valid attacker
+                break;
         }
     }
 
     public void SelectHex(Hex h)
     {
-        if (h.HoldsACharacter())
-        {
-            int heldCharacterID = h.holdsCharacterWithClassID;
-            PlayerCharacter heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
-            this.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
-        }
-
         this.SelectedHex = h;
         h.Select(true);
+
+        switch (this.controlMode)
+        {
+            case ControlMode.move:
+                int heldCharacterID = h.holdsCharacterWithClassID;
+                PlayerCharacter heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
+                this.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
+                break;
+            case ControlMode.attack:
+
+                break;
+        }
     }
 
     public void UnselectHex()
     {
-        Debug.Log("Unselecting hex");
-        this.HideMovementRange();
-        this.HidePath();
         if (this.SelectedHex == null) { return; }
         this.SelectedHex.Select(false);
-        this.SelectedHex = null;        
+        this.SelectedHex = null;
+
+        switch (this.controlMode)
+        {
+            case ControlMode.move:
+                this.HideMovementRange();
+                this.HidePath();
+                break;
+            case ControlMode.attack:
+                break;
+        }
     }
 
     public void HoverHex(Hex hoveredHex)
     {
         this.HoveredHex = hoveredHex;
-        hoveredHex.MoveHover(true);
 
-        //find path to hex if we have selected another hex
-        if (this.SelectedHex != null)
+        switch (this.controlMode)
         {
-            this.HidePath();
-            //hoveredHex.LabelString = Map.HexDistance(this.SelectedHex, this.HoveredHex).ToString();
-            List<Hex> path = this.FindMovementPath(this.SelectedHex, hoveredHex);
-            if (path != null)
-            {
-                this.DisplayPath(path);
-            }
-        }
+            case ControlMode.move:
+                hoveredHex.MoveHover(true);
+
+                //find path to hex if we have selected another hex
+                if (this.SelectedHex != null)
+                {
+                    this.HidePath();
+                    List<Hex> path = this.FindMovementPath(this.SelectedHex, hoveredHex);
+                    if (path != null)
+                    {
+                        this.DisplayPath(path);
+                    }
+                }
+                break;
+            case ControlMode.attack:
+                hoveredHex.AttackHover(true);
+                break;
+        }       
     }
 
-    public void UnhoverHex(Hex h)
+    public void UnhoverHex(Hex unhoveredHex)
     {
-        if (this.HoveredHex == h)
+        //in case we somehow unhover a hex AFTER we starting hovering another        
+        if (this.HoveredHex != unhoveredHex)
         {
-            this.HoveredHex = null;
+            return;
         }
-        h.MoveHover(false);
 
-        //h.HideLabel();
+        this.HoveredHex = null;
 
-        //this.HidePath();
+        switch (this.controlMode)
+        {
+            case ControlMode.move:
+                unhoveredHex.MoveHover(false);
+                this.HidePath();
+                break;
+            case ControlMode.attack:
+                unhoveredHex.AttackHover(false);
+                break;
+        }
     }
 
     private void DisplayMovementRange(Hex position, int moveDistance)
@@ -344,11 +408,12 @@ public class Map : NetworkBehaviour
 
     private void DisplayPath(List<Hex> path)
     {
+        //save path for hiding later
         this.displayedPath = path;
         int pathLength = 0;
         foreach (Hex h in path)
         {
-            pathLength += h.MoveCost;
+            pathLength += h.MoveCost();
 
             //skip starting hex label
             if (pathLength != 0)
@@ -365,6 +430,19 @@ public class Map : NetworkBehaviour
         {
             h.HideLabel();
         }
+    }
+
+
+    //Used by button
+    public void SetControlModeAttack()
+    {
+        controlMode = ControlMode.attack;
+    }
+
+    //Used by button
+    public void SetControlModeMove()
+    {
+        controlMode = ControlMode.move;
     }
     #endregion
 
@@ -415,7 +493,7 @@ public class Map : NetworkBehaviour
                     if (!visited.Contains(neighbour))
                     {
                         visited.Add(neighbour);
-                        fringes[k - 1 + neighbour.MoveCost].Add(neighbour);
+                        fringes[k - 1 + neighbour.MoveCost()].Add(neighbour);
                     }
 
                 }
@@ -441,7 +519,7 @@ public class Map : NetworkBehaviour
             {
                 foreach (Hex neighbour in Map.Singleton.GetUnobstructedHexNeighbours(h))
                 {
-                    int costToNeighbour = costsSoFar[h] + neighbour.MoveCost;
+                    int costToNeighbour = costsSoFar[h] + neighbour.MoveCost();
                     if (!costsSoFar.ContainsKey(neighbour) || costsSoFar[neighbour] > costToNeighbour)
                     {
                         if (costToNeighbour <= distance)
@@ -492,11 +570,11 @@ public class Map : NetworkBehaviour
 
     private int PathCost(List<Hex> path)
     {
-        int pathCost = 0;
-
+        int pathCost = 0;        
         foreach(Hex h in path)
         {
-            pathCost += h.MoveCost;
+            Debug.Log(h);
+            pathCost += h.MoveCost();
         }
 
         return pathCost;
@@ -524,7 +602,7 @@ public class Map : NetworkBehaviour
 
             foreach (Hex next in this.GetUnobstructedHexNeighbours(currentHex))
             {
-                int newCost = costsSoFar[currentHex] + next.MoveCost;
+                int newCost = costsSoFar[currentHex] + next.MoveCost();
                 if (!costsSoFar.ContainsKey(next) || newCost < costsSoFar[next])
                 {
                     costsSoFar[next] = newCost;
@@ -587,26 +665,28 @@ public class Map : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
-        PlayerController senderPlayer = sender.identity.gameObject.GetComponent<PlayerController>();        
-        //Validation
-        if (dest == null ||
-            source == null ||
-            source == dest ||
-            !source.HoldsACharacter() ||
-            !GameController.Singleton.DoesHeOwnThisCharacter(senderPlayer.playerIndex, source.holdsCharacterWithClassID) ||
-            dest.holdsObstacle != ObstacleType.none ||
-            dest.HoldsACharacter()        
-            )
+        //Validation, should be done already on client side but we double check in case something changed since
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        if (!IsValidMoveForPlayer(playerID, source, dest))
         {
             Debug.Log("Client requested invalid move");
             return;
         }
+
+        //Validate path
         PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
-        int moveCost = PathCost(FindMovementPath(source, dest));
+        List<Hex> path = FindMovementPath(source, dest);
+        if (path == null)
+        {
+            Debug.Log("Client requested move with no valid path to destination");
+            return;
+        }
+        int moveCost = PathCost(path);
         if (moveCost > toMove.CanMoveDistance()) {
             Debug.Log("Client requested move outside his current range");
             return;
         }
+
         toMove.UseMoves(moveCost);
         dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
         source.clearCharacter();
@@ -617,7 +697,7 @@ public class Map : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdCreateCharOnBoard(int characterClassID, Hex destinationHex, NetworkConnectionToClient sender = null)
     {
-        int ownerPlayerIndex = sender.identity.gameObject.GetComponent<PlayerController>().playerIndex;
+        int ownerPlayerIndex = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         //validate destination
         if (destinationHex == null ||
             !destinationHex.isStartingZone ||
@@ -720,6 +800,25 @@ public class Map : NetworkBehaviour
     }
     #endregion
 
+    #region Utility
+
+    private bool IsValidMoveForPlayer(int playerID, Hex source, Hex dest)
+    {
+        if (source == null ||
+            dest == null ||
+            source == dest ||
+            !source.IsValidMoveSource() ||
+            !dest.IsValidMoveDest() ||
+!           GameController.Singleton.CanIMoveThisCharacter(source.holdsCharacterWithClassID, playerID))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    #endregion
     public void Update()
     {
         if (isServer && this.hexGrid != null)

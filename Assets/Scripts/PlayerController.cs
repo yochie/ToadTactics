@@ -8,23 +8,23 @@ public class PlayerController : NetworkBehaviour
 {
     //0 for host
     //1 for client
-    public int playerIndex;
+    public int playerID;
 
     public override void OnStartClient()
     {
         base.OnStartClient();
 
         if (isServer && this.isOwned) {
-            this.playerIndex = 0;
+            this.playerID = 0;
         } else if (isServer && !this.isOwned)
         {
-            this.playerIndex = 1;
+            this.playerID = 1;
         } else if (!isServer && this.isOwned)
         {
-            this.playerIndex = 1;
+            this.playerID = 1;
         } else if (!isServer && !this.isOwned)
         {
-            this.playerIndex = 0;
+            this.playerID = 0;
         }
     }
 
@@ -68,7 +68,7 @@ public class PlayerController : NetworkBehaviour
 
             characterSlot.HoldsCharacterWithClassID = classID;
 
-            GameController.Singleton.CmdAddCharToTurnOrder(this.playerIndex, newCharClass.charStats.initiative, classID);
+            GameController.Singleton.CmdAddCharToTurnOrder(this.playerID, newCharClass.charStats.initiative, classID);
         }
     }
 

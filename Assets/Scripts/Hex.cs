@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
-    #region Constant vars
+    #region Constants
 
     public static readonly Color HEX_DEFAULT_COLOR = Color.white;
     public static readonly Color HEX_START_COLOR = Color.blue;
@@ -46,52 +46,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 
     private Vector3 dragStartPosition;
     private bool draggingStarted;
-    public bool IsSelectable
-    {
-        get
-        {
-            bool toReturn = false;
-            switch (GameController.Singleton.currentGameMode)
-            {
-                case GameMode.characterPlacement:
-                    toReturn = false;
-                    break;
-                case GameMode.gameplay:
-                    if (this.HoldsACharacter())
-                    {
-                        if (GameController.Singleton.IsItMyClientsTurn() &&
-                            GameController.Singleton.IsItThisCharactersTurn(this.holdsCharacterWithClassID) &&
-                            Map.Singleton.controlMode == ControlMode.move
-                            )
-                        {
-                            toReturn = true;
-                        }
-                        else
-                        {
-                            toReturn = false;
-                        }
-                    }
-                    else
-                    {
-                        toReturn = true;
-                    }
-                    break;
-            }
-            return toReturn;
-        }
-    }
-
-    public bool IsDraggable
-    {
-        get
-        {
-            //use same criteria as selection except we can't drag empty hexes
-            if (!this.HoldsACharacter())
-                return false;
-            else
-                return this.IsSelectable;
-        }
-    }
 
     #endregion
 
@@ -121,23 +75,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 
     [SyncVar]
     public bool hasBeenSpawnedOnClient;
-    #endregion
-
-    #region State vars
-    public int MoveCost
-    {
-        get
-        {
-            switch (this.holdsHazard)
-            {
-                case HazardType.cold:
-                    return 2;
-                default:
-                    return 1;
-            }
-
-        }
-    }    
     #endregion
 
     #region Startup
@@ -260,13 +197,13 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 
     void IPointerClickHandler.OnPointerClick (PointerEventData eventData)
     {
-        if(IsSelectable)
+        if(IsClickable())
             Map.Singleton.ClickHex(this);
     }
 
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
     {
-        if (this.IsDraggable)
+        if (this.IsDraggable())
         {
             this.dragStartPosition = this.transform.position;
             this.draggingStarted = true;
@@ -362,6 +299,80 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         else
             return false;
     }
+
+    //only validates local data, other checks need to be performed for allowing actual move
+    public bool IsValidMoveDest()
+    {
+        if (this.holdsObstacle == ObstacleType.none &&
+            !this.HoldsACharacter())
+            return true;
+        else
+            return true;
+    }
+
+    //only validates local data, other checks need to be performed for allowing actual move
+    public bool IsValidMoveSource()
+    {
+        if (this.HoldsACharacter())
+            return true;
+        else
+            return false;
+    }
+
+    public bool IsClickable()
+    {
+        switch (GameController.Singleton.currentGameMode)
+        {
+            case GameMode.characterPlacement:
+                return false;
+            case GameMode.gameplay:
+                switch (Map.Singleton.controlMode)
+                {
+                    case ControlMode.move:
+                        if (this.IsValidMoveSource() &&
+                            GameController.Singleton.CanIMoveThisCharacter(this.holdsCharacterWithClassID))
+                            return true;
+                        else if (Map.Singleton.SelectedHex != null && this.IsValidMoveDest())
+                            return true;
+                        else
+                            return false;
+                    case ControlMode.attack:
+                        //allow selecting to preview LOS
+                        //additional attack validation done in Map
+                        return true;
+                    default:
+                        return false;
+                }
+            default:
+                return false;
+        }
+    }
+
+    public bool IsDraggable()
+    {
+        switch (Map.Singleton.controlMode)
+        {
+            case ControlMode.move:
+                if (this.IsValidMoveSource() &&
+                    GameController.Singleton.CanIMoveThisCharacter(this.holdsCharacterWithClassID))
+                    return true;
+                else
+                    return false;
+            default:
+                return false;
+        }
+    }
+    public int MoveCost()
+    {
+        switch (this.holdsHazard)
+        {
+            case HazardType.cold:
+                return 2;
+            default:
+                return 1;
+        }
+    }
+
 
     #endregion
 
