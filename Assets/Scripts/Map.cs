@@ -283,61 +283,36 @@ public class Map : NetworkBehaviour
                 {
                     //FIRST CLICK
                     this.SelectHex(clickedHex);
-                    return;
-                } else
+                }
+                else if (this.IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
                 {
                     //SECOND CLICK
-                    if (this.IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
-                    {
-                        //move
-                        this.CmdMoveChar(previouslySelected, clickedHex);
-                        this.UnselectHex();
-                        return;
-                    }
-                    else
-                    {
-                        if (previouslySelected == clickedHex)
-                        {
-                            this.UnselectHex();
-                        } else
-                        {
-                            this.UnselectHex();
-                            this.SelectHex(clickedHex);
-                        }
-                        return;
-                    }
+
+                    this.CmdMoveChar(previouslySelected, clickedHex);
+                    this.UnselectHex();
+
                 }
+                else if (previouslySelected == clickedHex)
+                {
+                    this.UnselectHex();
+                }
+                break;
             case ControlMode.attack:
                 if (previouslySelected == null)
                 {
                     //FIRST CLICK
-                    this.SelectHex(clickedHex);
-                    return;
+                    this.SelectHex(clickedHex);                    
                 }
-                else
+                else if (this.IsValidAttackForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
                 {
-                    //SECOND CLICK
-                    if (this.IsValidAttackForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
-                    {
-                        //move
-                        this.CmdAttack(previouslySelected, clickedHex);
-                        this.UnselectHex();
-                        return;
-                    }
-                    else
-                    {
-                        if (previouslySelected == clickedHex)
-                        {
-                            this.UnselectHex();
-                        }
-                        else
-                        {
-                            this.UnselectHex();
-                            this.SelectHex(clickedHex);
-                        }
-                        return;
-                    }
+                    //SECOND CLICK                    
+                    this.CmdAttack(previouslySelected, clickedHex);
+                    this.UnselectHex();
+                } else if (previouslySelected == clickedHex)
+                {
+                    this.UnselectHex();
                 }
+                break;
         }
     }
 
@@ -489,6 +464,10 @@ public class Map : NetworkBehaviour
                     h.DisplayAttackRange(true);
                 else if (attackRange[h] == TargetableType.obstructing)
                     h.DisplayLOSObstruction(true);
+                else if (attackRange[h] == TargetableType.unreachable)
+                {
+                    h.DisplayOutOfAttackRange(true);
+                }
             }
         }
     }
@@ -501,18 +480,30 @@ public class Map : NetworkBehaviour
                 h.DisplayAttackRange(false);
             else if (this.displayedAttackRange[h] == TargetableType.obstructing)
                 h.DisplayLOSObstruction(false);
+            else if (this.displayedAttackRange[h] == TargetableType.unreachable)
+            {
+                h.DisplayOutOfAttackRange(false);
+            }
         }
     }
 
     //Used by button
     public void SetControlModeAttack()
     {
+        this.UnselectHex();
+        this.HidePath();
+        this.HideMovementRange();
+        this.HideAttackRange();
         CurrentControlMode = ControlMode.attack;
     }
 
     //Used by button
     public void SetControlModeMove()
     {
+        this.UnselectHex();
+        this.HidePath();
+        this.HideMovementRange();
+        this.HideAttackRange();
         CurrentControlMode = ControlMode.move;
     }
     #endregion
@@ -689,7 +680,10 @@ public class Map : NetworkBehaviour
     private Dictionary<Hex, TargetableType> FindAttackRange(Hex source, int range)
     {
         Dictionary<Hex,TargetableType> hexesInRange = new();
-        foreach (Hex target in this.RangeIgnoringObstacles(source, range))
+        List<Hex> allHexesInRange = this.RangeIgnoringObstacles(source, range);
+
+        allHexesInRange.Sort(Comparer<Hex>.Create((Hex h1, Hex h2) => Map.HexDistance(source, h1).CompareTo(Map.HexDistance(source, h2))));
+        foreach (Hex target in allHexesInRange)
         {
 
             bool unobstructed = true;
@@ -714,18 +708,22 @@ public class Map : NetworkBehaviour
                 Hex hitHex = hitObject.GetComponent<Hex>();
                 if (hitHex != null && hitHex.BreaksLOS(target.HoldsACharacter() ? target.holdsCharacterWithClassID : -1))
                 {
+                    //if (!hexesInRange.ContainsKey(hitHex) || hexesInRange[hitHex] == TargetableType.unreachable || hexesInRange[hitHex] == TargetableType.targetable)
                     hexesInRange[hitHex] = TargetableType.obstructing;
                     unobstructed = false;
                     for (int i = hitIndex + 1; i < hits.Length; i++)
                     {
-                        hexesInRange[hits[i].collider.gameObject.GetComponent<Hex>()] = TargetableType.unreachable;
+                        Hex nextHex = hits[i].collider.gameObject.GetComponent<Hex>();
+                        if(!hexesInRange.ContainsKey(nextHex))
+                            hexesInRange[nextHex] = TargetableType.unreachable;
                     }
                     break;
                 }
                 hitIndex++;
             }
             if (unobstructed)
-                hexesInRange[target] = TargetableType.targetable;
+                if(!hexesInRange.ContainsKey(target) || (hexesInRange.ContainsKey(target) && hexesInRange[target] != TargetableType.obstructing))
+                    hexesInRange[target] = TargetableType.targetable;
         }
         return hexesInRange;
     }
@@ -878,6 +876,7 @@ public class Map : NetworkBehaviour
         this.UnselectHex();
         this.HidePath();
         this.HideMovementRange();
+        this.HideAttackRange();
         this.CurrentControlMode = ControlMode.move;
     }
 
@@ -929,6 +928,10 @@ public class Map : NetworkBehaviour
     [TargetRpc]
     private void RpcSetControlMode(NetworkConnectionToClient target, ControlMode mode)
     {
+        this.UnselectHex();
+        this.HidePath();
+        this.HideMovementRange();
+        this.HideAttackRange();
         this.CurrentControlMode = mode;
     }
     #endregion

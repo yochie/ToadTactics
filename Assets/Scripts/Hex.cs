@@ -15,8 +15,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
     private static readonly Color HEX_SELECT_COLOR = Color.green;
     private static readonly Color HEX_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
     private static readonly Color HEX_LOS_OBSTRUCT_COLOR = Color.yellow;
-    private static readonly Color HEX_ATTACK_HOVER_COLOR = Color.red;
+    private static readonly Color HEX_ATTACK_HOVER_COLOR = new(1f, 0.45f, 0f);
     private static readonly Color HEX_ATTACK_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+    private static readonly Color HEX_OUT_OF_ATTACK_RANGE_COLOR = Color.red;
 
 
     #endregion
@@ -272,6 +273,12 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         this.HexColor = mode ? Hex.HEX_LOS_OBSTRUCT_COLOR : this.baseColor;
     }
 
+    internal void DisplayOutOfAttackRange(bool mode)
+    {
+        this.unHoveredColor = mode ? Hex.HEX_OUT_OF_ATTACK_RANGE_COLOR : this.baseColor;
+        this.HexColor = mode ? Hex.HEX_OUT_OF_ATTACK_RANGE_COLOR : this.baseColor;
+    }
+
     public void AttackHover(bool mode)
     {
         if (mode) { this.unHoveredColor = this.HexColor; }
@@ -400,6 +407,8 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
                 return 1;
         }
     }
+
+
     #endregion
 
 }
