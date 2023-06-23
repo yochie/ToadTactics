@@ -326,7 +326,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
             case GameMode.characterPlacement:
                 return false;
             case GameMode.gameplay:
-                switch (Map.Singleton.controlMode)
+                switch (Map.Singleton.CurrentControlMode)
                 {
                     case ControlMode.move:
                         if (this.IsValidMoveSource() &&
@@ -350,7 +350,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 
     public bool IsDraggable()
     {
-        switch (Map.Singleton.controlMode)
+        switch (Map.Singleton.CurrentControlMode)
         {
             case ControlMode.move:
                 if (this.IsValidMoveSource() &&

@@ -331,7 +331,23 @@ public class GameController : NetworkBehaviour
     [TargetRpc]
     public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
     {
-        this.moveButton.GetComponent<Button>().interactable = false;
+        this.moveButton.GetComponent<Button>().interactable = false;        
+    }
+
+    [Client]
+    public void HighlightGameplayButton(ControlMode mode)
+    {
+        switch (mode)
+        {
+            case ControlMode.move:
+                this.moveButton.GetComponent<Image>().color = Color.green;
+                this.attackButton.GetComponent<Image>().color = Color.white;
+                break;
+            case ControlMode.attack:
+                this.moveButton.GetComponent<Image>().color = Color.white;
+                this.attackButton.GetComponent<Image>().color = Color.green;
+                break;                
+        }
     }
     #endregion
 

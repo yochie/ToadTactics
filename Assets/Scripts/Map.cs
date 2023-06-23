@@ -60,7 +60,16 @@ public class Map : NetworkBehaviour
     public Hex HoveredHex { get; set; }
     private HashSet<Hex> displayedRange = new();
     private List<Hex> displayedPath = new();
-    public ControlMode controlMode;
+    private ControlMode currentControlMode;
+    public ControlMode CurrentControlMode {
+        get { return this.currentControlMode; }
+        set { 
+            this.currentControlMode = value;
+            GameController.Singleton.HighlightGameplayButton(value);
+        }
+
+    
+    }
     public bool hexesSpawnedOnClient;
 
     #endregion
@@ -76,7 +85,7 @@ public class Map : NetworkBehaviour
     {
         base.OnStartClient();
 
-        this.controlMode = ControlMode.move;
+        this.CurrentControlMode = ControlMode.move;
 
         hexGridNetIds.Callback += OnHexGridNetIdsChange;
         // Process initial SyncDictionary payload
@@ -264,7 +273,7 @@ public class Map : NetworkBehaviour
     {
         Hex previouslySelected = this.SelectedHex;
 
-        switch (this.controlMode)
+        switch (this.CurrentControlMode)
         {
             case ControlMode.move:
 
@@ -307,7 +316,7 @@ public class Map : NetworkBehaviour
         this.SelectedHex = h;
         h.Select(true);
 
-        switch (this.controlMode)
+        switch (this.CurrentControlMode)
         {
             case ControlMode.move:
                 int heldCharacterID = h.holdsCharacterWithClassID;
@@ -326,7 +335,7 @@ public class Map : NetworkBehaviour
         this.SelectedHex.Select(false);
         this.SelectedHex = null;
 
-        switch (this.controlMode)
+        switch (this.CurrentControlMode)
         {
             case ControlMode.move:
                 this.HideMovementRange();
@@ -341,7 +350,7 @@ public class Map : NetworkBehaviour
     {
         this.HoveredHex = hoveredHex;
 
-        switch (this.controlMode)
+        switch (this.CurrentControlMode)
         {
             case ControlMode.move:
                 hoveredHex.MoveHover(true);
@@ -373,7 +382,7 @@ public class Map : NetworkBehaviour
 
         this.HoveredHex = null;
 
-        switch (this.controlMode)
+        switch (this.CurrentControlMode)
         {
             case ControlMode.move:
                 unhoveredHex.MoveHover(false);
@@ -436,13 +445,13 @@ public class Map : NetworkBehaviour
     //Used by button
     public void SetControlModeAttack()
     {
-        controlMode = ControlMode.attack;
+        CurrentControlMode = ControlMode.attack;
     }
 
     //Used by button
     public void SetControlModeMove()
     {
-        controlMode = ControlMode.move;
+        CurrentControlMode = ControlMode.move;
     }
     #endregion
 
@@ -757,7 +766,7 @@ public class Map : NetworkBehaviour
         this.UnselectHex();
         this.HidePath();
         this.HideMovementRange();
-        this.controlMode = ControlMode.move;
+        this.CurrentControlMode = ControlMode.move;
     }
 
 
@@ -808,7 +817,7 @@ public class Map : NetworkBehaviour
     [TargetRpc]
     private void RpcSetControlMode(NetworkConnectionToClient target, ControlMode mode)
     {
-        this.controlMode = mode;
+        this.CurrentControlMode = mode;
     }
     #endregion
 
