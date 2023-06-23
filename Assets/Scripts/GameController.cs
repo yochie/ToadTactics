@@ -400,7 +400,7 @@ public class GameController : NetworkBehaviour
         this.RpcResetInteractableGameplayButtons();
     }
 
-    public bool CanIMoveThisCharacter(int classID, int playerID = -1)
+    public bool CanIControlThisCharacter(int classID, int playerID = -1)
     {
         if(playerID == -1)
         {

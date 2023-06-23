@@ -8,14 +8,16 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 {
     #region Constants
 
-    public static readonly Color HEX_DEFAULT_COLOR = Color.white;
-    public static readonly Color HEX_START_COLOR = Color.blue;
-    public static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
-    public static readonly Color HEX_HOVER_COLOR = Color.cyan;
-    public static readonly Color HEX_SELECT_COLOR = Color.green;
-    public static readonly Color HEX_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
-    public static readonly Color HEX_LOS_OBSTRUCT_COLOR = Color.yellow;
-    public static readonly Color HEX_ATTACK_COLOR = Color.red;
+    private static readonly Color HEX_DEFAULT_COLOR = Color.white;
+    private static readonly Color HEX_START_COLOR = Color.blue;
+    private static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
+    private static readonly Color HEX_HOVER_COLOR = Color.cyan;
+    private static readonly Color HEX_SELECT_COLOR = Color.green;
+    private static readonly Color HEX_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+    private static readonly Color HEX_LOS_OBSTRUCT_COLOR = Color.yellow;
+    private static readonly Color HEX_ATTACK_HOVER_COLOR = Color.red;
+    private static readonly Color HEX_ATTACK_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+
 
     #endregion
 
@@ -253,10 +255,15 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         this.HexColor = mode ? Hex.HEX_HOVER_COLOR : this.unHoveredColor;
     }
 
-    public void DisplayRange(bool mode)
+    public void DisplayMoveRange(bool mode)
     {
         this.unHoveredColor = mode ? Hex.HEX_RANGE_COLOR : this.baseColor;
         this.HexColor = mode ? Hex.HEX_RANGE_COLOR : this.baseColor;
+    }
+    public void DisplayAttackRange(bool mode)
+    {
+        this.unHoveredColor = mode ? Hex.HEX_ATTACK_RANGE_COLOR : this.baseColor;
+        this.HexColor = mode ? Hex.HEX_ATTACK_RANGE_COLOR : this.baseColor;
     }
 
     public void DisplayLOSObstruction(bool mode)
@@ -266,8 +273,8 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 
     public void AttackHover(bool mode)
     {
-        this.unHoveredColor = this.baseColor;
-        this.HexColor = Hex.HEX_ATTACK_COLOR;
+        if (mode) { this.unHoveredColor = this.HexColor; }
+        this.HexColor = mode ? Hex.HEX_ATTACK_HOVER_COLOR : this.unHoveredColor;
     }
     #endregion
 
@@ -310,8 +317,24 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
             return true;
     }
 
+    public bool IsValidAttackTarget()
+    {
+        if (this.HoldsACharacter())
+            return true;
+        else
+            return false;
+    }
+
     //only validates local data, other checks need to be performed for allowing actual move
     public bool IsValidMoveSource()
+    {
+        if (this.HoldsACharacter())
+            return true;
+        else
+            return false;
+    }
+
+    public bool IsValidAttackSource()
     {
         if (this.HoldsACharacter())
             return true;
@@ -330,16 +353,20 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
                 {
                     case ControlMode.move:
                         if (this.IsValidMoveSource() &&
-                            GameController.Singleton.CanIMoveThisCharacter(this.holdsCharacterWithClassID))
+                            GameController.Singleton.CanIControlThisCharacter(this.holdsCharacterWithClassID))
                             return true;
                         else if (Map.Singleton.SelectedHex != null && this.IsValidMoveDest())
                             return true;
                         else
                             return false;
                     case ControlMode.attack:
-                        //allow selecting to preview LOS
-                        //additional attack validation done in Map
-                        return true;
+                        if (this.IsValidAttackSource() &&
+                            GameController.Singleton.CanIControlThisCharacter(this.holdsCharacterWithClassID))
+                            return true;
+                        else if (Map.Singleton.SelectedHex != null && this.IsValidAttackTarget())
+                            return true;
+                        else
+                            return false;
                     default:
                         return false;
                 }
@@ -354,7 +381,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         {
             case ControlMode.move:
                 if (this.IsValidMoveSource() &&
-                    GameController.Singleton.CanIMoveThisCharacter(this.holdsCharacterWithClassID))
+                    GameController.Singleton.CanIControlThisCharacter(this.holdsCharacterWithClassID))
                     return true;
                 else
                     return false;
@@ -372,8 +399,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
                 return 1;
         }
     }
-
-
     #endregion
 
 }
