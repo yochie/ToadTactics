@@ -573,7 +573,6 @@ public class Map : NetworkBehaviour
         int pathCost = 0;        
         foreach(Hex h in path)
         {
-            Debug.Log(h);
             pathCost += h.MoveCost();
         }
 
