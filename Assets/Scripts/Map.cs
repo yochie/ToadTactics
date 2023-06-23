@@ -50,8 +50,8 @@ public class Map : NetworkBehaviour
     public readonly Dictionary<Vector2Int, Hex> hexGrid = new();
     public readonly SyncDictionary<Vector2Int, uint> hexGridNetIds = new();
 
-    //TODO : fix using same strat as hexgrid
-    //public readonly SyncDictionary<PlayerCharacter, Hex> characterPositions = new();
+    //maps classID onto HexCoordinates
+    public readonly SyncDictionary<int, HexCoordinates> characterPositions = new();
     #endregion
 
     #region Runtime state vars
@@ -287,7 +287,6 @@ public class Map : NetworkBehaviour
                 else if (this.IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
                 {
                     //SECOND CLICK
-
                     this.CmdMoveChar(previouslySelected, clickedHex);
                     this.UnselectHex();
 
@@ -490,21 +489,28 @@ public class Map : NetworkBehaviour
     //Used by button
     public void SetControlModeAttack()
     {
-        this.UnselectHex();
-        this.HidePath();
-        this.HideMovementRange();
-        this.HideAttackRange();
-        CurrentControlMode = ControlMode.attack;
+        this.SetControlMode(ControlMode.attack);
     }
 
     //Used by button
     public void SetControlModeMove()
     {
+        this.SetControlMode(ControlMode.move);
+    }
+
+    private void SetControlMode(ControlMode mode)
+    {
         this.UnselectHex();
         this.HidePath();
         this.HideMovementRange();
         this.HideAttackRange();
-        CurrentControlMode = ControlMode.move;
+        this.CurrentControlMode = mode;
+        if (GameController.Singleton.IsItMyTurn())
+        {
+            HexCoordinates toSelectCoords = this.characterPositions[GameController.Singleton.ClassIdForPlayingCharacter()];
+            Hex toSelect = this.GetHex(toSelectCoords.X, toSelectCoords.Y);
+            this.SelectHex(toSelect);
+        }
     }
     #endregion
 
@@ -807,7 +813,10 @@ public class Map : NetworkBehaviour
         }
 
         dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
+        this.characterPositions[source.holdsCharacterWithClassID] = dest.coordinates;
+
         source.clearCharacter();
+
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
 
     }
@@ -845,6 +854,8 @@ public class Map : NetworkBehaviour
         Map.Singleton.RpcPlaceChar(newChar, destinationWorldPos);
         this.markCharacterSlotAsPlaced(sender, characterClassID);
 
+        this.characterPositions[characterClassID] = destinationHex.coordinates;
+
         GameController.Singleton.EndTurn();
     }
     #endregion
@@ -871,15 +882,10 @@ public class Map : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcClearUIState()
+    public void RpcClearUIStateForTurn()
     {
-        this.UnselectHex();
-        this.HidePath();
-        this.HideMovementRange();
-        this.HideAttackRange();
-        this.CurrentControlMode = ControlMode.move;
+        this.SetControlMode(ControlMode.move);        
     }
-
 
     //callback for syncing hex grid dict netids
     [Client]
@@ -928,11 +934,7 @@ public class Map : NetworkBehaviour
     [TargetRpc]
     private void RpcSetControlMode(NetworkConnectionToClient target, ControlMode mode)
     {
-        this.UnselectHex();
-        this.HidePath();
-        this.HideMovementRange();
-        this.HideAttackRange();
-        this.CurrentControlMode = mode;
+        this.SetControlMode(mode);
     }
     #endregion
 

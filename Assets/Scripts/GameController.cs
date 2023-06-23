@@ -365,7 +365,7 @@ public class GameController : NetworkBehaviour
     [Server]
     private void NextCharacterTurn()
     {
-        Map.Singleton.RpcClearUIState();
+        Map.Singleton.RpcClearUIStateForTurn();
 
         //loops through turn order        
         this.turnOrderIndex++;
@@ -608,7 +608,7 @@ public class GameController : NetworkBehaviour
     }
     
     //return -1 if no character matches turn order index
-    private int ClassIdForPlayingCharacter(int playingCharacterIndex = -1)
+    public int ClassIdForPlayingCharacter(int playingCharacterIndex = -1)
     {
         //finds prefab ID for character whose turn it is
         int currentTurnOrderIndex = (playingCharacterIndex == -1 ? this.turnOrderIndex : playingCharacterIndex);
