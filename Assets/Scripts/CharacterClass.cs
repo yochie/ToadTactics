@@ -263,7 +263,7 @@ public class CharacterClass
                 damageType: DamageType.magic,
                 moveSpeed: 1,
                 initiative: 8,
-                range: 999,
+                range: 30,
                 damageIterations: 1),
             ability: new(
                 name: "Soul Projection",
