@@ -268,7 +268,8 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 
     public void DisplayLOSObstruction(bool mode)
     {
-        this.HexColor = Hex.HEX_LOS_OBSTRUCT_COLOR;
+        this.unHoveredColor = mode ? Hex.HEX_LOS_OBSTRUCT_COLOR : this.baseColor;
+        this.HexColor = mode ? Hex.HEX_LOS_OBSTRUCT_COLOR : this.baseColor;
     }
 
     public void AttackHover(bool mode)
