@@ -746,7 +746,7 @@ public class Map : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcClearState()
+    public void RpcClearUIState()
     {
         this.UnselectHex();
         this.HidePath();

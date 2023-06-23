@@ -17,6 +17,12 @@ public class GameController : NetworkBehaviour
     private GameObject endTurnButton;
 
     [SerializeField]
+    private GameObject moveButton;
+
+    [SerializeField]
+    private GameObject attackButton;
+
+    [SerializeField]
     private GameObject turnOrderSlotPrefab;
 
     [SerializeField]
@@ -215,11 +221,19 @@ public class GameController : NetworkBehaviour
         {
             //todo: display "Its your turn" msg
             this.endTurnButton.SetActive(true);
+            if(this.currentGameMode == GameMode.gameplay)
+            {
+                this.activatetGameplayButtons(true);
+            }
         }
         else
         {
             //todo : display "Waiting for other player" msg            
             this.endTurnButton.SetActive(false);
+            if (this.currentGameMode == GameMode.gameplay)
+            {
+                this.activatetGameplayButtons(false);
+            }
         }
     }
 
@@ -283,12 +297,20 @@ public class GameController : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcActivateEndTurnButton()
+    private void RpcActivateGameplayButtons()
     {
-        if (IsItMyTurn())
-            this.endTurnButton.SetActive(true);
+        if (playerTurn == this.LocalPlayer.playerID)
+        {
+            this.activatetGameplayButtons(true);
+        }
     }
 
+    [Client]
+    private void activatetGameplayButtons(bool state)
+    {
+        this.moveButton.SetActive(state);
+        this.attackButton.SetActive(state);
+    }
     #endregion
 
     #region Commands
@@ -299,13 +321,13 @@ public class GameController : NetworkBehaviour
     {        
         this.currentGameMode = GameMode.characterPlacement;
         this.playerTurn = 0;
-        this.RpcActivateEndTurnButton();
+        //this.RpcActivateEndTurnButton();
     }
 
     [Server]
     private void NextCharacterTurn()
     {
-        Map.Singleton.RpcClearState();
+        Map.Singleton.RpcClearUIState();
 
         //loops through turn order        
         this.turnOrderIndex++;
@@ -444,6 +466,8 @@ public class GameController : NetworkBehaviour
         {
             this.SwapPlayerTurn();
         }
+
+        this.RpcActivateGameplayButtons();
     }
 
     [Command(requiresAuthority = false)]
