@@ -809,7 +809,8 @@ public class Map : NetworkBehaviour
         if (toMove.CanMoveDistance() == 0)
         {
             GameController.Singleton.RpcGrayOutMoveButton(sender);
-            this.RpcSetControlMode(sender, ControlMode.attack);
+            if (!toMove.hasAttacked)
+                this.RpcSetControlMode(sender, ControlMode.attack);
         }
 
         dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
@@ -821,9 +822,37 @@ public class Map : NetworkBehaviour
 
     }
 
-    private void CmdAttack(Hex source, Hex target)
+    [Command(requiresAuthority = false)]
+    private void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
         Debug.Log("Pikachu, attack!");
+
+        //validate
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        if (!IsValidAttackForPlayer(playerID, source, target))
+        {
+            Debug.Log("Client requested invalid attack");
+            return;
+        }
+
+        PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        PlayerCharacter targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
+
+        //handles character states and attack logic
+        CombatManager.Attack(attackingCharacter, targetedCharacter);
+
+        //if no more actions, end turn
+
+        GameController.Singleton.RpcGrayOutAttackButton(sender);
+
+        if (attackingCharacter.CanMoveDistance() > 0)
+        {
+            this.SetControlMode(ControlMode.move);
+        }
+        else if (!attackingCharacter.HasRemainingActions())
+        {
+            GameController.Singleton.EndTurn();
+        }
     }
 
 

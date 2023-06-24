@@ -319,6 +319,11 @@ public class GameController : NetworkBehaviour
     {
         this.moveButton.GetComponent<Button>().interactable = state;
         this.attackButton.GetComponent<Button>().interactable = state;
+        if (!state)
+        {
+            this.moveButton.GetComponent<Image>().color = Color.white;
+            this.attackButton.GetComponent<Image>().color = Color.white;
+        }
     }
 
     [Client]
@@ -331,7 +336,17 @@ public class GameController : NetworkBehaviour
     [TargetRpc]
     public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
     {
-        this.moveButton.GetComponent<Button>().interactable = false;        
+        this.moveButton.GetComponent<Button>().interactable = false;
+        this.moveButton.GetComponent<Image>().color = Color.white;
+
+    }
+
+    [TargetRpc]
+    public void RpcGrayOutAttackButton(NetworkConnectionToClient target)
+    {
+        this.attackButton.GetComponent<Button>().interactable = false;
+        this.attackButton.GetComponent<Image>().color = Color.white;
+
     }
 
     [Client]
@@ -365,8 +380,6 @@ public class GameController : NetworkBehaviour
     [Server]
     private void NextCharacterTurn()
     {
-        Map.Singleton.RpcClearUIStateForTurn();
-
         //loops through turn order        
         this.turnOrderIndex++;
         if (this.turnOrderIndex >= this.sortedTurnOrder.Count)
@@ -397,6 +410,7 @@ public class GameController : NetworkBehaviour
             this.SwapPlayerTurn();
         }
 
+        Map.Singleton.RpcClearUIStateForTurn();
         this.RpcResetInteractableGameplayButtons();
     }
 
@@ -507,6 +521,7 @@ public class GameController : NetworkBehaviour
             this.SwapPlayerTurn();
         }
 
+        Map.Singleton.RpcClearUIStateForTurn();
         this.RpcResetActiveGameplayButtons();
     }
 
@@ -666,5 +681,6 @@ public class GameController : NetworkBehaviour
         //Debug.Log(result);
 
     }
+
 
 }

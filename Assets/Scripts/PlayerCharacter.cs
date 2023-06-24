@@ -17,31 +17,15 @@ public class PlayerCharacter : NetworkBehaviour
     [SyncVar]
     public CharacterStats currentStats;
     [SyncVar]
-    public bool hasMoved = false;
+    public bool hasMoved;
     [SyncVar]
-    public bool hasAttacked = false;
+    public bool hasAttacked;
     [SyncVar]
-    public bool hasUsedAbility = false;
+    public bool hasUsedAbility;
     [SyncVar]
-    public bool hasUsedTreasure = false;
+    public bool hasUsedTreasure;
     [SyncVar]
-    private int remainingMoves = 0;
-
-    public int CurrentLife
-    {
-        get => currentLife;
-        set
-        {
-            if (value < 0)
-            {
-                this.currentLife = 0;
-            }
-            else if (value > currentStats.maxHealth)
-            {
-                this.currentLife = this.currentStats.maxHealth;
-            }
-        }
-    }
+    private int remainingMoves;
 
     public override void OnStartClient()
     {
@@ -62,7 +46,7 @@ public class PlayerCharacter : NetworkBehaviour
         if (GameController.Singleton.AllClasses[this.charClassID] != null)
         {
             this.charClass = GameController.Singleton.AllClasses[this.charClassID];
-            this.CmdInitCurrentStats();
+            this.CmdInitCharacter();
         }
         else
         {
@@ -71,11 +55,15 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    private void CmdInitCurrentStats()
+    private void CmdInitCharacter()
     {
         this.currentStats = this.charClass.charStats;
+        this.currentLife = this.currentStats.maxHealth;
+        equippedTreasureIDs = new();
 
-        //now that we have current stats we can init turn data (including remaining moves)
+        //TODO : change to false once implemented
+        hasUsedAbility = true;
+        hasUsedTreasure = true;
         this.NewTurn();
     }
 
@@ -93,6 +81,13 @@ public class PlayerCharacter : NetworkBehaviour
         else
             return remainingMoves;
     }
+
+    public int CurrentLife()
+    {
+        return this.currentLife;
+    }
+
+    [Server]
     public void UseMoves(int moveDistance)
     {
         if (this.CanMoveDistance() < moveDistance)
@@ -103,6 +98,18 @@ public class PlayerCharacter : NetworkBehaviour
         this.remainingMoves -= moveDistance;
         this.hasMoved = true;
     }
+
+    [Server]
+    public void UseAttack()
+    {
+        if (this.hasAttacked)
+        {
+            Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate move beforehand.", this.charClass.className);
+            return;
+        }
+        this.hasAttacked = true;
+    }
+
     [Server]
     public void NewTurn()
     {
@@ -111,6 +118,11 @@ public class PlayerCharacter : NetworkBehaviour
         this.remainingMoves = this.currentStats.moveSpeed;
     }
 
+    [Server]
+    public void TakeRawDamage(int dmgAmount)
+    {
+        this.currentLife = Mathf.Clamp(currentLife - dmgAmount, 0, this.currentStats.maxHealth);        
+    }
 
     
 }
