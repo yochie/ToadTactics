@@ -714,8 +714,8 @@ public class Map : NetworkBehaviour
                 Hex hitHex = hitObject.GetComponent<Hex>();
                 if (hitHex != null && hitHex.BreaksLOS(target.HoldsACharacter() ? target.holdsCharacterWithClassID : -1))
                 {
-                    //if (!hexesInRange.ContainsKey(hitHex) || hexesInRange[hitHex] == TargetableType.unreachable || hexesInRange[hitHex] == TargetableType.targetable)
-                    hexesInRange[hitHex] = TargetableType.obstructing;
+                    if (!hexesInRange.ContainsKey(hitHex) || hexesInRange[hitHex] == TargetableType.targetable)
+                        hexesInRange[hitHex] = TargetableType.obstructing;
                     unobstructed = false;
                     for (int i = hitIndex + 1; i < hits.Length; i++)
                     {
@@ -841,15 +841,19 @@ public class Map : NetworkBehaviour
         //handles character states and attack logic
         CombatManager.Attack(attackingCharacter, targetedCharacter);
 
-        //if no more actions, end turn
-
         GameController.Singleton.RpcGrayOutAttackButton(sender);
 
+        //prevent from move - attack - move       
         if (attackingCharacter.CanMoveDistance() > 0)
         {
-            this.SetControlMode(ControlMode.move);
+            this.RpcSetControlMode(sender, ControlMode.move);
+        } else
+        {
+            //prevent from move - attack - move
+            GameController.Singleton.RpcGrayOutMoveButton(sender);
         }
-        else if (!attackingCharacter.HasRemainingActions())
+
+        if (!attackingCharacter.HasRemainingActions())
         {
             GameController.Singleton.EndTurn();
         }
@@ -994,6 +998,7 @@ public class Map : NetworkBehaviour
             !source.IsValidAttackSource() ||
             !target.IsValidAttackTarget() ||
             !GameController.Singleton.CanIControlThisCharacter(source.holdsCharacterWithClassID, playerID) ||
+            GameController.Singleton.DoesHeOwnThisCharacter(playerID, target.holdsCharacterWithClassID) ||
             !this.LOSReaches(source, target, GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID].currentStats.range))
         {
             return false;

@@ -60,10 +60,8 @@ public class PlayerCharacter : NetworkBehaviour
         this.currentStats = this.charClass.charStats;
         this.currentLife = this.currentStats.maxHealth;
         equippedTreasureIDs = new();
-
-        //TODO : change to false once implemented
-        hasUsedAbility = true;
-        hasUsedTreasure = true;
+        hasUsedAbility = false;
+        hasUsedTreasure = false;
         this.NewTurn();
     }
 
