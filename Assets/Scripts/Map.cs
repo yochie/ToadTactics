@@ -992,13 +992,24 @@ public class Map : NetworkBehaviour
 
     private bool IsValidAttackForPlayer(int playerID, Hex source, Hex target)
     {
+        //Allows targeting your own characters if healer
+        bool allowTargetingAnyCharacter = false;
+        if(source != null && source.IsValidAttackSource())
+        {
+            PlayerCharacter attacker = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+            if (attacker.currentStats.damageType == DamageType.healing)
+            {
+                allowTargetingAnyCharacter = true;
+            }
+        }
+
         if (source == null ||
             target == null ||
-            source == target ||
+            (allowTargetingAnyCharacter ? false : source == target) ||
             !source.IsValidAttackSource() ||
             !target.IsValidAttackTarget() ||
             !GameController.Singleton.CanIControlThisCharacter(source.holdsCharacterWithClassID, playerID) ||
-            GameController.Singleton.DoesHeOwnThisCharacter(playerID, target.holdsCharacterWithClassID) ||
+            (allowTargetingAnyCharacter ? false : GameController.Singleton.DoesHeOwnThisCharacter(playerID, target.holdsCharacterWithClassID)) ||
             !this.LOSReaches(source, target, GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID].currentStats.range))
         {
             return false;
