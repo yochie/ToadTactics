@@ -120,7 +120,5 @@ public class PlayerCharacter : NetworkBehaviour
     public void TakeRawDamage(int dmgAmount)
     {
         this.currentLife = Mathf.Clamp(currentLife - dmgAmount, 0, this.currentStats.maxHealth);        
-    }
-
-    
+    }    
 }
