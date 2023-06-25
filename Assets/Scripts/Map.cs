@@ -21,11 +21,12 @@ public class Map : NetworkBehaviour
 
     public GameObject hexPrefab;
     public GameObject treePrefab;
+    public TextMeshProUGUI cellLabelPrefab;
 
     public MapOutline outline;
     public TreasureSpawner treasureSpawner;
+    
 
-    public TextMeshProUGUI cellLabelPrefab;
     public Canvas coordCanvas;
     public Canvas labelsCanvas;
     public List<StartZone> startingZones;

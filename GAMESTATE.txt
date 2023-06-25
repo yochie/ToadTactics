@@ -5,28 +5,33 @@ IMPORTANT NOTE : this needs updating... might be better to just look at code...
 
 Game state
 
-    map
-        dict<vector, struct Hex> hex dictionnary where each hex can hold or be marked as
-            struct hexCoordinate
-            vector worldPosition
-            enum obstacleType
-            int playerIndex
-            struct treasure
-            enum hazardType (along with consequent moveCost)            
-            bool startingZone
-            int StartingZone for player (along with basecolor)
+    Map
+        dict<HexCoordinate, struct HexState> hexGrid where HexState
+            int holdsCharacter
+            ObstacleType holdsObstacle
+            HazardType holdsHazard
+            bool holdsTreasure            
+            bool isStartingZone
+            int startingZoneForPlayer
 
-    gamecontroller
-        array[2]<Player> of players each with
-            int/bool index (host:0 or client:1)
-            bool isMyTurn
-            int score
-            array[3]<struct character> of owned characters each with
-                struct hexCoordinate their position on board (or lack thereof)
-                list<struct treasure> their current equipped treasures
-                list<struct buff> their current buffs/debuffs
-                int their current life
-                int (x4) their remaning ability/treasure/moves/attack uses
-                struct charStats their current stats (base stats modified by buffs and gear, so could technically be recomputed based on other data)
-                int the player they are owned by
+    GameController
+        GamePhase currentPhase
+        int playerTurn (during drafts/characterPlacement)
+        int turnOrderIndex (during gameplay)
+        int[2] gameScore (for best of 3)
+        
+    PlayerController[2] players
+        int[2] roundScore (kills/treasure)
+        int playerIndex (host:0 or client:1)        
 
+        List<PlayerCharacter> playerCharacters
+            HexCoordinate position
+            List<int> treasureID
+            List<Buff> buffs
+            int currentLife
+            int remainingMoves
+            bool hasMoved
+            bool hasAttacked
+            bool hasUsedAbility
+            Dict<int, bool> hasUsedTreasureWithID
+            CharStats currentStats
