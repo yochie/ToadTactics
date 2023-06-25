@@ -26,13 +26,15 @@ Game state
 
         List<PlayerCharacter> playerCharacters
             HexCoordinate position
-            List<int> equippedTreasureID
-            List<Buff> buffs
+            int charClassID
+            CharStats currentStats
             int currentLife
-            int remainingMoves
             bool hasMoved
             bool hasAttacked
             bool hasUsedAbility
+            int remainingMoves
             Dict<int, bool> hasUsedTreasureWithID
-            CharStats currentStats
-            int charClassID
+            List<int> equippedTreasureID
+            List<Buff> buffs
+
+
