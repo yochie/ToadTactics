@@ -46,7 +46,7 @@ public class GameController : NetworkBehaviour
     public PlayerController LocalPlayer { get; set; }
     private readonly List<TurnOrderSlotUI> turnOrderSlots = new();
 
-    private bool waitingForClientSetup;
+    private bool waitingForClientSpawns;
     #endregion
 
     #region Synced vars
@@ -82,7 +82,7 @@ public class GameController : NetworkBehaviour
         //ensure array is sorted by classID
         Array.Sort<GameObject>(AllPlayerCharPrefabs,(p1, p2) => { return p1.GetComponent<PlayerCharacter>().charClass.classID.CompareTo(p2.GetComponent<PlayerCharacter>().charClass.classID);});
 
-        this.waitingForClientSetup = true;
+        this.waitingForClientSpawns = true;
     }
 
     public override void OnStartClient()
@@ -669,12 +669,12 @@ public class GameController : NetworkBehaviour
 
     private void Update()
     {
-        if (isServer && this.waitingForClientSetup)
+        if (isServer && this.waitingForClientSpawns)
         {
 
             if (Map.Singleton.hexesSpawnedOnClient && NetworkManager.singleton.numPlayers == 2)
             {
-                this.waitingForClientSetup = false;
+                this.waitingForClientSpawns = false;
                 this.CmdStartPlaying();
             }
 
