@@ -80,11 +80,7 @@ public class CharacterClass
                 damage: 1,
                 range: 0,
                 aoe: 0,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Barb has no usable ability. Should probably prevent this from being called.");
-                })
+                turnDuration: 0)
         );
         dictOfClasses.Add(barbarian.classID, barbarian);
 
@@ -107,11 +103,7 @@ public class CharacterClass
                 damage: 5,
                 range: 3,
                 aoe: 0,
-                turnDuration: 1,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 1)
             );
         dictOfClasses.Add(cavalier.classID, cavalier);
 
@@ -134,11 +126,7 @@ public class CharacterClass
                 damage: 0,
                 range: 3,
                 aoe: 0,
-                turnDuration: 1,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 1)
             );
         dictOfClasses.Add(archer.classID, archer);
 
@@ -161,11 +149,7 @@ public class CharacterClass
                 damage: 0,
                 range: 0,
                 aoe: 0,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 0)
             );
         dictOfClasses.Add(rogue.classID, rogue);
 
@@ -188,11 +172,7 @@ public class CharacterClass
                 damage: 5,
                 range: 3,
                 aoe: 0,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 0)
             );
         dictOfClasses.Add(warrior.classID, warrior);
 
@@ -215,11 +195,7 @@ public class CharacterClass
                 damage: 0,
                 range: 0,
                 aoe: 0,
-                turnDuration: 2,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 2)
             );
         dictOfClasses.Add(paladin.classID, paladin);
 
@@ -243,11 +219,7 @@ public class CharacterClass
                 damage: 0,
                 range: 0,
                 aoe: 2,
-                turnDuration: 1,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 1)
             );
         dictOfClasses.Add(druid.classID, druid);
 
@@ -271,11 +243,7 @@ public class CharacterClass
                 damage: 0,
                 range: 2,
                 aoe: 0,
-                turnDuration: 1,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 1)
             );
         dictOfClasses.Add(necromancer.classID, necromancer);
 
@@ -300,11 +268,7 @@ public class CharacterClass
                 damageType: DamageType.magic,
                 range: 3,
                 aoe: 1,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 0)
             );
         dictOfClasses.Add(wizard.classID, wizard);
 
@@ -328,11 +292,7 @@ public class CharacterClass
                 damage: 0,
                 range: 999,
                 aoe: 0,
-                turnDuration: 0,
-                use: (PlayerCharacter pc, Hex target) =>
-                {
-                    Debug.Log("Need to implement");
-                })
+                turnDuration: 0)
             );
         dictOfClasses.Add(priest.classID, priest);
 

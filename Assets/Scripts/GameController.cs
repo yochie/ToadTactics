@@ -531,7 +531,7 @@ public class GameController : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdAddCharToTurnOrder(int ownerPlayerIndex, int initiative, int classID)
+    public void CmdAddCharToTurnOrder(int ownerPlayerIndex, float initiative, int classID)
     {
         if (Utility.DictContainsValue(GameController.Singleton.sortedTurnOrder, classID))
         {

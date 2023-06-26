@@ -10,10 +10,7 @@ public readonly struct CharacterAbility
     public readonly int range;
     public readonly int aoe;
 
-    public delegate void Use(PlayerCharacter user, List<Hex> targets);
-    public readonly Use use;
-
-    public CharacterAbility(string name, string description, int damage, int range, int aoe, int turnDuration, Use use, DamageType damageType = DamageType.normal)
+    public CharacterAbility(string name, string description, int damage, int range, int aoe, int turnDuration, DamageType damageType = DamageType.normal)
     {
         this.name = name;
         this.description = description;
@@ -22,6 +19,5 @@ public readonly struct CharacterAbility
         this.range = range;
         this.aoe = aoe;
         this.turnDuration = turnDuration;
-        this.use = use;
     }
 }
