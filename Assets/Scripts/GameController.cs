@@ -78,6 +78,10 @@ public class GameController : NetworkBehaviour
     private void Awake()
     {
         Singleton = this;
+
+        //ensure array is sorted by classID
+        Array.Sort<GameObject>(AllPlayerCharPrefabs,(p1, p2) => { return p1.GetComponent<CharacterClass>().classID.CompareTo(p2.GetComponent<CharacterClass>().classID);});
+
         this.waitingForClientSetup = true;
     }
 
