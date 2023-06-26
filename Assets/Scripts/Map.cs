@@ -49,7 +49,7 @@ public class Map : NetworkBehaviour
 
     #region Synced vars
     public readonly Dictionary<Vector2Int, Hex> hexGrid = new();
-    public readonly SyncDictionary<Vector2Int, uint> hexGridNetIds = new();
+    public readonly SyncDictionary<Vector2Int, uint> hexGridNetIDs = new();
 
     //maps classID onto HexCoordinates
     public readonly SyncDictionary<int, HexCoordinates> characterPositions = new();
@@ -90,9 +90,9 @@ public class Map : NetworkBehaviour
 
         this.CurrentControlMode = ControlMode.move;
 
-        hexGridNetIds.Callback += OnHexGridNetIdsChange;
+        hexGridNetIDs.Callback += OnHexGridNetIdsChange;
         // Process initial SyncDictionary payload
-        foreach (KeyValuePair<Vector2Int, uint> kvp in hexGridNetIds)
+        foreach (KeyValuePair<Vector2Int, uint> kvp in hexGridNetIDs)
             OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
     }
 
@@ -139,7 +139,7 @@ public class Map : NetworkBehaviour
 
                     //used to sync hexGrid using coroutine callbacks on client
                     //bypasses issues with syncing gameobjects that haven't been spawned yet
-                    this.hexGridNetIds[new Vector2Int(x, y)] = h.gameObject.GetComponent<NetworkIdentity>().netId;
+                    this.hexGridNetIDs[new Vector2Int(x, y)] = h.gameObject.GetComponent<NetworkIdentity>().netId;
                 }
             }
         }
