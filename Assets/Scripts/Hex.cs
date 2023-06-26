@@ -352,11 +352,11 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
 
     public bool IsClickable()
     {
-        switch (GameController.Singleton.currentGameMode)
+        switch (GameController.Singleton.currentGamePhase)
         {
-            case GameMode.characterPlacement:
+            case GamePhase.characterPlacement:
                 return false;
-            case GameMode.gameplay:
+            case GamePhase.gameplay:
                 switch (Map.Singleton.CurrentControlMode)
                 {
                     case ControlMode.move:

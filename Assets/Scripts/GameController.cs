@@ -28,6 +28,7 @@ public class GameController : NetworkBehaviour
     [SerializeField]
     private GameObject turnOrderBar;
 
+    //Must be ordered in editor by classID
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
 
     //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
@@ -68,8 +69,8 @@ public class GameController : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlayerTurnChanged))]
     public int playerTurn;
 
-    [SyncVar(hook = nameof(OnGameModeChanged))]
-    public GameMode currentGameMode;
+    [SyncVar(hook = nameof(OnGamePhaseChanged))]
+    public GamePhase currentGamePhase;
     #endregion
 
     #region Startup
@@ -101,7 +102,7 @@ public class GameController : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        this.currentGameMode = GameMode.waitingForClient;
+        this.currentGamePhase = GamePhase.waitingForClient;
         this.turnOrderIndex = -1;
         this.playerTurn = -1;
     }
@@ -221,7 +222,7 @@ public class GameController : NetworkBehaviour
         {
             //todo: display "Its your turn" msg
             this.endTurnButton.SetActive(true);
-            if(this.currentGameMode == GameMode.gameplay)
+            if(this.currentGamePhase == GamePhase.gameplay)
             {
                 this.SetActiveGameplayButtons(true);
             }
@@ -230,7 +231,7 @@ public class GameController : NetworkBehaviour
         {
             //todo : display "Waiting for other player" msg            
             this.endTurnButton.SetActive(false);
-            if (this.currentGameMode == GameMode.gameplay)
+            if (this.currentGamePhase == GamePhase.gameplay)
             {
                 this.SetActiveGameplayButtons(false);
             }
@@ -239,7 +240,7 @@ public class GameController : NetworkBehaviour
 
     //callback for gamemode UI
     [Client]
-    private void OnGameModeChanged(GameMode oldPhase, GameMode newPhase)
+    private void OnGamePhaseChanged(GamePhase oldPhase, GamePhase newPhase)
     {
         this.phaseLabel.text = newPhase.ToString();
     }
@@ -372,7 +373,7 @@ public class GameController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void CmdStartPlaying()
     {        
-        this.currentGameMode = GameMode.characterPlacement;
+        this.currentGamePhase = GamePhase.characterPlacement;
         this.playerTurn = 0;
         //this.RpcActivateEndTurnButton();
     }
@@ -451,17 +452,17 @@ public class GameController : NetworkBehaviour
     [Server]
     public void EndTurn()
     {
-        switch (this.currentGameMode)
+        switch (this.currentGamePhase)
         {
-            case GameMode.waitingForClient:
+            case GamePhase.waitingForClient:
                 throw new Exception("You shouldn't be able to end turn while waiting for client...");
-            case GameMode.draft:
+            case GamePhase.draft:
                 //if(this.!AllCharactersAreDrafted())
                 //    this.SwapPlayerTurn();
                 //else
                 //    this.SetPhase(GameMode.characterPlacement);
                 break;
-            case GameMode.characterPlacement:
+            case GamePhase.characterPlacement:
                 if (!AllHisCharactersAreOnBoard(this.OtherPlayer(playerTurn)))
                 {
                     this.SwapPlayerTurn();
@@ -469,29 +470,29 @@ public class GameController : NetworkBehaviour
 
                 if (AllCharactersAreOnBoard())
                 {
-                    this.SetPhase(GameMode.gameplay);                    
+                    this.SetPhase(GamePhase.gameplay);                    
                 }
                 break;
-            case GameMode.gameplay:
+            case GamePhase.gameplay:
                 this.NextCharacterTurn();
                 break;
-            case GameMode.treasureDraft:
+            case GamePhase.treasureDraft:
                 this.SwapPlayerTurn();
                 break;
-            case GameMode.treasureEquip:
+            case GamePhase.treasureEquip:
                 this.SwapPlayerTurn();
                 break;
         }
     }
 
     [Server]
-    private void SetPhase(GameMode newPhase)
+    private void SetPhase(GamePhase newPhase)
     {
-        this.currentGameMode = newPhase;
+        this.currentGamePhase = newPhase;
 
         switch(newPhase)
         {
-            case GameMode.gameplay:
+            case GamePhase.gameplay:
                 this.InitGameplayMode();
                 break;
         }
