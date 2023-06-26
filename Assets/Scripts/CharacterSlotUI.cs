@@ -36,7 +36,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public bool IsDraggable {
         get {
             bool toReturn = false;
-            switch (GameController.Singleton.currentGamePhase)
+            switch (GameController.Singleton.currentPhase)
             {
                 case GamePhase.characterPlacement:
                     if (GameController.Singleton.IsItMyTurn() &&

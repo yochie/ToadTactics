@@ -70,7 +70,7 @@ public class GameController : NetworkBehaviour
     public int playerTurn;
 
     [SyncVar(hook = nameof(OnGamePhaseChanged))]
-    public GamePhase currentGamePhase;
+    public GamePhase currentPhase;
     #endregion
 
     #region Startup
@@ -106,7 +106,7 @@ public class GameController : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        this.currentGamePhase = GamePhase.waitingForClient;
+        this.currentPhase = GamePhase.waitingForClient;
         this.turnOrderIndex = -1;
         this.playerTurn = -1;
     }
@@ -226,7 +226,7 @@ public class GameController : NetworkBehaviour
         {
             //todo: display "Its your turn" msg
             this.endTurnButton.SetActive(true);
-            if(this.currentGamePhase == GamePhase.gameplay)
+            if(this.currentPhase == GamePhase.gameplay)
             {
                 this.SetActiveGameplayButtons(true);
             }
@@ -235,7 +235,7 @@ public class GameController : NetworkBehaviour
         {
             //todo : display "Waiting for other player" msg            
             this.endTurnButton.SetActive(false);
-            if (this.currentGamePhase == GamePhase.gameplay)
+            if (this.currentPhase == GamePhase.gameplay)
             {
                 this.SetActiveGameplayButtons(false);
             }
@@ -377,7 +377,7 @@ public class GameController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void CmdStartPlaying()
     {        
-        this.currentGamePhase = GamePhase.characterPlacement;
+        this.currentPhase = GamePhase.characterPlacement;
         this.playerTurn = 0;
         //this.RpcActivateEndTurnButton();
     }
@@ -456,7 +456,7 @@ public class GameController : NetworkBehaviour
     [Server]
     public void EndTurn()
     {
-        switch (this.currentGamePhase)
+        switch (this.currentPhase)
         {
             case GamePhase.waitingForClient:
                 throw new Exception("You shouldn't be able to end turn while waiting for client...");
@@ -492,7 +492,7 @@ public class GameController : NetworkBehaviour
     [Server]
     private void SetPhase(GamePhase newPhase)
     {
-        this.currentGamePhase = newPhase;
+        this.currentPhase = newPhase;
 
         switch(newPhase)
         {
