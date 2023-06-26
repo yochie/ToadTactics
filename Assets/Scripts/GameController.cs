@@ -42,7 +42,7 @@ public class GameController : NetworkBehaviour
 
     #region Runtime vars
     //Maps classID to CharacterClass
-    public Dictionary<int, CharacterClass> AllClasses { get; set; }
+    public Dictionary<int, CharacterClass> characterClassesByID { get; set; }
     public PlayerController LocalPlayer { get; set; }
     private readonly List<TurnOrderSlotUI> turnOrderSlots = new();
 
@@ -80,7 +80,7 @@ public class GameController : NetworkBehaviour
         Singleton = this;
 
         //ensure array is sorted by classID
-        Array.Sort<GameObject>(AllPlayerCharPrefabs,(p1, p2) => { return p1.GetComponent<CharacterClass>().classID.CompareTo(p2.GetComponent<CharacterClass>().classID);});
+        Array.Sort<GameObject>(AllPlayerCharPrefabs,(p1, p2) => { return p1.GetComponent<PlayerCharacter>().charClass.classID.CompareTo(p2.GetComponent<PlayerCharacter>().charClass.classID);});
 
         this.waitingForClientSetup = true;
     }
@@ -98,7 +98,7 @@ public class GameController : NetworkBehaviour
         foreach (KeyValuePair<float, int> kvp in sortedTurnOrder)
             OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
-        this.AllClasses =  CharacterClass.DefineClasses();
+        this.characterClassesByID =  CharacterClass.DefineClasses();
 
         Map.Singleton.Initialize();
     }
