@@ -68,7 +68,7 @@ public class PlayerController : NetworkBehaviour
 
             characterSlot.HoldsCharacterWithClassID = classID;
 
-            GameController.Singleton.CmdAddCharToTurnOrder(this.playerID, newCharClass.charStats.initiative, classID);
+            GameController.Singleton.CmdAddCharToTurnOrder(this.playerID, newCharClass.stats.initiative, classID);
         }
     }
 

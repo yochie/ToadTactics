@@ -453,8 +453,13 @@ public class GameController : NetworkBehaviour
     {
         switch (this.currentGameMode)
         {
+            case GameMode.waitingForClient:
+                throw new Exception("You shouldn't be able to end turn while waiting for client...");
             case GameMode.draft:
-                this.SwapPlayerTurn();
+                //if(this.!AllCharactersAreDrafted())
+                //    this.SwapPlayerTurn();
+                //else
+                //    this.SetPhase(GameMode.characterPlacement);
                 break;
             case GameMode.characterPlacement:
                 if (!AllHisCharactersAreOnBoard(this.OtherPlayer(playerTurn)))

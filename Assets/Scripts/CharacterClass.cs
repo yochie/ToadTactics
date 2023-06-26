@@ -6,18 +6,18 @@ using System.IO;
 public class CharacterClass
 {
     public readonly int classID;
-    public readonly string className;
-    public readonly string classDescription;
-    public readonly CharacterStats charStats;
-    public readonly CharacterAbility charAbility;
+    public readonly string name;
+    public readonly string description;
+    public readonly CharacterStats stats;
+    public readonly CharacterAbility ability;
 
     public CharacterClass(int classID, string name, string description, CharacterStats stats, CharacterAbility ability)
     {
         this.classID = classID;
-        this.className = name;
-        this.classDescription = description;
-        this.charStats = stats;
-        this.charAbility = ability;
+        this.name = name;
+        this.description = description;
+        this.stats = stats;
+        this.ability = ability;
     }
 
     #region Static definitions

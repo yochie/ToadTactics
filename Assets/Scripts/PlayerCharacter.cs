@@ -57,7 +57,7 @@ public class PlayerCharacter : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void CmdInitCharacter()
     {
-        this.currentStats = this.charClass.charStats;
+        this.currentStats = this.charClass.stats;
         this.currentLife = this.currentStats.maxHealth;
         equippedTreasureIDs = new();
         hasUsedAbility = false;
@@ -90,7 +90,7 @@ public class PlayerCharacter : NetworkBehaviour
     {
         if (this.CanMoveDistance() < moveDistance)
         {
-            Debug.LogFormat("Attempting to move {0} by {1} while it only has {2} moves left. You should validate move beforehand.", this.charClass.className, moveDistance, this.CanMoveDistance());
+            Debug.LogFormat("Attempting to move {0} by {1} while it only has {2} moves left. You should validate move beforehand.", this.charClass.name, moveDistance, this.CanMoveDistance());
             return;
         }
         this.remainingMoves -= moveDistance;
@@ -102,7 +102,7 @@ public class PlayerCharacter : NetworkBehaviour
     {
         if (this.hasAttacked)
         {
-            Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate move beforehand.", this.charClass.className);
+            Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate move beforehand.", this.charClass.name);
             return;
         }
         this.hasAttacked = true;
