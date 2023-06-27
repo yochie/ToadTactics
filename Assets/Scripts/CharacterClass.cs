@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 
 public class CharacterClass
 {
@@ -9,15 +10,17 @@ public class CharacterClass
     public readonly string name;
     public readonly string description;
     public readonly CharacterStats stats;
-    public readonly CharacterAbility ability;
+    public readonly CharacterAbilityStats abilityStats;
+    public readonly Type abilityActionType;
 
-    public CharacterClass(int classID, string name, string description, CharacterStats stats, CharacterAbility ability)
+    public CharacterClass(int classID, string name, string description, CharacterStats stats, CharacterAbilityStats abilityStats, Type abilityActionType = null)
     {
         this.classID = classID;
         this.name = name;
         this.description = description;
         this.stats = stats;
-        this.ability = ability;
+        this.abilityStats = abilityStats;
+        this.abilityActionType = abilityActionType;
     }
 
     #region Static definitions
@@ -74,13 +77,13 @@ public class CharacterClass
                 initiative: 1,
                 range: 1,
                 damageIterations: 3),
-            ability: new(
+            abilityStats: new(
                 name: "NA",
                 description: "No active ability. Always attacks thrice.",
                 damage: 1,
                 range: 0,
                 aoe: 0,
-                turnDuration: 0)
+                turnDuration: 0)            
         );
         dictOfClasses.Add(barbarian.classID, barbarian);
 
@@ -97,13 +100,14 @@ public class CharacterClass
                 initiative: 2,
                 range: 2,
                 damageIterations: 1),
-            ability: new(
+            abilityStats: new(
                 name: "Lance Throw",
                 description: "Throws a lance at an enemy in a 3 tile radius, dealing damage and stunning the target until next turn.",
                 damage: 5,
                 range: 3,
                 aoe: 0,
-                turnDuration: 1)
+                turnDuration: 1),
+            abilityActionType: typeof(CavalierAbilityAction)
             );
         dictOfClasses.Add(cavalier.classID, cavalier);
 
@@ -120,7 +124,7 @@ public class CharacterClass
                 initiative: 3,
                 range: 3,
                 damageIterations: 1),
-            ability: new(
+            abilityStats: new(
                 name: "Backflip + Root",
                 description: "Moves 3 tiles away from current position and roots the nearest enemy until next turn.",
                 damage: 0,
@@ -143,7 +147,7 @@ public class CharacterClass
                 initiative: 4,
                 range: 1,
                 damageIterations: 2),
-            ability: new(
+            abilityStats: new(
                 name: "Stealth",
                 description: "Can activate Stealth to become untargetable until he deals or is dealt damage.",
                 damage: 0,
@@ -166,7 +170,7 @@ public class CharacterClass
                 initiative: 5,
                 range: 1,
                 damageIterations: 1),
-            ability: new(
+            abilityStats: new(
                 name: "Charge",
                 description: "Move towards an enemy and deal damage.",
                 damage: 5,
@@ -189,7 +193,7 @@ public class CharacterClass
                 initiative: 6,
                 range: 1,
                 damageIterations: 1),
-            ability: new(
+            abilityStats: new(
                 name: "Blessing",
                 description: "Grants +2 to damage, health, armor and movement to all allies.",
                 damage: 0,
@@ -213,7 +217,7 @@ public class CharacterClass
                 initiative: 7,
                 range: 2,
                 damageIterations: 1),
-            ability: new(
+            abilityStats: new(
                 name: "Vine grasp",
                 description: "Targets a tile and roots all enemies in a 2 tile radius.",
                 damage: 0,
@@ -237,7 +241,7 @@ public class CharacterClass
                 initiative: 8,
                 range: 30,
                 damageIterations: 1),
-            ability: new(
+            abilityStats: new(
                 name: "Soul Projection",
                 description: "Targets any enemy and brings an effigy within two tiles that transfers received damage to targeted character until the next turn.",
                 damage: 0,
@@ -261,7 +265,7 @@ public class CharacterClass
                 initiative: 9,
                 range: 3,
                 damageIterations: 1),
-            ability: new(
+            abilityStats: new(
                 name: "Fireball",
                 description: "Throws a fireball at target character that explodes on contact, dealing damage adjacent tiles.",
                 damage: 5,
@@ -286,7 +290,7 @@ public class CharacterClass
                 initiative: 10,
                 range: 3,
                 damageIterations: 1),
-            ability: new(
+            abilityStats: new(
                 name: "Resurrect",
                 description: "Revives an ally at 50% of max HP.",
                 damage: 0,
