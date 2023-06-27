@@ -12,4 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00e58800434483c4d8863ea1cca0b4fb, type: 3}
   m_Name: CharacterData
   m_EditorClassIdentifier: 
-  characterPrefabs: []
+  characterPrefabs:
+  - {fileID: 3539194687959195621, guid: 3c1b84d6c4d5b0c489f27c1935398e5e, type: 3}
+  - {fileID: 199333712297459872, guid: 842dc21dd63a6ef42aa6871d2828655f, type: 3}
+  - {fileID: 5684010957284598466, guid: 9dfafdc65753e794e830f0a12a6faed2, type: 3}
+  - {fileID: 2511488635020328802, guid: e369898c66f721842be482c811b4c454, type: 3}
+  - {fileID: 7985195224116861791, guid: 1f6057fe4e07b6f449c2ea65c7d42948, type: 3}
+  - {fileID: 8051415400980049241, guid: 040df8fe721075a4abd83c1d9eb79475, type: 3}
+  - {fileID: 8602888662609690975, guid: 1b193989f8a3e024bb2130a631a88237, type: 3}
+  - {fileID: 4800910798072245519, guid: 85568a6e04a1e744da098c5832f1dcb0, type: 3}
+  - {fileID: 789519074972966039, guid: 8a8ddefb9b083814a99ffd1803633341, type: 3}
+  - {fileID: 6502996172088238785, guid: 427ad15459c387e459a5ae4c8d95bdab, type: 3}
