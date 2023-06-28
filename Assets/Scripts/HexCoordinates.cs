@@ -69,7 +69,7 @@ public readonly struct HexCoordinates : IEquatable<HexCoordinates>
 		return new HexCoordinates(this.Q + (int)dir.x, this.R + (int)dir.y, this.isFlatTop);
 	}
 
-	public HexCoordinates[] Neighbours()
+	public HexCoordinates[] NeighbhouringCoordinates()
 	{
 		HexCoordinates[] toReturn = new HexCoordinates[6];
 		for (int i = 0; i < toReturn.Length; i++)

@@ -613,7 +613,7 @@ public class Map : NetworkBehaviour
     public List<Hex> GetHexNeighbours(Hex h)
     {
         List<Hex> toReturn = new();
-        foreach (HexCoordinates neighbourCoord in h.coordinates.Neighbours())
+        foreach (HexCoordinates neighbourCoord in h.coordinates.NeighbhouringCoordinates())
         {
             Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
             if (neighbour != null)
@@ -629,7 +629,7 @@ public class Map : NetworkBehaviour
     public List<Hex> GetUnobstructedHexNeighbours(Hex h)
     {
         List<Hex> toReturn = new();
-        foreach (HexCoordinates neighbourCoord in h.coordinates.Neighbours())
+        foreach (HexCoordinates neighbourCoord in h.coordinates.NeighbhouringCoordinates())
         {
             Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
             if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && neighbour.holdsCharacterWithClassID == -1)
