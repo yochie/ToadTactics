@@ -411,7 +411,7 @@ public class GameController : NetworkBehaviour
         }
 
         PlayerCharacter currentCharacter = this.playerCharacters[currentCharacterClassID];
-        currentCharacter.NewTurn();
+        currentCharacter.ResetTurnState();
 
         //if we don't own that char, swap player turn
         if (this.playerTurn != characterOwners[currentCharacterClassID])

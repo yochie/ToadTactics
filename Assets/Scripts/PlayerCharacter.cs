@@ -62,7 +62,7 @@ public class PlayerCharacter : NetworkBehaviour
         equippedTreasureIDs = new();
         hasUsedAbility = false;
         hasUsedTreasure = false;
-        this.NewTurn();
+        this.ResetTurnState();
     }
 
     public bool HasRemainingActions()
@@ -109,7 +109,7 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    public void NewTurn()
+    public void ResetTurnState()
     {
         this.hasMoved = false;
         this.hasAttacked = false;
