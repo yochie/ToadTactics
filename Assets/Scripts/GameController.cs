@@ -6,6 +6,10 @@ using Mirror;
 using TMPro;
 using System;
 
+
+//RTODO: Split UI out
+//RTODO: review game progression mechanic, consider using events on phase/turn changes to setup UI elements (make buttons clickable, hexes draggable, etc) without depending on them
+//RTODO: Utility functions should be moved to class that holds relevant data so that gamecontroller is no longer abused as global storage, perhaps CharacterDat scriptable obj should serve as global data when actually required
 public class GameController : NetworkBehaviour
 {
     #region Editor vars

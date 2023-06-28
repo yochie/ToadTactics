@@ -1,6 +1,8 @@
 ﻿using Mirror;
 using UnityEngine;
 
+
+//RTODO: move to attack actions and delete
 public class CombatManager : NetworkBehaviour
 {
     [Server]

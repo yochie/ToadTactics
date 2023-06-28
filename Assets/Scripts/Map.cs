@@ -7,6 +7,10 @@ using TMPro;
 using Mirror;
 using Utils;
 
+
+//RTODO: Split into seperate classes
+//RTODO: Commands made into actions/ moved to other classes
+//RTODO: Update should stop happening once all hexes are marked as spawned
 public class Map : NetworkBehaviour
 {
 

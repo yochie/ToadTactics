@@ -6,7 +6,7 @@ public class CavalierAbilityAction : NetworkBehaviour, IAbilityAction
 
     public PlayerCharacter user { get; set; }
 
-    public Hex target { get; set; }
+    public PlayerCharacter target { get; set; }
 
     [Command]
     public void CmdUse()
