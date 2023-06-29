@@ -43,15 +43,15 @@ public class TurnOrderSlotUI : MonoBehaviour
         }
     }
 
-    internal void HighlightAndLabel(int i)
+    internal void HighlightAndLabel(int initiative)
     {
-        this.InitiativeLabel = i.ToString() + "*";
+        this.InitiativeLabel = initiative.ToString() + "*";
         this.IsHighlighted = true;
     }
 
-    internal void UnhighlightAndLabel(int i)
+    internal void UnhighlightAndLabel(int initiative)
     {
-        this.InitiativeLabel = i.ToString();
+        this.InitiativeLabel = initiative.ToString();
         this.IsHighlighted = false;
     }
 }

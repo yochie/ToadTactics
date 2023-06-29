@@ -64,7 +64,7 @@ public class Map : NetworkBehaviour
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
     private HashSet<Hex> displayedMoveRange = new();
-    private Dictionary<Hex,TargetableType> displayedAttackRange = new();
+    private Dictionary<Hex,LOSTargetType> displayedAttackRange = new();
 
     private List<Hex> displayedPath = new();
     private ControlMode currentControlMode;
@@ -457,18 +457,18 @@ public class Map : NetworkBehaviour
 
     private void DisplayAttackRange(Hex source, int range)
     {
-        Dictionary<Hex,TargetableType> attackRange = this.FindAttackRange(source, range);
+        Dictionary<Hex,LOSTargetType> attackRange = this.FindAttackRange(source, range);
         this.displayedAttackRange = attackRange;
         foreach (Hex h in attackRange.Keys)
         {
             //selected hex stays at selected color state
             if (h != source)
             {
-                if (attackRange[h] == TargetableType.targetable)
+                if (attackRange[h] == LOSTargetType.targetable)
                     h.DisplayAttackRange(true);
-                else if (attackRange[h] == TargetableType.obstructing)
+                else if (attackRange[h] == LOSTargetType.obstructing)
                     h.DisplayLOSObstruction(true);
-                else if (attackRange[h] == TargetableType.unreachable)
+                else if (attackRange[h] == LOSTargetType.unreachable)
                 {
                     h.DisplayOutOfAttackRange(true);
                 }
@@ -480,11 +480,11 @@ public class Map : NetworkBehaviour
     {
         foreach (Hex h in this.displayedAttackRange.Keys)
         {
-            if (this.displayedAttackRange[h] == TargetableType.targetable)
+            if (this.displayedAttackRange[h] == LOSTargetType.targetable)
                 h.DisplayAttackRange(false);
-            else if (this.displayedAttackRange[h] == TargetableType.obstructing)
+            else if (this.displayedAttackRange[h] == LOSTargetType.obstructing)
                 h.DisplayLOSObstruction(false);
-            else if (this.displayedAttackRange[h] == TargetableType.unreachable)
+            else if (this.displayedAttackRange[h] == LOSTargetType.unreachable)
             {
                 h.DisplayOutOfAttackRange(false);
             }
@@ -688,9 +688,9 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
-    private Dictionary<Hex, TargetableType> FindAttackRange(Hex source, int range)
+    private Dictionary<Hex, LOSTargetType> FindAttackRange(Hex source, int range)
     {
-        Dictionary<Hex,TargetableType> hexesInRange = new();
+        Dictionary<Hex,LOSTargetType> hexesInRange = new();
         List<Hex> allHexesInRange = this.RangeIgnoringObstacles(source, range);
 
         allHexesInRange.Sort(Comparer<Hex>.Create((Hex h1, Hex h2) => Map.HexDistance(source, h1).CompareTo(Map.HexDistance(source, h2))));
@@ -719,22 +719,22 @@ public class Map : NetworkBehaviour
                 Hex hitHex = hitObject.GetComponent<Hex>();
                 if (hitHex != null && hitHex.BreaksLOS(target.HoldsACharacter() ? target.holdsCharacterWithClassID : -1))
                 {
-                    if (!hexesInRange.ContainsKey(hitHex) || hexesInRange[hitHex] == TargetableType.targetable)
-                        hexesInRange[hitHex] = TargetableType.obstructing;
+                    if (!hexesInRange.ContainsKey(hitHex) || hexesInRange[hitHex] == LOSTargetType.targetable)
+                        hexesInRange[hitHex] = LOSTargetType.obstructing;
                     unobstructed = false;
                     for (int i = hitIndex + 1; i < hits.Length; i++)
                     {
                         Hex nextHex = hits[i].collider.gameObject.GetComponent<Hex>();
                         if(!hexesInRange.ContainsKey(nextHex))
-                            hexesInRange[nextHex] = TargetableType.unreachable;
+                            hexesInRange[nextHex] = LOSTargetType.unreachable;
                     }
                     break;
                 }
                 hitIndex++;
             }
             if (unobstructed)
-                if(!hexesInRange.ContainsKey(target) || (hexesInRange.ContainsKey(target) && hexesInRange[target] != TargetableType.obstructing))
-                    hexesInRange[target] = TargetableType.targetable;
+                if(!hexesInRange.ContainsKey(target) || (hexesInRange.ContainsKey(target) && hexesInRange[target] != LOSTargetType.obstructing))
+                    hexesInRange[target] = LOSTargetType.targetable;
         }
         return hexesInRange;
     }
@@ -758,7 +758,7 @@ public class Map : NetworkBehaviour
         return toReturn;
     }
 
-    private bool LOSReaches(Hex source, Hex target, int range)
+    public bool LOSReaches(Hex source, Hex target, int range)
     {
         if (Map.HexDistance(source, target) > range)
             return false;
