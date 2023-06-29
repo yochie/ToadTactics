@@ -1,4 +1,6 @@
-﻿public readonly struct CharacterStats
+﻿using System.Collections.Generic;
+
+public readonly struct CharacterStats
 {
     public readonly int maxHealth;
     public readonly int armor;
@@ -8,8 +10,9 @@
     public readonly int moveSpeed;
     public readonly float initiative;
     public readonly int range;
+    public readonly List<TargetType> allowedAttackTargets;
 
-    public CharacterStats(int maxHealth, int armor, int damage, int moveSpeed, int initiative, int range = 1, int damageIterations = 1, DamageType damageType = DamageType.normal)
+    public CharacterStats(int maxHealth, int armor, int damage, int moveSpeed, int initiative, int range = 1, int damageIterations = 1, DamageType damageType = DamageType.normal, List<TargetType> allowedAttackTargets = null)
     {
         this.maxHealth = maxHealth;
         this.armor = armor;
@@ -19,6 +22,13 @@
         this.moveSpeed = moveSpeed;
         this.initiative = initiative;
         this.range = range;
+        if(allowedAttackTargets == null)
+        {
+            this.allowedAttackTargets = new List<TargetType> { TargetType.ennemy_chars };
+        } else
+        {
+            this.allowedAttackTargets = allowedAttackTargets;
+        }
     }
 
 }
