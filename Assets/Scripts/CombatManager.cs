@@ -25,7 +25,7 @@ public class CombatManager : NetworkBehaviour
         }       
 
         //use PlayerCharacter attack action
-        attacker.UseAttack();
+        attacker.UsedAttack();
 
         Debug.LogFormat("{0} has attacked {1} for {2}x{3} leaving him with {4} => {5} life.", attacker, defender, attacker.currentStats.damage, attacker.currentStats.damageIterations, prevLife, defender.CurrentLife());
     }

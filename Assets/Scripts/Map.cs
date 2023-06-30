@@ -844,7 +844,12 @@ public class Map : NetworkBehaviour
         PlayerCharacter targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
 
         //handles character states and attack logic
-        CombatManager.Attack(attackingCharacter, targetedCharacter);
+        //CombatManager.Attack(attackingCharacter, targetedCharacter);
+        IAction attackAction = new DefaultAttackAction(attackingCharacter, targetedCharacter, source, target, attackingCharacter.currentStats, targetedCharacter.currentStats);
+        if (!attackAction.Validate())
+            Debug.Log("Could not validate DefaultAttackAction.");
+        else
+            attackAction.CmdUse();
 
         GameController.Singleton.RpcGrayOutAttackButton(sender);
 
@@ -883,6 +888,7 @@ public class Map : NetworkBehaviour
         Vector3 destinationWorldPos = destinationHex.transform.position;
         GameObject newChar =
             Instantiate(characterPrefab, destinationWorldPos, Quaternion.identity);
+        newChar.GetComponent<PlayerCharacter>().SetOwner(ownerPlayerIndex);
         NetworkServer.Spawn(newChar, connectionToClient);
         GameController.Singleton.playerCharactersNetIDs.Add(characterClassID, newChar.GetComponent<NetworkIdentity>().netId);
 

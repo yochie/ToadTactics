@@ -7,7 +7,6 @@ using System;
 public class PlayerCharacter : NetworkBehaviour
 {
     public CharacterClass charClass;
-
     [SyncVar(hook = nameof(OnCharClassIDChanged))]
     public int charClassID;
     [SyncVar]
@@ -26,6 +25,8 @@ public class PlayerCharacter : NetworkBehaviour
     public bool hasUsedTreasure;
     [SyncVar]
     private int remainingMoves;
+    [SyncVar]
+    public int ownerID;
 
     public override void OnStartClient()
     {
@@ -55,14 +56,19 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    private void CmdInitCharacter()
+    private void CmdInitCharacter(NetworkConnectionToClient sender = null)
     {
         this.currentStats = this.charClass.stats;
         this.currentLife = this.currentStats.maxHealth;
-        equippedTreasureIDs = new();
-        hasUsedAbility = false;
-        hasUsedTreasure = false;
+        this.equippedTreasureIDs = new();
+        this.hasUsedAbility = false;
+        this.hasUsedTreasure = false;
         this.ResetTurnState();
+    }
+
+    public void SetOwner(int ownerID)
+    {
+        this.ownerID = ownerID;
     }
 
     public bool HasRemainingActions()
@@ -98,7 +104,7 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    public void UseAttack()
+    public void UsedAttack()
     {
         if (this.hasAttacked)
         {

@@ -84,7 +84,7 @@ public class GameController : NetworkBehaviour
         Singleton = this;
 
         //ensure array is sorted by classID
-        Array.Sort<GameObject>(AllPlayerCharPrefabs,(p1, p2) => { return p1.GetComponent<PlayerCharacter>().charClass.classID.CompareTo(p2.GetComponent<PlayerCharacter>().charClass.classID);});
+        //Array.Sort<GameObject>(AllPlayerCharPrefabs,(p1, p2) => { return p1.GetComponent<PlayerCharacter>().charClass.classID.CompareTo(p2.GetComponent<PlayerCharacter>().charClass.classID);});
 
         this.waitingForClientSpawns = true;
     }
@@ -548,6 +548,8 @@ public class GameController : NetworkBehaviour
             Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
             return;
         }
+
+        //todo: move to draft phase
         this.characterOwners.Add(classID, ownerPlayerIndex);
 
         //throws callback to update UI
