@@ -845,7 +845,7 @@ public class Map : NetworkBehaviour
 
         //handles character states and attack logic
         //CombatManager.Attack(attackingCharacter, targetedCharacter);
-        IAction attackAction = new DefaultAttackAction(attackingCharacter, targetedCharacter, source, target, attackingCharacter.currentStats, targetedCharacter.currentStats);
+        IAction attackAction = new DefaultAttackAction(attackingCharacter, targetedCharacter, source, target, attackingCharacter.currentStats, targetedCharacter.currentStats, playerID);
         if (!attackAction.Validate())
             Debug.Log("Could not validate DefaultAttackAction.");
         else

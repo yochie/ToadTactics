@@ -10,8 +10,9 @@ public class DefaultAttackAction : IAction
     private Hex targetedHex;
     private CharacterStats attackerStats;
     private CharacterStats defenderStats;
+    private int attackingPlayerID;
 
-    public DefaultAttackAction(PlayerCharacter attacker, PlayerCharacter defender, Hex attackerHex, Hex targetedHex, CharacterStats attackerStats, CharacterStats defenderStats)
+    public DefaultAttackAction(PlayerCharacter attacker, PlayerCharacter defender, Hex attackerHex, Hex targetedHex, CharacterStats attackerStats, CharacterStats defenderStats, int attackingPlayerID)
     {
         this.attacker = attacker;
         this.defender = defender;
@@ -19,6 +20,7 @@ public class DefaultAttackAction : IAction
         this.targetedHex = targetedHex;
         this.attackerStats = attackerStats;
         this.defenderStats = defenderStats;
+        this.attackingPlayerID = attackingPlayerID;
     }
 
     [Command(requiresAuthority = false)]
@@ -41,7 +43,7 @@ public class DefaultAttackAction : IAction
             }
         }
 
-        //use PlayerCharacter attack action
+        //PlayerCharacter state updated to track that attack was used
         attacker.UsedAttack();
 
         Debug.LogFormat("{0} has attacked {1} for {2}x{3} leaving him with {4} => {5} life.", attacker, defender, attackerStats.damage, attackerStats.damageIterations, prevLife, defender.CurrentLife());
@@ -49,25 +51,25 @@ public class DefaultAttackAction : IAction
 
     public bool Validate()
     {
-        if (!Map.Singleton.LOSReaches(attackerHex, targetedHex, attackerStats.range) ||
-            attacker.hasAttacked ||
-            !GameController.Singleton.IsItMyTurn() ||
-            !GameController.Singleton.IsItThisCharactersTurn(attacker.charClassID) ||
-            !GameController.Singleton.DoIOwnThisCharacter(attacker.charClassID) ||
-            !IsValidTargetType(attacker, defender, targetedHex, attackerStats.allowedAttackTargets)
+        if (!Map.Singleton.LOSReaches(this.attackerHex, this.targetedHex, this.attackerStats.range) ||
+            this.attacker.hasAttacked ||
+            !GameController.Singleton.IsItThisPlayersTurn(this.attackingPlayerID) ||
+            !GameController.Singleton.IsItThisCharactersTurn(this.attacker.charClassID) ||
+            !GameController.Singleton.DoesHeOwnThisCharacter(this.attackingPlayerID, this.attacker.charClassID) ||
+            !this.IsValidTargetType(this.attacker, this.defender, this.targetedHex, this.attackerStats.allowedAttackTargets)
             )
             return false;
         else
             return true;
     }
 
-    private bool IsValidTargetType (PlayerCharacter user, PlayerCharacter target, Hex targetHex, List<TargetType> allowedTargets)
+    private bool IsValidTargetType (PlayerCharacter attacker, PlayerCharacter target, Hex targetHex, List<TargetType> allowedTargets)
     {
-        bool selfTarget = attacker.charClassID == defender.charClassID;
-        bool friendlyTarget = attacker.ownerID == defender.ownerID;
+        bool selfTarget = attacker.charClassID == target.charClassID;
+        bool friendlyTarget = attacker.ownerID == target.ownerID;
         bool ennemyTarget = !friendlyTarget;
-        bool emptyTarget = !targetedHex.HoldsACharacter() && targetedHex.holdsObstacle == ObstacleType.none;
-        bool obstacleTarget = targetedHex.holdsObstacle != ObstacleType.none;
+        bool emptyTarget = !targetHex.HoldsACharacter() && targetHex.holdsObstacle == ObstacleType.none;
+        bool obstacleTarget = targetHex.holdsObstacle != ObstacleType.none;
 
         if (!allowedTargets.Contains(TargetType.ennemy_chars) && ennemyTarget)
             return false;
