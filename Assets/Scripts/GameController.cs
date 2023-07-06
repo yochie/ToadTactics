@@ -93,8 +93,8 @@ public class GameController : NetworkBehaviour
     {
         base.OnStartClient();
 
+        //setup sync dict callbacks to sync actual objects from netids
         this.playerCharactersNetIDs.Callback += OnPlayerCharactersNetIDsChange;
-        // Process initial SyncDictionary payload
         foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
             OnPlayerCharactersNetIDsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
@@ -103,8 +103,6 @@ public class GameController : NetworkBehaviour
             OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
         this.characterClassesByID =  CharacterClass.DefineClasses();
-
-        Map.Singleton.Initialize();
     }
 
     public override void OnStartServer()
@@ -113,6 +111,9 @@ public class GameController : NetworkBehaviour
         this.currentPhase = GamePhase.waitingForClient;
         this.turnOrderIndex = -1;
         this.playerTurn = -1;
+
+        Map.Singleton.Initialize();
+
     }
 
     public void Start()

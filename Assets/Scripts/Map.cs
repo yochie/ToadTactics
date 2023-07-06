@@ -100,14 +100,12 @@ public class Map : NetworkBehaviour
             OnHexGridNetIdsChange(SyncDictionary<Vector2Int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
     }
 
+    [Server]
     public void Initialize()
     {
         this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
 
-        if (isServer)
-        {
-            this.GenerateMap();
-        }
+        this.GenerateMap();
     }
 
     #endregion
