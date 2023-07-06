@@ -419,20 +419,6 @@ public class GameController : NetworkBehaviour
         this.RpcResetInteractableGameplayButtons();
     }
 
-    public bool CanIControlThisCharacter(int classID, int playerID = -1)
-    {
-        if(playerID == -1)
-        {
-            playerID = this.LocalPlayer.playerID;
-        }
-        if (this.IsItThisPlayersTurn(playerID) &&
-            this.IsItThisCharactersTurn(classID) &&
-            this.DoesHeOwnThisCharacter(playerID, classID))
-            return true;
-        else
-            return false;
-    }
-
     [Server]
     public void SwapPlayerTurn()
     {
@@ -556,6 +542,20 @@ public class GameController : NetworkBehaviour
 
     #region Utility
 
+    public bool CanIControlThisCharacter(int classID, int playerID = -1)
+    {
+        if (playerID == -1)
+        {
+            playerID = this.LocalPlayer.playerID;
+        }
+        if (this.IsItThisPlayersTurn(playerID) &&
+            this.IsItThisCharactersTurn(classID) &&
+            this.DoesHeOwnThisCharacter(playerID, classID))
+            return true;
+        else
+            return false;
+    }
+
     public GameObject GetCharPrefabWithClassID(int classID)
     {
         foreach (GameObject prefab in this.AllPlayerCharPrefabs)
@@ -674,7 +674,7 @@ public class GameController : NetworkBehaviour
         if (isServer && this.waitingForClientSpawns)
         {
 
-            if (Map.Singleton.hexesSpawnedOnClient && NetworkManager.singleton.numPlayers == 2)
+            if (NetworkManager.singleton.numPlayers == 2 && Map.Singleton.hexesSpawnedOnClient)
             {
                 this.waitingForClientSpawns = false;
                 this.CmdStartPlaying();
