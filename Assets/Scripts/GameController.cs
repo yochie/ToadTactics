@@ -116,11 +116,6 @@ public class GameController : NetworkBehaviour
 
     }
 
-    public void Start()
-    {
-
-    }
-
     #endregion
 
     #region Callbacks
