@@ -6,8 +6,10 @@ using System;
 
 public class HexDrawer : MonoBehaviour
 {
+    #region Editor vars
     [SerializeField]
     private TextMeshProUGUI labelPrefab;
+    #endregion
 
     #region Constants
 
