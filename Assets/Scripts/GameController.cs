@@ -7,7 +7,7 @@ using TMPro;
 using System;
 
 
-//RTODO: Split UI out
+//RTODO: Split UI out, all current UI callbacks should only trigger an event that is listened to by actual UI classes
 //RTODO: review game progression mechanic, consider using events on phase/turn changes to setup UI elements (make buttons clickable, hexes draggable, etc) without depending on them
 //RTODO: Utility functions should be moved to class that holds relevant data so that gamecontroller is no longer abused as global storage, perhaps CharacterDataSO scriptable obj should serve as global data when actually required
 public class GameController : NetworkBehaviour
@@ -119,7 +119,7 @@ public class GameController : NetworkBehaviour
     #endregion
 
     #region Callbacks
-    //callback for turn order bar contents
+    //callback for turn order bar UI contents
     [Client]
     private void OnTurnOrderChanged(SyncIDictionary<float, int>.Operation op, float key, int value)
     {
@@ -159,7 +159,7 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    //callback turn order progression
+    //callback turn order UI progression
     [Client]
     private void OnTurnOrderIndexChanged(int prevTurnIndex, int newTurnIndex)
     {
@@ -249,7 +249,7 @@ public class GameController : NetworkBehaviour
         this.phaseLabel.text = newPhase.ToString();
     }
 
-    //callback for list of active characters
+    //callback for syncing list of active characters
     [Client]
     private void OnPlayerCharactersNetIDsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netidArg)
     {
