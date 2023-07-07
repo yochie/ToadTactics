@@ -53,7 +53,7 @@ public class PlayerController : NetworkBehaviour
         {            
             int classID;
             List<int> classIDs = new();
-            GameController.Singleton.characterClassesByID.Keys.CopyTo<int>(classIDs);
+            GameController.Singleton.CharacterClassesByID.Keys.CopyTo<int>(classIDs);
             do
             {
                 classID = classIDs[Random.Range(0, classIDs.Count)];
@@ -61,7 +61,7 @@ public class PlayerController : NetworkBehaviour
             while (usedClasses.Contains(classID));
             usedClasses.Add(classID);
 
-            CharacterClass newCharClass = GameController.Singleton.characterClassesByID[classID];
+            CharacterClass newCharClass = GameController.Singleton.CharacterClassesByID[classID];
             CharacterSlotUI characterSlot = GameController.Singleton.characterSlots[i];
 
             characterSlot.GetComponent<Image>().sprite = GameController.Singleton.GetCharPrefabWithClassID(classID).GetComponent<SpriteRenderer>().sprite;

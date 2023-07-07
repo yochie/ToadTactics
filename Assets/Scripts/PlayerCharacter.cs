@@ -44,9 +44,9 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.charClass = null;
 
-        if (GameController.Singleton.characterClassesByID[this.charClassID] != null)
+        if (GameController.Singleton.CharacterClassesByID[this.charClassID] != null)
         {
-            this.charClass = GameController.Singleton.characterClassesByID[this.charClassID];
+            this.charClass = GameController.Singleton.CharacterClassesByID[this.charClassID];
             this.CmdInitCharacter();
         }
         else

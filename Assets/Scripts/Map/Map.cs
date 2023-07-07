@@ -818,7 +818,7 @@ public class Map : NetworkBehaviour
         dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
         this.characterPositions[source.holdsCharacterWithClassID] = dest.coordinates;
 
-        source.clearCharacter();
+        source.ClearCharacter();
 
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
 
@@ -893,7 +893,7 @@ public class Map : NetworkBehaviour
         destinationHex.holdsCharacterWithClassID = characterClassID;
 
         Map.Singleton.RpcPlaceChar(newChar, destinationWorldPos);
-        this.markCharacterSlotAsPlaced(sender, characterClassID);
+        this.MarkCharacterSlotAsPlaced(sender, characterClassID);
 
         this.characterPositions[characterClassID] = destinationHex.coordinates;
 
@@ -904,7 +904,7 @@ public class Map : NetworkBehaviour
     #region RPCs
     //update client UI to prevent placing same character twice
     [TargetRpc]
-    public void markCharacterSlotAsPlaced(NetworkConnectionToClient target, int classID)
+    public void MarkCharacterSlotAsPlaced(NetworkConnectionToClient target, int classID)
     {
         foreach (CharacterSlotUI slot in GameController.Singleton.characterSlots)
         {
@@ -1013,11 +1013,11 @@ public class Map : NetworkBehaviour
 
         if (source == null ||
             target == null ||
-            (allowTargetingAnyCharacter ? false : source == target) ||
+            (!allowTargetingAnyCharacter && source == target) ||
             !source.IsValidAttackSource() ||
             !target.IsValidAttackTarget() ||
             !GameController.Singleton.CanIControlThisCharacter(source.holdsCharacterWithClassID, playerID) ||
-            (allowTargetingAnyCharacter ? false : GameController.Singleton.DoesHeOwnThisCharacter(playerID, target.holdsCharacterWithClassID)) ||
+            (!allowTargetingAnyCharacter && GameController.Singleton.DoesHeOwnThisCharacter(playerID, target.holdsCharacterWithClassID)) ||
             !this.LOSReaches(source, target, GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID].currentStats.range))
         {
             return false;

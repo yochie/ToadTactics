@@ -46,7 +46,7 @@ public class GameController : NetworkBehaviour
 
     #region Runtime vars
     //Maps classID to CharacterClass
-    public Dictionary<int, CharacterClass> characterClassesByID { get; set; }
+    public Dictionary<int, CharacterClass> CharacterClassesByID { get; set; }
     public PlayerController LocalPlayer { get; set; }
     private readonly List<TurnOrderSlotUI> turnOrderSlots = new();
 
@@ -102,7 +102,7 @@ public class GameController : NetworkBehaviour
         foreach (KeyValuePair<float, int> kvp in sortedTurnOrder)
             OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
-        this.characterClassesByID =  CharacterClass.DefineClasses();
+        this.CharacterClassesByID =  CharacterClass.DefineClasses();
     }
 
     public override void OnStartServer()
@@ -315,12 +315,12 @@ public class GameController : NetworkBehaviour
     {
         if (playerTurn == this.LocalPlayer.playerID)
         {
-            this.setInteractableGameplayButtons(true);
+            this.SetInteractableGameplayButtons(true);
         }
     }
 
     [Client]
-    private void setInteractableGameplayButtons(bool state)
+    private void SetInteractableGameplayButtons(bool state)
     {
         this.moveButton.GetComponent<Button>().interactable = state;
         this.attackButton.GetComponent<Button>().interactable = state;

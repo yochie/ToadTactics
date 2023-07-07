@@ -7,18 +7,23 @@ using UnityEngine.EventSystems;
 //RTODO: IsDraggable and IsClickable moved to registered observers that do the movement/selecting
 
 [RequireComponent(typeof(HexDrawer))]
-public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+[RequireComponent(typeof(HexInputHandler))]
+
+public class Hex : NetworkBehaviour, IEquatable<Hex>
 {
     #region Editor vars
 
     [SerializeField]
     public HexDrawer drawer;
+
+    [SerializeField]
+    public HexInputHandler inputHandler;
     #endregion
 
     #region UI vars
 
-    private Vector3 dragStartPosition;
-    private bool draggingStarted;
+    public Vector3 dragStartPosition;
+    public bool draggingStarted;
 
     #endregion
 
@@ -81,6 +86,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         bool isLocalStartingZone = (this.isServer && this.startZoneForPlayerIndex == 0) || (!this.isServer && this.startZoneForPlayerIndex == 1);
         this.drawer.Init(this.isStartingZone, isLocalStartingZone, this.coordinates);
 
+        this.inputHandler = this.GetComponent<HexInputHandler>();
+        this.inputHandler.master = this;
+
         if (isClientOnly)
             this.CmdMarkAsSpawned();
     }
@@ -94,7 +102,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
     #endregion
 
     #region State
-    internal void clearCharacter()
+    internal void ClearCharacter()
     {
         this.holdsCharacterWithClassID = -1;
     }
@@ -106,52 +114,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>, IBeginDragHandler, IDragHa
         }
 
         Destroy(this.gameObject);
-    }
-    #endregion
-
-    #region Events
-
-    private void OnMouseEnter() {
-        Map.Singleton.HoverHex(this);
-    }
-
-    private void OnMouseExit()
-    {
-        Map.Singleton.UnhoverHex(this);
-    }
-
-    void IPointerClickHandler.OnPointerClick (PointerEventData eventData)
-    {
-        if(IsClickable())
-            Map.Singleton.ClickHex(this);
-    }
-
-    void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
-    {
-        if (this.IsDraggable())
-        {
-            this.dragStartPosition = this.transform.position;
-            this.draggingStarted = true;
-            Map.Singleton.StartDragHex(this);
-        }
-    }
-    public void OnDrag(PointerEventData eventData)
-    {
-        if (this.draggingStarted)
-        {
-            PlayerCharacter heldCharacter = this.GetHeldCharacterObject();
-            heldCharacter.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, Camera.main.nearClipPlane));
-        }
-    }
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        if (this.draggingStarted)
-        {
-            this.draggingStarted = false;
-            PlayerCharacter heldCharacter = this.GetHeldCharacterObject();
-            heldCharacter.transform.position = this.dragStartPosition;
-            Map.Singleton.EndDragHex(this);
-        }
     }
     #endregion
 
