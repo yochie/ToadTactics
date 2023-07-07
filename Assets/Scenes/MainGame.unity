@@ -595,6 +595,7 @@ GameObject:
   - component: {fileID: 235931028}
   - component: {fileID: 235931027}
   - component: {fileID: 235931026}
+  - component: {fileID: 235931030}
   m_Layer: 0
   m_Name: Hex Label Canvas
   m_TagString: Untagged
@@ -697,6 +698,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &235931030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 235931024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a231567541469504887a8b3da433eb81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &288615332
 GameObject:
   m_ObjectHideFlags: 0
@@ -1340,7 +1353,7 @@ MonoBehaviour:
   - {fileID: 1663364222}
   turnOrderIndex: 0
   playerTurn: 0
-  currentGamePhase: 0
+  currentPhase: 0
 --- !u!4 &726135995
 Transform:
   m_ObjectHideFlags: 0
@@ -2382,6 +2395,7 @@ GameObject:
   - component: {fileID: 1515437361}
   - component: {fileID: 1515437360}
   - component: {fileID: 1515437362}
+  - component: {fileID: 1515437363}
   m_Layer: 5
   m_Name: Hex Coords Canvas
   m_TagString: Untagged
@@ -2467,6 +2481,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1515437363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515437358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aaa47e21f18e23479b55c7963f8b7bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1663364221
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3232,7 +3258,6 @@ MonoBehaviour:
   obstacleSpawnChance: 5
   hexPrefab: {fileID: 5749146893725706871, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
   treePrefab: {fileID: 6994461756168707245, guid: 3f7607b4dff716845914240a21818a89, type: 3}
-  cellLabelPrefab: {fileID: 6525404334361133443, guid: 68f45b61888877a4d8ae305dd024c3c3, type: 3}
   outline: {fileID: 1411125705}
   treasureSpawner: {fileID: 916223306}
   coordCanvas: {fileID: 1515437361}

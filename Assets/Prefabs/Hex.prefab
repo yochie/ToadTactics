@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 565734683451347671}
   - component: {fileID: 4275386168788920277}
   - component: {fileID: -4629326380555516548}
+  - component: {fileID: 7954374735384266840}
   m_Layer: 7
   m_Name: Hex
   m_TagString: Untagged
@@ -103,15 +104,14 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  baseColor: {r: 0, g: 0, b: 0, a: 0}
-  unHoveredColor: {r: 1, g: 1, b: 1, a: 1}
-  hexColor: {r: 1, g: 1, b: 1, a: 1}
+  drawer: {fileID: 0}
   isStartingZone: 0
   holdsCharacterWithClassID: 0
   holdsObstacle: 0
   holdsHazard: 0
   holdsTreasure: 0
   startZoneForPlayerIndex: 0
+  hasBeenSpawnedOnClient: 0
 --- !u!60 &565734683451347671
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -214,3 +214,16 @@ MonoBehaviour:
   positionPrecision: 0.01
   scalePrecision: 0.01
   timelineOffset: 0
+--- !u!114 &7954374735384266840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5749146893725706871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4eb5b11e28f9eff47a656b9dddf2424f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  labelPrefab: {fileID: 6525404334361133443, guid: 68f45b61888877a4d8ae305dd024c3c3, type: 3}

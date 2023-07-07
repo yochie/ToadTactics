@@ -25,7 +25,6 @@ public class Map : NetworkBehaviour
 
     public GameObject hexPrefab;
     public GameObject treePrefab;
-    public TextMeshProUGUI cellLabelPrefab;
 
     public MapOutline outline;
     public TreasureSpawner treasureSpawner;
@@ -321,7 +320,7 @@ public class Map : NetworkBehaviour
     public void SelectHex(Hex h)
     {
         this.SelectedHex = h;
-        h.Select(true);
+        h.drawer.Select(true);
 
         int heldCharacterID;
         PlayerCharacter heldCharacter;
@@ -343,7 +342,7 @@ public class Map : NetworkBehaviour
     public void UnselectHex()
     {
         if (this.SelectedHex == null) { return; }
-        this.SelectedHex.Select(false);
+        this.SelectedHex.drawer.Select(false);
         this.SelectedHex = null;
 
         switch (this.CurrentControlMode)
@@ -365,7 +364,7 @@ public class Map : NetworkBehaviour
         switch (this.CurrentControlMode)
         {
             case ControlMode.move:
-                hoveredHex.MoveHover(true);
+                hoveredHex.drawer.MoveHover(true);
 
                 //find path to hex if we have selected another hex
                 if (this.SelectedHex != null)
@@ -379,7 +378,7 @@ public class Map : NetworkBehaviour
                 }
                 break;
             case ControlMode.attack:
-                hoveredHex.AttackHover(true);
+                hoveredHex.drawer.AttackHover(true);
                 break;
         }
     }
@@ -397,11 +396,11 @@ public class Map : NetworkBehaviour
         switch (this.CurrentControlMode)
         {
             case ControlMode.move:
-                unhoveredHex.MoveHover(false);
+                unhoveredHex.drawer.MoveHover(false);
                 this.HidePath();
                 break;
             case ControlMode.attack:
-                unhoveredHex.AttackHover(false);
+                unhoveredHex.drawer.AttackHover(false);
                 break;
         }
     }
@@ -414,7 +413,7 @@ public class Map : NetworkBehaviour
             //selected hex stays at selected color state
             if (h != source)
             {
-                h.DisplayMoveRange(true);
+                h.drawer.DisplayMoveRange(true);
             }
         }
     }
@@ -423,7 +422,7 @@ public class Map : NetworkBehaviour
     {
         foreach (Hex h in this.displayedMoveRange)
         {
-            h.DisplayMoveRange(false);
+            h.drawer.DisplayMoveRange(false);
         }
     }
 
@@ -439,8 +438,8 @@ public class Map : NetworkBehaviour
             //skip starting hex label
             if (pathLength != 0)
             {
-                h.LabelString = pathLength.ToString();
-                h.ShowLabel();
+                h.drawer.LabelString = pathLength.ToString();
+                h.drawer.ShowLabel();
             }
         }
     }
@@ -449,7 +448,7 @@ public class Map : NetworkBehaviour
     {
         foreach (Hex h in this.displayedPath)
         {
-            h.HideLabel();
+            h.drawer.HideLabel();
         }
     }
 
@@ -463,12 +462,12 @@ public class Map : NetworkBehaviour
             if (h != source)
             {
                 if (attackRange[h] == LOSTargetType.targetable)
-                    h.DisplayAttackRange(true);
+                    h.drawer.DisplayAttackRange(true);
                 else if (attackRange[h] == LOSTargetType.obstructing)
-                    h.DisplayLOSObstruction(true);
+                    h.drawer.DisplayLOSObstruction(true);
                 else if (attackRange[h] == LOSTargetType.unreachable)
                 {
-                    h.DisplayOutOfAttackRange(true);
+                    h.drawer.DisplayOutOfAttackRange(true);
                 }
             }
         }
@@ -479,12 +478,12 @@ public class Map : NetworkBehaviour
         foreach (Hex h in this.displayedAttackRange.Keys)
         {
             if (this.displayedAttackRange[h] == LOSTargetType.targetable)
-                h.DisplayAttackRange(false);
+                h.drawer.DisplayAttackRange(false);
             else if (this.displayedAttackRange[h] == LOSTargetType.obstructing)
-                h.DisplayLOSObstruction(false);
+                h.drawer.DisplayLOSObstruction(false);
             else if (this.displayedAttackRange[h] == LOSTargetType.unreachable)
             {
-                h.DisplayOutOfAttackRange(false);
+                h.drawer.DisplayOutOfAttackRange(false);
             }
         }
     }
