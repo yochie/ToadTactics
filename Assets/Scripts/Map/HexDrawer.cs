@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System;
 
 public class HexDrawer : MonoBehaviour
 {
@@ -26,7 +23,7 @@ public class HexDrawer : MonoBehaviour
 
     #endregion
 
-    #region UI vars
+    #region State vars
 
     private SpriteRenderer sprite;
 
@@ -34,7 +31,7 @@ public class HexDrawer : MonoBehaviour
     private Color unHoveredColor = HexDrawer.HEX_DEFAULT_COLOR;
     private Color hexColor = HexDrawer.HEX_DEFAULT_COLOR;
 
-    private Color HexColor
+    private Color currentColor
     {
         get { return this.hexColor; }
         set
@@ -90,17 +87,16 @@ public class HexDrawer : MonoBehaviour
             this.baseColor = HexDrawer.HEX_OPPONENT_START_COLOR;
         } else
         {
-            //should already be set in basic Init, but just to be sure...
             this.baseColor = HexDrawer.HEX_DEFAULT_COLOR;
         }
 
-        this.HexColor = this.baseColor;
+        this.currentColor = this.baseColor;
         this.unHoveredColor = this.baseColor;
     }
 
     #endregion
 
-    #region UI state
+    #region State
 
     public void ShowLabel()
     {
@@ -115,42 +111,42 @@ public class HexDrawer : MonoBehaviour
     public void Select(bool mode)
     {
         this.unHoveredColor = mode ? HexDrawer.HEX_SELECT_COLOR : this.baseColor;
-        this.HexColor = mode ? HexDrawer.HEX_SELECT_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_SELECT_COLOR : this.baseColor;
     }
 
     public void MoveHover(bool mode)
     {
-        if (mode) { this.unHoveredColor = this.HexColor; }
-        this.HexColor = mode ? HexDrawer.HEX_HOVER_COLOR : this.unHoveredColor;
+        if (mode) { this.unHoveredColor = this.currentColor; }
+        this.currentColor = mode ? HexDrawer.HEX_HOVER_COLOR : this.unHoveredColor;
     }
 
     public void DisplayMoveRange(bool mode)
     {
         this.unHoveredColor = mode ? HexDrawer.HEX_RANGE_COLOR : this.baseColor;
-        this.HexColor = mode ? HexDrawer.HEX_RANGE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_RANGE_COLOR : this.baseColor;
     }
     public void DisplayAttackRange(bool mode)
     {
         this.unHoveredColor = mode ? HexDrawer.HEX_ATTACK_RANGE_COLOR : this.baseColor;
-        this.HexColor = mode ? HexDrawer.HEX_ATTACK_RANGE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_ATTACK_RANGE_COLOR : this.baseColor;
     }
 
     public void DisplayLOSObstruction(bool mode)
     {
         this.unHoveredColor = mode ? HexDrawer.HEX_LOS_OBSTRUCT_COLOR : this.baseColor;
-        this.HexColor = mode ? HexDrawer.HEX_LOS_OBSTRUCT_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_LOS_OBSTRUCT_COLOR : this.baseColor;
     }
 
     internal void DisplayOutOfAttackRange(bool mode)
     {
         this.unHoveredColor = mode ? HexDrawer.HEX_OUT_OF_ATTACK_RANGE_COLOR : this.baseColor;
-        this.HexColor = mode ? HexDrawer.HEX_OUT_OF_ATTACK_RANGE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_OUT_OF_ATTACK_RANGE_COLOR : this.baseColor;
     }
 
     public void AttackHover(bool mode)
     {
-        if (mode) { this.unHoveredColor = this.HexColor; }
-        this.HexColor = mode ? HexDrawer.HEX_ATTACK_HOVER_COLOR : this.unHoveredColor;
+        if (mode) { this.unHoveredColor = this.currentColor; }
+        this.currentColor = mode ? HexDrawer.HEX_ATTACK_HOVER_COLOR : this.unHoveredColor;
     }
     #endregion
 
