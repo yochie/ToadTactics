@@ -302,7 +302,7 @@ public class GameController : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcResetActiveGameplayButtons()
+    private void RpcActivateGameplayButtons()
     {
         if (playerTurn == this.LocalPlayer.playerID)
         {
@@ -518,7 +518,7 @@ public class GameController : NetworkBehaviour
         }
 
         Map.Singleton.RpcClearUIStateForTurn();
-        this.RpcResetActiveGameplayButtons();
+        this.RpcActivateGameplayButtons();
     }
 
     [Command(requiresAuthority = false)]
