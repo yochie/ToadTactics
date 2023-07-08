@@ -3144,7 +3144,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 0.29294455, g: 0.16048414, b: 0.9245283, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -3310,10 +3310,10 @@ MonoBehaviour:
   startingZones:
   - {fileID: 211519245}
   - {fileID: 1914068966}
-  hexPrefab: {fileID: 5749146893725706871, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
+  hexPrefab: {fileID: 1311420710301116983, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
   treePrefab: {fileID: 6994461756168707245, guid: 3f7607b4dff716845914240a21818a89, type: 3}
   hexWidth: 10
-  padding: 0.1
+  padding: 0
 --- !u!1001 &7018610921401553608
 PrefabInstance:
   m_ObjectHideFlags: 0
