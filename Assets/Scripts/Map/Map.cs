@@ -2,52 +2,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using Mirror;
 using Utils;
+using System.Linq;
 
 
 //RTODO: Split into seperate classes
 //RTODO: Commands made into actions/ moved to other classes
-//RTODO: Update should stop happening once all hexes are marked as spawned
+[RequireComponent(typeof(MapGenerator))]
 public class Map : NetworkBehaviour
 {
 
     #region Editor vars
-    public bool isFlatTop;
-
-    //radius in hex count
-    public int xSize;
-    public int ySize;
-
-    public int obstacleSpawnChance;
-
-    public GameObject hexPrefab;
-    public GameObject treePrefab;
-
-    public MapOutline outline;
-    public TreasureSpawner treasureSpawner;
-    
-
-    public Canvas coordCanvas;
-    public Canvas labelsCanvas;
-    public List<StartZone> startingZones;
-
-    //corner to corner, or width (two times side length)
-    //should correspond to unscaled sprite width
-    public float hexWidth = 1f;
-    //flat to flat, or height, calculated on init by WIDTH_TO_HEIGHT_RATIO
-    private float hexHeight;
-
-    public float padding = 0.1f;
-
-    public LayerMask hexMask;
-    #endregion
-
-    #region Constant vars
-    //geometric property of hexes
-    private const float WIDTH_TO_HEIGHT_RATIO = 1.155f;
+    [SerializeField]
+    private LayerMask hexMask;
+    [SerializeField]
+    private MapGenerator mapGenerator;
     #endregion
 
     #region Synced vars
@@ -76,6 +46,8 @@ public class Map : NetworkBehaviour
 
     
     }
+
+    [HideInInspector]
     public bool hexesSpawnedOnClient;
 
     #endregion
@@ -102,148 +74,16 @@ public class Map : NetworkBehaviour
     [Server]
     public void Initialize()
     {
-        this.hexHeight = this.hexWidth / WIDTH_TO_HEIGHT_RATIO;
-
-        this.GenerateMap();
-    }
-
-    #endregion
-
-    #region Generation
-    [Server]
-    private void GenerateMap()
-    {
-        this.GenerateHexes();
-
-        this.outline.DeleteHexesOutside();
-
-        //sets flag on hexes that are starting zones
-        //also assigns player
-        for (int i = 0; i < this.startingZones.Count; i++)
+        Dictionary<Vector2Int, uint> generatedHexNetIds = this.mapGenerator.GenerateMap();
+        foreach (KeyValuePair<Vector2Int, uint> entry in generatedHexNetIds)
         {
-            this.startingZones[i].SetStartingZone();
-        }
-
-        this.treasureSpawner.SpawnTreasure();
-
-        this.GenerateTrees();
-
-        //spawn all hexes on clients now that weve cleaned up extras and set all initial state
-        for (int x = -this.xSize + 1; x < this.xSize; x++)
-        {
-            for (int y = -this.ySize + 1; y < this.ySize; y++)
-            {
-                Hex h = GetHex(x, y);
-                if (h != null)
-                {
-                    NetworkServer.Spawn(h.gameObject);
-
-                    //used to sync hexGrid using coroutine callbacks on client
-                    //bypasses issues with syncing gameobjects that haven't been spawned yet
-                    this.hexGridNetIDs[new Vector2Int(x, y)] = h.gameObject.GetComponent<NetworkIdentity>().netId;
-                }
-            }
+            this.hexGridNetIDs.Add(entry.Key, entry.Value);
         }
     }
 
-    [Server]
-    private void GenerateHexes()
-    {
-        float paddedHexWidth = this.hexWidth + this.padding;
-        float paddedHexHeight = this.hexHeight + this.padding;
-        for (int x = -this.xSize + 1; x < this.xSize; x++)
-        {
-            for (int y = -this.ySize + 1; y < this.ySize; y++)
-            {
-                float xPos;
-                if (this.isFlatTop)
-                {
-                    xPos = x * (3f * paddedHexWidth / 4.0f);
-                }
-                else
-                {
-                    xPos = y % 2 == 0 ? x * paddedHexHeight : x * paddedHexHeight + paddedHexHeight / 2f;
-                }
-
-                float yPos;
-                if (this.isFlatTop)
-                {
-                    yPos = x % 2 == 0 ? y * paddedHexHeight : y * paddedHexHeight + paddedHexHeight / 2f;
-                }
-                else
-                {
-                    yPos = y * (3f * paddedHexWidth / 4.0f);
-                }
-
-                Vector3 position = new(xPos, yPos, 0);
-
-                Vector3 scale = new(this.hexWidth, this.hexWidth, 1);
-
-                //only rotate if not FlatTop since sprite is by default
-                Quaternion rotation = this.isFlatTop ? Quaternion.identity : Quaternion.AngleAxis(90, new Vector3(0, 0, 1));
-
-                HexCoordinates coordinates = HexCoordinates.FromOffsetCoordinates(x, y, isFlatTop);
-
-                GameObject hex = Instantiate(this.hexPrefab, position, rotation);
-                Hex h = hex.GetComponent<Hex>();
-                h.Init(coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
-
-                this.SetHex(x, y, h);
-            }
-        }
-    }
-
-    [Server]
-    private void GenerateTrees()
-    {
-        for (int x = -this.xSize + 1; x < this.xSize; x++)
-        {
-            for (int y = -this.ySize + 1; y < this.ySize; y++)
-            {
-                Hex h = GetHex(x, y);
-                if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard == HazardType.none)
-                {
-                    if (UnityEngine.Random.Range(1, 100) <= this.obstacleSpawnChance)
-                    {
-                        //Debug.Log("Spawning tree");
-                        GameObject tree = Instantiate(this.treePrefab, h.transform.position, Quaternion.identity);
-                        NetworkServer.Spawn(tree);
-                        h.holdsObstacle = ObstacleType.tree;
-                    }
-
-                }
-            }
-        }
-    }
-
-    [Server]
-    private void SetHex(int x, int y, Hex h)
-    {
-        this.hexGrid[new Vector2Int(x, y)] = h;
-    }
-
-    [Server]
-    public void DeleteHex(int x, int y)
-    {
-        Hex toDelete = GetHex(x, y);
-        toDelete.Delete();
-        this.hexGrid.Remove(new Vector2Int(x, y));
-    }
     #endregion
 
     #region State management
-    public Hex GetHex(int x, int y)
-    {
-        if (this.hexGrid.TryGetValue(new Vector2Int(x, y), out Hex toReturn))
-        {
-            return toReturn;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     //only used for movement
     public void StartDragHex(Hex draggedHex)
     {
@@ -510,7 +350,7 @@ public class Map : NetworkBehaviour
         if (GameController.Singleton.IsItMyTurn())
         {
             HexCoordinates toSelectCoords = this.characterPositions[GameController.Singleton.ClassIdForPlayingCharacter()];
-            Hex toSelect = this.GetHex(toSelectCoords.X, toSelectCoords.Y);
+            Hex toSelect = Map.GetHex(this.hexGrid, toSelectCoords.X, toSelectCoords.Y);
             this.SelectHex(toSelect);
         }
     }
@@ -536,7 +376,7 @@ public class Map : NetworkBehaviour
             for (int r = Mathf.Max(-distance, -distance - q); r <= Mathf.Min(distance, -q + distance); r++)
             {
                 HexCoordinates destCoords = HexCoordinates.Add(start.coordinates, new HexCoordinates(q, r, start.coordinates.isFlatTop));
-                Hex destHex = Map.Singleton.GetHex(destCoords.X, destCoords.Y);
+                Hex destHex = Map.GetHex(this.hexGrid, destCoords.X, destCoords.Y);
                 if (destHex != null)
                     toReturn.Add(destHex);
             }
@@ -612,7 +452,7 @@ public class Map : NetworkBehaviour
         List<Hex> toReturn = new();
         foreach (HexCoordinates neighbourCoord in h.coordinates.NeighbhouringCoordinates())
         {
-            Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
+            Hex neighbour = Map.GetHex(this.hexGrid, neighbourCoord.X, neighbourCoord.Y);
             if (neighbour != null)
             {
                 toReturn.Add(neighbour);
@@ -628,7 +468,7 @@ public class Map : NetworkBehaviour
         List<Hex> toReturn = new();
         foreach (HexCoordinates neighbourCoord in h.coordinates.NeighbhouringCoordinates())
         {
-            Hex neighbour = GetHex(neighbourCoord.X, neighbourCoord.Y);
+            Hex neighbour = Map.GetHex(this.hexGrid, neighbourCoord.X, neighbourCoord.Y);
             if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && neighbour.holdsCharacterWithClassID == -1)
             {
                 toReturn.Add(neighbour);
@@ -1028,10 +868,35 @@ public class Map : NetworkBehaviour
         }
     }
 
+    public static void SetHex(Dictionary<Vector2Int, Hex> grid, int x, int y, Hex h)
+    {
+        grid[new Vector2Int(x, y)] = h;
+    }
+
+    public static Hex GetHex(Dictionary<Vector2Int, Hex> grid, int x, int y)
+    {
+        if (grid.TryGetValue(new Vector2Int(x, y), out Hex toReturn))
+        {
+            return toReturn;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static void DeleteHex(Dictionary<Vector2Int, Hex> grid, int x, int y)
+    {
+        Hex toDelete = Map.GetHex(grid, x, y);
+        toDelete.Delete();
+        grid.Remove(new Vector2Int(x, y));
+    }
+
     #endregion
+
     public void Update()
     {
-        if (isServer && this.hexGrid != null)
+        if (!hexesSpawnedOnClient && isServer && this.hexGrid != null)
         {
             foreach (Hex h in this.hexGrid.Values)
             {

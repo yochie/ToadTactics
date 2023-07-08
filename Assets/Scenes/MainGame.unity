@@ -504,7 +504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55a80070307858e44b9685ba09f3dec3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: {fileID: 1982683008}
+  outlineCollider: {fileID: 211519246}
   playerIndex: 0
 --- !u!60 &211519246
 PolygonCollider2D:
@@ -1585,7 +1585,7 @@ GameObject:
   - component: {fileID: 916223307}
   - component: {fileID: 916223306}
   m_Layer: 0
-  m_Name: TreasureSpawner
+  m_Name: TreasureGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1613,7 +1613,6 @@ MonoBehaviour:
   - {fileID: 4066588543361744108, guid: 01536a0e1528faa4d89ccdf907dc8658, type: 3}
   - {fileID: 1425512457202989034, guid: a472cd4c2cb296f4fb179cd4515a1506, type: 3}
   treasurePrefab: {fileID: 8248381651605195454, guid: 7c03064db92ff5646b6e531a6ffc31ea, type: 3}
-  map: {fileID: 1982683008}
 --- !u!114 &916223307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2221,9 +2220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80ba30b295555c41b58abcb3d3304de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
+  outlineCollider: {fileID: 1411125706}
 --- !u!60 &1411125706
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -3076,7 +3073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55a80070307858e44b9685ba09f3dec3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: {fileID: 1982683008}
+  outlineCollider: {fileID: 1914068965}
   playerIndex: 1
 --- !u!4 &1914068967
 Transform:
@@ -3147,7 +3144,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -3230,6 +3227,7 @@ GameObject:
   - component: {fileID: 1982683009}
   - component: {fileID: 1982683008}
   - component: {fileID: 1982683010}
+  - component: {fileID: 1982683011}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -3252,24 +3250,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  isFlatTop: 1
-  xSize: 16
-  ySize: 8
-  obstacleSpawnChance: 5
-  hexPrefab: {fileID: 5749146893725706871, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
-  treePrefab: {fileID: 6994461756168707245, guid: 3f7607b4dff716845914240a21818a89, type: 3}
-  outline: {fileID: 1411125705}
-  treasureSpawner: {fileID: 916223306}
-  coordCanvas: {fileID: 1515437361}
-  labelsCanvas: {fileID: 235931025}
-  startingZones:
-  - {fileID: 211519245}
-  - {fileID: 1914068966}
-  hexWidth: 10
-  padding: 0
   hexMask:
     serializedVersion: 2
     m_Bits: 128
+  mapGenerator: {fileID: 1982683011}
   hexesSpawnedOnClient: 0
 --- !u!4 &1982683009
 Transform:
@@ -3305,6 +3289,31 @@ MonoBehaviour:
   serverOnly: 0
   visible: 0
   hasSpawned: 0
+--- !u!114 &1982683011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982683007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13df4e51daf772d46b709c51d2bb0a50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isFlatTop: 1
+  xSize: 7
+  ySize: 7
+  obstacleSpawnPercent: 5
+  outline: {fileID: 1411125705}
+  treasureGenerator: {fileID: 916223306}
+  startingZones:
+  - {fileID: 211519245}
+  - {fileID: 1914068966}
+  hexPrefab: {fileID: 5749146893725706871, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
+  treePrefab: {fileID: 6994461756168707245, guid: 3f7607b4dff716845914240a21818a89, type: 3}
+  hexWidth: 10
+  padding: 0.1
 --- !u!1001 &7018610921401553608
 PrefabInstance:
   m_ObjectHideFlags: 0

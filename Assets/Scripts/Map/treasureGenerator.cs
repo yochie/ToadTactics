@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class TreasureSpawner : NetworkBehaviour
+public class treasureGenerator : NetworkBehaviour
 {
-    public List<TreasureSpawnLocation> spawnLocations;
-    public List<GameObject> hazardPrefabs;
-    public GameObject treasurePrefab;
-
-    public Map map;
+    [SerializeField]
+    private List<TreasureSpawnLocation> spawnLocations;
+    [SerializeField]
+    private List<GameObject> hazardPrefabs;
+    [SerializeField]
+    private GameObject treasurePrefab;
 
     [Server]
-    public void SpawnTreasure()
+    public void GenerateTreasure(Dictionary<Vector2Int, Hex> grid)
     {
         //choose location at random
         TreasureSpawnLocation randomLocation = spawnLocations[Random.Range(0, spawnLocations.Count)];
 
-        Hex treasureHex = this.map.GetHex(randomLocation.treasureCoordinate.x, randomLocation.treasureCoordinate.y);
+        Hex treasureHex = Map.GetHex(grid, randomLocation.treasureCoordinate.x, randomLocation.treasureCoordinate.y);
         GameObject treasureObject = Instantiate(treasurePrefab, treasureHex.transform.position, Quaternion.identity);
         NetworkServer.Spawn(treasureObject);
         treasureHex.holdsTreasure = true;
@@ -28,7 +29,7 @@ public class TreasureSpawner : NetworkBehaviour
 
         foreach (Vector2Int hazardCoordinate in randomLocation.hazardCoordinates)
         {
-            Hex hazardHex = this.map.GetHex(hazardCoordinate.x, hazardCoordinate.y);
+            Hex hazardHex = Map.GetHex(grid, hazardCoordinate.x, hazardCoordinate.y);
             GameObject hazardObject = Instantiate(randomHazardPrefab, hazardHex.transform.position, Quaternion.identity);
             NetworkServer.Spawn(hazardObject);
             hazardHex.holdsHazard = randomHazard.type;
