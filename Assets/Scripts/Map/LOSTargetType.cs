@@ -1,4 +1,4 @@
-﻿enum LOSTargetType
+﻿public enum LOSTargetType
 {
     targetable, obstructing, unreachable
 }

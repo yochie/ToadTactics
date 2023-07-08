@@ -51,7 +51,7 @@ public class DefaultAttackAction : IAction
 
     public bool Validate()
     {
-        if (!Map.Singleton.LOSReaches(this.attackerHex, this.targetedHex, this.attackerStats.range) ||
+        if (!MapPathfinder.LOSReaches(this.attackerHex, this.targetedHex, this.attackerStats.range) ||
             this.attacker.hasAttacked ||
             !GameController.Singleton.IsItThisPlayersTurn(this.attackingPlayerID) ||
             !GameController.Singleton.IsItThisCharactersTurn(this.attacker.charClassID) ||
