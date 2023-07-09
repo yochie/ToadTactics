@@ -23,6 +23,18 @@ public class MapInputHandler : ScriptableObject
     private Vector3 dragStartPosition;
     private bool draggingStarted;
 
+    //used to reset all state
+    private void OnEnable()
+    {
+        this.playingCharacter = null;
+        this.SelectedHex = null;
+        this.HoveredHex = null;
+        this.currentAbilityStats = new CharacterAbility();
+        this.currentTreasureStats = new Treasure();
+        this.draggingStarted = false;
+        this.dragStartPosition = Vector3.zero;
+    }
+
     public void setPlayingCharacter(PlayerCharacter character)
     {
         this.playingCharacter = character;
