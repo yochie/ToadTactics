@@ -108,7 +108,7 @@ public class PlayerCharacter : NetworkBehaviour
     {
         if (this.hasAttacked)
         {
-            Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate move beforehand.", this.charClass.name);
+            Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate attack beforehand.", this.charClass.name);
             return;
         }
         this.hasAttacked = true;

@@ -130,10 +130,11 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         return GameController.Singleton.playerCharacters[this.holdsCharacterWithClassID];
     }
 
-    public bool BreaksLOS(int targetClassID)
+    public bool BreaksLOS(Hex targetHex)
     {
-        if ((this.HoldsACharacter() && this.holdsCharacterWithClassID != targetClassID) ||
-            this.holdsObstacle != ObstacleType.none )
+        if (this.Equals(targetHex))
+            return false;
+        else if (this.holdsObstacle != ObstacleType.none || this.HoldsACharacter())
             return true;
         else
             return false;

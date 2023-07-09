@@ -194,7 +194,7 @@ public class Map : NetworkBehaviour
 
         //actually moves character
         this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
-        this.RpcUpdateSelectedCharacter(sender, dest);
+        this.RpcUpdateSelectedHex(sender, dest);
         if (toMove.CanMoveDistance() == 0)
         {
             GameController.Singleton.RpcGrayOutMoveButton(sender);
@@ -204,7 +204,7 @@ public class Map : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void RpcUpdateSelectedCharacter(NetworkConnectionToClient sender, Hex dest)
+    private void RpcUpdateSelectedHex(NetworkConnectionToClient sender, Hex dest)
     {
         this.inputHandler.SelectHex(dest);
     }

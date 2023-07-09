@@ -193,7 +193,7 @@ public static class MapPathfinder
 
                 GameObject hitObject = hit.collider.gameObject;
                 Hex hitHex = hitObject.GetComponent<Hex>();
-                if (hitHex != null && hitHex.BreaksLOS(target.HoldsACharacter() ? target.holdsCharacterWithClassID : -1))
+                if (hitHex != null && hitHex.BreaksLOS(target))
                 {
                     if (!hexesInRange.ContainsKey(hitHex) || hexesInRange[hitHex] == LOSTargetType.targetable)
                         hexesInRange[hitHex] = LOSTargetType.obstructing;
@@ -234,7 +234,7 @@ public static class MapPathfinder
         {
             GameObject hitObject = hit.collider.gameObject;
             Hex hitHex = hitObject.GetComponent<Hex>();
-            if (hitHex != null && hitHex != source && hitHex.BreaksLOS(target.HoldsACharacter() ? target.holdsCharacterWithClassID : -1))
+            if (hitHex != null && hitHex != source && hitHex.BreaksLOS(target))
             {
                 //hitHex.DisplayLOSObstruction(true);
                 unobstructed = false;
