@@ -80,10 +80,7 @@ public class PlayerCharacter : NetworkBehaviour
     }
     public int CanMoveDistance()
     {
-        if (hasMoved && (hasAttacked || hasUsedAbility || hasUsedTreasure))
-            return 0;
-        else
-            return remainingMoves;
+       return remainingMoves;
     }
 
     public int CurrentLife()
@@ -104,13 +101,15 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    public void UsedAttack()
+    public void UseAttack()
     {
         if (this.hasAttacked)
         {
             Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate attack beforehand.", this.charClass.name);
             return;
         }
+        if (this.hasMoved)
+            this.remainingMoves = 0;
         this.hasAttacked = true;
     }
 

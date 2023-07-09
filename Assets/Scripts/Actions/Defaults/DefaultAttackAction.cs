@@ -52,7 +52,7 @@ public class DefaultAttackAction : IAttackAction
         }
 
         //PlayerCharacter state updated to track that attack was used
-        this.ActorCharacter.UsedAttack();
+        this.ActorCharacter.UseAttack();
 
         Debug.LogFormat("{0} has attacked {1} for {2}x{3} leaving him with {4} => {5} life.",
                         this.ActorCharacter,
