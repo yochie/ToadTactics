@@ -22,7 +22,9 @@ public class DefaultAttackAction : IAttackAction
     [Server]
     public void ServerUse()
     {
-        if(this.TargetHex.holdsObstacle != ObstacleType.none)
+
+        //attacking obstacle
+        if(this.TargetHex.holdsObstacle != ObstacleType.none && this.DefenderCharacter == null)
         {
             Debug.Log("Destroy this tree!");
             GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");

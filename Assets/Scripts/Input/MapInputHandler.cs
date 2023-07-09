@@ -7,21 +7,19 @@ using UnityEngine.EventSystems;
 [CreateAssetMenu]
 public class MapInputHandler : ScriptableObject
 {
+    //to be used eventually...
     private PlayerCharacter playingCharacter;
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
 
-    private ControlMode currentControlMode = ControlMode.move;
     public ControlMode CurrentControlMode
     {
-        get { return this.currentControlMode; }
+        get;
+        private set;
     }
 
     private CharacterAbility currentAbilityStats;
     private Treasure currentTreasureStats;
-
-    private Vector3 dragStartPosition;
-    private bool draggingStarted;
 
     //used to reset all state
     private void OnEnable()
@@ -31,8 +29,7 @@ public class MapInputHandler : ScriptableObject
         this.HoveredHex = null;
         this.currentAbilityStats = new CharacterAbility();
         this.currentTreasureStats = new Treasure();
-        this.draggingStarted = false;
-        this.dragStartPosition = Vector3.zero;
+        this.CurrentControlMode = ControlMode.none;
     }
 
     public void setPlayingCharacter(PlayerCharacter character)
@@ -40,146 +37,67 @@ public class MapInputHandler : ScriptableObject
         this.playingCharacter = character;
     }
 
-    //only used for movement
-    public void StartDragHex(Hex draggedHex)
-    {
-        if (draggedHex.inputHandler.IsDraggable())
-        {
-            this.dragStartPosition = draggedHex.transform.position;
-            this.draggingStarted = true;
-        }
-        else
-        {
-            return;
-        }
-
-        if (draggedHex == null || !draggedHex.IsValidMoveSource())
-        {
-            this.UnselectHex();
-        }
-        else
-        {
-            this.UnselectHex();
-            this.SelectHex(draggedHex);
-        }
-    }
-
-    //only used for movement
-    public void EndDragHex(Hex startHex)
-    {
-        if (!this.draggingStarted)
-            return;
-
-        PlayerCharacter heldCharacter = startHex.GetHeldCharacterObject();
-        heldCharacter.transform.position = this.dragStartPosition;
-        this.draggingStarted = false;
-
-        Hex endHex = this.HoveredHex;
-
-        if (endHex == null || !Map.Singleton.IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, startHex, endHex))
-        {
-            this.UnselectHex();
-            return;
-        }
-
-        Map.Singleton.CmdMoveChar(startHex, endHex);
-        this.UnselectHex();
-    }
-
-    public void DraggingHex(Hex draggedHex, PointerEventData eventData)
-    {
-        if (this.draggingStarted)
-        {
-            PlayerCharacter heldCharacter = draggedHex.GetHeldCharacterObject();
-            heldCharacter.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, Camera.main.nearClipPlane));
-        }
-    }
-
     public void ClickHex(Hex clickedHex)
     {
-        if (!clickedHex.inputHandler.IsClickable())
-            return;
-        
-        Hex previouslySelected = this.SelectedHex;
         switch (this.CurrentControlMode)
         {
+            case ControlMode.none:
+                return;
+            case ControlMode.characterPlacement:
+                return;
             case ControlMode.move:
-
-                if (previouslySelected == null)
-                {
-                    //FIRST CLICK
-                    this.SelectHex(clickedHex);
-                }
-                else if (Map.Singleton.IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
-                {
-                    //SECOND CLICK
-                    Map.Singleton.CmdMoveChar(previouslySelected, clickedHex);
-                    this.UnselectHex();
-
-                }
-                else if (previouslySelected == clickedHex)
-                {
-                    this.UnselectHex();
-                }
+                Map.Singleton.CmdMoveChar(this.SelectedHex, clickedHex);
                 break;
-            case ControlMode.attack:
-                if (previouslySelected == null)
-                {
-                    //FIRST CLICK
-                    this.SelectHex(clickedHex);
-                }
-                else if (Map.Singleton.IsValidAttackForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
-                {
-                    //SECOND CLICK                    
-                    Map.Singleton.CmdAttack(previouslySelected, clickedHex);
-                    this.UnselectHex();
-                }
-                else if (previouslySelected == clickedHex)
-                {
-                    this.UnselectHex();
-                }
+            case ControlMode.attack:                
+                Map.Singleton.CmdAttack(this.SelectedHex, clickedHex);
                 break;
         }
     }
 
+    //Called on mode change to select playing character
+    //Sets state and displays relevant action range
     public void SelectHex(Hex h)
     {
+        this.UnselectHex();
         this.SelectedHex = h;
         h.drawer.Select(true);
 
-        int heldCharacterID;
-        PlayerCharacter heldCharacter;
+        int heldCharacterID = h.holdsCharacterWithClassID;
+        PlayerCharacter heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
         switch (this.CurrentControlMode)
         {
+            case ControlMode.none:
+                Debug.Log("Trying to select hex while control mode is none.");
+                break;
+            case ControlMode.characterPlacement:
+                Debug.Log("Trying to select hex while control mode is characterPlacement.");
+                break;
             case ControlMode.move:
-                heldCharacterID = h.holdsCharacterWithClassID;
-                heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
                 Map.Singleton.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
                 break;
             case ControlMode.attack:
-                heldCharacterID = h.holdsCharacterWithClassID;
-                heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
                 Map.Singleton.DisplayAttackRange(h, heldCharacter.currentStats.range);
+                break;
+            case ControlMode.useAbility:
+                Debug.Log("Trying to select hex while control mode is useAbility (currently unsupported).");
+                break;
+            case ControlMode.useTreasure:
+                Debug.Log("Trying to select hex while control mode is useTreasure(currently unsupported).");
                 break;
         }
     }
 
     public void UnselectHex()
     {
-        if (this.SelectedHex == null) { return; }
-        this.SelectedHex.drawer.Select(false);
+        if (this.SelectedHex != null)
+        {
+            this.SelectedHex.drawer.Select(false);
+        }
         this.SelectedHex = null;
 
-        switch (this.CurrentControlMode)
-        {
-            case ControlMode.move:
-                Map.Singleton.HideMovementRange();
-                Map.Singleton.HidePath();
-                break;
-            case ControlMode.attack:
-                Map.Singleton.HideAttackRange();
-                break;
-        }
+        Map.Singleton.HidePath();
+        Map.Singleton.HideMovementRange();
+        Map.Singleton.HideAttackRange();
     }
 
     public void HoverHex(Hex hoveredHex)
@@ -188,6 +106,11 @@ public class MapInputHandler : ScriptableObject
 
         switch (this.CurrentControlMode)
         {
+            case ControlMode.none:
+                return;
+            case ControlMode.characterPlacement:            
+                hoveredHex.drawer.MoveHover(true);
+                break;
             case ControlMode.move:
                 hoveredHex.drawer.MoveHover(true);
 
@@ -211,15 +134,18 @@ public class MapInputHandler : ScriptableObject
     public void UnhoverHex(Hex unhoveredHex)
     {
         //in case we somehow unhover a hex AFTER we starting hovering another        
-        if (this.HoveredHex != unhoveredHex)
+        if (this.HoveredHex == unhoveredHex)
         {
-            return;
+            this.HoveredHex = null;
         }
-
-        this.HoveredHex = null;
 
         switch (this.CurrentControlMode)
         {
+            case ControlMode.none:
+                return;
+            case ControlMode.characterPlacement:
+                unhoveredHex.drawer.MoveHover(false);
+                break;
             case ControlMode.move:
                 unhoveredHex.drawer.MoveHover(false);
                 Map.Singleton.HidePath();
@@ -246,15 +172,21 @@ public class MapInputHandler : ScriptableObject
     {
         GameController.Singleton.HighlightGameplayButton(mode);
         this.UnselectHex();
-        Map.Singleton.HidePath();
-        Map.Singleton.HideMovementRange();
-        Map.Singleton.HideAttackRange();
-        this.currentControlMode = mode;
-        if (GameController.Singleton.IsItMyTurn())
+        this.CurrentControlMode = mode;
+        if (GameController.Singleton.IsItMyTurn() &&
+            (mode == ControlMode.move
+            || mode == ControlMode.attack
+            || mode == ControlMode.useAbility
+            || mode == ControlMode.useTreasure))
         {
-            HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.ClassIdForPlayingCharacter()];
-            Hex toSelect = Map.GetHex(Map.Singleton.hexGrid, toSelectCoords.X, toSelectCoords.Y);
-            this.SelectHex(toSelect);
+            this.updateSelectedHex();
         }
+    }
+
+    private void updateSelectedHex()
+    {
+        HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.ClassIdForPlayingCharacter()];
+        Hex toSelect = Map.GetHex(Map.Singleton.hexGrid, toSelectCoords.X, toSelectCoords.Y);
+        this.SelectHex(toSelect);
     }
 }

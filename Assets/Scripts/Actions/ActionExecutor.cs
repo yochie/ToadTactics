@@ -13,9 +13,16 @@ public class ActionExecutor : NetworkBehaviour
     }
 
     [Server]
-    public bool TryAttack(int actingPlayerID, PlayerCharacter attackerCharacter, PlayerCharacter defenderCharacter, CharacterStats attackerStats, CharacterStats defenderStats, Hex attackerHex, Hex defenderHex)
+    public bool TryAttackCharacter(int actingPlayerID, PlayerCharacter attackerCharacter, PlayerCharacter defenderCharacter, CharacterStats attackerStats, CharacterStats defenderStats, Hex attackerHex, Hex defenderHex)
     {
         IAction toTry = ActionFactory.CreateAttackAction(actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);
+        return this.UseAction(toTry);
+    }
+
+    [Server]
+    public bool TryAttackObstacle(int actingPlayerID, PlayerCharacter attackerCharacter, CharacterStats attackerStats, Hex attackerHex, Hex defenderHex)
+    {
+        IAction toTry = ActionFactory.CreateAttackAction(actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
         return this.UseAction(toTry);
     }
 

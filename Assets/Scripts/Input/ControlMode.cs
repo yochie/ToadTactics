@@ -1,4 +1,5 @@
 ﻿public enum ControlMode
 {
-    move, attack, useAbility, useTreasure, none
+    move, attack, useAbility, useTreasure, none,
+    characterPlacement
 }

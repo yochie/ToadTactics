@@ -1336,6 +1336,7 @@ MonoBehaviour:
   attackButton: {fileID: 445087650}
   turnOrderSlotPrefab: {fileID: 1986404150757741544, guid: 58a805a353feeae47aa3d7b088821ad7, type: 3}
   turnOrderBar: {fileID: 1755582584}
+  inputHandler: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
   AllPlayerCharPrefabs:
   - {fileID: 3539194687959195621, guid: 3c1b84d6c4d5b0c489f27c1935398e5e, type: 3}
   - {fileID: 199333712297459872, guid: 842dc21dd63a6ef42aa6871d2828655f, type: 3}

@@ -31,6 +31,28 @@ public class ActionFactory : MonoBehaviour
         return attackAction;
     }
 
+    public static IAttackAction CreateAttackAction(int requestingPlayerID,
+                                               PlayerCharacter attackerCharacter,
+                                               CharacterStats attackerStats,
+                                               Hex attackerHex,
+                                               Hex defenderHex)
+    {
+        IAttackAction attackAction = new DefaultAttackAction();
+
+        //IAction
+        attackAction.RequestingPlayerID = requestingPlayerID;
+        attackAction.ActorCharacter = attackerCharacter;
+        attackAction.ActorHex = attackerHex;
+
+        //ITargetedAction
+        attackAction.TargetHex = defenderHex;
+
+        //IAttackAction
+        attackAction.AttackerStats = attackerStats;
+        attackAction.DefenderCharacter = null;        
+
+        return attackAction;
+    }
     public static IAbilityAction CreateAbilityAction(int requestingPlayerID, PlayerCharacter actingCharacter, CharacterAbility ability, Hex userHex, Hex targetHex)
     {
         IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(ability.abilityActionType);

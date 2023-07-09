@@ -186,21 +186,27 @@ public class Map : NetworkBehaviour
             return;
         }
 
+        //move is valid, update relevant state
         toMove.UseMoves(moveCost);
+        dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
+        this.characterPositions[source.holdsCharacterWithClassID] = dest.coordinates;
+        source.ClearCharacter();
+
+        //actually moves character
+        this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
+        this.RpcUpdateSelectedCharacter(sender, dest);
         if (toMove.CanMoveDistance() == 0)
         {
             GameController.Singleton.RpcGrayOutMoveButton(sender);
             if (!toMove.hasAttacked)
                 this.RpcSetControlMode(sender, ControlMode.attack);
         }
+    }
 
-        dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
-        this.characterPositions[source.holdsCharacterWithClassID] = dest.coordinates;
-
-        source.ClearCharacter();
-
-        this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
-
+    [TargetRpc]
+    private void RpcUpdateSelectedCharacter(NetworkConnectionToClient sender, Hex dest)
+    {
+        this.inputHandler.SelectHex(dest);
     }
 
     [Command(requiresAuthority = false)]
@@ -208,25 +214,23 @@ public class Map : NetworkBehaviour
     {
         Debug.Log("Pikachu, attack!");
 
-        //validate
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        if (!IsValidAttackForPlayer(playerID, source, target))
+        PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        PlayerCharacter targetedCharacter = null;
+        if (target.HoldsACharacter())
         {
-            Debug.Log("Client requested invalid attack");
-            return;
+            targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
         }
 
-        PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
-        PlayerCharacter targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
+        bool attackSuccess;
+        if (targetedCharacter != null)
+        {
+            attackSuccess = ActionExecutor.instance.TryAttackCharacter(playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
 
-        //handles character states and attack logic
-        //CombatManager.Attack(attackingCharacter, targetedCharacter);
-        //IAction attackAction = new DefaultAttackAction(attackingCharacter, targetedCharacter, source, target, attackingCharacter.currentStats, targetedCharacter.currentStats, playerID);
-        //if (!attackAction.CmdValidate())
-        //    Debug.Log("Could not validate DefaultAttackAction.");
-        //else
-        //    attackAction.CmdUse();
-        bool attackSuccess = ActionExecutor.instance.TryAttack(playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
+        } else
+        {
+            attackSuccess = ActionExecutor.instance.TryAttackObstacle(playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
+        }
 
         if (!attackSuccess)
             return;
@@ -238,14 +242,14 @@ public class Map : NetworkBehaviour
         {
             this.RpcSetControlMode(sender, ControlMode.move);
         } else
-        {
-            //prevent from move - attack - move
+        {            
             GameController.Singleton.RpcGrayOutMoveButton(sender);
+            GameController.Singleton.RpcSetControlModeOnClient(sender, ControlMode.none);
         }
 
         if (!attackingCharacter.HasRemainingActions())
         {
-            GameController.Singleton.EndTurn();
+            GameController.Singleton.NextTurn();
         }
     }
 
@@ -279,7 +283,7 @@ public class Map : NetworkBehaviour
 
         this.characterPositions[characterClassID] = destinationHex.coordinates;
 
-        GameController.Singleton.EndTurn();
+        GameController.Singleton.NextTurn();
     }
     #endregion
 
@@ -302,12 +306,6 @@ public class Map : NetworkBehaviour
     public void RpcPlaceChar(GameObject character, Vector3 position)
     {
         character.transform.position = position;
-    }
-
-    [ClientRpc]
-    public void RpcClearUIStateForTurn()
-    {
-        this.inputHandler.SetControlMode(ControlMode.move);        
     }
 
     //callback for syncing hex grid dict netids

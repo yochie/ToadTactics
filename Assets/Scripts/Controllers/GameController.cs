@@ -32,12 +32,17 @@ public class GameController : NetworkBehaviour
     [SerializeField]
     private GameObject turnOrderBar;
 
+    [SerializeField]
+    private MapInputHandler inputHandler;
+
     //Must be ordered in editor by classID
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
 
     //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
     //todo : move to PlayerController
     public List<CharacterSlotUI> characterSlots = new();
+
+
     #endregion
 
     #region Static vars
@@ -301,24 +306,6 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    private void RpcActivateGameplayButtons()
-    {
-        if (playerTurn == this.LocalPlayer.playerID)
-        {
-            this.SetActiveGameplayButtons(true);
-        }
-    }
-
-    [ClientRpc]
-    private void RpcResetInteractableGameplayButtons()
-    {
-        if (playerTurn == this.LocalPlayer.playerID)
-        {
-            this.SetInteractableGameplayButtons(true);
-        }
-    }
-
     [Client]
     private void SetInteractableGameplayButtons(bool state)
     {
@@ -338,21 +325,6 @@ public class GameController : NetworkBehaviour
         this.attackButton.SetActive(state);
     }
 
-    [TargetRpc]
-    public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
-    {
-        this.moveButton.GetComponent<Button>().interactable = false;
-        this.moveButton.GetComponent<Image>().color = Color.white;
-
-    }
-
-    [TargetRpc]
-    public void RpcGrayOutAttackButton(NetworkConnectionToClient target)
-    {
-        this.attackButton.GetComponent<Button>().interactable = false;
-        this.attackButton.GetComponent<Image>().color = Color.white;
-
-    }
 
     [Client]
     public void HighlightGameplayButton(ControlMode mode)
@@ -371,13 +343,61 @@ public class GameController : NetworkBehaviour
     }
     #endregion
 
+    #region Rpcs
+    [TargetRpc]
+    public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
+    {
+        this.moveButton.GetComponent<Button>().interactable = false;
+        this.moveButton.GetComponent<Image>().color = Color.white;
+
+    }
+
+    [TargetRpc]
+    public void RpcGrayOutAttackButton(NetworkConnectionToClient target)
+    {
+        this.attackButton.GetComponent<Button>().interactable = false;
+        this.attackButton.GetComponent<Image>().color = Color.white;
+
+    }
+
+    [TargetRpc]
+    public void RpcSetControlModeOnClient(NetworkConnectionToClient target, ControlMode mode)
+    {
+        this.inputHandler.SetControlMode(mode);
+    }
+
+    [ClientRpc]
+    private void RpcActivateGameplayButtons()
+    {
+        if (playerTurn == this.LocalPlayer.playerID)
+        {
+            this.SetActiveGameplayButtons(true);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcResetInteractableGameplayButtons()
+    {
+        if (playerTurn == this.LocalPlayer.playerID)
+        {
+            this.SetInteractableGameplayButtons(true);
+        }
+    }
+
+    [ClientRpc]
+    private void SetControlModeOnAllClients(ControlMode mode)
+    {
+        this.inputHandler.SetControlMode(mode);
+    }
+    #endregion
+
     #region Commands
 
     //ACTUAL GAME START once everything is ready on client
     [Command(requiresAuthority = false)]
     private void CmdStartPlaying()
     {        
-        this.currentPhase = GamePhase.characterPlacement;
+        this.SetPhase(GamePhase.characterPlacement);
         this.playerTurn = 0;
         //this.RpcActivateEndTurnButton();
     }
@@ -414,9 +434,37 @@ public class GameController : NetworkBehaviour
         {
             this.SwapPlayerTurn();
         }
-
-        Map.Singleton.RpcClearUIStateForTurn();
+        
+        this.SetControlModeOnClientsForTurn(this.playerTurn);
+       
         this.RpcResetInteractableGameplayButtons();
+    }
+
+    [Server]
+    private void SetControlModeOnClientsForTurn(int playerTurn)
+    {
+        List<NetworkConnectionToClient> connections = new();
+        NetworkServer.connections.Values.CopyTo(connections);
+        NetworkConnectionToClient newTurnClient = null;
+        NetworkConnectionToClient otherClient = null;
+        foreach (NetworkConnectionToClient conn in connections)
+        {
+            if (conn.identity.GetComponent<PlayerController>().playerID == playerTurn)
+            {
+                if (newTurnClient != null)
+                    Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
+                newTurnClient = conn;
+            }
+            else
+            {
+                if (otherClient != null)
+                    Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
+                otherClient = conn;
+            }
+
+        }
+        this.RpcSetControlModeOnClient(newTurnClient, ControlMode.move);
+        this.RpcSetControlModeOnClient(otherClient, ControlMode.none);
     }
 
     [Server]
@@ -436,11 +484,11 @@ public class GameController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdEndTurn()
     {
-        this.EndTurn();
+        this.NextTurn();
     }
 
     [Server]
-    public void EndTurn()
+    public void NextTurn()
     {
         switch (this.currentPhase)
         {
@@ -482,16 +530,27 @@ public class GameController : NetworkBehaviour
 
         switch(newPhase)
         {
+            case GamePhase.characterPlacement:
+                this.initCharacterPlacementMode();
+                break;
             case GamePhase.gameplay:
                 this.InitGameplayMode();
                 break;
         }
     }
+    
+    [Server]
+    private void initCharacterPlacementMode()
+    {
+        Debug.Log("Initializing character placement mode");
+        this.playerTurn = 0;
+        this.SetControlModeOnAllClients(ControlMode.characterPlacement);
+    }
 
-    [Command(requiresAuthority = false)]
+    [Server]
     public void InitGameplayMode()
     {
-        Debug.Log("Resetting turn");
+        Debug.Log("Initializing gameplay mode");
         this.turnOrderIndex = 0;
         this.playerTurn = 0;
 
@@ -517,7 +576,7 @@ public class GameController : NetworkBehaviour
             this.SwapPlayerTurn();
         }
 
-        Map.Singleton.RpcClearUIStateForTurn();
+        this.SetControlModeOnClientsForTurn(this.playerTurn);
         this.RpcActivateGameplayButtons();
     }
 
