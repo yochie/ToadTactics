@@ -26,7 +26,7 @@ public class DefaultAttackAction : IAttackAction
             switch (this.AttackerStats.damageType)
             {
                 case DamageType.normal:
-                    this.DefenderCharacter.TakeRawDamage(this.AttackerStats.damage - this.AttackerStats.armor);
+                    this.DefenderCharacter.TakeRawDamage(this.AttackerStats.damage - this.DefenderStats.armor);
                     break;
                 case DamageType.magic:
                     this.DefenderCharacter.TakeRawDamage(this.AttackerStats.damage);
