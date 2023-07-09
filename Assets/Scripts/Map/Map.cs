@@ -14,11 +14,12 @@ public class Map : NetworkBehaviour
 {
 
     #region Editor vars
-    [SerializeField]
-    private LayerMask hexMask;
 
     [SerializeField]
     private MapGenerator mapGenerator;
+
+    [SerializeField]
+    private MapInputHandler inputHandler;
     #endregion
 
     #region Synced vars
@@ -31,22 +32,10 @@ public class Map : NetworkBehaviour
 
     #region Runtime state vars
     public static Map Singleton { get; private set; }
-    public Hex SelectedHex { get; set; }
-    public Hex HoveredHex { get; set; }
+
     private HashSet<Hex> displayedMoveRange = new();
     private Dictionary<Hex,LOSTargetType> displayedAttackRange = new();
-
     private List<Hex> displayedPath = new();
-    private ControlMode currentControlMode;
-    public ControlMode CurrentControlMode {
-        get { return this.currentControlMode; }
-        set { 
-            this.currentControlMode = value;
-            GameController.Singleton.HighlightGameplayButton(value);
-        }
-
-    
-    }
 
     [HideInInspector]
     public bool hexesSpawnedOnClient;
@@ -64,7 +53,7 @@ public class Map : NetworkBehaviour
     {
         base.OnStartClient();
 
-        this.CurrentControlMode = ControlMode.move;
+
 
         hexGridNetIDs.Callback += OnHexGridNetIdsChange;
         // Process initial SyncDictionary payload
@@ -85,168 +74,7 @@ public class Map : NetworkBehaviour
     #endregion
 
     #region State management
-    //only used for movement
-    public void StartDragHex(Hex draggedHex)
-    {
-        if (draggedHex == null || !draggedHex.IsValidMoveSource())
-        {
-            this.UnselectHex();
-        } else
-        {
-            this.UnselectHex();
-            this.SelectHex(draggedHex);
-        }
-    }
-
-    //only used for movement
-    public void EndDragHex(Hex startHex)
-    {
-
-        Hex endHex = this.HoveredHex;
-
-        if (endHex == null || !this.IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, startHex, endHex))
-        {
-            this.UnselectHex();
-            return;
-        }
-
-        this.CmdMoveChar(startHex, endHex);
-        this.UnselectHex();
-    }
-
-    public void ClickHex(Hex clickedHex)
-    {
-        Hex previouslySelected = this.SelectedHex;
-
-        switch (this.CurrentControlMode)
-        {
-            case ControlMode.move:
-
-                if (previouslySelected == null)
-                {
-                    //FIRST CLICK
-                    this.SelectHex(clickedHex);
-                }
-                else if (this.IsValidMoveForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
-                {
-                    //SECOND CLICK
-                    this.CmdMoveChar(previouslySelected, clickedHex);
-                    this.UnselectHex();
-
-                }
-                else if (previouslySelected == clickedHex)
-                {
-                    this.UnselectHex();
-                }
-                break;
-            case ControlMode.attack:
-                if (previouslySelected == null)
-                {
-                    //FIRST CLICK
-                    this.SelectHex(clickedHex);                    
-                }
-                else if (this.IsValidAttackForPlayer(GameController.Singleton.LocalPlayer.playerID, previouslySelected, clickedHex))
-                {
-                    //SECOND CLICK                    
-                    this.CmdAttack(previouslySelected, clickedHex);
-                    this.UnselectHex();
-                } else if (previouslySelected == clickedHex)
-                {
-                    this.UnselectHex();
-                }
-                break;
-        }
-    }
-
-    public void SelectHex(Hex h)
-    {
-        this.SelectedHex = h;
-        h.drawer.Select(true);
-
-        int heldCharacterID;
-        PlayerCharacter heldCharacter;
-        switch (this.CurrentControlMode)
-        {
-            case ControlMode.move:
-                heldCharacterID = h.holdsCharacterWithClassID;
-                heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
-                this.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
-                break;
-            case ControlMode.attack:
-                heldCharacterID = h.holdsCharacterWithClassID;
-                heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
-                this.DisplayAttackRange(h, heldCharacter.currentStats.range);
-                break;
-        }
-    }
-
-    public void UnselectHex()
-    {
-        if (this.SelectedHex == null) { return; }
-        this.SelectedHex.drawer.Select(false);
-        this.SelectedHex = null;
-
-        switch (this.CurrentControlMode)
-        {
-            case ControlMode.move:
-                this.HideMovementRange();
-                this.HidePath();
-                break;
-            case ControlMode.attack:
-                this.HideAttackRange();
-                break;
-        }
-    }
-
-    public void HoverHex(Hex hoveredHex)
-    {
-        this.HoveredHex = hoveredHex;
-
-        switch (this.CurrentControlMode)
-        {
-            case ControlMode.move:
-                hoveredHex.drawer.MoveHover(true);
-
-                //find path to hex if we have selected another hex
-                if (this.SelectedHex != null)
-                {
-                    this.HidePath();
-                    List<Hex> path = MapPathfinder.FindMovementPath(this.SelectedHex, hoveredHex, this.hexGrid);
-                    if (path != null)
-                    {
-                        this.DisplayPath(path);
-                    }
-                }
-                break;
-            case ControlMode.attack:
-                hoveredHex.drawer.AttackHover(true);
-                break;
-        }
-    }
-
-    public void UnhoverHex(Hex unhoveredHex)
-    {
-        //in case we somehow unhover a hex AFTER we starting hovering another        
-        if (this.HoveredHex != unhoveredHex)
-        {
-            return;
-        }
-
-        this.HoveredHex = null;
-
-        switch (this.CurrentControlMode)
-        {
-            case ControlMode.move:
-                unhoveredHex.drawer.MoveHover(false);
-                this.HidePath();
-                break;
-            case ControlMode.attack:
-                unhoveredHex.drawer.AttackHover(false);
-                break;
-        }
-    }
-
-    private void DisplayMovementRange(Hex source, int moveDistance)
+    public void DisplayMovementRange(Hex source, int moveDistance)
     {
         this.displayedMoveRange = MapPathfinder.RangeWithObstaclesAndMoveCost(source, moveDistance, this.hexGrid);
         foreach (Hex h in this.displayedMoveRange)
@@ -259,7 +87,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    private void HideMovementRange()
+    public void HideMovementRange()
     {
         foreach (Hex h in this.displayedMoveRange)
         {
@@ -267,7 +95,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    private void DisplayPath(List<Hex> path)
+    public void DisplayPath(List<Hex> path)
     {
         //save path for hiding later
         this.displayedPath = path;
@@ -285,7 +113,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    private void HidePath()
+    public void HidePath()
     {
         foreach (Hex h in this.displayedPath)
         {
@@ -293,7 +121,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    private void DisplayAttackRange(Hex source, int range)
+    public void DisplayAttackRange(Hex source, int range)
     {
         Dictionary<Hex,LOSTargetType> attackRange = MapPathfinder.FindAttackRange(source, range, this.hexGrid);
         this.displayedAttackRange = attackRange;
@@ -314,7 +142,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    private void HideAttackRange()
+    public void HideAttackRange()
     {
         foreach (Hex h in this.displayedAttackRange.Keys)
         {
@@ -329,35 +157,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    //Used by button
-    public void SetControlModeAttack()
-    {
-        this.SetControlMode(ControlMode.attack);
-    }
-
-    //Used by button
-    public void SetControlModeMove()
-    {
-        this.SetControlMode(ControlMode.move);
-    }
-
-    private void SetControlMode(ControlMode mode)
-    {
-        this.UnselectHex();
-        this.HidePath();
-        this.HideMovementRange();
-        this.HideAttackRange();
-        this.CurrentControlMode = mode;
-        if (GameController.Singleton.IsItMyTurn())
-        {
-            HexCoordinates toSelectCoords = this.characterPositions[GameController.Singleton.ClassIdForPlayingCharacter()];
-            Hex toSelect = Map.GetHex(this.hexGrid, toSelectCoords.X, toSelectCoords.Y);
-            this.SelectHex(toSelect);
-        }
-    }
     #endregion
-
-
 
     #region Commands
     [Command(requiresAuthority = false)]
@@ -403,7 +203,7 @@ public class Map : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    private void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
+    public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
         Debug.Log("Pikachu, attack!");
 
@@ -443,7 +243,6 @@ public class Map : NetworkBehaviour
             GameController.Singleton.EndTurn();
         }
     }
-
 
     [Command(requiresAuthority = false)]
     public void CmdCreateCharOnBoard(int characterClassID, Hex destinationHex, NetworkConnectionToClient sender = null)
@@ -503,7 +302,7 @@ public class Map : NetworkBehaviour
     [ClientRpc]
     public void RpcClearUIStateForTurn()
     {
-        this.SetControlMode(ControlMode.move);        
+        this.inputHandler.SetControlMode(ControlMode.move);        
     }
 
     //callback for syncing hex grid dict netids
@@ -553,13 +352,13 @@ public class Map : NetworkBehaviour
     [TargetRpc]
     private void RpcSetControlMode(NetworkConnectionToClient target, ControlMode mode)
     {
-        this.SetControlMode(mode);
+        this.inputHandler.SetControlMode(mode);
     }
     #endregion
 
     #region Utility
 
-    private bool IsValidMoveForPlayer(int playerID, Hex source, Hex dest)
+    public bool IsValidMoveForPlayer(int playerID, Hex source, Hex dest)
     {
         if (source == null ||
             dest == null ||
@@ -576,7 +375,7 @@ public class Map : NetworkBehaviour
         }
     }
 
-    private bool IsValidAttackForPlayer(int playerID, Hex source, Hex target)
+    public bool IsValidAttackForPlayer(int playerID, Hex source, Hex target)
     {
         //Allows targeting your own characters if healer
         bool allowTargetingAnyCharacter = false;

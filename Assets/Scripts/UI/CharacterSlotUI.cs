@@ -11,6 +11,9 @@ using UnityEngine.UI;
 //RTODO: Character creation should be handled by playerController since he stores the PlayerCharacter thereafter. Means he should maybe be registerd here as observer of drag.
 public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    [SerializeField]
+    private MapInputHandler mapInputHandler;
+
     private Vector3 dragStartPosition;
     public int HoldsCharacterWithClassID { get; set; }
 
@@ -92,7 +95,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (this.IsDraggable())
         {
             this.transform.position = this.dragStartPosition;
-            Hex destinationHex = Map.Singleton.HoveredHex;
+            Hex destinationHex = this.mapInputHandler.HoveredHex;
             if (destinationHex == null) { return; }
             Map.Singleton.CmdCreateCharOnBoard(this.HoldsCharacterWithClassID, destinationHex);
         }

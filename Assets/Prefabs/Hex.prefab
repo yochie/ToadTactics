@@ -107,8 +107,6 @@ MonoBehaviour:
   syncInterval: 0
   drawer: {fileID: 0}
   inputHandler: {fileID: 0}
-  dragStartPosition: {x: 0, y: 0, z: 0}
-  draggingStarted: 0
   isStartingZone: 0
   holdsCharacterWithClassID: 0
   holdsObstacle: 0
@@ -192,7 +190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 720e671946b7cc74ab15fd384c0cfb76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  master: {fileID: 0}
+  inputHandler: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
 --- !u!60 &3167317495844626575
 PolygonCollider2D:
   m_ObjectHideFlags: 0

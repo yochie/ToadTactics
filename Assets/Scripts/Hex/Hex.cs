@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 //RTODO: IsDraggable and IsClickable moved to registered observers that do the movement/selecting
 
 [RequireComponent(typeof(HexDrawer))]
-[RequireComponent(typeof(HexInputHandler))]
+[RequireComponent(typeof(HexMouseEventTracker))]
 
 public class Hex : NetworkBehaviour, IEquatable<Hex>
 {
@@ -17,14 +17,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     public HexDrawer drawer;
 
     [SerializeField]
-    public HexInputHandler inputHandler;
-    #endregion
-
-    #region UI vars
-
-    public Vector3 dragStartPosition;
-    public bool draggingStarted;
-
+    public HexMouseEventTracker inputHandler;
     #endregion
 
     #region Sync vars
@@ -86,8 +79,10 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         bool isLocalStartingZone = (this.isServer && this.startZoneForPlayerIndex == 0) || (!this.isServer && this.startZoneForPlayerIndex == 1);
         this.drawer.Init(this.isStartingZone, isLocalStartingZone, this.coordinates);
 
-        this.inputHandler = this.GetComponent<HexInputHandler>();
-        this.inputHandler.master = this;
+        this.inputHandler = this.GetComponent<HexMouseEventTracker>();
+        this.inputHandler.Master = this;
+
+
 
         if (isClientOnly)
             this.CmdMarkAsSpawned();
@@ -181,53 +176,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             return false;
     }
 
-    public bool IsClickable()
-    {
-        switch (GameController.Singleton.currentPhase)
-        {
-            case GamePhase.characterPlacement:
-                return false;
-            case GamePhase.gameplay:
-                switch (Map.Singleton.CurrentControlMode)
-                {
-                    case ControlMode.move:
-                        if (this.IsValidMoveSource() &&
-                            GameController.Singleton.CanIControlThisCharacter(this.holdsCharacterWithClassID))
-                            return true;
-                        else if (Map.Singleton.SelectedHex != null && this.IsValidMoveDest())
-                            return true;
-                        else
-                            return false;
-                    case ControlMode.attack:
-                        if (this.IsValidAttackSource() &&
-                            GameController.Singleton.CanIControlThisCharacter(this.holdsCharacterWithClassID))
-                            return true;
-                        else if (Map.Singleton.SelectedHex != null && this.IsValidAttackTarget())
-                            return true;
-                        else
-                            return false;
-                    default:
-                        return false;
-                }
-            default:
-                return false;
-        }
-    }
 
-    public bool IsDraggable()
-    {
-        switch (Map.Singleton.CurrentControlMode)
-        {
-            case ControlMode.move:
-                if (this.IsValidMoveSource() &&
-                    GameController.Singleton.CanIControlThisCharacter(this.holdsCharacterWithClassID))
-                    return true;
-                else
-                    return false;
-            default:
-                return false;
-        }
-    }
     public int MoveCost()
     {
         switch (this.holdsHazard)

@@ -1107,8 +1107,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1982683008}
-        m_TargetAssemblyTypeName: Map, Assembly-CSharp
+      - m_Target: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
+        m_TargetAssemblyTypeName: MapInputHandler, Assembly-CSharp
         m_MethodName: SetControlModeAttack
         m_Mode: 1
         m_Arguments:
@@ -2000,8 +2000,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1982683008}
-        m_TargetAssemblyTypeName: Map, Assembly-CSharp
+      - m_Target: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
+        m_TargetAssemblyTypeName: MapInputHandler, Assembly-CSharp
         m_MethodName: SetControlModeMove
         m_Mode: 1
         m_Arguments:
@@ -3250,10 +3250,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  hexMask:
-    serializedVersion: 2
-    m_Bits: 128
   mapGenerator: {fileID: 1982683011}
+  inputHandler: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
   hexesSpawnedOnClient: 0
 --- !u!4 &1982683009
 Transform:
