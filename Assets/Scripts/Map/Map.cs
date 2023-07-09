@@ -28,6 +28,7 @@ public class Map : NetworkBehaviour
 
     //maps classID onto HexCoordinates
     public readonly SyncDictionary<int, HexCoordinates> characterPositions = new();
+
     #endregion
 
     #region Runtime state vars

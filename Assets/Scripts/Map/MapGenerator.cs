@@ -130,6 +130,8 @@ public class MapGenerator : MonoBehaviour
                     {
                         //Debug.Log("Spawning tree");
                         GameObject tree = Instantiate(this.treePrefab, h.transform.position, Quaternion.identity);
+                        Obstacle treeObstacle = tree.GetComponent<Obstacle>();
+                        treeObstacle.hexPosition = h.coordinates;
                         NetworkServer.Spawn(tree);
                         h.holdsObstacle = ObstacleType.tree;
                     }

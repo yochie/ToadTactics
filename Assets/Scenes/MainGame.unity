@@ -3374,7 +3374,7 @@ MonoBehaviour:
   - {fileID: 211519245}
   - {fileID: 1914068966}
   hexPrefab: {fileID: 1311420710301116983, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
-  treePrefab: {fileID: 6994461756168707245, guid: 3f7607b4dff716845914240a21818a89, type: 3}
+  treePrefab: {fileID: 6196915132452724319, guid: 3f7607b4dff716845914240a21818a89, type: 3}
   hexWidth: 10
   padding: 0
 --- !u!1001 &7018610921401553608

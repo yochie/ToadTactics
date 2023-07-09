@@ -24,7 +24,7 @@ public readonly struct CharacterStats
         this.range = range;
         if(allowedAttackTargets == null)
         {
-            this.allowedAttackTargets = new List<TargetType> { TargetType.ennemy_chars };
+            this.allowedAttackTargets = new List<TargetType> { TargetType.ennemy_chars, TargetType.obstacle };
         } else
         {
             this.allowedAttackTargets = allowedAttackTargets;

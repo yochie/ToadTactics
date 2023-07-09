@@ -7,4 +7,7 @@ public class Obstacle : NetworkBehaviour
 {
     [SyncVar]
     public ObstacleType type;
+
+    [SyncVar]
+    public HexCoordinates hexPosition;
 }

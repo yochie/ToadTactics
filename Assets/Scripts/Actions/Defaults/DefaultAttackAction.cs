@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System.Linq;
+
 public class DefaultAttackAction : IAttackAction
 {
     //IAction
@@ -20,6 +22,16 @@ public class DefaultAttackAction : IAttackAction
     [Server]
     public void ServerUse()
     {
+        if(this.TargetHex.holdsObstacle != ObstacleType.none)
+        {
+            Debug.Log("Destroy this tree!");
+            GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+            GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
+            Object.Destroy(attackedTree);
+            TargetHex.holdsObstacle = ObstacleType.none;
+            return;
+        }
+
         int prevLife = this.DefenderCharacter.CurrentLife();
         for (int i = 0; i < this.AttackerStats.damageIterations; i++)
         {
@@ -52,15 +64,21 @@ public class DefaultAttackAction : IAttackAction
     [Server]
     public bool ServerValidate()
     {
-        if (!MapPathfinder.LOSReaches(this.ActorHex, this.TargetHex, this.AttackerStats.range) ||
-            this.ActorCharacter.hasAttacked ||
-            !GameController.Singleton.IsItThisPlayersTurn(this.RequestingPlayerID) ||
-            !GameController.Singleton.IsItThisCharactersTurn(this.ActorCharacter.charClassID) ||
-            !GameController.Singleton.DoesHeOwnThisCharacter(this.RequestingPlayerID, this.ActorCharacter.charClassID) ||
-            !ActionExecutor.IsValidTargetType(this.ActorCharacter, this.TargetHex, this.AttackerStats.allowedAttackTargets)
+        if (this.ActorCharacter != null &&
+            this.ActorHex != null &&            
+            this.TargetHex != null &&
+            this.RequestingPlayerID != -1 &&
+            this.ActorHex.HoldsACharacter() &&
+            this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
+            MapPathfinder.LOSReaches(this.ActorHex, this.TargetHex, this.AttackerStats.range) &&
+            !this.ActorCharacter.hasAttacked &&
+            this.RequestingPlayerID == this.ActorCharacter.ownerID &&
+            GameController.Singleton.IsItThisPlayersTurn(this.RequestingPlayerID) &&
+            GameController.Singleton.IsItThisCharactersTurn(this.ActorCharacter.charClassID) &&
+            ActionExecutor.IsValidTargetType(this.ActorCharacter, this.TargetHex, this.AttackerStats.allowedAttackTargets)
             )
-            return false;
-        else
             return true;
+        else
+            return false;
     }
 }
