@@ -1,6 +1,12 @@
 ﻿public interface IAction
 {
-    public abstract void CmdUse();
-    //users should validate action before using it
-    public abstract bool Validate();
+    public int RequestingPlayerID { get; set; }
+
+    public PlayerCharacter ActorCharacter { get; set; }
+
+    public Hex ActorHex { get; set; }
+
+    public abstract void ServerUse();
+
+    public abstract bool ServerValidate();
 }

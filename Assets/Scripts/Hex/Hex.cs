@@ -11,12 +11,10 @@ using UnityEngine.EventSystems;
 
 public class Hex : NetworkBehaviour, IEquatable<Hex>
 {
-    #region Editor vars
+    #region Component vars
 
-    [SerializeField]
     public HexDrawer drawer;
 
-    [SerializeField]
     public HexMouseEventTracker inputHandler;
     #endregion
 

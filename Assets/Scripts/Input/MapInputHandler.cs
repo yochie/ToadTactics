@@ -17,7 +17,7 @@ public class MapInputHandler : ScriptableObject
         get { return this.currentControlMode; }
     }
 
-    private CharacterAbilityStats currentAbilityStats;
+    private CharacterAbility currentAbilityStats;
     private Treasure currentTreasureStats;
 
     private Vector3 dragStartPosition;

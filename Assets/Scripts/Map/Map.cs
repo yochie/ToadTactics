@@ -220,11 +220,15 @@ public class Map : NetworkBehaviour
 
         //handles character states and attack logic
         //CombatManager.Attack(attackingCharacter, targetedCharacter);
-        IAction attackAction = new DefaultAttackAction(attackingCharacter, targetedCharacter, source, target, attackingCharacter.currentStats, targetedCharacter.currentStats, playerID);
-        if (!attackAction.Validate())
-            Debug.Log("Could not validate DefaultAttackAction.");
-        else
-            attackAction.CmdUse();
+        //IAction attackAction = new DefaultAttackAction(attackingCharacter, targetedCharacter, source, target, attackingCharacter.currentStats, targetedCharacter.currentStats, playerID);
+        //if (!attackAction.CmdValidate())
+        //    Debug.Log("Could not validate DefaultAttackAction.");
+        //else
+        //    attackAction.CmdUse();
+        bool attackSuccess = ActionExecutor.instance.TryAttack(playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
+
+        if (!attackSuccess)
+            return;
 
         GameController.Singleton.RpcGrayOutAttackButton(sender);
 

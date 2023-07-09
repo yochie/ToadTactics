@@ -1,6 +1,4 @@
 ﻿public interface IAbilityAction : IAction
 {
-    public CharacterAbilityStats abilityStats { get; set; }
-
-    public PlayerCharacter user { get; set; }
+    public CharacterAbility Ability { get; set; }
 }
