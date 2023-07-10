@@ -3294,6 +3294,7 @@ GameObject:
   - component: {fileID: 1982683008}
   - component: {fileID: 1982683010}
   - component: {fileID: 1982683011}
+  - component: {fileID: 1982683012}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -3318,6 +3319,7 @@ MonoBehaviour:
   syncInterval: 0
   mapGenerator: {fileID: 1982683011}
   inputHandler: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
+  rangeDisplayer: {fileID: 1982683012}
   hexesSpawnedOnClient: 0
 --- !u!4 &1982683009
 Transform:
@@ -3378,6 +3380,19 @@ MonoBehaviour:
   treePrefab: {fileID: 6196915132452724319, guid: 3f7607b4dff716845914240a21818a89, type: 3}
   hexWidth: 10
   padding: 0
+--- !u!114 &1982683012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982683007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec7c065323284144a505cfd666dde76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  map: {fileID: 1982683008}
 --- !u!1001 &7018610921401553608
 PrefabInstance:
   m_ObjectHideFlags: 0

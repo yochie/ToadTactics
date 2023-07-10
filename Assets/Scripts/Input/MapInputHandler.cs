@@ -73,10 +73,10 @@ public class MapInputHandler : ScriptableObject
                 Debug.Log("Trying to select hex while control mode is characterPlacement.");
                 break;
             case ControlMode.move:
-                Map.Singleton.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
+                Map.Singleton.rangeDisplayer.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
                 break;
             case ControlMode.attack:
-                Map.Singleton.DisplayAttackRange(h, heldCharacter.currentStats.range);
+                Map.Singleton.rangeDisplayer.DisplayAttackRange(h, heldCharacter.currentStats.range);
                 break;
             case ControlMode.useAbility:
                 Debug.Log("Trying to select hex while control mode is useAbility (currently unsupported).");
@@ -95,9 +95,9 @@ public class MapInputHandler : ScriptableObject
         }
         this.SelectedHex = null;
 
-        Map.Singleton.HidePath();
-        Map.Singleton.HideMovementRange();
-        Map.Singleton.HideAttackRange();
+        Map.Singleton.rangeDisplayer.HidePath();
+        Map.Singleton.rangeDisplayer.HideMovementRange();
+        Map.Singleton.rangeDisplayer.HideAttackRange();
     }
 
     public void HoverHex(Hex hoveredHex)
@@ -117,11 +117,11 @@ public class MapInputHandler : ScriptableObject
                 //find path to hex if we have selected another hex
                 if (this.SelectedHex != null)
                 {
-                    Map.Singleton.HidePath();
+                    Map.Singleton.rangeDisplayer.HidePath();
                     List<Hex> path = MapPathfinder.FindMovementPath(this.SelectedHex, hoveredHex, Map.Singleton.hexGrid);
                     if (path != null)
                     {
-                        Map.Singleton.DisplayPath(path);
+                        Map.Singleton.rangeDisplayer.DisplayPath(path);
                     }
                 }
                 break;
@@ -148,7 +148,7 @@ public class MapInputHandler : ScriptableObject
                 break;
             case ControlMode.move:
                 unhoveredHex.drawer.MoveHover(false);
-                Map.Singleton.HidePath();
+                Map.Singleton.rangeDisplayer.HidePath();
                 break;
             case ControlMode.attack:
                 unhoveredHex.drawer.AttackHover(false);
