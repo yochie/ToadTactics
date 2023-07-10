@@ -5,11 +5,48 @@ using Mirror;
 
 public class ActionExecutor : NetworkBehaviour
 {
-    public static ActionExecutor instance;
+    public static ActionExecutor Singleton { get; private set; }
 
     public void Awake()
     {
-        ActionExecutor.instance = this;
+        ActionExecutor.Singleton = this;
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
+    {
+        Debug.Log("Pikachu, move!");
+
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter movingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+
+        ActionExecutor.Singleton.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
+    }
+
+
+    [Command(requiresAuthority = false)]
+    public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
+    {
+        Debug.Log("Pikachu, attack!");
+
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        PlayerCharacter targetedCharacter = null;
+        if (target.HoldsACharacter())
+        {
+            targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
+        }
+
+
+        if (targetedCharacter != null)
+        {
+            ActionExecutor.Singleton.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
+
+        }
+        else
+        {
+            ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
+        }
     }
 
     [Server]

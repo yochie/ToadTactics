@@ -46,10 +46,10 @@ public class MapInputHandler : ScriptableObject
             case ControlMode.characterPlacement:
                 return;
             case ControlMode.move:
-                Map.Singleton.CmdMoveChar(this.SelectedHex, clickedHex);
+                ActionExecutor.Singleton.CmdMoveChar(this.SelectedHex, clickedHex);
                 break;
             case ControlMode.attack:                
-                Map.Singleton.CmdAttack(this.SelectedHex, clickedHex);
+                ActionExecutor.Singleton.CmdAttack(this.SelectedHex, clickedHex);
                 break;
         }
     }

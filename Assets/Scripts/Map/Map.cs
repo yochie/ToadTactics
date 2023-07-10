@@ -161,42 +161,6 @@ public class Map : NetworkBehaviour
     #endregion
 
     #region Commands
-    [Command(requiresAuthority = false)]
-    public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
-    {
-        Debug.Log("Pikachu, move!");
-
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter movingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
-
-        ActionExecutor.instance.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
-    }
-
-
-    [Command(requiresAuthority = false)]
-    public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
-    {
-        Debug.Log("Pikachu, attack!");
-
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
-        PlayerCharacter targetedCharacter = null;
-        if (target.HoldsACharacter())
-        {
-            targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
-        }
-
-
-        if (targetedCharacter != null)
-        {
-            ActionExecutor.instance.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
-
-        }
-        else
-        {
-            ActionExecutor.instance.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
-        }
-    }
 
     [Command(requiresAuthority = false)]
     public void CmdCreateCharOnBoard(int characterClassID, Hex destinationHex, NetworkConnectionToClient sender = null)
@@ -306,54 +270,6 @@ public class Map : NetworkBehaviour
     #endregion
 
     #region Utility
-
-    public bool IsValidMoveForPlayer(int playerID, Hex source, Hex dest)
-    {
-        if (source == null ||
-            dest == null ||
-            source == dest ||
-            !source.IsValidMoveSource() ||
-            !dest.IsValidMoveDest() ||
-!           GameController.Singleton.CanIControlThisCharacter(source.holdsCharacterWithClassID, playerID))
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    public bool IsValidAttackForPlayer(int playerID, Hex source, Hex target)
-    {
-        //Allows targeting your own characters if healer
-        bool allowTargetingAnyCharacter = false;
-        if(source != null && source.IsValidAttackSource())
-        {
-            PlayerCharacter attacker = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
-            if (attacker.currentStats.damageType == DamageType.healing)
-            {
-                allowTargetingAnyCharacter = true;
-            }
-        }
-
-        if (source == null ||
-            target == null ||
-            (!allowTargetingAnyCharacter && source == target) ||
-            !source.IsValidAttackSource() ||
-            !target.IsValidAttackTarget() ||
-            !GameController.Singleton.CanIControlThisCharacter(source.holdsCharacterWithClassID, playerID) ||
-            (!allowTargetingAnyCharacter && GameController.Singleton.DoesHeOwnThisCharacter(playerID, target.holdsCharacterWithClassID)) ||
-            !MapPathfinder.LOSReaches(source, target, GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID].currentStats.range))
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
     public static void SetHex(Dictionary<Vector2Int, Hex> grid, int x, int y, Hex h)
     {
         grid[new Vector2Int(x, y)] = h;
