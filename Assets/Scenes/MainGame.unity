@@ -1107,7 +1107,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
+      - m_Target: {fileID: 1982683013}
         m_TargetAssemblyTypeName: MapInputHandler, Assembly-CSharp
         m_MethodName: SetControlModeAttack
         m_Mode: 1
@@ -1336,7 +1336,7 @@ MonoBehaviour:
   attackButton: {fileID: 445087650}
   turnOrderSlotPrefab: {fileID: 1986404150757741544, guid: 58a805a353feeae47aa3d7b088821ad7, type: 3}
   turnOrderBar: {fileID: 1755582584}
-  inputHandler: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
+  inputHandler: {fileID: 1982683013}
   AllPlayerCharPrefabs:
   - {fileID: 3539194687959195621, guid: 3c1b84d6c4d5b0c489f27c1935398e5e, type: 3}
   - {fileID: 199333712297459872, guid: 842dc21dd63a6ef42aa6871d2828655f, type: 3}
@@ -2066,7 +2066,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
+      - m_Target: {fileID: 1982683013}
         m_TargetAssemblyTypeName: MapInputHandler, Assembly-CSharp
         m_MethodName: SetControlModeMove
         m_Mode: 1
@@ -2572,6 +2572,10 @@ PrefabInstance:
       propertyPath: map
       value: 
       objectReference: {fileID: 1982683008}
+    - target: {fileID: 110651761229220715, guid: e9a58510302918c479b59004c80acce9, type: 3}
+      propertyPath: mapInputHandler
+      value: 
+      objectReference: {fileID: 1982683013}
     - target: {fileID: 7018610921847236664, guid: e9a58510302918c479b59004c80acce9, type: 3}
       propertyPath: m_Name
       value: Slot3
@@ -2692,6 +2696,10 @@ PrefabInstance:
       propertyPath: map
       value: 
       objectReference: {fileID: 1982683008}
+    - target: {fileID: 110651761229220715, guid: e9a58510302918c479b59004c80acce9, type: 3}
+      propertyPath: mapInputHandler
+      value: 
+      objectReference: {fileID: 1982683013}
     - target: {fileID: 7018610921847236664, guid: e9a58510302918c479b59004c80acce9, type: 3}
       propertyPath: m_Name
       value: Slot2
@@ -3295,6 +3303,7 @@ GameObject:
   - component: {fileID: 1982683010}
   - component: {fileID: 1982683011}
   - component: {fileID: 1982683012}
+  - component: {fileID: 1982683013}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -3318,8 +3327,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   mapGenerator: {fileID: 1982683011}
-  inputHandler: {fileID: 11400000, guid: c0105867d9291e34db93531570fab20d, type: 2}
-  rangeDisplayer: {fileID: 1982683012}
+  inputHandler: {fileID: 1982683013}
   hexesSpawnedOnClient: 0
 --- !u!4 &1982683009
 Transform:
@@ -3393,6 +3401,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   map: {fileID: 1982683008}
+--- !u!114 &1982683013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982683007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efd320152585ca4a814133db0e6f87a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rangeDisplayer: {fileID: 1982683012}
 --- !u!1001 &7018610921401553608
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3409,6 +3430,10 @@ PrefabInstance:
       propertyPath: map
       value: 
       objectReference: {fileID: 1982683008}
+    - target: {fileID: 110651761229220715, guid: e9a58510302918c479b59004c80acce9, type: 3}
+      propertyPath: mapInputHandler
+      value: 
+      objectReference: {fileID: 1982683013}
     - target: {fileID: 7018610921847236664, guid: e9a58510302918c479b59004c80acce9, type: 3}
       propertyPath: m_Name
       value: Slot1

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-
-[CreateAssetMenu]
-public class MapInputHandler : ScriptableObject
+public class MapInputHandler : MonoBehaviour
 {
+    [SerializeField]
+    private MapRangeDisplayer rangeDisplayer;
+
     //to be used eventually...
     private PlayerCharacter playingCharacter;
     public Hex SelectedHex { get; set; }
@@ -22,7 +23,7 @@ public class MapInputHandler : ScriptableObject
     private Treasure currentTreasureStats;
 
     //used to reset all state
-    private void OnEnable()
+    private void Awake()
     {
         this.playingCharacter = null;
         this.SelectedHex = null;
@@ -73,10 +74,10 @@ public class MapInputHandler : ScriptableObject
                 Debug.Log("Trying to select hex while control mode is characterPlacement.");
                 break;
             case ControlMode.move:
-                Map.Singleton.rangeDisplayer.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
+                this.rangeDisplayer.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
                 break;
             case ControlMode.attack:
-                Map.Singleton.rangeDisplayer.DisplayAttackRange(h, heldCharacter.currentStats.range);
+                this.rangeDisplayer.DisplayAttackRange(h, heldCharacter.currentStats.range);
                 break;
             case ControlMode.useAbility:
                 Debug.Log("Trying to select hex while control mode is useAbility (currently unsupported).");
@@ -95,9 +96,9 @@ public class MapInputHandler : ScriptableObject
         }
         this.SelectedHex = null;
 
-        Map.Singleton.rangeDisplayer.HidePath();
-        Map.Singleton.rangeDisplayer.HideMovementRange();
-        Map.Singleton.rangeDisplayer.HideAttackRange();
+        this.rangeDisplayer.HidePath();
+        this.rangeDisplayer.HideMovementRange();
+        this.rangeDisplayer.HideAttackRange();
     }
 
     public void HoverHex(Hex hoveredHex)
@@ -117,11 +118,11 @@ public class MapInputHandler : ScriptableObject
                 //find path to hex if we have selected another hex
                 if (this.SelectedHex != null)
                 {
-                    Map.Singleton.rangeDisplayer.HidePath();
+                    this.rangeDisplayer.HidePath();
                     List<Hex> path = MapPathfinder.FindMovementPath(this.SelectedHex, hoveredHex, Map.Singleton.hexGrid);
                     if (path != null)
                     {
-                        Map.Singleton.rangeDisplayer.DisplayPath(path);
+                        this.rangeDisplayer.DisplayPath(path);
                     }
                 }
                 break;
@@ -148,7 +149,7 @@ public class MapInputHandler : ScriptableObject
                 break;
             case ControlMode.move:
                 unhoveredHex.drawer.MoveHover(false);
-                Map.Singleton.rangeDisplayer.HidePath();
+                this.rangeDisplayer.HidePath();
                 break;
             case ControlMode.attack:
                 unhoveredHex.drawer.AttackHover(false);

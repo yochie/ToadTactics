@@ -113,7 +113,8 @@ public class GameController : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        this.currentPhase = GamePhase.waitingForClient;
+        
+        this.SetPhase(GamePhase.waitingForClient);
         this.turnOrderIndex = -1;
         this.playerTurn = -1;
 

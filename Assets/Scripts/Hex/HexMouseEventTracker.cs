@@ -36,4 +36,9 @@ public class HexMouseEventTracker : MonoBehaviour, IPointerClickHandler
         this.inputHandler.ClickHex(master);
     }
     #endregion
+
+    private void Start()
+    {
+        this.inputHandler = Map.Singleton.GetComponent<MapInputHandler>();
+    }
 }

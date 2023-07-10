@@ -20,9 +20,6 @@ public class Map : NetworkBehaviour
 
     [SerializeField]
     private MapInputHandler inputHandler;
-
-    [SerializeField]
-    public MapRangeDisplayer rangeDisplayer;
     #endregion
 
     #region Synced vars
