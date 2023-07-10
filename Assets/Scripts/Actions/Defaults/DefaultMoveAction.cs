@@ -39,7 +39,7 @@ public class DefaultMoveAction : IMoveAction
         {
             GameController.Singleton.RpcGrayOutMoveButton(this.Sender);
             if (!ActorCharacter.hasAttacked)
-                Map.Singleton.RpcSetControlModeOnSingleClient(this.Sender, ControlMode.attack);
+                GameController.Singleton.RpcSetControlModeOnClient(this.Sender, ControlMode.attack);
         }
     }
 

@@ -30,7 +30,7 @@ public class ActionFactory : MonoBehaviour
         return moveAction;
     }
 
-
+    //For attacking characters
     public static IAttackAction CreateAttackAction(NetworkConnectionToClient sender,
                                                    int requestingPlayerID,
                                                    PlayerCharacter attackerCharacter,
@@ -59,6 +59,7 @@ public class ActionFactory : MonoBehaviour
         return attackAction;
     }
 
+    //For attacking obstacles
     public static IAttackAction CreateAttackAction(NetworkConnectionToClient sender, 
                                                int requestingPlayerID,
                                                PlayerCharacter attackerCharacter,

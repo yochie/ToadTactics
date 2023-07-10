@@ -25,44 +25,61 @@ public class DefaultAttackAction : IAttackAction
     public void ServerUse()
     {
 
-        //attacking obstacle
         if(this.TargetHex.holdsObstacle != ObstacleType.none && this.DefenderCharacter == null)
         {
-            Debug.Log("Destroy this tree!");
+            //attacking obstacle
             GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
             GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
             Object.Destroy(attackedTree);
-            TargetHex.holdsObstacle = ObstacleType.none;
-            return;
-        }
-
-        int prevLife = this.DefenderCharacter.CurrentLife();
-        for (int i = 0; i < this.AttackerStats.damageIterations; i++)
+            TargetHex.holdsObstacle = ObstacleType.none;            
+        } else 
         {
-            switch (this.AttackerStats.damageType)
+            //attacking character
+            int prevLife = this.DefenderCharacter.CurrentLife();
+            for (int i = 0; i < this.AttackerStats.damageIterations; i++)
             {
-                case DamageType.normal:
-                    this.DefenderCharacter.TakeRawDamage(this.AttackerStats.damage - this.DefenderStats.armor);
-                    break;
-                case DamageType.magic:
-                    this.DefenderCharacter.TakeRawDamage(this.AttackerStats.damage);
-                    break;
-                case DamageType.healing:
-                    this.DefenderCharacter.TakeRawDamage(-this.AttackerStats.damage);
-                    break;
+                switch (this.AttackerStats.damageType)
+                {
+                    case DamageType.normal:
+                        this.DefenderCharacter.TakeRawDamage(this.AttackerStats.damage - this.DefenderStats.armor);
+                        break;
+                    case DamageType.magic:
+                        this.DefenderCharacter.TakeRawDamage(this.AttackerStats.damage);
+                        break;
+                    case DamageType.healing:
+                        this.DefenderCharacter.TakeRawDamage(-this.AttackerStats.damage);
+                        break;
+                }
             }
+
+            Debug.LogFormat("{0} has attacked {1} for {2}x{3} leaving him with {4} => {5} life.",
+                            this.ActorCharacter,
+                            this.DefenderCharacter,
+                            this.AttackerStats.damage,
+                            this.AttackerStats.damageIterations,
+                            prevLife,
+                            this.DefenderCharacter.CurrentLife());
         }
 
         //PlayerCharacter state updated to track that attack was used
         this.ActorCharacter.UseAttack();
 
-        Debug.LogFormat("{0} has attacked {1} for {2}x{3} leaving him with {4} => {5} life.",
-                        this.ActorCharacter,
-                        this.DefenderCharacter,
-                        this.AttackerStats.damage,
-                        this.AttackerStats.damageIterations,
-                        prevLife,
-                        this.DefenderCharacter.CurrentLife());
+        GameController.Singleton.RpcGrayOutAttackButton(this.Sender);
+
+        if (this.ActorCharacter.CanMoveDistance() > 0)
+        {
+            GameController.Singleton.RpcSetControlModeOnClient(this.Sender, ControlMode.move);
+        }
+        else
+        {
+            GameController.Singleton.RpcGrayOutMoveButton(this.Sender);
+            GameController.Singleton.RpcSetControlModeOnClient(this.Sender, ControlMode.none);
+        }
+
+        if (!this.ActorCharacter.HasRemainingActions())
+        {
+            GameController.Singleton.NextTurn();
+        }
     }
 
     [Server]

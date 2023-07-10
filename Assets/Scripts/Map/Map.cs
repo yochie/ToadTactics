@@ -169,10 +169,7 @@ public class Map : NetworkBehaviour
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter movingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
 
-        bool moveSuccess = ActionExecutor.instance.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
-        if (!moveSuccess)
-            return;
-
+        ActionExecutor.instance.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
     }
 
 
@@ -189,34 +186,15 @@ public class Map : NetworkBehaviour
             targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
         }
 
-        bool attackSuccess;
+
         if (targetedCharacter != null)
         {
-            attackSuccess = ActionExecutor.instance.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
+            ActionExecutor.instance.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
 
-        } else
-        {
-            attackSuccess = ActionExecutor.instance.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
         }
-
-        if (!attackSuccess)
-            return;
-
-        GameController.Singleton.RpcGrayOutAttackButton(sender);
-
-        //prevent from move - attack - move       
-        if (attackingCharacter.CanMoveDistance() > 0)
+        else
         {
-            this.RpcSetControlModeOnSingleClient(sender, ControlMode.move);
-        } else
-        {            
-            GameController.Singleton.RpcGrayOutMoveButton(sender);
-            GameController.Singleton.RpcSetControlModeOnClient(sender, ControlMode.none);
-        }
-
-        if (!attackingCharacter.HasRemainingActions())
-        {
-            GameController.Singleton.NextTurn();
+            ActionExecutor.instance.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
         }
     }
 
@@ -324,12 +302,6 @@ public class Map : NetworkBehaviour
             if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
                 this.hexGrid[key] = identity.gameObject.GetComponent<Hex>();
         }
-    }
-
-    [TargetRpc]
-    public void RpcSetControlModeOnSingleClient(NetworkConnectionToClient target, ControlMode mode)
-    {
-        this.inputHandler.SetControlMode(mode);
     }
     #endregion
 
