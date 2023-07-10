@@ -6,8 +6,6 @@ using Mirror;
 using UnityEngine.UI;
 
 
-//RTODO: SetHighlight color moved here
-//RTODO: IsDraggable should be set in gamecontroller when turn is started during correct phase (maybe an event?)
 //RTODO: Character creation should be handled by playerController since he stores the PlayerCharacter thereafter. Means he should maybe be registerd here as observer of drag.
 public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
