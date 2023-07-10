@@ -13,23 +13,52 @@ public class ActionExecutor : NetworkBehaviour
     }
 
     [Server]
-    public bool TryAttackCharacter(int actingPlayerID, PlayerCharacter attackerCharacter, PlayerCharacter defenderCharacter, CharacterStats attackerStats, CharacterStats defenderStats, Hex attackerHex, Hex defenderHex)
+    public bool TryMove(NetworkConnectionToClient sender,
+                                   int actingPlayerID,
+                                   PlayerCharacter moverCharacter,                                   
+                                   CharacterStats moverStats,                                   
+                                   Hex moverHex,
+                                   Hex targetHex)
     {
-        IAction toTry = ActionFactory.CreateAttackAction(actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);
+        IAction toTry = ActionFactory.CreateMoveAction(sender, actingPlayerID, moverCharacter, moverStats, moverHex, targetHex);
         return this.UseAction(toTry);
     }
 
     [Server]
-    public bool TryAttackObstacle(int actingPlayerID, PlayerCharacter attackerCharacter, CharacterStats attackerStats, Hex attackerHex, Hex defenderHex)
+    public bool TryAttackCharacter(NetworkConnectionToClient sender,
+                                   int actingPlayerID,
+                                   PlayerCharacter attackerCharacter,
+                                   PlayerCharacter defenderCharacter,
+                                   CharacterStats attackerStats,
+                                   CharacterStats defenderStats,
+                                   Hex attackerHex,
+                                   Hex defenderHex)
     {
-        IAction toTry = ActionFactory.CreateAttackAction(actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
+        IAction toTry = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);
         return this.UseAction(toTry);
     }
 
     [Server]
-    public bool TryAbility(int actingPlayerID, PlayerCharacter actingCharacter, CharacterAbility ability, Hex source, Hex target)
+    public bool TryAttackObstacle(NetworkConnectionToClient sender,
+                                  int actingPlayerID,
+                                  PlayerCharacter attackerCharacter,
+                                  CharacterStats attackerStats,
+                                  Hex attackerHex,
+                                  Hex defenderHex)
     {
-        IAbilityAction toTry = ActionFactory.CreateAbilityAction(actingPlayerID, actingCharacter, ability, source, target);
+        IAction toTry = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
+        return this.UseAction(toTry);
+    }
+
+    [Server]
+    public bool TryAbility(NetworkConnectionToClient sender,
+                           int actingPlayerID,
+                           PlayerCharacter actingCharacter,
+                           CharacterAbility ability,
+                           Hex source,
+                           Hex target)
+    {
+        IAbilityAction toTry = ActionFactory.CreateAbilityAction(sender, actingPlayerID, actingCharacter, ability, source, target);
         return this.UseAction(toTry);
     }
 

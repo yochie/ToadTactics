@@ -11,6 +11,8 @@ public class DefaultAttackAction : IAttackAction
     public Hex ActorHex { get; set; }
     public int RequestingPlayerID { get; set; }
 
+    public NetworkConnectionToClient Sender { get; set; }
+
     //ITargetedAction
     public Hex TargetHex { get; set; }
 

@@ -8,6 +8,8 @@ public class CavalierImpaleAbility : NetworkBehaviour, IAbilityAction, ITargeted
 
     public Hex ActorHex { get; set; }
 
+    public NetworkConnectionToClient Sender { get; set; }
+
     public CharacterAbility Ability { get; set; }
 
     public Hex TargetHex { get; set; }

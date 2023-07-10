@@ -164,50 +164,17 @@ public class Map : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
-        //Validation, should be done already on client side but we double check in case something changed since
+        Debug.Log("Pikachu, move!");
+
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        if (!IsValidMoveForPlayer(playerID, source, dest))
-        {
-            Debug.Log("Client requested invalid move");
-            return;
-        }
+        PlayerCharacter movingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
 
-        //Validate path
-        PlayerCharacter toMove = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
-        List<Hex> path = MapPathfinder.FindMovementPath(source, dest, this.hexGrid);
-        if (path == null)
-        {
-            Debug.Log("Client requested move with no valid path to destination");
+        bool moveSuccess = ActionExecutor.instance.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
+        if (!moveSuccess)
             return;
-        }
-        int moveCost = MapPathfinder.PathCost(path);
-        if (moveCost > toMove.CanMoveDistance()) {
-            Debug.Log("Client requested move outside his current range");
-            return;
-        }
 
-        //move is valid, update relevant state
-        toMove.UseMoves(moveCost);
-        dest.holdsCharacterWithClassID = source.holdsCharacterWithClassID;
-        this.characterPositions[source.holdsCharacterWithClassID] = dest.coordinates;
-        source.ClearCharacter();
-
-        //actually moves character
-        this.RpcPlaceChar(toMove.gameObject, dest.transform.position);
-        this.RpcUpdateSelectedHex(sender, dest);
-        if (toMove.CanMoveDistance() == 0)
-        {
-            GameController.Singleton.RpcGrayOutMoveButton(sender);
-            if (!toMove.hasAttacked)
-                this.RpcSetControlMode(sender, ControlMode.attack);
-        }
     }
 
-    [TargetRpc]
-    private void RpcUpdateSelectedHex(NetworkConnectionToClient sender, Hex dest)
-    {
-        this.inputHandler.SelectHex(dest);
-    }
 
     [Command(requiresAuthority = false)]
     public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
@@ -225,11 +192,11 @@ public class Map : NetworkBehaviour
         bool attackSuccess;
         if (targetedCharacter != null)
         {
-            attackSuccess = ActionExecutor.instance.TryAttackCharacter(playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
+            attackSuccess = ActionExecutor.instance.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
 
         } else
         {
-            attackSuccess = ActionExecutor.instance.TryAttackObstacle(playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
+            attackSuccess = ActionExecutor.instance.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
         }
 
         if (!attackSuccess)
@@ -240,7 +207,7 @@ public class Map : NetworkBehaviour
         //prevent from move - attack - move       
         if (attackingCharacter.CanMoveDistance() > 0)
         {
-            this.RpcSetControlMode(sender, ControlMode.move);
+            this.RpcSetControlModeOnSingleClient(sender, ControlMode.move);
         } else
         {            
             GameController.Singleton.RpcGrayOutMoveButton(sender);
@@ -288,6 +255,13 @@ public class Map : NetworkBehaviour
     #endregion
 
     #region RPCs
+
+    [TargetRpc]
+    public void RpcUpdateSelectedHex(NetworkConnectionToClient target, Hex dest)
+    {
+        this.inputHandler.SelectHex(dest);
+    }
+
     //update client UI to prevent placing same character twice
     [TargetRpc]
     public void MarkCharacterSlotAsPlaced(NetworkConnectionToClient target, int classID)
@@ -353,7 +327,7 @@ public class Map : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void RpcSetControlMode(NetworkConnectionToClient target, ControlMode mode)
+    public void RpcSetControlModeOnSingleClient(NetworkConnectionToClient target, ControlMode mode)
     {
         this.inputHandler.SetControlMode(mode);
     }

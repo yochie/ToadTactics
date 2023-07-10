@@ -2,10 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Mirror;
 
 public class ActionFactory : MonoBehaviour
 {
-    public static IAttackAction CreateAttackAction(int requestingPlayerID,
+    public static IMoveAction CreateMoveAction(NetworkConnectionToClient sender,
+                                           int requestingPlayerID,
+                                           PlayerCharacter moverCharacter,
+                                           CharacterStats moverStats,
+                                           Hex moverHex,
+                                           Hex targetHex)
+    {
+        IMoveAction moveAction = new DefaultMoveAction();
+
+        //IAction
+        moveAction.RequestingPlayerID = requestingPlayerID;
+        moveAction.ActorCharacter = moverCharacter;
+        moveAction.ActorHex = moverHex;
+        moveAction.Sender = sender;
+
+        //ITargetedAction
+        moveAction.TargetHex = targetHex;
+
+        //IMoveAction
+        moveAction.MoverStats = moverStats;        
+
+        return moveAction;
+    }
+
+
+    public static IAttackAction CreateAttackAction(NetworkConnectionToClient sender,
+                                                   int requestingPlayerID,
                                                    PlayerCharacter attackerCharacter,
                                                    PlayerCharacter defenderCharacter,
                                                    CharacterStats attackerStats,
@@ -19,6 +46,7 @@ public class ActionFactory : MonoBehaviour
         attackAction.RequestingPlayerID = requestingPlayerID;
         attackAction.ActorCharacter = attackerCharacter;
         attackAction.ActorHex = attackerHex;
+        attackAction.Sender = sender;
 
         //ITargetedAction
         attackAction.TargetHex = defenderHex;
@@ -31,7 +59,8 @@ public class ActionFactory : MonoBehaviour
         return attackAction;
     }
 
-    public static IAttackAction CreateAttackAction(int requestingPlayerID,
+    public static IAttackAction CreateAttackAction(NetworkConnectionToClient sender, 
+                                               int requestingPlayerID,
                                                PlayerCharacter attackerCharacter,
                                                CharacterStats attackerStats,
                                                Hex attackerHex,
@@ -43,6 +72,8 @@ public class ActionFactory : MonoBehaviour
         attackAction.RequestingPlayerID = requestingPlayerID;
         attackAction.ActorCharacter = attackerCharacter;
         attackAction.ActorHex = attackerHex;
+        attackAction.Sender = sender;
+
 
         //ITargetedAction
         attackAction.TargetHex = defenderHex;
@@ -53,7 +84,8 @@ public class ActionFactory : MonoBehaviour
 
         return attackAction;
     }
-    public static IAbilityAction CreateAbilityAction(int requestingPlayerID, PlayerCharacter actingCharacter, CharacterAbility ability, Hex userHex, Hex targetHex)
+
+    public static IAbilityAction CreateAbilityAction(NetworkConnectionToClient sender, int requestingPlayerID, PlayerCharacter actingCharacter, CharacterAbility ability, Hex userHex, Hex targetHex)
     {
         IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(ability.abilityActionType);
 
@@ -61,6 +93,8 @@ public class ActionFactory : MonoBehaviour
         abilityAction.RequestingPlayerID = requestingPlayerID;
         abilityAction.ActorCharacter = actingCharacter;
         abilityAction.ActorHex = userHex;
+        abilityAction.Sender = sender;
+
 
         //IAbilityAction
         abilityAction.Ability = ability;
