@@ -44,6 +44,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
 
     [SyncVar]
     public bool hasBeenSpawnedOnClient;
+
     #endregion
 
     #region Startup
@@ -80,12 +81,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.inputHandler = this.GetComponent<HexMouseEventTracker>();
         this.inputHandler.Master = this;
 
-
-
         if (isClientOnly)
             this.CmdMarkAsSpawned();
     }
-
 
     [Command(requiresAuthority = false)]
     private void CmdMarkAsSpawned()
@@ -99,6 +97,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     {
         this.holdsCharacterWithClassID = -1;
     }
+
     public void Delete()
     {
         if (this.drawer != null)
@@ -108,6 +107,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
 
         Destroy(this.gameObject);
     }
+
     #endregion
 
     #region Utility
@@ -140,42 +140,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             return false;
     }
 
-    //only validates local data, other checks need to be performed for allowing actual move
-    public bool IsValidMoveDest()
-    {
-        if (this.holdsObstacle == ObstacleType.none &&
-            !this.HoldsACharacter())
-            return true;
-        else
-            return true;
-    }
-
-    public bool IsValidAttackTarget()
-    {
-        if (this.HoldsACharacter())
-            return true;
-        else
-            return false;
-    }
-
-    //only validates local data, other checks need to be performed for allowing actual move
-    public bool IsValidMoveSource()
-    {
-        if (this.HoldsACharacter())
-            return true;
-        else
-            return false;
-    }
-
-    public bool IsValidAttackSource()
-    {
-        if (this.HoldsACharacter())
-            return true;
-        else
-            return false;
-    }
-
-
     public int MoveCost()
     {
         switch (this.holdsHazard)
@@ -187,7 +151,5 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         }
     }
 
-
     #endregion
-
 }
