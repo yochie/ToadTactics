@@ -19,7 +19,7 @@ public class ActionFactory : MonoBehaviour
         moveAction.RequestingPlayerID = requestingPlayerID;
         moveAction.ActorCharacter = moverCharacter;
         moveAction.ActorHex = moverHex;
-        moveAction.Sender = sender;
+        moveAction.RequestingClient = sender;
 
         //ITargetedAction
         moveAction.TargetHex = targetHex;
@@ -46,7 +46,7 @@ public class ActionFactory : MonoBehaviour
         attackAction.RequestingPlayerID = requestingPlayerID;
         attackAction.ActorCharacter = attackerCharacter;
         attackAction.ActorHex = attackerHex;
-        attackAction.Sender = sender;
+        attackAction.RequestingClient = sender;
 
         //ITargetedAction
         attackAction.TargetHex = defenderHex;
@@ -73,7 +73,7 @@ public class ActionFactory : MonoBehaviour
         attackAction.RequestingPlayerID = requestingPlayerID;
         attackAction.ActorCharacter = attackerCharacter;
         attackAction.ActorHex = attackerHex;
-        attackAction.Sender = sender;
+        attackAction.RequestingClient = sender;
 
 
         //ITargetedAction
@@ -94,7 +94,7 @@ public class ActionFactory : MonoBehaviour
         abilityAction.RequestingPlayerID = requestingPlayerID;
         abilityAction.ActorCharacter = actingCharacter;
         abilityAction.ActorHex = userHex;
-        abilityAction.Sender = sender;
+        abilityAction.RequestingClient = sender;
 
 
         //IAbilityAction

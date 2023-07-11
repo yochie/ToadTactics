@@ -8,7 +8,7 @@ public interface IAction
 
     public Hex ActorHex { get; set; }
 
-    public NetworkConnectionToClient Sender { get; set; }
+    public NetworkConnectionToClient RequestingClient { get; set; }
 
     public abstract void ServerUse();
 

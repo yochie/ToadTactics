@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using Mirror;
 
-public class MapInputHandler : MonoBehaviour
+public class MapInputHandler : NetworkBehaviour
 {
     [SerializeField]
     private MapRangeDisplayer rangeDisplayer;
@@ -190,4 +190,11 @@ public class MapInputHandler : MonoBehaviour
         Hex toSelect = Map.GetHex(Map.Singleton.hexGrid, toSelectCoords.X, toSelectCoords.Y);
         this.SelectHex(toSelect);
     }
+
+    [TargetRpc]
+    public void RpcUpdateSelectedHex(NetworkConnectionToClient target, Hex dest)
+    {
+        this.SelectHex(dest);
+    }
+
 }

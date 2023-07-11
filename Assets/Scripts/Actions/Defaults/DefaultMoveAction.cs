@@ -9,8 +9,7 @@ public class DefaultMoveAction : IMoveAction
     public int RequestingPlayerID { get; set; }
     public PlayerCharacter ActorCharacter { get; set; }
     public Hex ActorHex { get; set; }
-
-    public NetworkConnectionToClient Sender { get; set; }
+    public NetworkConnectionToClient RequestingClient { get; set; }
 
     //ITargetedAction
     public Hex TargetHex { get; set; }
@@ -31,15 +30,15 @@ public class DefaultMoveAction : IMoveAction
         ActorCharacter.UseMoves(this.moveCost);
         this.TargetHex.holdsCharacterWithClassID = this.ActorHex.holdsCharacterWithClassID;
         Map.Singleton.characterPositions[this.ActorCharacter.charClassID] = this.TargetHex.coordinates;
-        Map.Singleton.RpcUpdateSelectedHex(this.Sender, this.TargetHex);
+        Map.Singleton.inputHandler.RpcUpdateSelectedHex(this.RequestingClient, this.TargetHex);
         this.ActorHex.ClearCharacter();
 
         //Update UI/Gamecontroller
         if (this.ActorCharacter.CanMoveDistance() == 0)
         {
-            GameController.Singleton.RpcGrayOutMoveButton(this.Sender);
+            GameController.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
             if (!ActorCharacter.hasAttacked)
-                GameController.Singleton.RpcSetControlModeOnClient(this.Sender, ControlMode.attack);
+                GameController.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.attack);
         }
     }
 

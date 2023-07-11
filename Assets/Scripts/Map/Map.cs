@@ -19,7 +19,7 @@ public class Map : NetworkBehaviour
     private MapGenerator mapGenerator;
 
     [SerializeField]
-    private MapInputHandler inputHandler;
+    public MapInputHandler inputHandler;
     #endregion
 
     #region Synced vars
@@ -75,12 +75,6 @@ public class Map : NetworkBehaviour
     #endregion
 
     #region RPCs
-
-    [TargetRpc]
-    public void RpcUpdateSelectedHex(NetworkConnectionToClient target, Hex dest)
-    {
-        this.inputHandler.SelectHex(dest);
-    }
 
     //callback for syncing hex grid dict netids
     [Client]
