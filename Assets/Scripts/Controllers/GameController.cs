@@ -215,52 +215,17 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    [Client]
-    private void SetInteractableGameplayButtons(bool state)
-    {
-        this.moveButton.GetComponent<Button>().interactable = state;
-        this.attackButton.GetComponent<Button>().interactable = state;
-        if (!state)
-        {
-            this.moveButton.GetComponent<Image>().color = Color.white;
-            this.attackButton.GetComponent<Image>().color = Color.white;
-        }
-    }
-
-    [Client]
-    private void SetActiveGameplayButtons(bool state)
-    {
-        this.moveButton.SetActive(state);
-        this.attackButton.SetActive(state);
-    }
-
-    [Client]
-    public void HighlightGameplayButton(ControlMode mode)
-    {
-        switch (mode)
-        {
-            case ControlMode.move:
-                this.moveButton.GetComponent<Image>().color = Color.green;
-                this.attackButton.GetComponent<Image>().color = Color.white;
-                break;
-            case ControlMode.attack:
-                this.moveButton.GetComponent<Image>().color = Color.white;
-                this.attackButton.GetComponent<Image>().color = Color.green;
-                break;                
-        }
-    }
     #endregion
 
     #region Events
-
-    #endregion
-
-    #region Rpcs
     [ClientRpc]
     private void RpcOnCharAddedToTurnOrder()
     {
         this.onCharAddedToTurnOrder.Raise();
     }
+    #endregion
+
+    #region Rpcs/UI
     [TargetRpc]
     public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
     {
@@ -306,6 +271,41 @@ public class GameController : NetworkBehaviour
     {
         this.inputHandler.SetControlMode(mode);
     }
+
+    [Client]
+    private void SetInteractableGameplayButtons(bool state)
+    {
+        this.moveButton.GetComponent<Button>().interactable = state;
+        this.attackButton.GetComponent<Button>().interactable = state;
+        if (!state)
+        {
+            this.moveButton.GetComponent<Image>().color = Color.white;
+            this.attackButton.GetComponent<Image>().color = Color.white;
+        }
+    }
+
+    [Client]
+    private void SetActiveGameplayButtons(bool state)
+    {
+        this.moveButton.SetActive(state);
+        this.attackButton.SetActive(state);
+    }
+
+    public void HighlightGameplayButton(ControlMode mode)
+    {
+        switch (mode)
+        {
+            case ControlMode.move:
+                this.moveButton.GetComponent<Image>().color = Color.green;
+                this.attackButton.GetComponent<Image>().color = Color.white;
+                break;
+            case ControlMode.attack:
+                this.moveButton.GetComponent<Image>().color = Color.white;
+                this.attackButton.GetComponent<Image>().color = Color.green;
+                break;
+        }
+    }
+
     #endregion
 
     #region Commands
@@ -466,7 +466,7 @@ public class GameController : NetworkBehaviour
         switch(newPhase)
         {
             case GamePhase.characterPlacement:
-                this.initCharacterPlacementMode();
+                this.InitCharacterPlacementMode();
                 break;
             case GamePhase.gameplay:
                 this.InitGameplayMode();
@@ -475,7 +475,7 @@ public class GameController : NetworkBehaviour
     }
     
     [Server]
-    private void initCharacterPlacementMode()
+    private void InitCharacterPlacementMode()
     {
         Debug.Log("Initializing character placement mode");
         this.playerTurn = 0;
@@ -518,20 +518,6 @@ public class GameController : NetworkBehaviour
 
     #region Utility
 
-        public bool CanIControlThisCharacter(int classID, int playerID = -1)
-    {
-        if (playerID == -1)
-        {
-            playerID = this.LocalPlayer.playerID;
-        }
-        if (this.IsItThisPlayersTurn(playerID) &&
-            this.IsItThisCharactersTurn(classID) &&
-            this.DoesHeOwnThisCharacter(playerID, classID))
-            return true;
-        else
-            return false;
-    }
-
     public GameObject GetCharPrefabWithClassID(int classID)
     {
         foreach (GameObject prefab in this.AllPlayerCharPrefabs)
@@ -556,18 +542,6 @@ public class GameController : NetworkBehaviour
     public bool IsItThisCharactersTurn(int classID)
     {
         return this.ClassIdForPlayingCharacter() == classID;
-    }
-
-    public bool DoIOwnThisCharacter(int classID)
-    {
-        if (this.characterOwners[classID] == this.LocalPlayer.playerID)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     public bool DoesHeOwnThisCharacter(int playerID, int classID)
