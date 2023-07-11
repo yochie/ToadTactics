@@ -1329,9 +1329,9 @@ MonoBehaviour:
   endTurnButton: {fileID: 1106533433}
   moveButton: {fileID: 1047991522}
   attackButton: {fileID: 445087650}
-  turnOrderSlotPrefab: {fileID: 1986404150757741544, guid: 58a805a353feeae47aa3d7b088821ad7, type: 3}
-  turnOrderBar: {fileID: 1755582584}
   inputHandler: {fileID: 1982683013}
+  onCharacterDraftedListener: {fileID: 0}
+  onCharAddedToTurnOrder: {fileID: 11400000, guid: a8be1d0769750c848abe6856ea2171ce, type: 2}
   AllPlayerCharPrefabs:
   - {fileID: 3539194687959195621, guid: 3c1b84d6c4d5b0c489f27c1935398e5e, type: 3}
   - {fileID: 199333712297459872, guid: 842dc21dd63a6ef42aa6871d2828655f, type: 3}
@@ -2594,8 +2594,10 @@ GameObject:
   - component: {fileID: 1755582587}
   - component: {fileID: 1755582586}
   - component: {fileID: 1755582589}
+  - component: {fileID: 1755582590}
+  - component: {fileID: 1755582591}
   m_Layer: 5
-  m_Name: TurnOrderBar
+  m_Name: TurnOrderHud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2697,6 +2699,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 1
   m_VerticalFit: 1
+--- !u!114 &1755582590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755582584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93c80f94fae48d34389fce616640a2d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterAddedToTurnOrderListener: {fileID: 1755582591}
+  turnOrderSlotPrefab: {fileID: 1986404150757741544, guid: 58a805a353feeae47aa3d7b088821ad7, type: 3}
+--- !u!114 &1755582591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755582584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcdfe653ddc233d4986f95bba225726e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: a8be1d0769750c848abe6856ea2171ce, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1755582590}
+        m_TargetAssemblyTypeName: TurnOrderHUD, Assembly-CSharp
+        m_MethodName: OnCharacterAddedToTurnOrder
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1889067058
 GameObject:
   m_ObjectHideFlags: 0
@@ -3190,4 +3234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8efd320152585ca4a814133db0e6f87a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   rangeDisplayer: {fileID: 1982683012}

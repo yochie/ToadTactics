@@ -29,10 +29,6 @@ public class CharacterSlotsHUD : MonoBehaviour
     private void Awake()
     {
         CharacterSlotsHUD.Singleton = this;
-    }
-
-    private void Start()
-    {
         this.characterPlacedListener.Response.AddListener(OnCharacterPlaced);
         this.characterDraftedListener.Response.AddListener(OnCharacterDrafted);
     }

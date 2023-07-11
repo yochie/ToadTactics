@@ -13,7 +13,6 @@ using System;
 public class GameController : NetworkBehaviour
 {
     #region Editor vars
-    //EDITOR
     [SerializeField]
     private TextMeshProUGUI phaseLabel;
 
@@ -27,13 +26,10 @@ public class GameController : NetworkBehaviour
     private GameObject attackButton;
 
     [SerializeField]
-    private GameObject turnOrderSlotPrefab;
-
-    [SerializeField]
-    private GameObject turnOrderBar;
-
-    [SerializeField]
     private MapInputHandler inputHandler;
+
+    [SerializeField]
+    private GameEventSO onCharAddedToTurnOrder;
 
     //Must be ordered in editor by classID
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
@@ -50,7 +46,6 @@ public class GameController : NetworkBehaviour
     //Maps classID to CharacterClass
     public Dictionary<int, CharacterClass> CharacterClassesByID { get; set; }
     public PlayerController LocalPlayer { get; set; }
-    private readonly List<TurnOrderSlotUI> turnOrderSlots = new();
 
     private bool waitingForClientSpawns;
 
@@ -103,10 +98,6 @@ public class GameController : NetworkBehaviour
         foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
             OnPlayerCharactersNetIDsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
-        sortedTurnOrder.Callback += OnTurnOrderChanged;
-        foreach (KeyValuePair<float, int> kvp in sortedTurnOrder)
-            OnTurnOrderChanged(SyncDictionary<float, int>.Operation.OP_ADD, kvp.Key, kvp.Value);
-
         this.CharacterClassesByID =  CharacterClass.DefineClasses();
     }
 
@@ -125,45 +116,6 @@ public class GameController : NetworkBehaviour
     #endregion
 
     #region Callbacks
-    //callback for turn order bar UI contents
-    [Client]
-    private void OnTurnOrderChanged(SyncIDictionary<float, int>.Operation op, float key, int value)
-    {
-        switch (op)
-        {
-            case SyncIDictionary<float, int>.Operation.OP_ADD:
-                // entry added
-                //Debug.LogFormat("Adding {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
-                GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.turnOrderBar.transform);
-                turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
-                this.UpdateTurnOrderSlotsUI();
-                break;
-
-            case SyncIDictionary<float, int>.Operation.OP_SET:
-                // entry changed
-                break;
-
-            case SyncIDictionary<float, int>.Operation.OP_REMOVE:
-                // entry removed
-                //Debug.LogFormat("Removing {0} with priority {1}", AllPlayerCharPrefabs[value].name, key);
-                foreach (TurnOrderSlotUI currentSlot in turnOrderSlots)
-                {
-                    if (currentSlot.holdsCharacterWithClassID == value)
-                    {
-                        //Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
-                        this.turnOrderSlots.Remove(currentSlot);
-                        Destroy(currentSlot.gameObject);
-                        break;
-                    }
-                }
-                this.UpdateTurnOrderSlotsUI();
-                break;
-
-            case SyncIDictionary<float, int>.Operation.OP_CLEAR:
-                // Dictionary was cleared
-                break;
-        }
-    }
 
     //callback turn order UI progression
     [Client]
@@ -176,7 +128,7 @@ public class GameController : NetworkBehaviour
 
         //highlights turnOrderSlotUI for currently playing character
         int i = 0;
-        foreach (TurnOrderSlotUI slot in turnOrderSlots)
+        foreach (TurnOrderSlotUI slot in TurnOrderHUD.Singleton.turnOrderSlots)
         {
             i++;
             if (slot.holdsCharacterWithClassID == newTurnCharacterId)
@@ -189,35 +141,6 @@ public class GameController : NetworkBehaviour
                 slot.UnhighlightAndLabel(i);
 
             }
-        }
-    }
-
-    //used to update UI from callbacks
-    [Client]
-    private void UpdateTurnOrderSlotsUI()
-    {
-        //Debug.Log("Updating turnOrderSlots");
-        int i = 0;
-        foreach (float initiative in this.sortedTurnOrder.Keys)
-        {
-            //stops joining clients from trying to fill slots that weren't created yet
-            if (i >= this.turnOrderSlots.Count) return;
-
-            TurnOrderSlotUI slot = this.turnOrderSlots[i];
-            Image slotImage = slot.GetComponent<Image>();
-            int classID = this.sortedTurnOrder[initiative];
-            slotImage.sprite = AllPlayerCharPrefabs[classID].GetComponent<SpriteRenderer>().sprite;
-            slot.holdsCharacterWithClassID = classID;
-
-            if (this.turnOrderIndex == i)
-            {
-                slot.HighlightAndLabel(i + 1);
-            }
-            else
-            {
-                slot.UnhighlightAndLabel(i + 1);
-            }
-            i++;
         }
     }
 
@@ -311,7 +234,6 @@ public class GameController : NetworkBehaviour
         this.attackButton.SetActive(state);
     }
 
-
     [Client]
     public void HighlightGameplayButton(ControlMode mode)
     {
@@ -329,7 +251,16 @@ public class GameController : NetworkBehaviour
     }
     #endregion
 
+    #region Events
+
+    #endregion
+
     #region Rpcs
+    [ClientRpc]
+    private void RpcOnCharAddedToTurnOrder()
+    {
+        this.onCharAddedToTurnOrder.Raise();
+    }
     [TargetRpc]
     public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
     {
@@ -390,6 +321,20 @@ public class GameController : NetworkBehaviour
         this.SetPhase(GamePhase.characterPlacement);
         this.playerTurn = 0;
         //this.RpcActivateEndTurnButton();
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdDraftCharacter(int draftedByPlayerID, int classID)
+    {
+        float initiative = this.CharacterClassesByID[classID].stats.initiative;
+        if (Utility.DictContainsValue(this.sortedTurnOrder, classID))
+        {
+            Debug.Log("Error : Character is already in turnOrder.");
+            return;
+        }
+        this.characterOwners.Add(classID, draftedByPlayerID);
+        this.sortedTurnOrder.Add(initiative, classID);
+        this.RpcOnCharAddedToTurnOrder();
     }
 
     [Server]
@@ -569,29 +514,11 @@ public class GameController : NetworkBehaviour
         this.SetControlModeOnClientsForTurn(this.playerTurn);
         this.RpcActivateGameplayButtons();
     }
-
-    [Command(requiresAuthority = false)]
-    public void CmdAddCharToTurnOrder(int ownerPlayerIndex, float initiative, int classID)
-    {
-        if (Utility.DictContainsValue(GameController.Singleton.sortedTurnOrder, classID))
-        {
-            //Todo add support for this
-            Debug.Log("Character is already in turnOrder, use CmdUpdateTurnOrder instead.");
-            return;
-        }
-
-        //todo: move to draft phase
-        this.characterOwners.Add(classID, ownerPlayerIndex);
-
-        //throws callback to update UI
-        this.sortedTurnOrder.Add(initiative, classID);
-    }
-
     #endregion
 
     #region Utility
 
-    public bool CanIControlThisCharacter(int classID, int playerID = -1)
+        public bool CanIControlThisCharacter(int classID, int playerID = -1)
     {
         if (playerID == -1)
         {
@@ -735,13 +662,6 @@ public class GameController : NetworkBehaviour
     //used for testing functionnalities without waiting for client setup
     public void TestButton()
     {
-        //testing
-        //Hex target = Map.Singleton.GetHex(2, 1);
-        //target.AttackHover(true);
-        //bool result = Map.Singleton.LOSReaches(Map.Singleton.GetHex(0, 0), target, 10);
-        //Debug.Log(result);
 
     }
-
-
 }

@@ -43,15 +43,6 @@ public class PlayerController : NetworkBehaviour
         {
             this.playerID = 0;
         }
-
-        //onCharacterPlaced.AddListener(CharacterSlotsHUD.Singleton.OnCharacterPlaced);
-        //onCharacterDrafted.AddListener(CharacterSlotsHUD.Singleton.OnCharacterDrafted);
-    }
-
-    public override void OnStopClient()
-    {
-        base.OnStopClient();
-
     }
 
     public override void OnStartLocalPlayer()
@@ -59,12 +50,6 @@ public class PlayerController : NetworkBehaviour
         base.OnStartLocalPlayer();
 
         GameController.Singleton.LocalPlayer = this;
-    }
-
-    public override void OnStopLocalPlayer()
-    {
-        base.OnStopLocalPlayer();
-
     }
 
     public override void OnStartServer()
@@ -83,7 +68,7 @@ public class PlayerController : NetworkBehaviour
 
     #region Commands
 
-    [Command(requiresAuthority = false)]
+    [Server]
     public void FakeDraft()
     {
         //for now just choose random chars
@@ -95,6 +80,7 @@ public class PlayerController : NetworkBehaviour
         {
             usedClasses.Add(classID);
         }
+        Debug.LogFormat("usedClasses counts {0}", usedClasses.Count);
         for (int i = 0; i < GameController.Singleton.defaultNumCharsPerPlayer; i++)
         {
             int classID;
@@ -107,13 +93,18 @@ public class PlayerController : NetworkBehaviour
             while (usedClasses.Contains(classID));
             usedClasses.Add(classID);
 
-            CharacterClass newCharClass = GameController.Singleton.CharacterClassesByID[classID];
-
-            this.RpcOnCharacterDrafted(this.playerID, classID);
-
-            //TODO: handle using above event
-            GameController.Singleton.CmdAddCharToTurnOrder(this.playerID, newCharClass.stats.initiative, classID);
+            this.DraftCharacter(classID);
         }
+    }
+
+    [Server]
+    public void DraftCharacter(int classID)
+    {
+        //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
+        GameController.Singleton.CmdDraftCharacter(this.playerID, classID);
+
+        //updates UI elements
+        this.RpcOnCharacterDrafted(this.playerID, classID);
     }
 
     [Command(requiresAuthority = false)]
