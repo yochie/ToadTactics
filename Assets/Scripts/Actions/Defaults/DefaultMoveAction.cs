@@ -25,7 +25,7 @@ public class DefaultMoveAction : IMoveAction
     {
 
         //actually moves character
-        Map.Singleton.RpcPlaceChar(this.ActorCharacter.gameObject, this.TargetHex.transform.position);
+        this.ActorCharacter.RpcPlaceChar(this.TargetHex.transform.position);
 
         //update state
         ActorCharacter.UseMoves(this.moveCost);

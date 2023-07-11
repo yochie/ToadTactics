@@ -125,5 +125,13 @@ public class PlayerCharacter : NetworkBehaviour
     public void TakeRawDamage(int dmgAmount)
     {
         this.currentLife = Mathf.Clamp(currentLife - dmgAmount, 0, this.currentStats.maxHealth);        
-    }    
+    }
+
+    //update position on all clients
+    [ClientRpc]
+    public void RpcPlaceChar(Vector3 position)
+    {
+        this.transform.position = position;
+    }
+
 }

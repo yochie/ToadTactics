@@ -38,10 +38,7 @@ public class GameController : NetworkBehaviour
     //Must be ordered in editor by classID
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
 
-    //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
-    //todo : move to PlayerController
-    public List<CharacterSlotUI> characterSlots = new();
-
+    public uint defaultNumCharsPerPlayer = 3;
 
     #endregion
 
@@ -56,6 +53,9 @@ public class GameController : NetworkBehaviour
     private readonly List<TurnOrderSlotUI> turnOrderSlots = new();
 
     private bool waitingForClientSpawns;
+
+    //Only filled on server
+    public List<PlayerController> playerControllers = new();
     #endregion
 
     #region Synced vars
@@ -262,22 +262,11 @@ public class GameController : NetworkBehaviour
         switch (op)
         {
             case SyncDictionary<int, uint>.Operation.OP_ADD:
-                // entry added
-                //Debug.Log("Callback for character being added to Gamecontroller main list has been called.");
-                //Debug.LogFormat("Adding character with key {0}", key);
                 this.playerCharacters[key] = null;
-
                 if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
-                {
-                    //Debug.LogFormat("Actually adding character with key {0}", key);
                     this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
-                }
                 else
-                {
-                    //Debug.LogFormat("Couldnt find character with key {0}, calling coroutine", key);
-
                     StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
-                }
                 break;
             case SyncDictionary<int, uint>.Operation.OP_SET:
                 // entry changed
@@ -299,11 +288,7 @@ public class GameController : NetworkBehaviour
         {
             yield return null;
             if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
-            {
-                //Debug.LogFormat("Actually adding character with key {0} from coroutine", key);
-
                 this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
-            }
         }
     }
 
@@ -397,7 +382,11 @@ public class GameController : NetworkBehaviour
     //ACTUAL GAME START once everything is ready on client
     [Command(requiresAuthority = false)]
     private void CmdStartPlaying()
-    {        
+    {
+        foreach(PlayerController player in this.playerControllers)
+        {
+            player.FakeDraft();
+        }
         this.SetPhase(GamePhase.characterPlacement);
         this.playerTurn = 0;
         //this.RpcActivateEndTurnButton();

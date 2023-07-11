@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Mirror;
 using UnityEngine.UI;
+using System;
 
 
 //RTODO: Character creation should be handled by playerController since he stores the PlayerCharacter thereafter. Means he should maybe be registerd here as observer of drag.
 public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField]
     private MapInputHandler mapInputHandler;
 
     private Vector3 dragStartPosition;
@@ -38,34 +38,6 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
-    public bool IsDraggable() { 
-        bool toReturn = false;
-        switch (GameController.Singleton.currentPhase)
-        {
-            case GamePhase.characterPlacement:
-                if (GameController.Singleton.IsItMyTurn() &&
-                    !this.HasBeenPlacedOnBoard)
-                {
-                    toReturn = true;
-                } else
-                {
-                    toReturn = false;
-                }
-                break;
-            case GamePhase.gameplay:
-                toReturn = false;
-                break;
-            case GamePhase.draft:
-                break;
-            case GamePhase.treasureDraft:
-                break;
-            case GamePhase.treasureEquip:
-                break;
-        }
-        return toReturn;
-    }
-
-
     public void Awake()
     {
         foreach (Image child in this.GetComponentsInChildren<Image>())
@@ -88,6 +60,11 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             this.transform.position = eventData.position;
     }
 
+    internal void SetInputHandler(MapInputHandler inputHandler)
+    {
+        this.mapInputHandler = inputHandler;
+    }
+
     public void OnEndDrag(PointerEventData eventData)
     {
         if (this.IsDraggable())
@@ -95,7 +72,37 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             this.transform.position = this.dragStartPosition;
             Hex destinationHex = this.mapInputHandler.HoveredHex;
             if (destinationHex == null) { return; }
-            Map.Singleton.CmdCreateCharOnBoard(this.HoldsCharacterWithClassID, destinationHex);
+            GameController.Singleton.LocalPlayer.CmdCreateCharOnBoard(this.HoldsCharacterWithClassID, destinationHex);
         }
     }
+
+    public bool IsDraggable()
+    {
+        bool toReturn = false;
+        switch (GameController.Singleton.currentPhase)
+        {
+            case GamePhase.characterPlacement:
+                if (GameController.Singleton.IsItMyTurn() &&
+                    !this.HasBeenPlacedOnBoard)
+                {
+                    toReturn = true;
+                }
+                else
+                {
+                    toReturn = false;
+                }
+                break;
+            case GamePhase.gameplay:
+                toReturn = false;
+                break;
+            case GamePhase.draft:
+                break;
+            case GamePhase.treasureDraft:
+                break;
+            case GamePhase.treasureEquip:
+                break;
+        }
+        return toReturn;
+    }
+
 }

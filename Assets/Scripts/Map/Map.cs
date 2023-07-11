@@ -72,38 +72,6 @@ public class Map : NetworkBehaviour
 
     #region Commands
 
-    [Command(requiresAuthority = false)]
-    public void CmdCreateCharOnBoard(int characterClassID, Hex destinationHex, NetworkConnectionToClient sender = null)
-    {
-        int ownerPlayerIndex = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        //validate destination
-        if (destinationHex == null ||
-            !destinationHex.isStartingZone ||
-            destinationHex.startZoneForPlayerIndex != ownerPlayerIndex ||
-            destinationHex.holdsCharacterWithClassID != -1)
-        {
-            Debug.Log("Invalid character destination");
-            return;
-        }
-
-        GameObject characterPrefab = GameController.Singleton.GetCharPrefabWithClassID(characterClassID);
-        Vector3 destinationWorldPos = destinationHex.transform.position;
-        GameObject newChar =
-            Instantiate(characterPrefab, destinationWorldPos, Quaternion.identity);
-        newChar.GetComponent<PlayerCharacter>().SetOwner(ownerPlayerIndex);
-        NetworkServer.Spawn(newChar, connectionToClient);
-        GameController.Singleton.playerCharactersNetIDs.Add(characterClassID, newChar.GetComponent<NetworkIdentity>().netId);
-
-        //update Hex state, synced to clients by syncvar
-        destinationHex.holdsCharacterWithClassID = characterClassID;
-
-        Map.Singleton.RpcPlaceChar(newChar, destinationWorldPos);
-        this.MarkCharacterSlotAsPlaced(sender, characterClassID);
-
-        this.characterPositions[characterClassID] = destinationHex.coordinates;
-
-        GameController.Singleton.NextTurn();
-    }
     #endregion
 
     #region RPCs
@@ -112,26 +80,6 @@ public class Map : NetworkBehaviour
     public void RpcUpdateSelectedHex(NetworkConnectionToClient target, Hex dest)
     {
         this.inputHandler.SelectHex(dest);
-    }
-
-    //update client UI to prevent placing same character twice
-    [TargetRpc]
-    public void MarkCharacterSlotAsPlaced(NetworkConnectionToClient target, int classID)
-    {
-        foreach (CharacterSlotUI slot in GameController.Singleton.characterSlots)
-        {
-            if (slot.HoldsCharacterWithClassID == classID)
-            {
-                slot.HasBeenPlacedOnBoard = true;
-            }
-        }
-    }
-
-    //update all clients UI to display character
-    [ClientRpc]
-    public void RpcPlaceChar(GameObject character, Vector3 position)
-    {
-        character.transform.position = position;
     }
 
     //callback for syncing hex grid dict netids

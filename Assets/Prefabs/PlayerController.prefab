@@ -65,3 +65,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  playerID: 0
+  onCharacterPlaced: {fileID: 11400000, guid: 90c6609506ffa2c47a76a22c3f64360b, type: 2}
+  onCharacterDrafted: {fileID: 11400000, guid: 95970226cb210e04091fc105eb0a841e, type: 2}
