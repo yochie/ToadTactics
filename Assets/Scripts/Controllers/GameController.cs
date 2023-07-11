@@ -370,13 +370,13 @@ public class GameController : NetworkBehaviour
             this.SwapPlayerTurn();
         }
         
-        this.SetControlModeOnClientsForTurn(this.playerTurn);
+        this.SetControlModeOnClientsForNewTurn(this.playerTurn);
        
         this.RpcResetInteractableGameplayButtons();
     }
 
     [Server]
-    private void SetControlModeOnClientsForTurn(int playerTurn)
+    private void SetControlModeOnClientsForNewTurn(int playerTurn)
     {
         List<NetworkConnectionToClient> connections = new();
         NetworkServer.connections.Values.CopyTo(connections);
@@ -511,7 +511,7 @@ public class GameController : NetworkBehaviour
             this.SwapPlayerTurn();
         }
 
-        this.SetControlModeOnClientsForTurn(this.playerTurn);
+        this.SetControlModeOnClientsForNewTurn(this.playerTurn);
         this.RpcActivateGameplayButtons();
     }
     #endregion
