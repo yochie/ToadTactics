@@ -11,6 +11,9 @@ public class TurnOrderHUD : MonoBehaviour
     private GameEventSOListener characterAddedToTurnOrderListener;
 
     [SerializeField]
+    private IntGameEventSOListener turnOrderChangedListener;
+
+    [SerializeField]
     private GameObject turnOrderSlotPrefab;
 
     #endregion
@@ -23,16 +26,29 @@ public class TurnOrderHUD : MonoBehaviour
     private void Awake()
     {
         TurnOrderHUD.Singleton = this;
+
+        this.turnOrderChangedListener.Response.AddListener(OnTurnOrderIndexChanged);
     }
 
     #region Events
+
+    private void OnTurnOrderIndexChanged(int newTurnIndex)
+    {
+        //Debug.Log("OnCharacterTurnChanged");
+
+        //finds class ID for character whose turn it is
+        int newTurnCharacterId = GameController.Singleton.ClassIdForTurn(newTurnIndex);
+
+        //highlights turnOrderSlotUI for currently playing character
+        this.highlightSlot(newTurnCharacterId);
+    }
 
     public void OnCharacterAddedToTurnOrder()
     {
         Debug.Log("Adding character to turn order.");
         GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.transform);
         turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
-        this.UpdateTurnOrderSlotsUI();
+        this.ResetTurnOrderSlots();
     }
 
     //TODO : hookup with event once we have this happening (ie clones)
@@ -48,14 +64,14 @@ public class TurnOrderHUD : MonoBehaviour
                 break;
             }
         }
-        this.UpdateTurnOrderSlotsUI();
+        this.ResetTurnOrderSlots();
     }
 
     #endregion
 
     #region Utility
     //fills all slots with appopriate sprite and classID from sortedTurnOrder
-    private void UpdateTurnOrderSlotsUI()
+    private void ResetTurnOrderSlots()
     {
         //Debug.Log("Updating turnOrderSlots");
         int i = 0;
@@ -79,6 +95,25 @@ public class TurnOrderHUD : MonoBehaviour
                 slot.UnhighlightAndLabel(i + 1);
             }
             i++;
+        }
+    }
+
+    private void highlightSlot(int classID)
+    {
+        int i = 0;
+        foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
+        {
+            i++;
+            if (slot.holdsCharacterWithClassID == classID)
+            {
+                //Debug.Log("Highlighting slot");
+                slot.HighlightAndLabel(i);
+            }
+            else
+            {
+                slot.UnhighlightAndLabel(i);
+
+            }
         }
     }
     #endregion

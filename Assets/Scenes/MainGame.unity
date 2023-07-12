@@ -1330,8 +1330,8 @@ MonoBehaviour:
   moveButton: {fileID: 1047991522}
   attackButton: {fileID: 445087650}
   inputHandler: {fileID: 1982683013}
-  onCharacterDraftedListener: {fileID: 0}
   onCharAddedToTurnOrder: {fileID: 11400000, guid: a8be1d0769750c848abe6856ea2171ce, type: 2}
+  onTurnOrderIndexChanged: {fileID: 11400000, guid: 50fde46ae2412d44b9c0286f9878cf78, type: 2}
   AllPlayerCharPrefabs:
   - {fileID: 3539194687959195621, guid: 3c1b84d6c4d5b0c489f27c1935398e5e, type: 3}
   - {fileID: 199333712297459872, guid: 842dc21dd63a6ef42aa6871d2828655f, type: 3}
@@ -2596,6 +2596,7 @@ GameObject:
   - component: {fileID: 1755582589}
   - component: {fileID: 1755582590}
   - component: {fileID: 1755582591}
+  - component: {fileID: 1755582592}
   m_Layer: 5
   m_Name: TurnOrderHud
   m_TagString: Untagged
@@ -2712,6 +2713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterAddedToTurnOrderListener: {fileID: 1755582591}
+  turnOrderChangedListener: {fileID: 1755582592}
   turnOrderSlotPrefab: {fileID: 1986404150757741544, guid: 58a805a353feeae47aa3d7b088821ad7, type: 3}
 --- !u!114 &1755582591
 MonoBehaviour:
@@ -2741,6 +2743,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1755582592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755582584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca3c739417bcc0a4ab5e6853da8f87e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 50fde46ae2412d44b9c0286f9878cf78, type: 2}
 --- !u!1 &1889067058
 GameObject:
   m_ObjectHideFlags: 0

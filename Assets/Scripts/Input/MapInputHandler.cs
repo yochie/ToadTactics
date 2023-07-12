@@ -186,7 +186,7 @@ public class MapInputHandler : NetworkBehaviour
 
     private void updateSelectedHex()
     {
-        HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.ClassIdForPlayingCharacter()];
+        HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.ClassIdForTurn()];
         Hex toSelect = Map.GetHex(Map.Singleton.hexGrid, toSelectCoords.X, toSelectCoords.Y);
         this.SelectHex(toSelect);
     }

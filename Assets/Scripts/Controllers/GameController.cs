@@ -31,6 +31,9 @@ public class GameController : NetworkBehaviour
     [SerializeField]
     private GameEventSO onCharAddedToTurnOrder;
 
+    [SerializeField]
+    private IntGameEventSO onTurnOrderIndexChanged;
+
     //Must be ordered in editor by classID
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
 
@@ -121,27 +124,8 @@ public class GameController : NetworkBehaviour
     [Client]
     private void OnTurnOrderIndexChanged(int prevTurnIndex, int newTurnIndex)
     {
-        //Debug.Log("OnCharacterTurnChanged");
+        this.onTurnOrderIndexChanged.Raise(newTurnIndex);
 
-        //finds prefab ID for character whose turn it is
-        int newTurnCharacterId = this.ClassIdForPlayingCharacter();
-
-        //highlights turnOrderSlotUI for currently playing character
-        int i = 0;
-        foreach (TurnOrderSlotUI slot in TurnOrderHUD.Singleton.turnOrderSlots)
-        {
-            i++;
-            if (slot.holdsCharacterWithClassID == newTurnCharacterId)
-            {
-                //Debug.Log("Highlighting slot");
-                slot.HighlightAndLabel(i);
-            }
-            else
-            {
-                slot.UnhighlightAndLabel(i);
-
-            }
-        }
     }
 
     //callback for player turn UI (end turn button)
@@ -541,7 +525,7 @@ public class GameController : NetworkBehaviour
 
     public bool IsItThisCharactersTurn(int classID)
     {
-        return this.ClassIdForPlayingCharacter() == classID;
+        return this.ClassIdForTurn() == classID;
     }
 
     public bool DoesHeOwnThisCharacter(int playerID, int classID)
@@ -585,10 +569,10 @@ public class GameController : NetworkBehaviour
     }
     
     //return -1 if no character matches turn order index
-    public int ClassIdForPlayingCharacter(int playingCharacterIndex = -1)
+    public int ClassIdForTurn(int turnOrderIndex = -1)
     {
         //finds prefab ID for character whose turn it is
-        int currentTurnOrderIndex = (playingCharacterIndex == -1 ? this.turnOrderIndex : playingCharacterIndex);
+        int currentTurnOrderIndex = (turnOrderIndex == -1 ? this.turnOrderIndex : turnOrderIndex);
         int sortedTurnOrderIndex = 0;
         foreach (int classID in this.sortedTurnOrder.Values)
         {
