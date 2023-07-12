@@ -66,11 +66,11 @@ public class GameController : NetworkBehaviour
     //maps character initiative to classID
     public readonly SyncIDictionary<float, int> sortedTurnOrder = new SyncIDictionary<float, int>(new SortedList<float, int>());
 
-    //stores index of currently playing character during gameplay phase
+    //index of currently playing character during gameplay phase
     [SyncVar(hook = nameof(OnTurnOrderIndexChanged))]
     public int turnOrderIndex;
 
-    //stores currently playerID
+    //currently playing playerID
     [SyncVar(hook = nameof(OnPlayerTurnChanged))]
     public int playerTurn;
 
