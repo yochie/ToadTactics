@@ -6,7 +6,6 @@ using Mirror;
 using TMPro;
 using System;
 
-
 //RTODO: review game progression mechanic
 //RTODO: Utility functions should be moved to class that holds relevant data so that gamecontroller is no longer abused as global storage, perhaps CharacterDataSO scriptable obj should serve as global data when actually required
 public class GameController : NetworkBehaviour
@@ -118,25 +117,7 @@ public class GameController : NetworkBehaviour
     #endregion
 
     #region Callbacks
-
-    //callback for player turn UI (end turn button)
-    [Client]
-    private void OnPlayerTurnChanged(int _, int newPlayerID)
-    {
-        if (newPlayerID == -1)
-            //we havent started game yet
-            return;
-
-        if (newPlayerID == this.LocalPlayer.playerID)
-        {
-            this.onLocalPlayerTurnStart.Raise();
-        }
-        else
-        {
-            this.onLocalPlayerTurnEnd.Raise();
-        }
-    }
-
+    //TODO : delete or move to mainhud
     //callback for gamemode UI
     [Client]
     private void OnGamePhaseChanged(GamePhase oldPhase, GamePhase newPhase)
@@ -202,6 +183,24 @@ public class GameController : NetworkBehaviour
     private void RpcOnInitGameplayMode()
     {
         this.onInitGameplayMode.Raise();
+    }
+
+    //called on on all clients by syncvar hook
+    [Client]
+    private void OnPlayerTurnChanged(int _, int newPlayerID)
+    {
+        if (newPlayerID == -1)
+            //we havent started game yet
+            return;
+
+        if (newPlayerID == this.LocalPlayer.playerID)
+        {
+            this.onLocalPlayerTurnStart.Raise();
+        }
+        else
+        {
+            this.onLocalPlayerTurnEnd.Raise();
+        }
     }
     #endregion
 
@@ -532,7 +531,7 @@ public class GameController : NetworkBehaviour
 
     private void Update()
     {
-        if (isServer && this.waitingForClientSpawns)
+        if (this.waitingForClientSpawns && isServer)
         {
 
             if (NetworkManager.singleton.numPlayers == 2 && Map.Singleton.hexesSpawnedOnClient)
