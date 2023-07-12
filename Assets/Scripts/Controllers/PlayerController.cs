@@ -80,7 +80,7 @@ public class PlayerController : NetworkBehaviour
         {
             usedClasses.Add(classID);
         }
-        Debug.LogFormat("usedClasses counts {0}", usedClasses.Count);
+        //Debug.LogFormat("usedClasses counts {0}", usedClasses.Count);
         for (int i = 0; i < GameController.Singleton.defaultNumCharsPerPlayer; i++)
         {
             int classID;

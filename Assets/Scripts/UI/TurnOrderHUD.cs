@@ -45,7 +45,7 @@ public class TurnOrderHUD : MonoBehaviour
 
     public void OnCharacterAddedToTurnOrder()
     {
-        Debug.Log("Adding character to turn order.");
+        //Debug.Log("Adding character to turn order.");
         GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.transform);
         turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
         this.ResetTurnOrderSlots();

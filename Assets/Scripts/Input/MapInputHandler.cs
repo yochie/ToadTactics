@@ -171,10 +171,10 @@ public class MapInputHandler : NetworkBehaviour
 
     public void SetControlMode(ControlMode mode)
     {
-        GameController.Singleton.HighlightGameplayButton(mode);
+        MainHUD.Singleton.HighlightGameplayButton(mode);
         this.UnselectHex();
         this.CurrentControlMode = mode;
-        if (GameController.Singleton.IsItMyTurn() &&
+        if (GameController.Singleton.ItsMyTurn() &&
             (mode == ControlMode.move
             || mode == ControlMode.attack
             || mode == ControlMode.useAbility

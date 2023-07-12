@@ -82,7 +82,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         switch (GameController.Singleton.currentPhase)
         {
             case GamePhase.characterPlacement:
-                if (GameController.Singleton.IsItMyTurn() &&
+                if (GameController.Singleton.ItsMyTurn() &&
                     !this.HasBeenPlacedOnBoard)
                 {
                     toReturn = true;

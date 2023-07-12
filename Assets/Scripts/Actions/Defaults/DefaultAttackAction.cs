@@ -64,7 +64,7 @@ public class DefaultAttackAction : IAttackAction
         //PlayerCharacter state updated to track that attack was used
         this.ActorCharacter.UseAttack();
 
-        GameController.Singleton.RpcGrayOutAttackButton(this.RequestingClient);
+        MainHUD.Singleton.RpcGrayOutAttackButton(this.RequestingClient);
 
         if (this.ActorCharacter.CanMoveDistance() > 0)
         {
@@ -72,7 +72,7 @@ public class DefaultAttackAction : IAttackAction
         }
         else
         {
-            GameController.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
+            MainHUD.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
             GameController.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.none);
         }
 
@@ -94,8 +94,8 @@ public class DefaultAttackAction : IAttackAction
             MapPathfinder.LOSReaches(this.ActorHex, this.TargetHex, this.AttackerStats.range) &&
             !this.ActorCharacter.hasAttacked &&
             this.RequestingPlayerID == this.ActorCharacter.ownerID &&
-            GameController.Singleton.IsItThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.IsItThisCharactersTurn(this.ActorCharacter.charClassID) &&
+            GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
+            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
             ActionExecutor.IsValidTargetType(this.ActorCharacter, this.TargetHex, this.AttackerStats.allowedAttackTargets)
             )
             return true;

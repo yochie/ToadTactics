@@ -7,23 +7,11 @@ using TMPro;
 using System;
 
 
-//RTODO: Split UI out, all current UI callbacks should only trigger an event that is listened to by actual UI classes
-//RTODO: review game progression mechanic, consider using events on phase/turn changes to setup UI elements (make buttons clickable, hexes draggable, etc) without depending on them
+//RTODO: review game progression mechanic
 //RTODO: Utility functions should be moved to class that holds relevant data so that gamecontroller is no longer abused as global storage, perhaps CharacterDataSO scriptable obj should serve as global data when actually required
 public class GameController : NetworkBehaviour
 {
     #region Editor vars
-    [SerializeField]
-    private TextMeshProUGUI phaseLabel;
-
-    [SerializeField]
-    private GameObject endTurnButton;
-
-    [SerializeField]
-    private GameObject moveButton;
-
-    [SerializeField]
-    private GameObject attackButton;
 
     [SerializeField]
     private MapInputHandler inputHandler;
@@ -34,6 +22,15 @@ public class GameController : NetworkBehaviour
     [SerializeField]
     private IntGameEventSO onTurnOrderIndexChanged;
 
+    [SerializeField]
+    private GameEventSO onLocalPlayerTurnStart;
+
+    [SerializeField]
+    private GameEventSO onLocalPlayerTurnEnd;
+
+    [SerializeField]
+    private GameEventSO onInitGameplayMode;
+
     //Must be ordered in editor by classID
     public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
 
@@ -41,19 +38,21 @@ public class GameController : NetworkBehaviour
 
     #endregion
 
-    #region Static vars
-    public static GameController Singleton { get; private set; }
-    #endregion
-
     #region Runtime vars
-    //Maps classID to CharacterClass
-    public Dictionary<int, CharacterClass> CharacterClassesByID { get; set; }
-    public PlayerController LocalPlayer { get; set; }
+
+    public static GameController Singleton { get; private set; }
 
     private bool waitingForClientSpawns;
 
+    public PlayerController LocalPlayer { get; set; }
+
     //Only filled on server
     public List<PlayerController> playerControllers = new();
+
+    //TODO : move to SO
+    //Maps classID to CharacterClass
+    public Dictionary<int, CharacterClass> CharacterClassesByID { get; set; }
+
     #endregion
 
     #region Synced vars
@@ -120,38 +119,21 @@ public class GameController : NetworkBehaviour
 
     #region Callbacks
 
-    //callback turn order UI progression
-    [Client]
-    private void OnTurnOrderIndexChanged(int prevTurnIndex, int newTurnIndex)
-    {
-        this.onTurnOrderIndexChanged.Raise(newTurnIndex);
-
-    }
-
     //callback for player turn UI (end turn button)
     [Client]
-    private void OnPlayerTurnChanged(int _, int newPlayer)
+    private void OnPlayerTurnChanged(int _, int newPlayerID)
     {
-        if (newPlayer == -1)
+        if (newPlayerID == -1)
             //we havent started game yet
             return;
-        if (newPlayer == this.LocalPlayer.playerID)
+
+        if (newPlayerID == this.LocalPlayer.playerID)
         {
-            //todo: display "Its your turn" msg
-            this.endTurnButton.SetActive(true);
-            if(this.currentPhase == GamePhase.gameplay)
-            {
-                this.SetActiveGameplayButtons(true);
-            }
+            this.onLocalPlayerTurnStart.Raise();
         }
         else
         {
-            //todo : display "Waiting for other player" msg            
-            this.endTurnButton.SetActive(false);
-            if (this.currentPhase == GamePhase.gameplay)
-            {
-                this.SetActiveGameplayButtons(false);
-            }
+            this.onLocalPlayerTurnEnd.Raise();
         }
     }
 
@@ -159,7 +141,7 @@ public class GameController : NetworkBehaviour
     [Client]
     private void OnGamePhaseChanged(GamePhase oldPhase, GamePhase newPhase)
     {
-        this.phaseLabel.text = newPhase.ToString();
+        MainHUD.Singleton.phaseLabel.text = newPhase.ToString();
     }
 
     //callback for syncing list of active characters
@@ -207,24 +189,23 @@ public class GameController : NetworkBehaviour
     {
         this.onCharAddedToTurnOrder.Raise();
     }
+
+    //called on on all clients by syncvar hook
+    [Client]
+    private void OnTurnOrderIndexChanged(int prevTurnIndex, int newTurnIndex)
+    {
+        this.onTurnOrderIndexChanged.Raise(newTurnIndex);
+
+    }
+
+    [ClientRpc]
+    private void RpcOnInitGameplayMode()
+    {
+        this.onInitGameplayMode.Raise();
+    }
     #endregion
 
-    #region Rpcs/UI
-    [TargetRpc]
-    public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
-    {
-        this.moveButton.GetComponent<Button>().interactable = false;
-        this.moveButton.GetComponent<Image>().color = Color.white;
-
-    }
-
-    [TargetRpc]
-    public void RpcGrayOutAttackButton(NetworkConnectionToClient target)
-    {
-        this.attackButton.GetComponent<Button>().interactable = false;
-        this.attackButton.GetComponent<Image>().color = Color.white;
-
-    }
+    #region Rpcs
 
     [TargetRpc]
     public void RpcSetControlModeOnClient(NetworkConnectionToClient target, ControlMode mode)
@@ -233,61 +214,9 @@ public class GameController : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcActivateGameplayButtons()
-    {
-        if (playerTurn == this.LocalPlayer.playerID)
-        {
-            this.SetActiveGameplayButtons(true);
-        }
-    }
-
-    [ClientRpc]
-    private void RpcResetInteractableGameplayButtons()
-    {
-        if (playerTurn == this.LocalPlayer.playerID)
-        {
-            this.SetInteractableGameplayButtons(true);
-        }
-    }
-
-    [ClientRpc]
     private void SetControlModeOnAllClients(ControlMode mode)
     {
         this.inputHandler.SetControlMode(mode);
-    }
-
-    [Client]
-    private void SetInteractableGameplayButtons(bool state)
-    {
-        this.moveButton.GetComponent<Button>().interactable = state;
-        this.attackButton.GetComponent<Button>().interactable = state;
-        if (!state)
-        {
-            this.moveButton.GetComponent<Image>().color = Color.white;
-            this.attackButton.GetComponent<Image>().color = Color.white;
-        }
-    }
-
-    [Client]
-    private void SetActiveGameplayButtons(bool state)
-    {
-        this.moveButton.SetActive(state);
-        this.attackButton.SetActive(state);
-    }
-
-    public void HighlightGameplayButton(ControlMode mode)
-    {
-        switch (mode)
-        {
-            case ControlMode.move:
-                this.moveButton.GetComponent<Image>().color = Color.green;
-                this.attackButton.GetComponent<Image>().color = Color.white;
-                break;
-            case ControlMode.attack:
-                this.moveButton.GetComponent<Image>().color = Color.white;
-                this.attackButton.GetComponent<Image>().color = Color.green;
-                break;
-        }
     }
 
     #endregion
@@ -355,8 +284,6 @@ public class GameController : NetworkBehaviour
         }
         
         this.SetControlModeOnClientsForNewTurn(this.playerTurn);
-       
-        this.RpcResetInteractableGameplayButtons();
     }
 
     [Server]
@@ -496,7 +423,7 @@ public class GameController : NetworkBehaviour
         }
 
         this.SetControlModeOnClientsForNewTurn(this.playerTurn);
-        this.RpcActivateGameplayButtons();
+        this.RpcOnInitGameplayMode();
     }
     #endregion
 
@@ -513,22 +440,22 @@ public class GameController : NetworkBehaviour
         return null;
     }
 
-    public bool IsItMyTurn()
+    public bool ItsMyTurn()
     {
         return this.LocalPlayer.playerID == this.playerTurn;
     }
 
-    public bool IsItThisPlayersTurn(int playerID)
+    public bool ItsThisPlayersTurn(int playerID)
     {
         return playerID == this.playerTurn;
     }
 
-    public bool IsItThisCharactersTurn(int classID)
+    public bool ItsThisCharactersTurn(int classID)
     {
         return this.ClassIdForTurn() == classID;
     }
 
-    public bool DoesHeOwnThisCharacter(int playerID, int classID)
+    public bool HeOwnsThisCharacter(int playerID, int classID)
     {
         if (this.characterOwners[classID] == playerID)
         {
@@ -551,7 +478,7 @@ public class GameController : NetworkBehaviour
         return true;
     }
 
-    public bool IsThisCharacterPlacedOnBoard(int classID)
+    public bool ThisCharacterIsPlacedOnBoard(int classID)
     {
         return this.playerCharacters.ContainsKey(classID);
     }
@@ -559,8 +486,8 @@ public class GameController : NetworkBehaviour
     public bool AllHisCharactersAreOnBoard(int playerID) {
         foreach (int classID in this.sortedTurnOrder.Values)
         {
-            if (DoesHeOwnThisCharacter(playerID, classID) &&
-                !IsThisCharacterPlacedOnBoard(classID))
+            if (HeOwnsThisCharacter(playerID, classID) &&
+                !ThisCharacterIsPlacedOnBoard(classID))
             {
                 return false;
             }
@@ -615,11 +542,5 @@ public class GameController : NetworkBehaviour
             }
 
         }
-    }
-
-    //used for testing functionnalities without waiting for client setup
-    public void TestButton()
-    {
-
     }
 }

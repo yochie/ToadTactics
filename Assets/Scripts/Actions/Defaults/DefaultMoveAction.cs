@@ -36,7 +36,7 @@ public class DefaultMoveAction : IMoveAction
         //Update UI/Gamecontroller
         if (this.ActorCharacter.CanMoveDistance() == 0)
         {
-            GameController.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
+            MainHUD.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
             if (!ActorCharacter.hasAttacked)
                 GameController.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.attack);
         }
@@ -55,8 +55,8 @@ public class DefaultMoveAction : IMoveAction
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&                        
             this.ActorCharacter.CanMoveDistance() > 0 &&
             this.RequestingPlayerID == this.ActorCharacter.ownerID &&
-            GameController.Singleton.IsItThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.IsItThisCharactersTurn(this.ActorCharacter.charClassID))
+            GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
+            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID))
         {
             //Validate path
             List<Hex> path = MapPathfinder.FindMovementPath(this.ActorHex, this.TargetHex, Map.Singleton.hexGrid);
