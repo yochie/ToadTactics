@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 00e58800434483c4d8863ea1cca0b4fb, type: 3}
-  m_Name: CharacterData
+  m_Name: ClassData
   m_EditorClassIdentifier: 
   characterPrefabs:
   - {fileID: 3539194687959195621, guid: 3c1b84d6c4d5b0c489f27c1935398e5e, type: 3}

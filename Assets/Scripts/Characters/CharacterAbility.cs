@@ -4,7 +4,8 @@ using System.Collections.Generic;
 public readonly struct CharacterAbility
 
 {
-    public readonly string name;
+    public readonly string stringID;
+    public readonly string interfaceName;
     public readonly string description;
     public readonly int turnDuration;
     public readonly int damage;
@@ -13,28 +14,31 @@ public readonly struct CharacterAbility
     public readonly int range;
     public readonly int aoe;
     public readonly bool requiresLOS;
-    public readonly Type abilityActionType;
+    public readonly Type actionType;
 
-    public CharacterAbility(string name,
+
+    public CharacterAbility(string stringID,
+                            string interfaceName,
                             string description,
                             int damage,
                             int range,
                             int aoe,
                             int turnDuration,
-                            Type abilityActionType,
                             bool requiresLOS = true,
                             int damageIterations = 1,
-                            DamageType damageType = DamageType.normal)
+                            DamageType damageType = DamageType.normal,
+                            Type actionType = null)
     {
-        this.name = name;
+        this.stringID = stringID;
+        this.interfaceName = interfaceName;
         this.description = description;
         this.damage = damage;
         this.range = range;
         this.aoe = aoe;
-        this.turnDuration = turnDuration;
-        this.abilityActionType = abilityActionType;
+        this.turnDuration = turnDuration;        
         this.requiresLOS = requiresLOS;
         this.damageIterations = damageIterations;
         this.damageType = damageType;
+        this.actionType = actionType;
     }
 }

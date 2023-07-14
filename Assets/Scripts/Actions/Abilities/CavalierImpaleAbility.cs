@@ -2,6 +2,7 @@
 
 public class CavalierImpaleAbility : NetworkBehaviour, IAbilityAction, ITargetedAction
 {
+    //IAction
     public int RequestingPlayerID { get; set; }
 
     public PlayerCharacter ActorCharacter { get; set; }
@@ -10,14 +11,11 @@ public class CavalierImpaleAbility : NetworkBehaviour, IAbilityAction, ITargeted
 
     public NetworkConnectionToClient RequestingClient { get; set; }
 
+    //IAbilityAction
     public CharacterAbility Ability { get; set; }
 
+    //ITargetedAction
     public Hex TargetHex { get; set; }
-
-    public CavalierImpaleAbility()
-    {
-
-    }
 
     [Server]
     public void ServerUse()

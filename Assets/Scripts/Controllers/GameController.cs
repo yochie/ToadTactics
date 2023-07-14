@@ -48,10 +48,6 @@ public class GameController : NetworkBehaviour
     //Only filled on server
     public List<PlayerController> playerControllers = new();
 
-    //TODO : move to SO
-    //Maps classID to CharacterClass
-    public Dictionary<int, CharacterClass> CharacterClassesByID { get; set; }
-
     #endregion
 
     #region Synced vars
@@ -98,8 +94,6 @@ public class GameController : NetworkBehaviour
         this.playerCharactersNetIDs.Callback += OnPlayerCharactersNetIDsChange;
         foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
             OnPlayerCharactersNetIDsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
-
-        this.CharacterClassesByID =  CharacterClass.DefineClasses();
     }
 
     public override void OnStartServer()
@@ -238,7 +232,7 @@ public class GameController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdDraftCharacter(int draftedByPlayerID, int classID)
     {
-        float initiative = this.CharacterClassesByID[classID].stats.initiative;
+        float initiative = ClassDataSO.Singleton.GetClassByID(classID).stats.initiative;
         if (Utility.DictContainsValue(this.sortedTurnOrder, classID))
         {
             Debug.Log("Error : Character is already in turnOrder.");

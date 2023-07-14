@@ -85,7 +85,7 @@ public class PlayerController : NetworkBehaviour
         {
             int classID;
             List<int> classIDs = new();
-            GameController.Singleton.CharacterClassesByID.Keys.CopyTo<int>(classIDs);
+            ClassDataSO.Singleton.GetClassIDs().CopyTo<int>(classIDs);
             do
             {
                 classID = classIDs[Random.Range(0, classIDs.Count)];

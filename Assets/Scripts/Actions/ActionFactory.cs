@@ -88,7 +88,8 @@ public class ActionFactory : MonoBehaviour
 
     public static IAbilityAction CreateAbilityAction(NetworkConnectionToClient sender, int requestingPlayerID, PlayerCharacter actingCharacter, CharacterAbility ability, Hex userHex, Hex targetHex)
     {
-        IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(ability.abilityActionType);
+        Type actionType = ability.actionType;
+        IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(actionType);
 
         //IAction
         abilityAction.RequestingPlayerID = requestingPlayerID;
@@ -102,7 +103,7 @@ public class ActionFactory : MonoBehaviour
         
         //ITargetedAction (conditionally)
         //Assign target hex if ability implements ITargetedAction
-        if (typeof(ITargetedAction).IsAssignableFrom(ability.abilityActionType))
+        if (typeof(ITargetedAction).IsAssignableFrom(actionType))
         {
             ITargetedAction actionWithTarget = abilityAction as ITargetedAction;
             actionWithTarget.TargetHex = targetHex;
