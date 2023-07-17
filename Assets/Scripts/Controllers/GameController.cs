@@ -7,7 +7,6 @@ using TMPro;
 using System;
 
 //RTODO: review game progression mechanic
-//RTODO: Utility functions should be moved to class that holds relevant data so that gamecontroller is no longer abused as global storage, perhaps CharacterDataSO scriptable obj should serve as global data when actually required
 public class GameController : NetworkBehaviour
 {
     #region Editor vars
@@ -15,6 +14,11 @@ public class GameController : NetworkBehaviour
     [SerializeField]
     private MapInputHandler inputHandler;
 
+    public uint defaultNumCharsPerPlayer = 3;
+
+    #endregion
+
+    #region Event vars
     [SerializeField]
     private GameEventSO onCharAddedToTurnOrder;
 
@@ -29,11 +33,6 @@ public class GameController : NetworkBehaviour
 
     [SerializeField]
     private GameEventSO onInitGameplayMode;
-
-    //Must be ordered in editor by classID
-    public GameObject[] AllPlayerCharPrefabs = new GameObject[10];
-
-    public uint defaultNumCharsPerPlayer = 3;
 
     #endregion
 
@@ -79,10 +78,6 @@ public class GameController : NetworkBehaviour
     private void Awake()
     {
         Singleton = this;
-
-        //ensure array is sorted by classID
-        //Array.Sort<GameObject>(AllPlayerCharPrefabs,(p1, p2) => { return p1.GetComponent<PlayerCharacter>().charClass.classID.CompareTo(p2.GetComponent<PlayerCharacter>().charClass.classID);});
-
         this.waitingForClientSpawns = true;
     }
 
@@ -447,6 +442,8 @@ public class GameController : NetworkBehaviour
     public bool AllCharactersAreOnBoard() { 
         foreach (int classID in this.sortedTurnOrder.Values)
         {
+
+            //works because PlayerCharacter is only created when its placed on board
             if (!this.playerCharacters.ContainsKey(classID))
             {
                 return false;

@@ -83,7 +83,7 @@ public class TurnOrderHUD : MonoBehaviour
             TurnOrderSlotUI slot = this.turnOrderSlots[i];
             Image slotImage = slot.GetComponent<Image>();
             int classID = GameController.Singleton.sortedTurnOrder[initiative];
-            slotImage.sprite = GameController.Singleton.AllPlayerCharPrefabs[classID].GetComponent<SpriteRenderer>().sprite;
+            slotImage.sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
             slot.holdsCharacterWithClassID = classID;
 
             if (GameController.Singleton.turnOrderIndex == i)
