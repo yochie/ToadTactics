@@ -417,17 +417,6 @@ public class GameController : NetworkBehaviour
 
     #region Utility
 
-    public GameObject GetCharPrefabWithClassID(int classID)
-    {
-        foreach (GameObject prefab in this.AllPlayerCharPrefabs)
-        {
-            if (prefab.GetComponent<PlayerCharacter>().charClassID == classID)
-                return prefab;
-        }
-        Debug.Log("Couldn't find any prefabs with given classID");
-        return null;
-    }
-
     public bool ItsMyTurn()
     {
         return this.LocalPlayer.playerID == this.playerTurn;

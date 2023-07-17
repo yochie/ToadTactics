@@ -121,7 +121,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        GameObject characterPrefab = GameController.Singleton.GetCharPrefabWithClassID(characterClassID);
+        GameObject characterPrefab = ClassDataSO.Singleton.GetPrefabByClassID(characterClassID);
         Vector3 destinationWorldPos = destinationHex.transform.position;
         GameObject newCharObject =
             Instantiate(characterPrefab, destinationWorldPos, Quaternion.identity);

@@ -54,7 +54,7 @@ public class CharacterSlotsHUD : MonoBehaviour
         characterSlot.SetInputHandler(this.inputHandler);
         characterSlots.Add(characterSlot);
 
-        characterSlot.GetComponent<Image>().sprite = GameController.Singleton.GetCharPrefabWithClassID(classID).GetComponent<SpriteRenderer>().sprite;
+        characterSlot.GetComponent<Image>().sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
 
         characterSlot.HoldsCharacterWithClassID = classID;
     }
