@@ -77,7 +77,7 @@ public class GameController : NetworkBehaviour
 
     private void Awake()
     {
-        Singleton = this;
+        GameController.Singleton = this;
         this.waitingForClientSpawns = true;
     }
 
@@ -297,7 +297,7 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
-    public void SwapPlayerTurn()
+    private void SwapPlayerTurn()
     {
         if (this.playerTurn == 0)
         {

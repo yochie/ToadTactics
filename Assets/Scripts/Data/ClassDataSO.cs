@@ -34,9 +34,9 @@ public class ClassDataSO : ScriptableObject
     {
         foreach (GameObject prefab in characterPrefabs)
         {
-            if(prefab.GetComponent<PlayerCharacter>().charClass.classID == classID)
+            if(prefab.GetComponent<PlayerCharacter>().charClassID == classID)
             {
-                return prefab.GetComponent<Sprite>();
+                return prefab.GetComponent<SpriteRenderer>().sprite;
             }
         }
 
@@ -47,7 +47,7 @@ public class ClassDataSO : ScriptableObject
     {
         foreach (GameObject prefab in characterPrefabs)
         {
-            if (prefab.GetComponent<PlayerCharacter>().charClass.classID == classID)
+            if (prefab.GetComponent<PlayerCharacter>().charClassID == classID)
             {
                 return prefab;
             }

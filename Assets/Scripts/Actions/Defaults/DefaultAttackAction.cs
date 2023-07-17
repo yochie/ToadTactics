@@ -10,7 +10,6 @@ public class DefaultAttackAction : IAttackAction
     public PlayerCharacter ActorCharacter { get; set; }
     public Hex ActorHex { get; set; }
     public int RequestingPlayerID { get; set; }
-
     public NetworkConnectionToClient RequestingClient { get; set; }
 
     //ITargetedAction
@@ -64,16 +63,17 @@ public class DefaultAttackAction : IAttackAction
         //PlayerCharacter state updated to track that attack was used
         this.ActorCharacter.UseAttack();
 
+        //TODO Move to event listeners
         MainHUD.Singleton.RpcGrayOutAttackButton(this.RequestingClient);
 
         if (this.ActorCharacter.CanMoveDistance() > 0)
         {
-            GameController.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.move);
+            MapInputHandler.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.move);
         }
         else
         {
             MainHUD.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
-            GameController.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.none);
+            MapInputHandler.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.none);
         }
 
         if (!this.ActorCharacter.HasRemainingActions())

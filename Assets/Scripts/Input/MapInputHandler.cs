@@ -5,8 +5,11 @@ using Mirror;
 
 public class MapInputHandler : NetworkBehaviour
 {
+
     [SerializeField]
     private MapRangeDisplayer rangeDisplayer;
+
+    public static MapInputHandler Singleton { get; private set; }
 
     //to be used eventually...
     private PlayerCharacter playingCharacter;
@@ -25,6 +28,8 @@ public class MapInputHandler : NetworkBehaviour
     //used to reset all state
     private void Awake()
     {
+        if(MapInputHandler.Singleton == null)
+            MapInputHandler.Singleton = this;
         this.playingCharacter = null;
         this.SelectedHex = null;
         this.HoveredHex = null;
@@ -108,7 +113,8 @@ public class MapInputHandler : NetworkBehaviour
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
-                return;
+                hoveredHex.drawer.MoveHover(true);
+                break;
             case ControlMode.characterPlacement:            
                 hoveredHex.drawer.MoveHover(true);
                 break;
@@ -143,7 +149,8 @@ public class MapInputHandler : NetworkBehaviour
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
-                return;
+                unhoveredHex.drawer.MoveHover(false);
+                break;
             case ControlMode.characterPlacement:
                 unhoveredHex.drawer.MoveHover(false);
                 break;
