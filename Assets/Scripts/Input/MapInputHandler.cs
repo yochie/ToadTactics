@@ -197,4 +197,16 @@ public class MapInputHandler : NetworkBehaviour
         this.SelectHex(dest);
     }
 
+    [TargetRpc]
+    public void RpcSetControlModeOnClient(NetworkConnectionToClient target, ControlMode mode)
+    {
+        this.SetControlMode(mode);
+    }
+
+    [ClientRpc]
+    public void SetControlModeOnAllClients(ControlMode mode)
+    {
+        this.SetControlMode(mode);
+    }
+
 }

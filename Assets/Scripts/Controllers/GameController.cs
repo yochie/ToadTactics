@@ -200,17 +200,7 @@ public class GameController : NetworkBehaviour
 
     #region Rpcs
 
-    [TargetRpc]
-    public void RpcSetControlModeOnClient(NetworkConnectionToClient target, ControlMode mode)
-    {
-        this.inputHandler.SetControlMode(mode);
-    }
 
-    [ClientRpc]
-    private void SetControlModeOnAllClients(ControlMode mode)
-    {
-        this.inputHandler.SetControlMode(mode);
-    }
 
     #endregion
 
@@ -276,34 +266,39 @@ public class GameController : NetworkBehaviour
             this.SwapPlayerTurn();
         }
         
-        this.SetControlModeOnClientsForNewTurn(this.playerTurn);
+        this.assignControlModeToActivePlayer(this.playerTurn, ControlMode.move);
     }
 
     [Server]
-    private void SetControlModeOnClientsForNewTurn(int playerTurn)
+    private void assignControlModeToActivePlayer(int playerTurn, ControlMode activeMode)
     {
         List<NetworkConnectionToClient> connections = new();
         NetworkServer.connections.Values.CopyTo(connections);
-        NetworkConnectionToClient newTurnClient = null;
-        NetworkConnectionToClient otherClient = null;
+        NetworkConnectionToClient playingClient = null;
+        NetworkConnectionToClient idleClient = null;
+        bool excessClients = false;
         foreach (NetworkConnectionToClient conn in connections)
         {
             if (conn.identity.GetComponent<PlayerController>().playerID == playerTurn)
             {
-                if (newTurnClient != null)
-                    Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
-                newTurnClient = conn;
+                if (playingClient != null)
+                    excessClients = true;
+                playingClient = conn;
             }
             else
             {
-                if (otherClient != null)
-                    Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
-                otherClient = conn;
+                if (idleClient != null)
+                    excessClients = true;
+                idleClient = conn;
             }
 
         }
-        this.RpcSetControlModeOnClient(newTurnClient, ControlMode.move);
-        this.RpcSetControlModeOnClient(otherClient, ControlMode.none);
+
+        if (excessClients)
+            Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
+
+        this.inputHandler.RpcSetControlModeOnClient(playingClient, activeMode);
+        this.inputHandler.RpcSetControlModeOnClient(idleClient, ControlMode.none);
     }
 
     [Server]
@@ -383,7 +378,7 @@ public class GameController : NetworkBehaviour
     {
         Debug.Log("Initializing character placement mode");
         this.playerTurn = 0;
-        this.SetControlModeOnAllClients(ControlMode.characterPlacement);
+        this.inputHandler.SetControlModeOnAllClients(ControlMode.characterPlacement);
     }
 
     [Server]
@@ -415,7 +410,7 @@ public class GameController : NetworkBehaviour
             this.SwapPlayerTurn();
         }
 
-        this.SetControlModeOnClientsForNewTurn(this.playerTurn);
+        this.assignControlModeToActivePlayer(this.playerTurn, ControlMode.move);
         this.RpcOnInitGameplayMode();
     }
     #endregion
