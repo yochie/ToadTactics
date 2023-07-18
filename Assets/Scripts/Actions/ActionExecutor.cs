@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.Events;
 
 public class ActionExecutor : NetworkBehaviour
 {
+    public ActionEvent attackEvent;
+    public ActionEvent moveEvent;
+    public ActionEvent abilityEvent;
+
     //TODO : remove this field, should simply be referenced by mapinputhandler
     public static ActionExecutor Singleton { get; private set; }
 
@@ -59,7 +64,9 @@ public class ActionExecutor : NetworkBehaviour
                                    Hex targetHex)
     {
         IAction toTry = ActionFactory.CreateMoveAction(sender, actingPlayerID, moverCharacter, moverStats, moverHex, targetHex);
-        return this.UseAction(toTry);
+
+        bool moveSuccess = this.TryAction(toTry, this.moveEvent);
+        return moveSuccess;
     }
 
     [Server]
@@ -73,7 +80,7 @@ public class ActionExecutor : NetworkBehaviour
                                    Hex defenderHex)
     {
         IAction toTry = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);
-        return this.UseAction(toTry);
+        return this.TryAction(toTry, this.attackEvent);
     }
 
     [Server]
@@ -85,7 +92,7 @@ public class ActionExecutor : NetworkBehaviour
                                   Hex defenderHex)
     {
         IAction toTry = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
-        return this.UseAction(toTry);
+        return this.TryAction(toTry, this.attackEvent);
     }
 
     [Server]
@@ -97,15 +104,16 @@ public class ActionExecutor : NetworkBehaviour
                            Hex target)
     {
         IAbilityAction toTry = ActionFactory.CreateAbilityAction(sender, actingPlayerID, actingCharacter, ability, source, target);
-        return this.UseAction(toTry);
+        return this.TryAction(toTry, this.abilityEvent);
     }
 
     [Server]
-    private bool UseAction(IAction action)
+    private bool TryAction(IAction action, ActionEvent toInvoke)
     {
         if (action.ServerValidate())
         {
             action.ServerUse();
+            toInvoke?.Invoke(action);
             return true;
         }
         else

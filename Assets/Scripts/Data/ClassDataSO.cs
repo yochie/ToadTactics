@@ -20,7 +20,7 @@ public class ClassDataSO : ScriptableObject
     public static ClassDataSO Singleton {
         get {
             if (ClassDataSO.singleton == null)
-                ClassDataSO.singleton = Resources.Load<ClassDataSO>(ClassDataSO.resourcePath);
+                ClassDataSO.singleton = Resources.Load<ClassDataSO>(resourcePath);
             return ClassDataSO.singleton;
         }
     }

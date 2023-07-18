@@ -124,7 +124,7 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     public void TakeRawDamage(int dmgAmount)
     {
-        this.currentLife = Mathf.Clamp(currentLife - dmgAmount, 0, this.currentStats.maxHealth);        
+        this.currentLife = Mathf.Clamp(currentLife - dmgAmount, 0, this.currentStats.maxHealth);
     }
 
     //update position on all clients

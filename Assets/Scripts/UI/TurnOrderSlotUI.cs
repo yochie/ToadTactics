@@ -7,23 +7,21 @@ using UnityEngine.UI;
 
 public class TurnOrderSlotUI : MonoBehaviour
 {
+    [SerializeField]
     private Image highlightImage;
+
+    [SerializeField]
+    private Image characterImage;
+
+    [SerializeField]
+    private TextMeshProUGUI lifeLabel;
+
 
     public int holdsCharacterWithClassID = -1;
 
-    private string initiativeLabel;
-    public string InitiativeLabel
-    {
-        get { return this.initiativeLabel; }
-        set {
-            this.initiativeLabel = value;
-            this.GetComponentInChildren<TextMeshProUGUI>().text = value;  
-        }
-    }
     private bool isHighlighted = false;
     private bool IsHighlighted
     {
-        get { return isHighlighted;  }
         set
         {
             isHighlighted = value;
@@ -32,26 +30,23 @@ public class TurnOrderSlotUI : MonoBehaviour
         }
     }
 
-    public void Awake()
+    internal void Highlight()
     {
-        foreach (Image child in this.GetComponentsInChildren<Image>())
-        {
-            if (child.gameObject.GetInstanceID() != this.gameObject.GetInstanceID())
-            {
-                this.highlightImage = child;
-            }
-        }
-    }
-
-    internal void HighlightAndLabel(int initiative)
-    {
-        this.InitiativeLabel = initiative.ToString() + "*";
         this.IsHighlighted = true;
     }
 
-    internal void UnhighlightAndLabel(int initiative)
+    internal void Unhighlight()
     {
-        this.InitiativeLabel = initiative.ToString();
         this.IsHighlighted = false;
+    }
+
+    internal void SetLifeLabel(int currentLife, int maxHealth)
+    {
+        this.lifeLabel.text = String.Format("{0}/{1}", currentLife, maxHealth);
+    }
+
+    internal void SetSprite(Sprite sprite)
+    {
+        this.characterImage.sprite = sprite;
     }
 }

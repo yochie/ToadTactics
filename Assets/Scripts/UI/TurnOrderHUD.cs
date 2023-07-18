@@ -80,19 +80,29 @@ public class TurnOrderHUD : MonoBehaviour
             //stops joining clients from trying to fill slots that weren't created yet
             if (i >= this.turnOrderSlots.Count) return;
 
-            TurnOrderSlotUI slot = this.turnOrderSlots[i];
-            Image slotImage = slot.GetComponent<Image>();
             int classID = GameController.Singleton.sortedTurnOrder[initiative];
-            slotImage.sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
+            TurnOrderSlotUI slot = this.turnOrderSlots[i];
+            slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
             slot.holdsCharacterWithClassID = classID;
 
-            if (GameController.Singleton.turnOrderIndex == i)
+            if (GameController.Singleton.AllCharactersAreOnBoard())
             {
-                slot.HighlightAndLabel(i + 1);
+                PlayerCharacter currentCharacter = GameController.Singleton.playerCharacters[classID];
+                slot.SetLifeLabel(currentCharacter.CurrentLife(), currentCharacter.currentStats.maxHealth);
             }
             else
             {
-                slot.UnhighlightAndLabel(i + 1);
+                CharacterClass currentClass = ClassDataSO.Singleton.GetClassByID(classID);
+                slot.SetLifeLabel(currentClass.stats.maxHealth, currentClass.stats.maxHealth);
+            }
+
+            if (GameController.Singleton.turnOrderIndex == i)
+            {
+                slot.Highlight();
+            }
+            else
+            {
+                slot.Unhighlight();
             }
             i++;
         }
@@ -107,11 +117,11 @@ public class TurnOrderHUD : MonoBehaviour
             if (slot.holdsCharacterWithClassID == classID)
             {
                 //Debug.Log("Highlighting slot");
-                slot.HighlightAndLabel(i);
+                slot.Highlight();
             }
             else
             {
-                slot.UnhighlightAndLabel(i);
+                slot.Unhighlight();
 
             }
         }
