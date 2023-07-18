@@ -29,7 +29,7 @@ public class CharacterPlacementPhase : IGamePhase
             Controller.SwapPlayerTurn();
         }
 
-        if (Controller.AllCharactersAreOnBoard())
+        if (Controller.AllPlayerCharactersCreated())
         {
             Controller.SetPhase(new GameplayPhase());
         }

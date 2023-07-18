@@ -329,11 +329,10 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    public bool AllCharactersAreOnBoard() { 
+    //note that characters are created as they are placed on board
+    public bool AllPlayerCharactersCreated() { 
         foreach (int classID in this.sortedTurnOrder.Values)
         {
-
-            //works because PlayerCharacter is only created when its placed on board
             if (!this.playerCharacters.ContainsKey(classID))
             {
                 return false;

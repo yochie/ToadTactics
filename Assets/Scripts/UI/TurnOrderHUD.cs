@@ -85,7 +85,7 @@ public class TurnOrderHUD : MonoBehaviour
             slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
             slot.holdsCharacterWithClassID = classID;
 
-            if (GameController.Singleton.AllCharactersAreOnBoard())
+            if (GameController.Singleton.AllPlayerCharactersCreated())
             {
                 PlayerCharacter currentCharacter = GameController.Singleton.playerCharacters[classID];
                 slot.SetLifeLabel(currentCharacter.CurrentLife(), currentCharacter.currentStats.maxHealth);
@@ -104,6 +104,30 @@ public class TurnOrderHUD : MonoBehaviour
             {
                 slot.Unhighlight();
             }
+            i++;
+        }
+    }
+
+    //called by Attack event
+    //TODO make alternative function that only resets life for target character
+    public void ResetLifeLabels()
+    {
+        bool charactersCreated = GameController.Singleton.AllPlayerCharactersCreated();
+        int i = 0;
+        foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
+        {
+            int classID = slot.holdsCharacterWithClassID;
+            if (charactersCreated)
+            {
+                PlayerCharacter currentCharacter = GameController.Singleton.playerCharacters[classID];
+                slot.SetLifeLabel(currentCharacter.CurrentLife(), currentCharacter.currentStats.maxHealth);
+            }
+            else
+            {
+                CharacterClass currentClass = ClassDataSO.Singleton.GetClassByID(classID);
+                slot.SetLifeLabel(currentClass.stats.maxHealth, currentClass.stats.maxHealth);
+            }
+
             i++;
         }
     }

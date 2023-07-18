@@ -6,9 +6,9 @@ using UnityEngine.Events;
 
 public class ActionExecutor : NetworkBehaviour
 {
-    public ActionEvent attackEvent;
-    public ActionEvent moveEvent;
-    public ActionEvent abilityEvent;
+    public AttackEvent attackEvent;
+    public MoveEvent moveEvent;
+    public AbilityEvent abilityEvent;
 
     //TODO : remove this field, should simply be referenced by mapinputhandler
     public static ActionExecutor Singleton { get; private set; }
@@ -65,7 +65,7 @@ public class ActionExecutor : NetworkBehaviour
     {
         IAction toTry = ActionFactory.CreateMoveAction(sender, actingPlayerID, moverCharacter, moverStats, moverHex, targetHex);
 
-        bool moveSuccess = this.TryAction(toTry, this.moveEvent);
+        bool moveSuccess = this.TryAction(toTry);
         return moveSuccess;
     }
 
@@ -79,8 +79,11 @@ public class ActionExecutor : NetworkBehaviour
                                    Hex attackerHex,
                                    Hex defenderHex)
     {
-        IAction toTry = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);
-        return this.TryAction(toTry, this.attackEvent);
+        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);
+        bool success = this.TryAction(attackAction);
+        if (success)
+            this.RpcInvokeAttackEvent(attackAction.ActorCharacter.charClassID, attackAction.DefenderCharacter.charClassID);
+        return success;
     }
 
     [Server]
@@ -91,8 +94,11 @@ public class ActionExecutor : NetworkBehaviour
                                   Hex attackerHex,
                                   Hex defenderHex)
     {
-        IAction toTry = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
-        return this.TryAction(toTry, this.attackEvent);
+        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
+        bool success = this.TryAction(attackAction);
+        if (success)
+            this.RpcInvokeAttackEvent(attackAction.ActorCharacter.charClassID, -1);
+        return success;
     }
 
     [Server]
@@ -104,16 +110,15 @@ public class ActionExecutor : NetworkBehaviour
                            Hex target)
     {
         IAbilityAction toTry = ActionFactory.CreateAbilityAction(sender, actingPlayerID, actingCharacter, ability, source, target);
-        return this.TryAction(toTry, this.abilityEvent);
+        return this.TryAction(toTry);
     }
 
     [Server]
-    private bool TryAction(IAction action, ActionEvent toInvoke)
+    private bool TryAction(IAction action)
     {
         if (action.ServerValidate())
         {
-            action.ServerUse();
-            toInvoke?.Invoke(action);
+            action.ServerUse();            
             return true;
         }
         else
@@ -123,6 +128,11 @@ public class ActionExecutor : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    private void RpcInvokeAttackEvent(int attackerID, int defenderID)
+    {
+        this.attackEvent?.Invoke(attackerID, defenderID);
+    }
 
     //Utility for validation, used by individual IAction classes
     public static bool IsValidTargetType(PlayerCharacter actor, Hex targetedHex, List<TargetType> allowedTargets)
