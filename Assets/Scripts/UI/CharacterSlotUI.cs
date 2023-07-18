@@ -79,9 +79,9 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public bool IsDraggable()
     {
         bool toReturn = false;
-        switch (GameController.Singleton.currentPhase)
+        switch (GameController.Singleton.currentPhaseID)
         {
-            case GamePhase.characterPlacement:
+            case GamePhaseID.characterPlacement:
                 if (GameController.Singleton.ItsMyTurn() &&
                     !this.HasBeenPlacedOnBoard)
                 {
@@ -92,14 +92,12 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     toReturn = false;
                 }
                 break;
-            case GamePhase.gameplay:
+            case GamePhaseID.gameplay:
                 toReturn = false;
                 break;
-            case GamePhase.draft:
+            case GamePhaseID.characterDraft:
                 break;
-            case GamePhase.treasureDraft:
-                break;
-            case GamePhase.treasureEquip:
+            case GamePhaseID.treasureDraft:
                 break;
         }
         return toReturn;

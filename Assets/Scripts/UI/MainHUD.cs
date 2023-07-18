@@ -91,7 +91,7 @@ public class MainHUD : NetworkBehaviour
     {
         //todo: display "Its your turn" msg
         this.endTurnButton.SetActive(true);
-        if (GameController.Singleton.currentPhase == GamePhase.gameplay)
+        if (GameController.Singleton.currentPhaseID == GamePhaseID.gameplay)
         {
             this.SetActiveGameplayButtons(true);
         }
@@ -102,7 +102,7 @@ public class MainHUD : NetworkBehaviour
     {
         //todo : display "Waiting for other player" msg            
         this.endTurnButton.SetActive(false);
-        if (GameController.Singleton.currentPhase == GamePhase.gameplay)
+        if (GameController.Singleton.currentPhaseID == GamePhaseID.gameplay)
         {
             this.SetActiveGameplayButtons(false);
         }

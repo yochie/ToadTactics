@@ -12,7 +12,7 @@ public class GameController : NetworkBehaviour
     #region Editor vars
 
     [SerializeField]
-    private MapInputHandler inputHandler;
+    public MapInputHandler inputHandler;
 
     public uint defaultNumCharsPerPlayer = 3;
 
@@ -47,6 +47,9 @@ public class GameController : NetworkBehaviour
     //Only filled on server
     public List<PlayerController> playerControllers = new();
 
+    //maintained on server only
+    public IGamePhase currentPhaseObject;
+
     #endregion
 
     #region Synced vars
@@ -69,8 +72,11 @@ public class GameController : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlayerTurnChanged))]
     public int playerTurn;
 
-    [SyncVar(hook = nameof(OnGamePhaseChanged))]
-    public GamePhase currentPhase;
+    [SyncVar(hook = nameof(OnGamePhaseIDChanged))]
+    public GamePhaseID currentPhaseID;
+
+    [SyncVar]
+    public int currentRound;
     #endregion
 
     #region Startup
@@ -95,9 +101,10 @@ public class GameController : NetworkBehaviour
     {
         base.OnStartServer();
         
-        this.SetPhase(GamePhase.waitingForClient);
+        this.SetPhase(new WaitingForClientPhase());
         this.turnOrderIndex = -1;
         this.playerTurn = -1;
+        this.currentRound = -1;
 
         Map.Singleton.Initialize();
 
@@ -109,7 +116,7 @@ public class GameController : NetworkBehaviour
     //TODO : delete or move to mainhud
     //callback for gamemode UI
     [Client]
-    private void OnGamePhaseChanged(GamePhase oldPhase, GamePhase newPhase)
+    private void OnGamePhaseIDChanged(GamePhaseID oldPhase, GamePhaseID newPhase)
     {
         MainHUD.Singleton.phaseLabel.text = newPhase.ToString();
     }
@@ -169,7 +176,7 @@ public class GameController : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcOnInitGameplayMode()
+    public void RpcOnInitGameplayMode()
     {
         this.onInitGameplayMode.Raise();
     }
@@ -193,79 +200,60 @@ public class GameController : NetworkBehaviour
     }
     #endregion
 
-    #region Rpcs
-
-
-
-    #endregion
-
-    #region Commands
+    #region Commands/Server
 
     //ACTUAL GAME START once everything is ready on client
     [Command(requiresAuthority = false)]
     private void CmdStartPlaying()
     {
+        this.currentRound = 0;
+        //TODO change to actual draft
         foreach(PlayerController player in this.playerControllers)
         {
             player.FakeDraft();
         }
-        this.SetPhase(GamePhase.characterPlacement);
-        this.playerTurn = 0;
-        //this.RpcActivateEndTurnButton();
+        this.SetPhase(new CharacterPlacementPhase());
     }
 
+    //Main game tick
+    //Called at end of every turn for all gamemodes
     [Command(requiresAuthority = false)]
-    public void CmdDraftCharacter(int draftedByPlayerID, int classID)
+    public void NextTurn()
     {
-        float initiative = ClassDataSO.Singleton.GetClassByID(classID).stats.initiative;
-        if (Utility.DictContainsValue(this.sortedTurnOrder, classID))
-        {
-            Debug.Log("Error : Character is already in turnOrder.");
-            return;
-        }
-        this.characterOwners.Add(classID, draftedByPlayerID);
-        this.sortedTurnOrder.Add(initiative, classID);
-        this.RpcOnCharAddedToTurnOrder();
+        this.currentPhaseObject.Tick();
     }
 
     [Server]
-    private void NextCharacterTurn()
+    public void SetPhase(IGamePhase newPhase)
     {
-        //loops through turn order        
-        this.turnOrderIndex++;
-        if (this.turnOrderIndex >= this.sortedTurnOrder.Count)
-            this.turnOrderIndex = 0;
+        this.currentPhaseObject = newPhase;
+        this.currentPhaseID = newPhase.ID;
 
-        //finds character class id for the next turn so that we can check who owns it
-        int currentCharacterClassID = -1;
-        int i = 0;
-        foreach (int classID in this.sortedTurnOrder.Values)
+        switch (newPhase.ID)
         {
-            if (i == this.turnOrderIndex)
-            {
-                currentCharacterClassID = classID;
-            }
-            i++;
+            case GamePhaseID.waitingForClient:
+                newPhase.Init("Waiting for client", this);
+                break;
+            case GamePhaseID.characterPlacement:
+                newPhase.Init("Placement " + this.currentRound, this);
+                break;
+            case GamePhaseID.gameplay:
+                newPhase.Init("Gameplay " + this.currentRound, this);
+                break;
         }
-        if (currentCharacterClassID == -1)
-        {
-            Debug.Log("Error : Bad code for iterating turn order");
-        }
-
-        PlayerCharacter currentCharacter = this.playerCharacters[currentCharacterClassID];
-        currentCharacter.ResetTurnState();
-
-        //if we don't own that char, swap player turn
-        if (this.playerTurn != characterOwners[currentCharacterClassID])
-        {
-            this.SwapPlayerTurn();
-        }
-        
-        this.assignControlModeToActivePlayer(this.playerTurn, ControlMode.move);
     }
 
     [Server]
-    private void assignControlModeToActivePlayer(int playerTurn, ControlMode activeMode)
+    public void SwapPlayerTurn()
+    {
+        if (this.playerTurn == 0)
+            this.playerTurn = 1;
+        else
+            this.playerTurn = 0;
+    }
+
+    [Server]
+    public void assignControlModesForNewTurn(int playerTurn, ControlMode activePlayerMode)
     {
         List<NetworkConnectionToClient> connections = new();
         NetworkServer.connections.Values.CopyTo(connections);
@@ -292,122 +280,24 @@ public class GameController : NetworkBehaviour
         if (excessClients)
             Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
 
-        this.inputHandler.RpcSetControlModeOnClient(playingClient, activeMode);
+        this.inputHandler.RpcSetControlModeOnClient(playingClient, activePlayerMode);
         this.inputHandler.RpcSetControlModeOnClient(idleClient, ControlMode.none);
     }
 
-    [Server]
-    private void SwapPlayerTurn()
-    {
-        if (this.playerTurn == 0)
-        {
-            this.playerTurn = 1;
-        }
-        else
-        {
-            this.playerTurn = 0;
-        }
-    }
-
-    //Used by End turn button
     [Command(requiresAuthority = false)]
-    public void CmdEndTurn()
+    public void CmdDraftCharacter(int draftedByPlayerID, int classID)
     {
-        this.NextTurn();
+        float initiative = ClassDataSO.Singleton.GetClassByID(classID).stats.initiative;
+        if (Utility.DictContainsValue(this.sortedTurnOrder, classID))
+        {
+            Debug.Log("Error : Character is already in turnOrder.");
+            return;
+        }
+        this.characterOwners.Add(classID, draftedByPlayerID);
+        this.sortedTurnOrder.Add(initiative, classID);
+        this.RpcOnCharAddedToTurnOrder();
     }
 
-    [Server]
-    public void NextTurn()
-    {
-        switch (this.currentPhase)
-        {
-            case GamePhase.waitingForClient:
-                throw new Exception("You shouldn't be able to end turn while waiting for client...");
-            case GamePhase.draft:
-                //if(this.!AllCharactersAreDrafted())
-                //    this.SwapPlayerTurn();
-                //else
-                //    this.SetPhase(GameMode.characterPlacement);
-                break;
-            case GamePhase.characterPlacement:
-                if (!AllHisCharactersAreOnBoard(this.OtherPlayer(playerTurn)))
-                {
-                    this.SwapPlayerTurn();
-                }
-
-                if (AllCharactersAreOnBoard())
-                {
-                    this.SetPhase(GamePhase.gameplay);                    
-                }
-                break;
-            case GamePhase.gameplay:
-                this.NextCharacterTurn();
-                break;
-            case GamePhase.treasureDraft:
-                this.SwapPlayerTurn();
-                break;
-            case GamePhase.treasureEquip:
-                this.SwapPlayerTurn();
-                break;
-        }
-    }
-
-    [Server]
-    private void SetPhase(GamePhase newPhase)
-    {
-        this.currentPhase = newPhase;
-
-        switch(newPhase)
-        {
-            case GamePhase.characterPlacement:
-                this.InitCharacterPlacementMode();
-                break;
-            case GamePhase.gameplay:
-                this.InitGameplayMode();
-                break;
-        }
-    }
-    
-    [Server]
-    private void InitCharacterPlacementMode()
-    {
-        Debug.Log("Initializing character placement mode");
-        this.playerTurn = 0;
-        this.inputHandler.SetControlModeOnAllClients(ControlMode.characterPlacement);
-    }
-
-    [Server]
-    public void InitGameplayMode()
-    {
-        Debug.Log("Initializing gameplay mode");
-        this.turnOrderIndex = 0;
-        this.playerTurn = 0;
-
-        //finds character class id for the next turn so that we can check who owns it
-        int currentCharacterClassID = -1;
-        int i = 0;
-        foreach (int classID in this.sortedTurnOrder.Values)
-        {
-            if (i == this.turnOrderIndex)
-            {
-                currentCharacterClassID = classID;
-            }
-            i++;
-        }
-        if (currentCharacterClassID == -1)
-        {
-            Debug.Log("Error : Bad code for iterating turn order");
-        }
-
-        //if we don't own that char, swap player turn
-        if (this.playerTurn != characterOwners[currentCharacterClassID])
-        {
-            this.SwapPlayerTurn();
-        }
-
-        this.assignControlModeToActivePlayer(this.playerTurn, ControlMode.move);
-        this.RpcOnInitGameplayMode();
-    }
     #endregion
 
     #region Utility
@@ -491,7 +381,7 @@ public class GameController : NetworkBehaviour
         return -1;
     }
 
-    private int OtherPlayer (int playerID)
+    public int OtherPlayer (int playerID)
     {
         if (playerID == 0)
         {
