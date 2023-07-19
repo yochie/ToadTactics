@@ -5,15 +5,12 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 using System;
+using UnityEngine.SceneManagement;
 
 //RTODO: review game progression mechanic
 public class GameController : NetworkBehaviour
 {
     #region Editor vars
-
-    [SerializeField]
-    public MapInputHandler inputHandler;
-
     public uint defaultNumCharsPerPlayer = 3;
 
     #endregion
@@ -50,6 +47,8 @@ public class GameController : NetworkBehaviour
     //maintained on server only
     public IGamePhase currentPhaseObject;
 
+    public MapInputHandler mapInputHandler;
+
     #endregion
 
     #region Synced vars
@@ -81,7 +80,6 @@ public class GameController : NetworkBehaviour
 
     #region Startup
 
-
     //needs to be in start : https://mirror-networking.gitbook.io/docs/manual/components/networkbehaviour
     private void Start()
     {
@@ -94,6 +92,8 @@ public class GameController : NetworkBehaviour
             Destroy(GameController.Singleton.gameObject);
         GameController.Singleton = this;
         this.waitingForClientSpawns = true;
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     public override void OnStartClient()
@@ -164,6 +164,15 @@ public class GameController : NetworkBehaviour
             yield return null;
             if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
                 this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "MainGame")
+        {
+            //should have been instantiated by now since this is called after awake on scene objects
+            this.mapInputHandler = MapInputHandler.Singleton;
         }
     }
 
@@ -289,8 +298,8 @@ public class GameController : NetworkBehaviour
         if (excessClients)
             Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
 
-        this.inputHandler.RpcSetControlModeOnClient(playingClient, activePlayerMode);
-        this.inputHandler.RpcSetControlModeOnClient(idleClient, ControlMode.none);
+        this.mapInputHandler.RpcSetControlModeOnClient(playingClient, activePlayerMode);
+        this.mapInputHandler.RpcSetControlModeOnClient(idleClient, ControlMode.none);
     }
 
     [Command(requiresAuthority = false)]

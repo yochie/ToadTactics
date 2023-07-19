@@ -10,8 +10,9 @@ public class MenuController : MonoBehaviour
     {
 
         MyNetworkManager.singleton.StartHost();
-        SceneManager.LoadScene("MainGame");
-    }
+        SceneManager.LoadScene("Draft");
+    }    
+
     public void ExitGame()
     {
         Application.Quit();

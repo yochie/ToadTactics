@@ -17,8 +17,8 @@ public class CharacterPlacementPhase : IGamePhase
         this.Name = name;
         this.Controller = controller;
 
-        Controller.playerTurn = 0;
-        Controller.inputHandler.SetControlModeOnAllClients(ControlMode.characterPlacement);
+        this.Controller.playerTurn = 0;
+        this.Controller.mapInputHandler.SetControlModeOnAllClients(ControlMode.characterPlacement);
     }
 
     [Server]

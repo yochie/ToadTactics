@@ -945,7 +945,7 @@ MonoBehaviour:
   autoConnectClientBuild: 0
   sendRate: 30
   offlineScene: Assets/Scenes/Menu.unity
-  onlineScene: Assets/Scenes/MainGame.unity
+  onlineScene: Assets/Scenes/Draft.unity
   transport: {fileID: 1696785497}
   networkAddress: localhost
   maxConnections: 100
