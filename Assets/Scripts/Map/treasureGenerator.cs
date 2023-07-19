@@ -19,7 +19,7 @@ public class treasureGenerator : NetworkBehaviour
         TreasureSpawnLocation randomLocation = spawnLocations[Random.Range(0, spawnLocations.Count)];
 
         Hex treasureHex = Map.GetHex(grid, randomLocation.treasureCoordinate.x, randomLocation.treasureCoordinate.y);
-        GameObject treasureObject = Instantiate(treasurePrefab, treasureHex.transform.position, Quaternion.identity);
+        GameObject treasureObject = Instantiate(this.treasurePrefab, treasureHex.transform.position, Quaternion.identity);
         NetworkServer.Spawn(treasureObject);
         treasureHex.holdsTreasure = true;
 

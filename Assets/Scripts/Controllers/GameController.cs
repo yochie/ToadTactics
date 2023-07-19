@@ -81,8 +81,17 @@ public class GameController : NetworkBehaviour
 
     #region Startup
 
+
+    //needs to be in start : https://mirror-networking.gitbook.io/docs/manual/components/networkbehaviour
+    private void Start()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     private void Awake()
     {
+        if (GameController.Singleton != null)
+            Destroy(GameController.Singleton.gameObject);
         GameController.Singleton = this;
         this.waitingForClientSpawns = true;
     }

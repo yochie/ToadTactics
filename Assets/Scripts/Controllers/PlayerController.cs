@@ -22,6 +22,13 @@ public class PlayerController : NetworkBehaviour
     public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
 
     #region Startup
+
+    //needs to be in start : https://mirror-networking.gitbook.io/docs/manual/components/networkbehaviour
+    private void Start()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
