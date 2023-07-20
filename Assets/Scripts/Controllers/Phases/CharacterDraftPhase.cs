@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class CharacterDraftPhase : IGamePhase
 {
-    public GameController Controller => throw new System.NotImplementedException();
+    public GameController Controller { get; set; }
 
-    public string Name { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public string Name { get; set; }
 
-    public GamePhaseID ID => throw new System.NotImplementedException();
+    public GamePhaseID ID => GamePhaseID.characterDraft;
 
     public void Init(string name, GameController controller)
     {
-        throw new System.NotImplementedException();
+        this.Name = name;
+        this.Controller = controller;
+
+        //Roll 6 classes
+
+        //fill slots
+
+
     }
 
     public void Tick()

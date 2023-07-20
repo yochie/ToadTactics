@@ -114,9 +114,6 @@ public class GameController : NetworkBehaviour
         this.turnOrderIndex = -1;
         this.playerTurn = -1;
         this.currentRound = -1;
-
-        Map.Singleton.Initialize();
-
     }
 
     #endregion
@@ -171,6 +168,8 @@ public class GameController : NetworkBehaviour
     {
         if (scene.name == "MainGame")
         {
+            Map.Singleton.Initialize();
+
             //should have been instantiated by now since this is called after awake on scene objects
             this.mapInputHandler = MapInputHandler.Singleton;
         }
