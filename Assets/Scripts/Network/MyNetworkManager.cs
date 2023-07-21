@@ -121,6 +121,13 @@ public class MyNetworkManager : NetworkManager
     public override void OnClientSceneChanged()
     {
         base.OnClientSceneChanged();
+
+        //let server know that remote client is ready
+        if (!GameController.Singleton.isServer)
+        {
+            GameController.Singleton.CmdRemoteClientFinishedLoadingScene(SceneManager.GetActiveScene().name);
+            return;
+        }
     }
 
     #endregion
@@ -152,6 +159,11 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         base.OnServerAddPlayer(conn);
+
+        if (this.numPlayers == 2)
+        {
+            NetworkManager.singleton.ServerChangeScene("Draft");
+        }
     }
 
     /// <summary>

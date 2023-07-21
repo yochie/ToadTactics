@@ -37,15 +37,15 @@ public class GameController : NetworkBehaviour
 
     public static GameController Singleton { get; private set; }
 
-    private bool waitingForClientSpawns;
+    //private bool waitingForClient;
 
     public PlayerController LocalPlayer { get; set; }
 
     //Only filled on server
     public List<PlayerController> playerControllers = new();
-
-    //maintained on server only
+    private string remoteClientLoadedScene = "";
     public IGamePhase currentPhaseObject;
+
 
     public MapInputHandler mapInputHandler;
 
@@ -94,7 +94,7 @@ public class GameController : NetworkBehaviour
         if (GameController.Singleton != null)
             Destroy(GameController.Singleton.gameObject);
         GameController.Singleton = this;
-        this.waitingForClientSpawns = true;
+        //this.waitingForClient = true;
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -159,26 +159,38 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    //Phases that require new scene are set in this callback to ensure scene gameobjects are loaded
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        switch (scene.name)
+        Debug.LogFormat("Loaded scene {0}", scene.name);
+
+        //needed because client won't exist yet in lobby scene
+        if (scene.name == "Lobby" || !isServer)
+            return;
+
+        if(remoteClientLoadedScene == scene.name)
         {
-            case "Draft":
-                this.draftUI = GameObject.FindWithTag("DraftUI").GetComponent<DraftUI>();
-                break;
-            case "MainGame":
-                Map.Singleton.Initialize();
-
-                //setup turn order list
-                foreach(int classID in this.characterOwners.Keys)
-                {
-                    this.CmdAddCharToTurnOrder(classID);
-                }
-
-                //should have been instantiated by now since this is called after awake on scene objects
-                this.mapInputHandler = MapInputHandler.Singleton;
-                break;
+            InitScene(scene.name);
         }
+        else
+        {
+            StartCoroutine(InitSceneOnceReadyCoroutine(scene.name));
+        }
+    }
+
+    [Client]
+    private IEnumerator InitSceneOnceReadyCoroutine(string sceneName)
+    {
+        Debug.LogFormat("Starting scene init coroutine for scene {0}", sceneName);
+        while (this.remoteClientLoadedScene != sceneName)
+        {
+            Debug.Log("yielding");
+            yield return null;            
+        }
+
+        Debug.Log("client finished loading scene, will begin init.");
+
+        this.InitScene(sceneName);
     }
 
     #endregion
@@ -225,27 +237,19 @@ public class GameController : NetworkBehaviour
 
     #region Commands/Server
 
-    //ACTUAL GAME START once everything is ready on client
-    [Command(requiresAuthority = false)]
-    private void CmdStartPlaying()
-    {
-        this.currentRound = 0;
-        //TODO change to actual draft
-        //foreach(PlayerController player in this.playerControllers)
-        //{
-        //    player.FakeDraft();
-        //}
-        //this.SetPhase(new CharacterPlacementPhase());
-
-        this.SetPhase(new CharacterDraftPhase());
-    }
-
     //Main game tick
     //Called at end of every turn for all gamemodes
     [Command(requiresAuthority = false)]
     public void NextTurn()
     {
         this.currentPhaseObject.Tick();
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdRemoteClientFinishedLoadingScene(string sceneName)
+    {
+        Debug.LogFormat("Client finished loading scene {0}", sceneName);
+        this.remoteClientLoadedScene = sceneName;
     }
 
     [Server]
@@ -320,7 +324,7 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
-    public void CmdAddCharToTurnOrder(int classID)
+    public void AddCharToTurnOrder(int classID)
     {
         float initiative = ClassDataSO.Singleton.GetClassByID(classID).stats.initiative;
         if (Utility.DictContainsValue(this.sortedTurnOrder, classID))
@@ -332,7 +336,30 @@ public class GameController : NetworkBehaviour
         this.RpcOnCharAddedToTurnOrder();
     }
 
+    [Server]
+    private void InitScene(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "Draft":
+                this.SetPhase(new CharacterDraftPhase());
+                break;
 
+            case "MainGame":
+                this.SetPhase(new CharacterPlacementPhase());
+                Map.Singleton.Initialize();
+
+                //setup turn order list
+                foreach (int classID in this.characterOwners.Keys)
+                {
+                    this.AddCharToTurnOrder(classID);
+                }
+
+                //should have been instantiated by now since this is called after awake on scene objects
+                this.mapInputHandler = MapInputHandler.Singleton;
+                break;
+        }
+    }
     #endregion
 
     #region Utility
@@ -430,27 +457,41 @@ public class GameController : NetworkBehaviour
 
     private void Update()
     {
-        //waits for all setup between phases before starting
-        if (this.waitingForClientSpawns && isServer)
-        {
-            switch (this.currentPhaseID)
-            {
-                case GamePhaseID.waitingForClient:
-                    if(NetworkManager.singleton.numPlayers == 2)
-                    {
-                        this.waitingForClientSpawns = false;
-                        this.CmdStartPlaying();
-                    }
-                    break;
-                //case GamePhaseID.characterPlacement:
-                //    if (NetworkManager.singleton.numPlayers == 2 && Map.Singleton.hexesSpawnedOnClient)
-                //    {
-                //        this.waitingForClientSpawns = false;
-                //        this.CmdStartPlaying();
-                //    }
-                //    break;
-            }
+        //if (this.waitingForClient && isServer) 
+        //{ 
+        //    switch (this.currentPhaseID)
+        //    {
+        //        case GamePhaseID.waitingForClient:
+        //            if (NetworkManager.singleton.numPlayers == 2)
+        //            {
+        //                this.waitingForClient = false;
+        //                this.StartDraft();
+        //            }
+        //            break;
+        //    }
+        //}
 
-        }
+        //waits for all setup between phases before starting
+        //if (this.waitingForClientSpawns && isServer)
+        //    {
+        //        switch (this.currentPhaseID)
+        //        {
+        //            case GamePhaseID.waitingForClient:
+        //                if (NetworkManager.singleton.numPlayers == 2)
+        //                {
+        //                    this.waitingForClientSpawns = false;
+        //                    this.CmdStartPlaying();
+        //                }
+        //                break;
+        //                //case GamePhaseID.characterPlacement:
+        //                //    if (NetworkManager.singleton.numPlayers == 2 && Map.Singleton.hexesSpawnedOnClient)
+        //                //    {
+        //                //        this.waitingForClientSpawns = false;
+        //                //        this.CmdStartPlaying();
+        //                //    }
+        //                //    break;
+        //        }
+        //    }
     }
+
 }

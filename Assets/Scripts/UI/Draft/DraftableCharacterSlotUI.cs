@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class DraftableSlotUI : NetworkBehaviour
+public class DraftableCharacterSlotUI : NetworkBehaviour
 {
     public int holdsClassID;
 
@@ -42,8 +42,6 @@ public class DraftableSlotUI : NetworkBehaviour
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderFromDictionary(classData.GetPrintableAbilityDictionary());
         this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary());
-
-        this.draftButton.GetComponent<Button>().onClick.AddListener(delegate{ GameController.Singleton.draftUI.DraftCharacter(classID); });
     }
 
     [ClientRpc]
@@ -52,10 +50,22 @@ public class DraftableSlotUI : NetworkBehaviour
         this.draftButton.SetActive(state);
     }
 
+    internal void SetButtonActiveState(bool state)
+    {
+        this.draftButton.SetActive(state);
+    }
+
+    //handler for event
     public void OnCharacterDrafted(int playerID, int classID){
         if (this.holdsClassID != classID)
             return;
 
-        this.RpcSetButtonActiveState(false);
+        this.SetButtonActiveState(false);
+    }
+
+    //called by button
+    public void DraftCharacter()
+    {
+        GameController.Singleton.LocalPlayer.CmdDraftCharacter(this.holdsClassID);
     }
 }

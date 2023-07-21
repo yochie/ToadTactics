@@ -8,9 +8,7 @@ public class MenuController : MonoBehaviour
 {
     public void StartGame()
     {
-
         MyNetworkManager.singleton.StartHost();
-        SceneManager.LoadScene("Draft");
     }    
 
     public void ExitGame()
