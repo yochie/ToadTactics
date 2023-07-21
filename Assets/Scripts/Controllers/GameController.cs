@@ -49,6 +49,8 @@ public class GameController : NetworkBehaviour
 
     public MapInputHandler mapInputHandler;
 
+    public DraftUI draftUI;
+
     #endregion
 
     #region Synced vars
@@ -71,11 +73,12 @@ public class GameController : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlayerTurnChanged))]
     public int playerTurn;
 
-    [SyncVar(hook = nameof(OnGamePhaseIDChanged))]
+    [SyncVar]
     public GamePhaseID currentPhaseID;
 
     [SyncVar]
     public int currentRound;
+
     #endregion
 
     #region Startup
@@ -119,14 +122,6 @@ public class GameController : NetworkBehaviour
     #endregion
 
     #region Callbacks
-    //TODO : delete or move to mainhud
-    //callback for gamemode UI
-    [Client]
-    private void OnGamePhaseIDChanged(GamePhaseID oldPhase, GamePhaseID newPhase)
-    {
-        MainHUD.Singleton.phaseLabel.text = newPhase.ToString();
-    }
-
     //callback for syncing list of active characters
     [Client]
     private void OnPlayerCharactersNetIDsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netidArg)
@@ -166,12 +161,17 @@ public class GameController : NetworkBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "MainGame")
+        switch (scene.name)
         {
-            Map.Singleton.Initialize();
+            case "Draft":
+                this.draftUI = GameObject.FindWithTag("DraftUI").GetComponent<DraftUI>();
+                break;
+            case "MainGame":
+                Map.Singleton.Initialize();
 
-            //should have been instantiated by now since this is called after awake on scene objects
-            this.mapInputHandler = MapInputHandler.Singleton;
+                //should have been instantiated by now since this is called after awake on scene objects
+                this.mapInputHandler = MapInputHandler.Singleton;
+                break;
         }
     }
 
@@ -225,11 +225,13 @@ public class GameController : NetworkBehaviour
     {
         this.currentRound = 0;
         //TODO change to actual draft
-        foreach(PlayerController player in this.playerControllers)
-        {
-            player.FakeDraft();
-        }
-        this.SetPhase(new CharacterPlacementPhase());
+        //foreach(PlayerController player in this.playerControllers)
+        //{
+        //    player.FakeDraft();
+        //}
+        //this.SetPhase(new CharacterPlacementPhase());
+
+        this.SetPhase(new CharacterDraftPhase());
     }
 
     //Main game tick
@@ -243,6 +245,7 @@ public class GameController : NetworkBehaviour
     [Server]
     public void SetPhase(IGamePhase newPhase)
     {
+        Debug.LogFormat("Changing to phase {0}", newPhase.ID);
         this.currentPhaseObject = newPhase;
         this.currentPhaseID = newPhase.ID;
 
@@ -250,6 +253,9 @@ public class GameController : NetworkBehaviour
         {
             case GamePhaseID.waitingForClient:
                 newPhase.Init("Waiting for client", this);
+                break;
+            case GamePhaseID.characterDraft:
+                newPhase.Init("Drafting characters", this);
                 break;
             case GamePhaseID.characterPlacement:
                 newPhase.Init("Placement " + this.currentRound, this);
@@ -412,13 +418,25 @@ public class GameController : NetworkBehaviour
 
     private void Update()
     {
+        //waits for all setup between phases before starting
         if (this.waitingForClientSpawns && isServer)
         {
-
-            if (NetworkManager.singleton.numPlayers == 2 && Map.Singleton.hexesSpawnedOnClient)
+            switch (this.currentPhaseID)
             {
-                this.waitingForClientSpawns = false;
-                this.CmdStartPlaying();
+                case GamePhaseID.waitingForClient:
+                    if(NetworkManager.singleton.numPlayers == 2)
+                    {
+                        this.waitingForClientSpawns = false;
+                        this.CmdStartPlaying();
+                    }
+                    break;
+                //case GamePhaseID.characterPlacement:
+                //    if (NetworkManager.singleton.numPlayers == 2 && Map.Singleton.hexesSpawnedOnClient)
+                //    {
+                //        this.waitingForClientSpawns = false;
+                //        this.CmdStartPlaying();
+                //    }
+                //    break;
             }
 
         }

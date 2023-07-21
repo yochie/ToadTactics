@@ -8,9 +8,6 @@ using UnityEngine.UI;
 public class MainHUD : NetworkBehaviour
 {
     [SerializeField]
-    public TextMeshProUGUI phaseLabel;
-
-    [SerializeField]
     private GameObject endTurnButton;
 
     [SerializeField]

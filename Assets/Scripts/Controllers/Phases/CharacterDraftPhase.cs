@@ -15,6 +15,9 @@ public class CharacterDraftPhase : IGamePhase
         this.Name = name;
         this.Controller = controller;
 
+        //test
+        this.Controller.draftUI.Init();
+
         //Roll 6 classes
 
         //fill slots

@@ -61,6 +61,14 @@ public class ClassDataSO : ScriptableObject
         return this.characterClasses.Keys.ToList<int>();
     }
 
+    public int GetRandomClassID()
+    {
+        List<int> classIDs = ClassDataSO.Singleton.GetClassIDs();
+        int numClassIDs = classIDs.Count;
+
+        return classIDs[UnityEngine.Random.Range(0, numClassIDs)];
+    }
+
     public CharacterClass GetClassByID(int classID)
     {
         return this.characterClasses[classID];
