@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class DraftableSlotUI : NetworkBehaviour
 {
@@ -38,5 +39,11 @@ public class DraftableSlotUI : NetworkBehaviour
         this.abilitiesTable.RenderFromDictionary(classData.GetPrintableAbilityDictionary());
         this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary());
 
+    }
+
+    [ClientRpc]
+    internal void RpcSetButtonActiveState(bool state)
+    {
+        this.draftButton.SetActive(state);
     }
 }

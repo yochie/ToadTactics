@@ -16,6 +16,8 @@ public class DraftUI : MonoBehaviour
             do { newID = ClassDataSO.Singleton.GetRandomClassID(); } while (alreadyRolledIDs.Contains(newID));
             alreadyRolledIDs.Add(newID);
             slot.RpcRenderClassData(newID);
+
+            slot.RpcSetButtonActiveState(true);
         }        
     }
 }
