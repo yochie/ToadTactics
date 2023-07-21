@@ -8,6 +8,8 @@ using System;
 
 public class DraftableSlotUI : NetworkBehaviour
 {
+    public int holdsClassID;
+
     [SerializeField]
     private Image spriteImage;
 
@@ -27,8 +29,10 @@ public class DraftableSlotUI : NetworkBehaviour
     private GameObject draftButton;
 
     [ClientRpc]
-    public void RpcRenderClassData(int classID)
+    public void RpcInit(int classID)
     {
+        this.holdsClassID = classID;
+
         //Debug.Log("Rendering draftable");
         CharacterClass classData = ClassDataSO.Singleton.GetClassByID(classID);
         Sprite sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
@@ -39,11 +43,19 @@ public class DraftableSlotUI : NetworkBehaviour
         this.abilitiesTable.RenderFromDictionary(classData.GetPrintableAbilityDictionary());
         this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary());
 
+        this.draftButton.GetComponent<Button>().onClick.AddListener(delegate{ GameController.Singleton.draftUI.DraftCharacter(classID); });
     }
 
     [ClientRpc]
     internal void RpcSetButtonActiveState(bool state)
     {
         this.draftButton.SetActive(state);
+    }
+
+    public void OnCharacterDrafted(int playerID, int classID){
+        if (this.holdsClassID != classID)
+            return;
+
+        this.RpcSetButtonActiveState(false);
     }
 }

@@ -169,6 +169,12 @@ public class GameController : NetworkBehaviour
             case "MainGame":
                 Map.Singleton.Initialize();
 
+                //setup turn order list
+                foreach(int classID in this.characterOwners.Keys)
+                {
+                    this.CmdAddCharToTurnOrder(classID);
+                }
+
                 //should have been instantiated by now since this is called after awake on scene objects
                 this.mapInputHandler = MapInputHandler.Singleton;
                 break;
@@ -307,8 +313,14 @@ public class GameController : NetworkBehaviour
         this.mapInputHandler.RpcSetControlModeOnClient(idleClient, ControlMode.none);
     }
 
-    [Command(requiresAuthority = false)]
-    public void CmdDraftCharacter(int draftedByPlayerID, int classID)
+    [Server]
+    public void CmdAddCharToCharacterOwners(int draftedByPlayerID, int classID)
+    {
+        this.characterOwners.Add(classID, draftedByPlayerID);
+    }
+
+    [Server]
+    public void CmdAddCharToTurnOrder(int classID)
     {
         float initiative = ClassDataSO.Singleton.GetClassByID(classID).stats.initiative;
         if (Utility.DictContainsValue(this.sortedTurnOrder, classID))
@@ -316,10 +328,10 @@ public class GameController : NetworkBehaviour
             Debug.Log("Error : Character is already in turnOrder.");
             return;
         }
-        this.characterOwners.Add(classID, draftedByPlayerID);
         this.sortedTurnOrder.Add(initiative, classID);
         this.RpcOnCharAddedToTurnOrder();
     }
+
 
     #endregion
 

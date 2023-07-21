@@ -211,6 +211,7 @@ GameObject:
   - component: {fileID: 7477028147701800119}
   - component: {fileID: 7598477135798624817}
   - component: {fileID: 2715696140710627871}
+  - component: {fileID: 5130557729914102253}
   m_Layer: 0
   m_Name: DraftableCharacterSlotUI
   m_TagString: Untagged
@@ -314,12 +315,41 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  holdsClassID: 0
   spriteImage: {fileID: 152058478695813124}
   nameLabel: {fileID: 2492957255000105331}
   descriptionLabel: {fileID: 2715855109400066422}
   abilitiesTable: {fileID: 7746158526558049855}
   statsTable: {fileID: 3547894774721501335}
   draftButton: {fileID: 2177547960083077098}
+--- !u!114 &5130557729914102253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4044031974028053451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bb57a502d9dc0a40b4bc673f686c358, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 95970226cb210e04091fc105eb0a841e, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2715696140710627871}
+        m_TargetAssemblyTypeName: DraftableSlotUI, Assembly-CSharp
+        m_MethodName: OnCharacterDrafted
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6698935270250197270
 GameObject:
   m_ObjectHideFlags: 0

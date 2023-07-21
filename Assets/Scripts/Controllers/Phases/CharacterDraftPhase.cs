@@ -18,10 +18,6 @@ public class CharacterDraftPhase : IGamePhase
         //test
         this.Controller.draftUI.Init();
 
-        //Roll 6 classes
-
-        //fill slots
-
 
     }
 

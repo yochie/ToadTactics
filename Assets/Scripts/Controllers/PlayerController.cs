@@ -100,17 +100,17 @@ public class PlayerController : NetworkBehaviour
             while (usedClasses.Contains(classID));
             usedClasses.Add(classID);
 
-            this.DraftCharacter(classID);
+            this.CmdDraftCharacter(classID);
         }
     }
 
-    [Server]
-    public void DraftCharacter(int classID)
+    [Command]
+    public void CmdDraftCharacter(int classID)
     {
         //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
-        GameController.Singleton.CmdDraftCharacter(this.playerID, classID);
+        GameController.Singleton.CmdAddCharToCharacterOwners(this.playerID, classID);
 
-        //updates UI elements
+        //throw event that updates UI elements
         this.RpcOnCharacterDrafted(this.playerID, classID);
     }
 

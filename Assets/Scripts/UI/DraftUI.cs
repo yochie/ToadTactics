@@ -15,9 +15,26 @@ public class DraftUI : MonoBehaviour
             int newID;
             do { newID = ClassDataSO.Singleton.GetRandomClassID(); } while (alreadyRolledIDs.Contains(newID));
             alreadyRolledIDs.Add(newID);
-            slot.RpcRenderClassData(newID);
+            slot.RpcInit(newID);
 
             slot.RpcSetButtonActiveState(true);
         }        
+    }
+
+    //Called by button during draft
+    public void DraftCharacter(int classID)
+    {
+        GameController.Singleton.LocalPlayer.CmdDraftCharacter(classID);
+    }
+
+    private DraftableSlotUI GetSlotForID(int classID)
+    {
+        foreach (DraftableSlotUI slot in draftableSlots)
+        {
+            if (slot.holdsClassID == classID)
+                return slot;
+        }
+
+        throw new System.Exception("No slot with given ID was found");
     }
 }
