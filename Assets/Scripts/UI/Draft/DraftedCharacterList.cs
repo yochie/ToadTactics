@@ -41,5 +41,6 @@ public class DraftedCharacterList : MonoBehaviour
         GameObject slotObject = Instantiate(this.slotPrefab, this.transform);
         DraftedCharacterSlotUI slot = slotObject.GetComponent<DraftedCharacterSlotUI>();
         slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
+        slot.SetClassID(classID);
     }
 }

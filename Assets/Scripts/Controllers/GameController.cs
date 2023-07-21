@@ -7,7 +7,6 @@ using TMPro;
 using System;
 using UnityEngine.SceneManagement;
 
-//RTODO: review game progression mechanic
 public class GameController : NetworkBehaviour
 {
     #region Editor vars
@@ -36,8 +35,6 @@ public class GameController : NetworkBehaviour
     #region Runtime vars
 
     public static GameController Singleton { get; private set; }
-
-    //private bool waitingForClient;
 
     public PlayerController LocalPlayer { get; set; }
 
@@ -94,8 +91,6 @@ public class GameController : NetworkBehaviour
         if (GameController.Singleton != null)
             Destroy(GameController.Singleton.gameObject);
         GameController.Singleton = this;
-        //this.waitingForClient = true;
-
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -121,120 +116,6 @@ public class GameController : NetworkBehaviour
 
     #endregion
 
-    #region Callbacks
-    //callback for syncing list of active characters
-    [Client]
-    private void OnPlayerCharactersNetIDsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netidArg)
-    {
-        switch (op)
-        {
-            case SyncDictionary<int, uint>.Operation.OP_ADD:
-                this.playerCharacters[key] = null;
-                if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
-                    this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
-                else
-                    StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_SET:
-                // entry changed
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_REMOVE:
-                // entry removed
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_CLEAR:
-                // Dictionary was cleared
-                break;
-        }
-    }
-
-    //coroutine for finishing syncvar netid matching
-    [Client]
-    private IEnumerator PlayerFromNetIDCoroutine(int key, uint netIdArg)
-    {
-        while (this.playerCharacters[key] == null)
-        {
-            yield return null;
-            if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
-                this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
-        }
-    }
-
-    //Phases that require new scene are set in this callback to ensure scene gameobjects are loaded
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        Debug.LogFormat("Loaded scene {0}", scene.name);
-
-        //needed because client won't exist yet in lobby scene
-        if (scene.name == "Lobby" || !isServer)
-            return;
-
-        if(remoteClientLoadedScene == scene.name)
-        {
-            InitScene(scene.name);
-        }
-        else
-        {
-            StartCoroutine(InitSceneOnceReadyCoroutine(scene.name));
-        }
-    }
-
-    [Client]
-    private IEnumerator InitSceneOnceReadyCoroutine(string sceneName)
-    {
-        Debug.LogFormat("Starting scene init coroutine for scene {0}", sceneName);
-        while (this.remoteClientLoadedScene != sceneName)
-        {
-            Debug.Log("yielding");
-            yield return null;            
-        }
-
-        Debug.Log("client finished loading scene, will begin init.");
-
-        this.InitScene(sceneName);
-    }
-
-    #endregion
-
-    #region Events
-    [ClientRpc]
-    private void RpcOnCharAddedToTurnOrder()
-    {
-        this.onCharAddedToTurnOrder.Raise();
-    }
-
-    //called on on all clients by syncvar hook
-    [Client]
-    private void OnTurnOrderIndexChanged(int prevTurnIndex, int newTurnIndex)
-    {
-        this.onTurnOrderIndexChanged.Raise(newTurnIndex);
-
-    }
-
-    [ClientRpc]
-    public void RpcOnInitGameplayMode()
-    {
-        this.onInitGameplayMode.Raise();
-    }
-
-    //called on on all clients by syncvar hook
-    [Client]
-    private void OnPlayerTurnChanged(int _, int newPlayerID)
-    {
-        if (newPlayerID == -1)
-            //we havent started game yet
-            return;
-
-        if (newPlayerID == this.LocalPlayer.playerID)
-        {
-            this.onLocalPlayerTurnStart.Raise();
-        }
-        else
-        {
-            this.onLocalPlayerTurnEnd.Raise();
-        }
-    }
-    #endregion
-
     #region Commands/Server
 
     //Main game tick
@@ -248,7 +129,6 @@ public class GameController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdRemoteClientFinishedLoadingScene(string sceneName)
     {
-        Debug.LogFormat("Client finished loading scene {0}", sceneName);
         this.remoteClientLoadedScene = sceneName;
     }
 
@@ -318,9 +198,15 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
-    public void CmdAddCharToCharacterOwners(int draftedByPlayerID, int classID)
+    public void CmdDraftCharacter(int draftedByPlayerID, int classID)
     {
         this.characterOwners.Add(classID, draftedByPlayerID);
+
+        if (this.draftUI.AllCharactersHaveBeenDrafted())
+        {
+            Debug.Log("All chars drafted. Setting up king selection.");
+            this.RpcSetupKingSelection();
+        }
     }
 
     [Server]
@@ -337,7 +223,7 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
-    private void InitScene(string sceneName)
+    private void ServerSceneInit(string sceneName)
     {
         switch (sceneName)
         {
@@ -358,6 +244,146 @@ public class GameController : NetworkBehaviour
                 //should have been instantiated by now since this is called after awake on scene objects
                 this.mapInputHandler = MapInputHandler.Singleton;
                 break;
+        }
+    }
+    #endregion
+
+    #region Callbacks
+    //callback for syncing list of active characters
+    private void OnPlayerCharactersNetIDsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netidArg)
+    {
+        switch (op)
+        {
+            case SyncDictionary<int, uint>.Operation.OP_ADD:
+                this.playerCharacters[key] = null;
+                if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
+                    this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
+                else
+                    StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_SET:
+                // entry changed
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_REMOVE:
+                // entry removed
+                break;
+            case SyncDictionary<int, uint>.Operation.OP_CLEAR:
+                // Dictionary was cleared
+                break;
+        }
+    }
+
+    //coroutine for finishing syncvar netid matching
+    private IEnumerator PlayerFromNetIDCoroutine(int key, uint netIdArg)
+    {
+        while (this.playerCharacters[key] == null)
+        {
+            yield return null;
+            if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
+                this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+        }
+    }
+
+    //Phases that require new scene are set in this callback to ensure scene gameobjects are loaded
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.LogFormat("Loaded scene {0}", scene.name);
+
+        //needed because network isn't properly setup yet, causing weird stuff
+        if (scene.name == "Lobby")
+            return;
+
+        this.LocalSceneInit(scene.name);
+
+        //rest of scene init can be handled server side or with Rpcs
+        if (!isServer)
+            return;
+
+        //ensure that remote client has finished loading scene
+        if (remoteClientLoadedScene == scene.name)
+        {
+            this.ServerSceneInit(scene.name);
+        }
+        else
+        {
+            StartCoroutine(InitSceneOnceReadyCoroutine(scene.name));
+        }
+    }
+
+    private IEnumerator InitSceneOnceReadyCoroutine(string sceneName)
+    {
+        while (this.remoteClientLoadedScene != sceneName)
+        {
+            yield return null;            
+        }
+        this.ServerSceneInit(sceneName);
+    }
+
+    //setup scene references on all clients ASAP to avoid null refs that can occur when setting them via async Rpcs
+    private void LocalSceneInit(string sceneName)
+    {
+        if (sceneName == "Draft")
+            this.draftUI = GameObject.FindWithTag("DraftUI").GetComponent<DraftUI>();
+
+        if (sceneName == "MainGame")
+            this.mapInputHandler = MapInputHandler.Singleton;
+    }
+
+    #endregion
+
+    #region Rpcs
+
+    [ClientRpc]
+    private void RpcSetupKingSelection()
+    {
+        List<int> kingCandidates = new();
+        foreach (KeyValuePair<int, int> entry in this.characterOwners)
+        {
+            if (entry.Value == this.LocalPlayer.playerID)
+                kingCandidates.Add(entry.Key);
+        }
+
+        this.draftUI.SetupKingSelection(kingCandidates);
+    }
+
+    #endregion
+
+    #region Events
+    [ClientRpc]
+    private void RpcOnCharAddedToTurnOrder()
+    {
+        this.onCharAddedToTurnOrder.Raise();
+    }
+
+    //called on on all clients by syncvar hook
+    [Client]
+    private void OnTurnOrderIndexChanged(int prevTurnIndex, int newTurnIndex)
+    {
+        this.onTurnOrderIndexChanged.Raise(newTurnIndex);
+
+    }
+
+    [ClientRpc]
+    public void RpcOnInitGameplayMode()
+    {
+        this.onInitGameplayMode.Raise();
+    }
+
+    //called on on all clients by syncvar hook
+    [Client]
+    private void OnPlayerTurnChanged(int _, int newPlayerID)
+    {
+        if (newPlayerID == -1)
+            //we havent started game yet
+            return;
+
+        if (newPlayerID == this.LocalPlayer.playerID)
+        {
+            this.onLocalPlayerTurnStart.Raise();
+        }
+        else
+        {
+            this.onLocalPlayerTurnEnd.Raise();
         }
     }
     #endregion
@@ -457,20 +483,6 @@ public class GameController : NetworkBehaviour
 
     private void Update()
     {
-        //if (this.waitingForClient && isServer) 
-        //{ 
-        //    switch (this.currentPhaseID)
-        //    {
-        //        case GamePhaseID.waitingForClient:
-        //            if (NetworkManager.singleton.numPlayers == 2)
-        //            {
-        //                this.waitingForClient = false;
-        //                this.StartDraft();
-        //            }
-        //            break;
-        //    }
-        //}
-
         //waits for all setup between phases before starting
         //if (this.waitingForClientSpawns && isServer)
         //    {

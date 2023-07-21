@@ -17,14 +17,7 @@ public class CharacterDraftPhase : IGamePhase
         this.Name = name;
         this.Controller = controller;
 
-        Debug.Log(this.Name);
-        Debug.Log(this.Controller);
-        Debug.Log(GameObject.FindWithTag("DraftUI"));
-
-        this.Controller.draftUI = GameObject.FindWithTag("DraftUI").GetComponent<DraftUI>();
-        Debug.Log(this.Controller.draftUI);
         this.Controller.draftUI.Init();
-
     }
 
     [Server]

@@ -10,6 +10,9 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
 {
     public int holdsClassID;
 
+    [SyncVar]
+    public bool hasBeenDrafted;
+
     [SerializeField]
     private Image spriteImage;
 
@@ -28,12 +31,20 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
     [SerializeField]
     private GameObject draftButton;
 
+    [SerializeField]
+    private GameObject crownButton;
+
     [ClientRpc]
     public void RpcInit(int classID)
     {
-        this.holdsClassID = classID;
+        this.Init(classID);
+    }
 
-        //Debug.Log("Rendering draftable");
+    public void Init(int classID, bool asKingCandidate = false)
+    {
+        this.holdsClassID = classID;
+        this.hasBeenDrafted = false;
+
         CharacterClass classData = ClassDataSO.Singleton.GetClassByID(classID);
         Sprite sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
 
@@ -41,18 +52,20 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderFromDictionary(classData.GetPrintableAbilityDictionary());
-        this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary());
+        this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary(), asKingCandidate);
+
+        if (asKingCandidate)
+            this.SetButtonActiveState(true, true);
+        else
+            this.SetButtonActiveState(true, false);
     }
 
-    [ClientRpc]
-    internal void RpcSetButtonActiveState(bool state)
+    internal void SetButtonActiveState(bool state, bool asKingCandidate = false)
     {
-        this.draftButton.SetActive(state);
-    }
-
-    internal void SetButtonActiveState(bool state)
-    {
-        this.draftButton.SetActive(state);
+        if (!asKingCandidate)
+            this.draftButton.SetActive(state);
+        else
+            this.crownButton.SetActive(state);
     }
 
     //handler for event
@@ -63,9 +76,29 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
         this.SetButtonActiveState(false);
     }
 
+    //handler for event
+    public void OnCharacterCrowned(int classID)
+    {
+        this.SetButtonActiveState(false, true);
+    }
+
     //called by button
     public void DraftCharacter()
     {
+        this.CmdSetAsDrafted();
         GameController.Singleton.LocalPlayer.CmdDraftCharacter(this.holdsClassID);
+    }
+
+    //called by button
+
+    public void CrownCharacter()
+    {
+        GameController.Singleton.LocalPlayer.CmdCrownCharacter(this.holdsClassID);
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdSetAsDrafted()
+    {
+        this.hasBeenDrafted = true;
     }
 }

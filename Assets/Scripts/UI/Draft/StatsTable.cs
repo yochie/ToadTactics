@@ -19,17 +19,25 @@ public class StatsTable : MonoBehaviour
     [SerializeField]
     private GameObject statsValueTable;
 
-    internal void RenderFromDictionary(Dictionary<string, string> dictionary)
+    internal void RenderFromDictionary(Dictionary<string, string> dictionary, bool asKingCandidate)
     {
-        foreach (KeyValuePair<string, string> ability in dictionary)
+        foreach (KeyValuePair<string, string> stat in dictionary)
         {
             GameObject nameLabelObject = Instantiate(this.statNameLabelPrefab, this.statsNameTable.gameObject.transform);
             TextMeshProUGUI nameLabel = nameLabelObject.GetComponent<TextMeshProUGUI>();
-            nameLabel.text = ability.Key;
+            nameLabel.text = stat.Key;
 
             GameObject valueLabelObject = Instantiate(this.statValueLabelPrefab, this.statsValueTable.gameObject.transform);
             TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
-            valueLabel.text = ability.Value;
+            if(asKingCandidate && stat.Key == "Health")
+            {
+                valueLabel.text = (Int32.Parse(stat.Value)*2).ToString();
+                valueLabel.color = Color.green;
+            } else
+            {
+                valueLabel.text = stat.Value;
+            }
+            
         }
     }
 }

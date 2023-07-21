@@ -27,6 +27,8 @@ public class PlayerCharacter : NetworkBehaviour
     private int remainingMoves;
     [SyncVar]
     public int ownerID;
+    [SyncVar]
+    public bool isKing;
 
     public override void OnStartClient()
     {

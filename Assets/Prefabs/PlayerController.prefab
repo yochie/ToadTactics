@@ -68,3 +68,5 @@ MonoBehaviour:
   playerID: 0
   onCharacterPlaced: {fileID: 11400000, guid: 90c6609506ffa2c47a76a22c3f64360b, type: 2}
   onCharacterDrafted: {fileID: 11400000, guid: 95970226cb210e04091fc105eb0a841e, type: 2}
+  onCharacterCrowned: {fileID: 11400000, guid: 0bb5e1cc09a6b8b44ae685d30613de5f, type: 2}
+  kingClassID: 0

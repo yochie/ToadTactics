@@ -7,6 +7,7 @@ using System.Collections;
 
 public class PlayerController : NetworkBehaviour
 {
+    //TODO : Make into syncvar..
     //0 for host
     //1 for client
     public int playerID;
@@ -17,9 +18,15 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]
     private IntIntGameEventSO onCharacterDrafted;
 
+    [SerializeField]
+    private IntGameEventSO onCharacterCrowned;
+
     //maps classID to PlayerCharacter
     public readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
     public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
+
+    [SyncVar]
+    public int kingClassID;
 
     #region Startup
 
@@ -78,8 +85,6 @@ public class PlayerController : NetworkBehaviour
     [Server]
     public void FakeDraft()
     {
-        //for now just choose random chars
-        //TODO : fill these using draft eventually
         List<int> usedClasses = new();
 
         //make characters used by other clients unavailable
@@ -87,7 +92,6 @@ public class PlayerController : NetworkBehaviour
         {
             usedClasses.Add(classID);
         }
-        //Debug.LogFormat("usedClasses counts {0}", usedClasses.Count);
         for (int i = 0; i < GameController.Singleton.defaultNumCharsPerPlayer; i++)
         {
             int classID;
@@ -105,10 +109,19 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
+    internal void CmdCrownCharacter(int classID, NetworkConnectionToClient sender = null)
+    {
+        //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
+        this.kingClassID = classID;
+
+        this.TargetRpcOnCharacterCrowned(sender, classID);        
+    }
+
+    [Command]
     public void CmdDraftCharacter(int classID)
     {
         //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
-        GameController.Singleton.CmdAddCharToCharacterOwners(this.playerID, classID);
+        GameController.Singleton.CmdDraftCharacter(this.playerID, classID);
 
         //throw event that updates UI elements
         this.RpcOnCharacterDrafted(this.playerID, classID);
@@ -144,7 +157,7 @@ public class PlayerController : NetworkBehaviour
 
         //update Hex state, synced to clients by syncvar
         destinationHex.holdsCharacterWithClassID = characterClassID;
-        this.RpcOnCharacterPlaced(sender, characterClassID);
+        this.TargetRpcOnCharacterPlaced(sender, characterClassID);
 
 
         Map.Singleton.characterPositions[characterClassID] = destinationHex.coordinates;
@@ -192,7 +205,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void RpcOnCharacterPlaced(NetworkConnectionToClient sender, int charClassID)
+    private void TargetRpcOnCharacterPlaced(NetworkConnectionToClient sender, int charClassID)
     {
         this.onCharacterPlaced.Raise(charClassID);
     }
@@ -201,6 +214,12 @@ public class PlayerController : NetworkBehaviour
     private void RpcOnCharacterDrafted(int draftedByPlayerID, int charClassID)
     {
         this.onCharacterDrafted.Raise(draftedByPlayerID, charClassID);
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnCharacterCrowned(NetworkConnectionToClient sender, int charClassID)
+    {
+        this.onCharacterCrowned.Raise(charClassID);
     }
     #endregion
 }

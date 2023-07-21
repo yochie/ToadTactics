@@ -21,8 +21,6 @@ public class ActionExecutor : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
-        Debug.Log("Pikachu, move!");
-
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter movingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
 
@@ -33,8 +31,6 @@ public class ActionExecutor : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
-        Debug.Log("Pikachu, attack!");
-
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
         PlayerCharacter targetedCharacter = null;
