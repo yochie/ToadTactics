@@ -32,7 +32,7 @@ public class TurnOrderHUD : MonoBehaviour
         int newTurnCharacterId = GameController.Singleton.ClassIdForTurn(newTurnIndex);
 
         //highlights turnOrderSlotUI for currently playing character
-        this.highlightSlot(newTurnCharacterId);
+        this.HighlightSlot(newTurnCharacterId);
     }
 
     public void OnCharacterAddedToTurnOrder(int classID)
@@ -146,7 +146,7 @@ public class TurnOrderHUD : MonoBehaviour
         }
     }
 
-    private void highlightSlot(int classID)
+    private void HighlightSlot(int classID)
     {
         int i = 0;
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
