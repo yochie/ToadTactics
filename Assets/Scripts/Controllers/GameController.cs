@@ -42,8 +42,9 @@ public class GameController : NetworkBehaviour
     public List<PlayerController> playerControllers = new();
     public IGamePhase currentPhaseObject;
 
+    //Only exist in some scenes, so they need to plug themselves here in their own Awake()
+    //dont try to set them here, too tricky to wait for them before handling scene initialization
     public MapInputHandler mapInputHandler;
-
     public DraftUI draftUI;
 
     #endregion
@@ -166,24 +167,14 @@ public class GameController : NetworkBehaviour
         if (scene.name == "Lobby")
             return;
 
-        ////ensure that remote client has finished loading scene
-        //if (SceneAwokenOnLocalClient(scene.name))
-        //{
-        //    this.LocalSceneInit(scene.name);
-        //}
-        //else
-        //{
-        //    StartCoroutine(InitSceneOnceLocalClientReadyCoroutine(scene.name));
-        //}
-
         //rest of scene init can be handled server side or with Rpcs
         if (!isServer)
             return;
 
-        //ensure that remote client has finished loading scene
+        //ensure that all clients has finished loading scene
         if (SceneAwokenOnAllClients(scene.name))
         {
-            this.ServerSceneInit(scene.name);
+            this.NewScenePhaseInit(scene.name);
         }
         else
         {
@@ -197,37 +188,11 @@ public class GameController : NetworkBehaviour
         {
             yield return null;
         }
-        this.ServerSceneInit(sceneName);
+        this.NewScenePhaseInit(sceneName);
     }
 
-    //private IEnumerator InitSceneOnceLocalClientReadyCoroutine(string sceneName)
-    //{
-    //    while (!SceneAwokenOnLocalClient(sceneName))
-    //    {
-    //        yield return null;
-    //    }
-    //    this.LocalSceneInit(sceneName);
-    //}
-
-    ////setup scene references on all clients ASAP to avoid null refs that can occur when setting them via async Rpcs
-    //private void LocalSceneInit(string sceneName)
-    //{
-    //    switch (sceneName)
-    //    {
-    //        case "Draft":
-    //            Debug.Log("setting local draftUI reference");
-    //            this.draftUI = GameObject.FindWithTag("DraftUI").GetComponent<DraftUI>();
-    //            break;
-    //        case "Maingame":
-    //            Debug.Log("setting local mapInputHandler reference");
-    //            Debug.Log(MapInputHandler.Singleton);
-    //            this.mapInputHandler = MapInputHandler.Singleton;
-    //            break;
-    //    }
-    //}
-
     [Server]
-    private void ServerSceneInit(string sceneName)
+    private void NewScenePhaseInit(string sceneName)
     {
         switch (sceneName)
         {
@@ -522,9 +487,7 @@ public class GameController : NetworkBehaviour
             {
                 sortedTurnOrderIndex++;
             }
-
         }
-
         return -1;
     }
 
@@ -551,30 +514,4 @@ public class GameController : NetworkBehaviour
         return true;
     }
     #endregion
-
-    private void Update()
-    {
-        //waits for all setup between phases before starting
-        //if (this.waitingForClientSpawns && isServer)
-        //    {
-        //        switch (this.currentPhaseID)
-        //        {
-        //            case GamePhaseID.waitingForClient:
-        //                if (NetworkManager.singleton.numPlayers == 2)
-        //                {
-        //                    this.waitingForClientSpawns = false;
-        //                    this.CmdStartPlaying();
-        //                }
-        //                break;
-        //                //case GamePhaseID.characterPlacement:
-        //                //    if (NetworkManager.singleton.numPlayers == 2 && Map.Singleton.hexesSpawnedOnClient)
-        //                //    {
-        //                //        this.waitingForClientSpawns = false;
-        //                //        this.CmdStartPlaying();
-        //                //    }
-        //                //    break;
-        //        }
-        //    }
-    }
-
 }
