@@ -11,12 +11,6 @@ public class CharacterSlotsHUD : MonoBehaviour
     private GameObject characterSlotPrefab;
 
     [SerializeField]
-    private IntGameEventSOListener characterPlacedListener;
-
-    [SerializeField]
-    private IntIntGameEventSOListener characterDraftedListener;
-
-    [SerializeField]
     private MapInputHandler inputHandler;
     #endregion
 
@@ -29,7 +23,6 @@ public class CharacterSlotsHUD : MonoBehaviour
     private void Awake()
     {
         CharacterSlotsHUD.Singleton = this;
-        this.characterPlacedListener.Response.AddListener(OnCharacterPlaced);
     }
 
     public void OnCharacterPlaced(int classID)

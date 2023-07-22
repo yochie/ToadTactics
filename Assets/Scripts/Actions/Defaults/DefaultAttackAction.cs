@@ -78,7 +78,7 @@ public class DefaultAttackAction : IAttackAction
 
         if (!this.ActorCharacter.HasRemainingActions())
         {
-            GameController.Singleton.NextTurn();
+            GameController.Singleton.CmdNextTurn();
         }
     }
 

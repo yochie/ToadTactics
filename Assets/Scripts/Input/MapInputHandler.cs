@@ -27,13 +27,14 @@ public class MapInputHandler : NetworkBehaviour
 
     private void OnEnable()
     {
-        if (MapInputHandler.Singleton == null)
-            MapInputHandler.Singleton = this;
-        Debug.Log("MapInputHandler awakened");
+
     }
 
     private void Awake()
-    {        
+    {
+        if (MapInputHandler.Singleton == null)
+            MapInputHandler.Singleton = this;
+        Debug.Log("MapInputHandler awakened");
         this.playingCharacter = null;
         this.SelectedHex = null;
         this.HoveredHex = null;

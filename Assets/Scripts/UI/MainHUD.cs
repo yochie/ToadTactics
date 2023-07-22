@@ -131,4 +131,9 @@ public class MainHUD : NetworkBehaviour
     {
 
     }
+
+    public void OnEndTurnButtonClicked()
+    {
+        GameController.Singleton.CmdNextTurn();
+    }
 }

@@ -121,7 +121,7 @@ public class GameController : NetworkBehaviour
     //Main game tick
     //Called at end of every turn for all gamemodes
     [Command(requiresAuthority = false)]
-    public void NextTurn()
+    public void CmdNextTurn()
     {
         this.currentPhaseObject.Tick();
     }
@@ -326,7 +326,7 @@ public class GameController : NetworkBehaviour
     {
         if (sceneName == "Menu")
         {
-            Destroy(this.gameObject);
+           //Destroy(this.gameObject);
         }
 
         if (sceneName == "Draft")

@@ -122,6 +122,10 @@ public class MyNetworkManager : NetworkManager
     {
         base.OnClientSceneChanged();
 
+        Debug.Log(GameController.Singleton);
+        Debug.Log(SceneManager.GetActiveScene().name);
+        if (GameController.Singleton == null)
+            return;
         //let server know that remote client is ready
         if (!GameController.Singleton.isServer)
         {

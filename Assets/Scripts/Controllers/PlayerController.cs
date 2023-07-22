@@ -165,7 +165,7 @@ public class PlayerController : NetworkBehaviour
 
         Map.Singleton.characterPositions[characterClassID] = destinationHex.coordinates;
 
-        GameController.Singleton.NextTurn();
+        GameController.Singleton.CmdNextTurn();
     }
     #endregion
 
