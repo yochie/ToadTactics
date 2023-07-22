@@ -69,7 +69,7 @@ public class DraftUI : MonoBehaviour
         {
             GameObject kingCandidateSlotObject = Instantiate(this.slotPrefab, this.CharacterSheetsList.transform);
             DraftableCharacterSlotUI kingCandidateSlot = kingCandidateSlotObject.GetComponent<DraftableCharacterSlotUI>();
-            kingCandidateSlot.Init(classID, true);
+            kingCandidateSlot.Init(classID, true, true);
         }
     }
 

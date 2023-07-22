@@ -51,9 +51,15 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
         this.abilitiesTable.RenderFromDictionary(classData.GetPrintableAbilityDictionary());
         this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary(), asKingCandidate);
 
+
         if (asKingCandidate)
-            this.SetButtonActiveState(true, true);
-        else            
+        {
+            //hides draft buttons
+            this.SetButtonActiveState(state: false, asKingCandidate: false);
+            //displays crown buttons
+            this.SetButtonActiveState(state: true, asKingCandidate: true);
+        }
+        else
             this.SetButtonActiveState(itsYourTurn, false);
     }
 

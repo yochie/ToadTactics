@@ -27,7 +27,11 @@ public class CharacterPlacementPhase : IGamePhase
             this.Controller.AddCharToTurnOrder(classID);
         }
 
+        //do a false setting to trigger new player turn event even if he was last to play during draft
+        //todo : avoid need for this somehow when i have more brainpower left
+        this.Controller.playerTurn = -1;
         this.Controller.playerTurn = 0;
+
         this.Controller.mapInputHandler.RpcSetControlModeOnAllClients(ControlMode.characterPlacement);
     }
 
