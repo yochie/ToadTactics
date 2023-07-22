@@ -121,8 +121,11 @@ public class TurnOrderHUD : MonoBehaviour
             else
             {
                 CharacterClass currentClass = ClassDataSO.Singleton.GetClassByID(classID);
-                if(GameController.Singleton.LocalPlayer.kingClassID == classID || GameController.Singleton.NonLocalPlayer.kingClassID == classID)
-                    slot.SetLifeLabel(currentClass.stats.maxHealth, Utility.ApplyKingLifeBuff(currentClass.stats.maxHealth));
+                if (GameController.Singleton.LocalPlayer.kingClassID == classID || GameController.Singleton.NonLocalPlayer.kingClassID == classID)
+                {
+                    int buffedLife = Utility.ApplyKingLifeBuff(currentClass.stats.maxHealth);
+                    slot.SetLifeLabel(buffedLife, buffedLife);
+                }
                 else
                     slot.SetLifeLabel(currentClass.stats.maxHealth, currentClass.stats.maxHealth);
             }

@@ -63,6 +63,7 @@ public class PlayerCharacter : NetworkBehaviour
         this.currentStats = this.charClass.stats;
         if (this.isKing)
             this.currentStats = new CharacterStats(this.currentStats, maxHealth : Utility.ApplyKingLifeBuff(this.currentStats.maxHealth));
+
         this.currentLife = this.currentStats.maxHealth;
         this.equippedTreasureIDs = new();
         this.hasUsedAbility = false;
