@@ -25,11 +25,15 @@ public class MapInputHandler : NetworkBehaviour
     private CharacterAbility currentAbilityStats;
     private Treasure currentTreasureStats;
 
-    //used to reset all state
-    private void Awake()
+    private void OnEnable()
     {
-        if(MapInputHandler.Singleton == null)
+        if (MapInputHandler.Singleton == null)
             MapInputHandler.Singleton = this;
+        Debug.Log("MapInputHandler awakened");
+    }
+
+    private void Awake()
+    {        
         this.playingCharacter = null;
         this.SelectedHex = null;
         this.HoveredHex = null;
@@ -199,19 +203,19 @@ public class MapInputHandler : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void RpcUpdateSelectedHex(NetworkConnectionToClient target, Hex dest)
+    public void TargetRpcUpdateSelectedHex(NetworkConnectionToClient target, Hex dest)
     {
         this.SelectHex(dest);
     }
 
     [TargetRpc]
-    public void RpcSetControlModeOnClient(NetworkConnectionToClient target, ControlMode mode)
+    public void TargetRpcSetControlModeOnClient(NetworkConnectionToClient target, ControlMode mode)
     {
         this.SetControlMode(mode);
     }
 
     [ClientRpc]
-    public void SetControlModeOnAllClients(ControlMode mode)
+    public void RpcSetControlModeOnAllClients(ControlMode mode)
     {
         this.SetControlMode(mode);
     }

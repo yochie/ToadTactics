@@ -8,12 +8,6 @@ public class TurnOrderHUD : MonoBehaviour
     #region Editor vars
 
     [SerializeField]
-    private GameEventSOListener characterAddedToTurnOrderListener;
-
-    [SerializeField]
-    private IntGameEventSOListener turnOrderChangedListener;
-
-    [SerializeField]
     private GameObject turnOrderSlotPrefab;
 
     #endregion
@@ -26,13 +20,11 @@ public class TurnOrderHUD : MonoBehaviour
     private void Awake()
     {
         TurnOrderHUD.Singleton = this;
-
-        this.turnOrderChangedListener.Response.AddListener(OnTurnOrderIndexChanged);
     }
 
     #region Events
 
-    private void OnTurnOrderIndexChanged(int newTurnIndex)
+    public void OnTurnOrderIndexChanged(int newTurnIndex)
     {
         //Debug.Log("OnCharacterTurnChanged");
 
@@ -43,7 +35,7 @@ public class TurnOrderHUD : MonoBehaviour
         this.highlightSlot(newTurnCharacterId);
     }
 
-    public void OnCharacterAddedToTurnOrder()
+    public void OnCharacterAddedToTurnOrder(int classID)
     {
         //Debug.Log("Adding character to turn order.");
         GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.transform);

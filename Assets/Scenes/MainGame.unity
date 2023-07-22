@@ -846,6 +846,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Event: {fileID: 11400000, guid: 50fde46ae2412d44b9c0286f9878cf78, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &297310969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1462,6 +1465,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Event: {fileID: 11400000, guid: 95970226cb210e04091fc105eb0a841e, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &866484639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1475,6 +1481,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Event: {fileID: 11400000, guid: 90c6609506ffa2c47a76a22c3f64360b, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &916223303
 GameObject:
   m_ObjectHideFlags: 0
@@ -2396,8 +2405,8 @@ GameObject:
   - component: {fileID: 1755582586}
   - component: {fileID: 1755582589}
   - component: {fileID: 1755582590}
-  - component: {fileID: 1755582591}
   - component: {fileID: 1755582592}
+  - component: {fileID: 1755582593}
   m_Layer: 5
   m_Name: TurnOrderHud
   m_TagString: Untagged
@@ -2513,37 +2522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93c80f94fae48d34389fce616640a2d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterAddedToTurnOrderListener: {fileID: 1755582591}
-  turnOrderChangedListener: {fileID: 1755582592}
   turnOrderSlotPrefab: {fileID: 1986404150757741544, guid: 58a805a353feeae47aa3d7b088821ad7, type: 3}
---- !u!114 &1755582591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1755582584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcdfe653ddc233d4986f95bba225726e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: a8be1d0769750c848abe6856ea2171ce, type: 2}
-  Response:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1755582590}
-        m_TargetAssemblyTypeName: TurnOrderHUD, Assembly-CSharp
-        m_MethodName: OnCharacterAddedToTurnOrder
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1755582592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2557,6 +2536,49 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Event: {fileID: 11400000, guid: 50fde46ae2412d44b9c0286f9878cf78, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1755582590}
+        m_TargetAssemblyTypeName: TurnOrderHUD, Assembly-CSharp
+        m_MethodName: OnTurnOrderIndexChanged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1755582593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755582584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca3c739417bcc0a4ab5e6853da8f87e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 8953317fb65d86347a5a2990de93360c, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1755582590}
+        m_TargetAssemblyTypeName: TurnOrderHUD, Assembly-CSharp
+        m_MethodName: OnCharacterAddedToTurnOrder
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1889067058
 GameObject:
   m_ObjectHideFlags: 0

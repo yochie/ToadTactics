@@ -16,7 +16,7 @@ public class GameController : NetworkBehaviour
 
     #region Event vars
     [SerializeField]
-    private GameEventSO onCharAddedToTurnOrder;
+    private IntGameEventSO onCharAddedToTurnOrder;
 
     [SerializeField]
     private IntGameEventSO onTurnOrderIndexChanged;
@@ -193,8 +193,8 @@ public class GameController : NetworkBehaviour
         if (excessClients)
             Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
 
-        this.mapInputHandler.RpcSetControlModeOnClient(playingClient, activePlayerMode);
-        this.mapInputHandler.RpcSetControlModeOnClient(idleClient, ControlMode.none);
+        this.mapInputHandler.TargetRpcSetControlModeOnClient(playingClient, activePlayerMode);
+        this.mapInputHandler.TargetRpcSetControlModeOnClient(idleClient, ControlMode.none);
     }
 
     [Server]
@@ -209,6 +209,17 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    [Command(requiresAuthority = false)]
+    internal void CmdCrownCharacter(int playerID, int classID)
+    {
+        if (this.AllPlayersAssignedKings())
+        {
+            //just change scene, scene changed callback will set phase once all clients have loaded scene
+            NetworkManager.singleton.ServerChangeScene("MainGame");
+        }
+    }
+
+
     [Server]
     public void AddCharToTurnOrder(int classID)
     {
@@ -219,7 +230,7 @@ public class GameController : NetworkBehaviour
             return;
         }
         this.sortedTurnOrder.Add(initiative, classID);
-        this.RpcOnCharAddedToTurnOrder();
+        this.RpcOnCharAddedToTurnOrder(classID);
     }
 
     [Server]
@@ -233,16 +244,7 @@ public class GameController : NetworkBehaviour
 
             case "MainGame":
                 this.SetPhase(new CharacterPlacementPhase());
-                Map.Singleton.Initialize();
 
-                //setup turn order list
-                foreach (int classID in this.characterOwners.Keys)
-                {
-                    this.AddCharToTurnOrder(classID);
-                }
-
-                //should have been instantiated by now since this is called after awake on scene objects
-                this.mapInputHandler = MapInputHandler.Singleton;
                 break;
         }
     }
@@ -322,11 +324,21 @@ public class GameController : NetworkBehaviour
     //setup scene references on all clients ASAP to avoid null refs that can occur when setting them via async Rpcs
     private void LocalSceneInit(string sceneName)
     {
+        if (sceneName == "Menu")
+        {
+            Destroy(this.gameObject);
+        }
+
         if (sceneName == "Draft")
             this.draftUI = GameObject.FindWithTag("DraftUI").GetComponent<DraftUI>();
 
         if (sceneName == "MainGame")
+        {
+            Debug.Log("initiliazing map input handler ref from gamecontroller on some client");
+            Debug.Log(MapInputHandler.Singleton);
             this.mapInputHandler = MapInputHandler.Singleton;
+            Debug.Log(this.mapInputHandler);
+        }
     }
 
     #endregion
@@ -350,9 +362,9 @@ public class GameController : NetworkBehaviour
 
     #region Events
     [ClientRpc]
-    private void RpcOnCharAddedToTurnOrder()
+    private void RpcOnCharAddedToTurnOrder(int classID)
     {
-        this.onCharAddedToTurnOrder.Raise();
+        this.onCharAddedToTurnOrder.Raise(classID);
     }
 
     //called on on all clients by syncvar hook
@@ -478,6 +490,17 @@ public class GameController : NetworkBehaviour
         {
             return 0;
         }
+    }
+
+    [Server]
+    private bool AllPlayersAssignedKings()
+    {
+        foreach(PlayerController player in this.playerControllers)
+        {
+            if (player.kingClassID == -1)
+                return false;
+        }
+        return true;
     }
     #endregion
 

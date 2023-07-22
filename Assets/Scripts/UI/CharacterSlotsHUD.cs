@@ -30,7 +30,6 @@ public class CharacterSlotsHUD : MonoBehaviour
     {
         CharacterSlotsHUD.Singleton = this;
         this.characterPlacedListener.Response.AddListener(OnCharacterPlaced);
-        this.characterDraftedListener.Response.AddListener(OnCharacterDrafted);
     }
 
     public void OnCharacterPlaced(int classID)
@@ -44,10 +43,10 @@ public class CharacterSlotsHUD : MonoBehaviour
         }
     }
 
-    public void OnCharacterDrafted(int draftedByPlayerID, int classID)
+    public void OnCharAddedToTurnOrder(int classID)
     {
-        if (GameController.Singleton.LocalPlayer.playerID != draftedByPlayerID)
-            return;        
+        if (!GameController.Singleton.HeOwnsThisCharacter(GameController.Singleton.LocalPlayer.playerID, classID))
+            return;
 
         GameObject characterSlotObject = Instantiate(this.characterSlotPrefab, this.transform);        
         CharacterSlotUI characterSlot = characterSlotObject.GetComponent<CharacterSlotUI>();

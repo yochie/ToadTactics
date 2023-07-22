@@ -13,12 +13,22 @@ public class CharacterPlacementPhase : IGamePhase
     public void Init(string name, GameController controller)
     {
         Debug.Log("Initializing character placement mode");
-
+        Debug.Log(controller.characterOwners);
+        Debug.Log(controller.mapInputHandler);
+        Debug.Log(Map.Singleton);
         this.Name = name;
         this.Controller = controller;
 
+        Map.Singleton.Initialize();
+
+        //setup turn order list
+        foreach (int classID in this.Controller.characterOwners.Keys)
+        {
+            this.Controller.AddCharToTurnOrder(classID);
+        }
+
         this.Controller.playerTurn = 0;
-        this.Controller.mapInputHandler.SetControlModeOnAllClients(ControlMode.characterPlacement);
+        this.Controller.mapInputHandler.RpcSetControlModeOnAllClients(ControlMode.characterPlacement);
     }
 
     [Server]

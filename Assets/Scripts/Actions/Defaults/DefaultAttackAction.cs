@@ -68,12 +68,12 @@ public class DefaultAttackAction : IAttackAction
 
         if (this.ActorCharacter.CanMoveDistance() > 0)
         {
-            MapInputHandler.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.move);
+            MapInputHandler.Singleton.TargetRpcSetControlModeOnClient(this.RequestingClient, ControlMode.move);
         }
         else
         {
             MainHUD.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
-            MapInputHandler.Singleton.RpcSetControlModeOnClient(this.RequestingClient, ControlMode.none);
+            MapInputHandler.Singleton.TargetRpcSetControlModeOnClient(this.RequestingClient, ControlMode.none);
         }
 
         if (!this.ActorCharacter.HasRemainingActions())

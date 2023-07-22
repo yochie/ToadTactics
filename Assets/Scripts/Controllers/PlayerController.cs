@@ -69,7 +69,7 @@ public class PlayerController : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-
+        this.kingClassID = -1;
         GameController.Singleton.playerControllers.Add(this);
     }
 
@@ -113,6 +113,9 @@ public class PlayerController : NetworkBehaviour
     {
         //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
         this.kingClassID = classID;
+
+        //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
+        GameController.Singleton.CmdCrownCharacter(this.playerID, classID);
 
         this.TargetRpcOnCharacterCrowned(sender, classID);        
     }
