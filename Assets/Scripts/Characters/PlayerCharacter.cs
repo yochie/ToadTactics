@@ -61,6 +61,8 @@ public class PlayerCharacter : NetworkBehaviour
     private void CmdInitCharacter(NetworkConnectionToClient sender = null)
     {
         this.currentStats = this.charClass.stats;
+        if (this.isKing)
+            this.currentStats = new CharacterStats(this.currentStats, maxHealth : Utility.ApplyKingLifeBuff(this.currentStats.maxHealth));
         this.currentLife = this.currentStats.maxHealth;
         this.equippedTreasureIDs = new();
         this.hasUsedAbility = false;

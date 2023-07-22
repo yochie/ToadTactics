@@ -37,6 +37,7 @@ public class GameController : NetworkBehaviour
     public static GameController Singleton { get; private set; }
 
     public PlayerController LocalPlayer { get; set; }
+    public PlayerController NonLocalPlayer { get; set; }
 
     //Only filled on server
     public List<PlayerController> playerControllers = new();

@@ -77,16 +77,18 @@ public class TurnOrderHUD : MonoBehaviour
             slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
             slot.holdsCharacterWithClassID = classID;
 
-            if (GameController.Singleton.AllPlayerCharactersCreated())
-            {
-                PlayerCharacter currentCharacter = GameController.Singleton.playerCharacters[classID];
-                slot.SetLifeLabel(currentCharacter.CurrentLife(), currentCharacter.currentStats.maxHealth);
-            }
-            else
-            {
-                CharacterClass currentClass = ClassDataSO.Singleton.GetClassByID(classID);
-                slot.SetLifeLabel(currentClass.stats.maxHealth, currentClass.stats.maxHealth);
-            }
+            //if (charactersCreated)
+            //{
+            //    //set labels using current stats
+            //    PlayerCharacter currentCharacter = GameController.Singleton.playerCharacters[classID];
+            //    slot.SetLifeLabel(currentCharacter.CurrentLife(), currentCharacter.currentStats.maxHealth);
+            //}
+            //else
+            //{
+            //    //set labels using default stats
+            //    CharacterClass currentClass = ClassDataSO.Singleton.GetClassByID(classID);
+            //    slot.SetLifeLabel(currentClass.stats.maxHealth, currentClass.stats.maxHealth);
+            //}
 
             if (GameController.Singleton.turnOrderIndex == i)
             {
@@ -98,6 +100,8 @@ public class TurnOrderHUD : MonoBehaviour
             }
             i++;
         }
+
+        this.ResetLifeLabels();
     }
 
     //called by Attack event
@@ -117,7 +121,10 @@ public class TurnOrderHUD : MonoBehaviour
             else
             {
                 CharacterClass currentClass = ClassDataSO.Singleton.GetClassByID(classID);
-                slot.SetLifeLabel(currentClass.stats.maxHealth, currentClass.stats.maxHealth);
+                if(GameController.Singleton.LocalPlayer.kingClassID == classID || GameController.Singleton.NonLocalPlayer.kingClassID == classID)
+                    slot.SetLifeLabel(currentClass.stats.maxHealth, Utility.ApplyKingLifeBuff(currentClass.stats.maxHealth));
+                else
+                    slot.SetLifeLabel(currentClass.stats.maxHealth, currentClass.stats.maxHealth);
             }
 
             i++;

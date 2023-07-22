@@ -31,7 +31,7 @@ public class StatsTable : MonoBehaviour
             TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
             if(asKingCandidate && stat.Key == "Health")
             {
-                valueLabel.text = (Int32.Parse(stat.Value)*2).ToString();
+                valueLabel.text = (Utility.ApplyKingLifeBuff(Int32.Parse(stat.Value))).ToString();
                 valueLabel.color = Color.green;
             } else
             {

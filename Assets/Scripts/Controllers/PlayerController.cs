@@ -57,6 +57,11 @@ public class PlayerController : NetworkBehaviour
         {
             this.playerID = 0;
         }
+
+        if (!this.isOwned)
+        {
+            GameController.Singleton.NonLocalPlayer = this;
+        }
     }
 
     public override void OnStartLocalPlayer()
@@ -151,7 +156,11 @@ public class PlayerController : NetworkBehaviour
         PlayerCharacter newChar = newCharObject.GetComponent<PlayerCharacter>();
 
         newChar.SetOwner(ownerPlayerIndex);
+        if(newChar.charClassID == this.kingClassID)
+            newChar.isKing = true;
         newChar.transform.position = destinationWorldPos;
+
+        //will actually init character on server using class data and state set above
         NetworkServer.Spawn(newCharObject, connectionToClient);
 
         //add player to both lists

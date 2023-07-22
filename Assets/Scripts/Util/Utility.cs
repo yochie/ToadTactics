@@ -29,4 +29,9 @@ public static class Utility
         return state ? highlightOn : highlightOff;
 
     }
+
+    internal static int ApplyKingLifeBuff(int maxHealth)
+    {
+        return maxHealth * 2;
+    }
 }

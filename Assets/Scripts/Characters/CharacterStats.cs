@@ -1,18 +1,30 @@
 ﻿using System.Collections.Generic;
 using System;
+using Mirror;
 
-public readonly struct CharacterStats
+public readonly struct CharacterStats : IEquatable<CharacterStats>
 {
+
     public readonly int maxHealth;
+
     public readonly int armor;
+
     public readonly int damage;
+
     public readonly DamageType damageType;
+
     public readonly int damageIterations;
+
     public readonly float critChance;
+
     public readonly float critMultiplier;
+
     public readonly int moveSpeed;
+
     public readonly float initiative;
+
     public readonly int range;
+
     public readonly List<TargetType> allowedAttackTargets;
 
     public CharacterStats(int maxHealth,
@@ -42,8 +54,34 @@ public readonly struct CharacterStats
             this.allowedAttackTargets = new List<TargetType> { TargetType.ennemy_chars, TargetType.obstacle };
         } else
         {
-            this.allowedAttackTargets = allowedAttackTargets;
+            this.allowedAttackTargets = new List<TargetType>(allowedAttackTargets);
         }
+    }
+
+    public CharacterStats(CharacterStats toCopy, 
+                      int maxHealth = -1,
+                      int armor = -1,
+                      int damage = -1,
+                      int moveSpeed = -1,
+                      int initiative = -1,
+                      float critChance = -1f,
+                      float critMultiplier = -1f,
+                      int range = -1,
+                      int damageIterations = -1,
+                      DamageType damageType = DamageType.none,
+                      List<TargetType> allowedAttackTargets = null)
+    {
+        this.maxHealth = maxHealth == -1 ? toCopy.maxHealth : maxHealth;
+        this.armor = armor == -1 ? toCopy.armor : armor;
+        this.damage = damage == -1 ? toCopy.damage : damage;
+        this.damageType = damageType == DamageType.none ? toCopy.damageType : damageType;
+        this.damageIterations = damageIterations == -1 ? toCopy.damageIterations : damageIterations;
+        this.critChance = critChance == -1f ? toCopy.critChance : critChance;
+        this.critMultiplier = critMultiplier == -1f ? toCopy.critMultiplier : critMultiplier;
+        this.moveSpeed = moveSpeed == -1 ? toCopy.moveSpeed : moveSpeed;
+        this.initiative = initiative == -1 ? toCopy.initiative : initiative;
+        this.range = range == -1 ? toCopy.range : range;
+        this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : this.allowedAttackTargets = allowedAttackTargets;
     }
 
     public Dictionary<string, string> GetPrintableDictionary()
@@ -60,5 +98,29 @@ public readonly struct CharacterStats
 
         return toPrint;
     }
-
+    public bool Equals(CharacterStats other)
+    {
+       
+        if (this.maxHealth == other.maxHealth &&
+            this.armor == other.armor &&
+            this.damage == other.damage &&
+            this.damageType == other.damageType &&
+            this.damageIterations == other.damageIterations &&
+            this.critChance == other.critChance &&
+            this.critMultiplier == other.critMultiplier &&
+            this.moveSpeed == other.moveSpeed &&
+            this.initiative == other.initiative &&
+            this.range == other.range)
+        {
+            foreach (TargetType t in this.allowedAttackTargets)
+            {
+                if (!other.allowedAttackTargets.Contains(t))
+                    return false;                
+            }
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
 }
