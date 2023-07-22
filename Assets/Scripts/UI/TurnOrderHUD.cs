@@ -98,6 +98,18 @@ public class TurnOrderHUD : MonoBehaviour
             {
                 slot.Unhighlight();
             }
+
+
+            if (GameController.Singleton.IsAKing(classID))
+            {
+                slot.ShowCrown();
+            }
+            else
+            {
+                slot.HideCrown();
+            }
+
+
             i++;
         }
 
@@ -121,7 +133,7 @@ public class TurnOrderHUD : MonoBehaviour
             else
             {
                 CharacterClass currentClass = ClassDataSO.Singleton.GetClassByID(classID);
-                if (GameController.Singleton.LocalPlayer.kingClassID == classID || GameController.Singleton.NonLocalPlayer.kingClassID == classID)
+                if (GameController.Singleton.IsAKing(classID))
                 {
                     int buffedLife = Utility.ApplyKingLifeBuff(currentClass.stats.maxHealth);
                     slot.SetLifeLabel(buffedLife, buffedLife);

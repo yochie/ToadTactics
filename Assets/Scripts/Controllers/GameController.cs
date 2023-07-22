@@ -37,11 +37,13 @@ public class GameController : NetworkBehaviour
     public static GameController Singleton { get; private set; }
 
     public PlayerController LocalPlayer { get; set; }
+
     public PlayerController NonLocalPlayer { get; set; }
 
     //Only filled on server
-    public List<PlayerController> playerControllers = new();
     public IGamePhase currentPhaseObject;
+
+    public List<PlayerController> playerControllers = new();
 
     //Only exist in some scenes, so they need to plug themselves here in their own Awake()
     //dont try to set them here, too tricky to wait for them before handling scene initialization
@@ -518,6 +520,16 @@ public class GameController : NetworkBehaviour
                 return false;
         }
         return true;
+    }
+
+    internal bool IsAKing(int classID)
+    {
+        foreach (PlayerController p in this.playerControllers)
+        {
+            if (p.kingClassID == classID)
+                return true;
+        }
+        return false;
     }
     #endregion
 }

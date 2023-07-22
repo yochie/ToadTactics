@@ -61,21 +61,23 @@ public class PlayerController : NetworkBehaviour
         if (!this.isOwned)
         {
             GameController.Singleton.NonLocalPlayer = this;
+        } else
+        {
+            GameController.Singleton.LocalPlayer = this;
         }
+
+        GameController.Singleton.playerControllers.Add(this);
     }
 
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-
-        GameController.Singleton.LocalPlayer = this;
     }
 
     public override void OnStartServer()
     {
         base.OnStartServer();
         this.kingClassID = -1;
-        GameController.Singleton.playerControllers.Add(this);
     }
 
     public override void OnStopServer()

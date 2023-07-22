@@ -17,6 +17,10 @@ public class TurnOrderSlotUI : MonoBehaviour
     private TextMeshProUGUI lifeLabel;
 
 
+    [SerializeField]
+    GameObject crownSpriteImage;
+
+
     public int holdsCharacterWithClassID = -1;
 
     private bool isHighlighted = false;
@@ -48,5 +52,13 @@ public class TurnOrderSlotUI : MonoBehaviour
     internal void SetSprite(Sprite sprite)
     {
         this.characterImage.sprite = sprite;
+    }
+    internal void ShowCrown()
+    {
+        this.crownSpriteImage.SetActive(true);
+    }
+    internal void HideCrown()
+    {
+        this.crownSpriteImage.SetActive(false);
     }
 }
