@@ -31,7 +31,7 @@ public class DraftUI : MonoBehaviour
     }
 
     [Server]
-    public void Init(List<int> classIDsToDraft)
+    public void InitSlotContents(List<int> classIDsToDraft)
     {
         int currentPlayerID = GameController.Singleton.playerTurn;
         NetworkConnectionToClient currentPlayerClient =  GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);

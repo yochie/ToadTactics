@@ -29,7 +29,7 @@ public class CharacterDraftPhase : IGamePhase
         }
 
         //will init slots using Rpcs (careful, async, need to set all state before)
-        this.Controller.draftUI.Init(rolledIDs);
+        this.Controller.draftUI.InitSlotContents(rolledIDs);
     }
 
     [Server]
