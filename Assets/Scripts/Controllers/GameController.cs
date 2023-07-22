@@ -55,7 +55,7 @@ public class GameController : NetworkBehaviour
     #region Synced vars
 
     //maps classID to playerID
-    public readonly SyncDictionary<int, int> characterOwners = new();
+    public readonly SyncDictionary<int, int> draftedCharacterOwners = new();
 
     //maps classID to PlayerCharacter
     public readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
@@ -293,13 +293,9 @@ public class GameController : NetworkBehaviour
     [Server]
     public void CmdDraftCharacter(int draftedByPlayerID, int classID)
     {
-        this.characterOwners.Add(classID, draftedByPlayerID);
+        this.draftedCharacterOwners.Add(classID, draftedByPlayerID);
 
-        if (this.draftUI.AllCharactersHaveBeenDrafted())
-        {
-            Debug.Log("All chars drafted. Setting up king selection.");
-            this.RpcSetupKingSelection();
-        }
+        this.CmdNextTurn();
     }
 
     [Command(requiresAuthority = false)]
@@ -367,10 +363,10 @@ public class GameController : NetworkBehaviour
     #region Rpcs
 
     [ClientRpc]
-    private void RpcSetupKingSelection()
+    public void RpcSetupKingSelection()
     {
         List<int> kingCandidates = new();
-        foreach (KeyValuePair<int, int> entry in this.characterOwners)
+        foreach (KeyValuePair<int, int> entry in this.draftedCharacterOwners)
         {
             if (entry.Value == this.LocalPlayer.playerID)
                 kingCandidates.Add(entry.Key);
@@ -440,7 +436,7 @@ public class GameController : NetworkBehaviour
 
     public bool HeOwnsThisCharacter(int playerID, int classID)
     {
-        if (this.characterOwners[classID] == playerID)
+        if (this.draftedCharacterOwners[classID] == playerID)
         {
             return true;
         }
@@ -511,7 +507,6 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    [Server]
     private bool AllPlayersAssignedKings()
     {
         foreach(PlayerController player in this.playerControllers)
@@ -531,5 +526,33 @@ public class GameController : NetworkBehaviour
         }
         return false;
     }
+
+    internal bool AllCharactersDrafted()
+    {
+        if (this.draftedCharacterOwners.Count == this.defaultNumCharsPerPlayer * 2)
+            return true;
+        else
+            return false;
+    }
+
+    internal bool CharacterHasBeenDrafted(int classID)
+    {
+        return this.draftedCharacterOwners.ContainsKey(classID);
+    }
+
+    internal NetworkConnectionToClient GetConnectionForPlayerID(int playerID)
+    {
+        foreach(PlayerController p in this.playerControllers)
+        {
+            if (p.playerID == playerID)
+            {
+                return p.connectionToClient;
+            }
+        }
+
+        Debug.Log("Couldn't find connection for requested playerID");
+        return null;
+    }
+
     #endregion
 }

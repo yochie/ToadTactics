@@ -95,7 +95,7 @@ public class PlayerController : NetworkBehaviour
         List<int> usedClasses = new();
 
         //make characters used by other clients unavailable
-        foreach (int classID in GameController.Singleton.characterOwners.Keys)
+        foreach (int classID in GameController.Singleton.draftedCharacterOwners.Keys)
         {
             usedClasses.Add(classID);
         }

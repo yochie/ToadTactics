@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class CharacterDraftPhase : IGamePhase
 {
@@ -16,13 +17,30 @@ public class CharacterDraftPhase : IGamePhase
     {
         this.Name = name;
         this.Controller = controller;
+        this.Controller.playerTurn = 0;
 
-        this.Controller.draftUI.Init();
+        uint numToRoll = this.Controller.defaultNumCharsPerPlayer * 2;
+        List<int> rolledIDs = new();
+        for (int i = 0; i < numToRoll; i++)
+        {
+            int newClassID;
+            do { newClassID = ClassDataSO.Singleton.GetRandomClassID(); } while (rolledIDs.Contains(newClassID));
+            rolledIDs.Add(newClassID);
+        }
+
+        //will init slots using Rpcs (careful, async, need to set all state before)
+        this.Controller.draftUI.Init(rolledIDs);
     }
 
     [Server]
     public void Tick()
     {
-        throw new System.NotImplementedException();
+        Controller.SwapPlayerTurn();
+
+        if (this.Controller.AllCharactersDrafted())
+        {
+            Debug.Log("All chars drafted. Setting up king selection.");
+            this.Controller.RpcSetupKingSelection();
+        }
     }
 }

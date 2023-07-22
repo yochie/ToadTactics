@@ -39,7 +39,7 @@ public class GameplayPhase : IGamePhase
         }
 
         //if we don't own that char, swap player turn
-        if (Controller.playerTurn != Controller.characterOwners[currentCharacterClassID])
+        if (Controller.playerTurn != Controller.draftedCharacterOwners[currentCharacterClassID])
         {
             Controller.SwapPlayerTurn();
         }
@@ -76,7 +76,7 @@ public class GameplayPhase : IGamePhase
         currentCharacter.ResetTurnState();
 
         //if we don't own that char, swap player turn
-        if (Controller.playerTurn != Controller.characterOwners[currentCharacterClassID])
+        if (Controller.playerTurn != Controller.draftedCharacterOwners[currentCharacterClassID])
         {
             Controller.SwapPlayerTurn();
         }

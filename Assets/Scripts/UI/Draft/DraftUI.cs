@@ -31,15 +31,17 @@ public class DraftUI : MonoBehaviour
     }
 
     [Server]
-    public void Init()
+    public void Init(List<int> classIDsToDraft)
     {
-        List<int> alreadyRolledIDs = new();
+        int currentPlayerID = GameController.Singleton.playerTurn;
+        NetworkConnectionToClient currentPlayerClient =  GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
+        NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
+        int i = 0;
         foreach (DraftableCharacterSlotUI slot in draftableSlots)
         {
-            int newClassID;
-            do { newClassID = ClassDataSO.Singleton.GetRandomClassID(); } while (alreadyRolledIDs.Contains(newClassID));
-            alreadyRolledIDs.Add(newClassID);
-            slot.RpcInit(newClassID);
+            slot.TargetRpcInit(currentPlayerClient, classIDsToDraft[i], true);
+            slot.TargetRpcInit(waitingPlayerClient, classIDsToDraft[i], false);
+            i++;
         }
     }
 
@@ -52,16 +54,6 @@ public class DraftUI : MonoBehaviour
         }
 
         throw new System.Exception("No slot with given ID was found");
-    }
-
-    public bool AllCharactersHaveBeenDrafted()
-    {
-        foreach (DraftableCharacterSlotUI slot in draftableSlots)
-        {
-            if (!slot.hasBeenDrafted)
-                return false;
-        }
-        return true;
     }
 
     public void SetupKingSelection(List<int> classIDs)

@@ -10,9 +10,6 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
 {
     public int holdsClassID;
 
-    [SyncVar]
-    public bool hasBeenDrafted;
-
     [SerializeField]
     private Image spriteImage;
 
@@ -34,16 +31,16 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
     [SerializeField]
     private GameObject crownButton;
 
-    [ClientRpc]
-    public void RpcInit(int classID)
+    #region Startup
+    [TargetRpc]
+    public void TargetRpcInit(NetworkConnectionToClient target, int classID, bool itsYourTurn)
     {
-        this.Init(classID);
+        this.Init(classID, itsYourTurn);
     }
 
-    public void Init(int classID, bool asKingCandidate = false)
+    public void Init(int classID, bool itsYourTurn, bool asKingCandidate = false)
     {
         this.holdsClassID = classID;
-        this.hasBeenDrafted = false;
 
         CharacterClass classData = ClassDataSO.Singleton.GetClassByID(classID);
         Sprite sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
@@ -56,18 +53,13 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
 
         if (asKingCandidate)
             this.SetButtonActiveState(true, true);
-        else
-            this.SetButtonActiveState(true, false);
+        else            
+            this.SetButtonActiveState(itsYourTurn, false);
     }
 
-    internal void SetButtonActiveState(bool state, bool asKingCandidate = false)
-    {
-        if (!asKingCandidate)
-            this.draftButton.SetActive(state);
-        else
-            this.crownButton.SetActive(state);
-    }
+    #endregion
 
+    #region Events
     //handler for event
     public void OnCharacterDrafted(int playerID, int classID){
         if (this.holdsClassID != classID)
@@ -82,10 +74,24 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
         this.SetButtonActiveState(false, true);
     }
 
+    public void OnLocalPlayerTurnStart()
+    {
+        CharacterDraftPhase currentPhase = GameController.Singleton.currentPhaseObject as CharacterDraftPhase;
+
+        if (GameController.Singleton.CharacterHasBeenDrafted(this.holdsClassID))
+            return;
+
+        this.SetButtonActiveState(true);
+    }
+
+    public void OnLocalPlayerTurnEnd()
+    {
+        this.SetButtonActiveState(false);
+    }
+
     //called by button
     public void DraftCharacter()
     {
-        this.CmdSetAsDrafted();
         GameController.Singleton.LocalPlayer.CmdDraftCharacter(this.holdsClassID);
     }
 
@@ -96,9 +102,13 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
         GameController.Singleton.LocalPlayer.CmdCrownCharacter(this.holdsClassID);
     }
 
-    [Command(requiresAuthority = false)]
-    private void CmdSetAsDrafted()
+    #endregion
+
+    internal void SetButtonActiveState(bool state, bool asKingCandidate = false)
     {
-        this.hasBeenDrafted = true;
+        if (!asKingCandidate)
+            this.draftButton.SetActive(state);
+        else
+            this.crownButton.SetActive(state);
     }
 }

@@ -13,7 +13,7 @@ public class CharacterPlacementPhase : IGamePhase
     public void Init(string name, GameController controller)
     {
         Debug.Log("Initializing character placement mode");
-        Debug.Log(controller.characterOwners);
+        Debug.Log(controller.draftedCharacterOwners);
         Debug.Log(controller.mapInputHandler);
         Debug.Log(Map.Singleton);
         this.Name = name;
@@ -22,7 +22,7 @@ public class CharacterPlacementPhase : IGamePhase
         Map.Singleton.Initialize();
 
         //setup turn order list
-        foreach (int classID in this.Controller.characterOwners.Keys)
+        foreach (int classID in this.Controller.draftedCharacterOwners.Keys)
         {
             this.Controller.AddCharToTurnOrder(classID);
         }
