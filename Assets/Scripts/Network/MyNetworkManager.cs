@@ -20,9 +20,14 @@ public class MyNetworkManager : NetworkManager
     /// </summary>
     public override void Awake()
     {
-        Debug.Log("NetworkManager awaking.");
-        if(MyNetworkManager.singleton != null) { Destroy(this.gameObject); return; }
+        if (MyNetworkManager.singleton != null) 
+        { 
+            //Debug.Log("Destroying this netmanager as singleton is already set."); 
+            Destroy(this.gameObject); 
+            return; 
+        }
         base.Awake();
+        Debug.Log("NetworkManager awaking.");
         singleton = this;
     }
 
