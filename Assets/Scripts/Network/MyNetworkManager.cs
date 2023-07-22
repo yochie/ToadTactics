@@ -122,16 +122,16 @@ public class MyNetworkManager : NetworkManager
     {
         base.OnClientSceneChanged();
 
-        Debug.Log(GameController.Singleton);
-        Debug.Log(SceneManager.GetActiveScene().name);
-        if (GameController.Singleton == null)
-            return;
-        //let server know that remote client is ready
-        if (!GameController.Singleton.isServer)
-        {
-            GameController.Singleton.CmdRemoteClientFinishedLoadingScene(SceneManager.GetActiveScene().name);
-            return;
-        }
+        //Debug.Log(GameController.Singleton);
+        //Debug.Log(SceneManager.GetActiveScene().name);
+        //if (GameController.Singleton == null)
+        //    return;
+        ////let server know that remote client is ready
+        //if (!GameController.Singleton.isServer)
+        //{
+        //    GameController.Singleton.CmdRemoteClientFinishedLoadingScene(SceneManager.GetActiveScene().name);
+        //    return;
+        //}
     }
 
     #endregion
@@ -177,6 +177,7 @@ public class MyNetworkManager : NetworkManager
     /// <param name="conn">Connection from client.</param>
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
+        // 
         if (conn != null && conn.identity != null && !conn.identity.isLocalPlayer)
             this.StopHost();
         base.OnServerDisconnect(conn);
@@ -207,7 +208,10 @@ public class MyNetworkManager : NetworkManager
     /// Called on clients when disconnected from a server.
     /// <para>This is called on the client when it disconnects from the server. Override this function to decide what happens when the client disconnects.</para>
     /// </summary>
-    public override void OnClientDisconnect() { }
+    public override void OnClientDisconnect() {
+        Debug.Log("Client disconnected. Attempting to destroy GameController.");
+        Destroy(GameController.Singleton.gameObject);
+    }
 
     /// <summary>
     /// Called on clients when a servers tells the client it is no longer ready.
@@ -254,7 +258,9 @@ public class MyNetworkManager : NetworkManager
     /// <summary>
     /// This is called when a server is stopped - including when a host is stopped.
     /// </summary>
-    public override void OnStopServer() { }
+    public override void OnStopServer() {
+
+    }
 
     /// <summary>
     /// This is called when a client is stopped.

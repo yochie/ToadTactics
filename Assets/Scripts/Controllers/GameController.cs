@@ -40,9 +40,7 @@ public class GameController : NetworkBehaviour
 
     //Only filled on server
     public List<PlayerController> playerControllers = new();
-    private string remoteClientLoadedScene = "";
     public IGamePhase currentPhaseObject;
-
 
     public MapInputHandler mapInputHandler;
 
@@ -75,6 +73,10 @@ public class GameController : NetworkBehaviour
 
     [SyncVar]
     public int currentRound;
+
+    //sceneName => awokenState
+    public readonly SyncDictionary<string, bool> remoteAwokenScenes = new();
+    public readonly SyncDictionary<string, bool> hostAwokenScenes = new();
 
     #endregion
 
@@ -116,6 +118,130 @@ public class GameController : NetworkBehaviour
 
     #endregion
 
+    #region Scene management
+    [Command(requiresAuthority = false)]
+    public void NotifySceneAwoken(bool onServer, string sceneName)
+    {
+        if (onServer)
+            this.hostAwokenScenes[sceneName] = true;
+        else
+            this.remoteAwokenScenes[sceneName] = true;
+    }
+
+    private bool SceneAwokenOnAllClients(string sceneName)
+    {
+        if (!hostAwokenScenes.ContainsKey(sceneName) || !this.remoteAwokenScenes.ContainsKey(sceneName))
+            return false;
+
+        if (this.hostAwokenScenes[sceneName] && this.remoteAwokenScenes[sceneName])
+            return true;
+        else
+            return false;
+    }
+
+    private bool SceneAwokenOnLocalClient(string sceneName)
+    {
+        if (this.isServer)
+        {
+            if (!hostAwokenScenes.ContainsKey(sceneName))
+                return false;
+            else
+                return this.hostAwokenScenes[sceneName];
+        }
+        else
+        {
+            if (!this.remoteAwokenScenes.ContainsKey(sceneName))
+                return false;
+            else
+                return this.remoteAwokenScenes[sceneName];
+        }
+    }
+
+    //Phases that require new scene are set in this callback to ensure scene gameobjects are loaded
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.LogFormat("Loaded scene {0}", scene.name);
+
+        //needed because network isn't properly setup yet, causing weird errors
+        if (scene.name == "Lobby")
+            return;
+
+        ////ensure that remote client has finished loading scene
+        //if (SceneAwokenOnLocalClient(scene.name))
+        //{
+        //    this.LocalSceneInit(scene.name);
+        //}
+        //else
+        //{
+        //    StartCoroutine(InitSceneOnceLocalClientReadyCoroutine(scene.name));
+        //}
+
+        //rest of scene init can be handled server side or with Rpcs
+        if (!isServer)
+            return;
+
+        //ensure that remote client has finished loading scene
+        if (SceneAwokenOnAllClients(scene.name))
+        {
+            this.ServerSceneInit(scene.name);
+        }
+        else
+        {
+            StartCoroutine(InitSceneOnceAllClientsReadyCoroutine(scene.name));
+        }
+    }
+
+    private IEnumerator InitSceneOnceAllClientsReadyCoroutine(string sceneName)
+    {
+        while (!SceneAwokenOnAllClients(sceneName))
+        {
+            yield return null;
+        }
+        this.ServerSceneInit(sceneName);
+    }
+
+    //private IEnumerator InitSceneOnceLocalClientReadyCoroutine(string sceneName)
+    //{
+    //    while (!SceneAwokenOnLocalClient(sceneName))
+    //    {
+    //        yield return null;
+    //    }
+    //    this.LocalSceneInit(sceneName);
+    //}
+
+    ////setup scene references on all clients ASAP to avoid null refs that can occur when setting them via async Rpcs
+    //private void LocalSceneInit(string sceneName)
+    //{
+    //    switch (sceneName)
+    //    {
+    //        case "Draft":
+    //            Debug.Log("setting local draftUI reference");
+    //            this.draftUI = GameObject.FindWithTag("DraftUI").GetComponent<DraftUI>();
+    //            break;
+    //        case "Maingame":
+    //            Debug.Log("setting local mapInputHandler reference");
+    //            Debug.Log(MapInputHandler.Singleton);
+    //            this.mapInputHandler = MapInputHandler.Singleton;
+    //            break;
+    //    }
+    //}
+
+    [Server]
+    private void ServerSceneInit(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "Draft":
+                this.SetPhase(new CharacterDraftPhase());
+                break;
+
+            case "MainGame":
+                this.SetPhase(new CharacterPlacementPhase());
+                break;
+        }
+    }
+    #endregion
+
     #region Commands/Server
 
     //Main game tick
@@ -124,12 +250,6 @@ public class GameController : NetworkBehaviour
     public void CmdNextTurn()
     {
         this.currentPhaseObject.Tick();
-    }
-
-    [Command(requiresAuthority = false)]
-    public void CmdRemoteClientFinishedLoadingScene(string sceneName)
-    {
-        this.remoteClientLoadedScene = sceneName;
     }
 
     [Server]
@@ -219,7 +339,6 @@ public class GameController : NetworkBehaviour
         }
     }
 
-
     [Server]
     public void AddCharToTurnOrder(int classID)
     {
@@ -233,21 +352,6 @@ public class GameController : NetworkBehaviour
         this.RpcOnCharAddedToTurnOrder(classID);
     }
 
-    [Server]
-    private void ServerSceneInit(string sceneName)
-    {
-        switch (sceneName)
-        {
-            case "Draft":
-                this.SetPhase(new CharacterDraftPhase());
-                break;
-
-            case "MainGame":
-                this.SetPhase(new CharacterPlacementPhase());
-
-                break;
-        }
-    }
     #endregion
 
     #region Callbacks
@@ -285,62 +389,6 @@ public class GameController : NetworkBehaviour
                 this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
         }
     }
-
-    //Phases that require new scene are set in this callback to ensure scene gameobjects are loaded
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        Debug.LogFormat("Loaded scene {0}", scene.name);
-
-        //needed because network isn't properly setup yet, causing weird stuff
-        if (scene.name == "Lobby")
-            return;
-
-        this.LocalSceneInit(scene.name);
-
-        //rest of scene init can be handled server side or with Rpcs
-        if (!isServer)
-            return;
-
-        //ensure that remote client has finished loading scene
-        if (remoteClientLoadedScene == scene.name)
-        {
-            this.ServerSceneInit(scene.name);
-        }
-        else
-        {
-            StartCoroutine(InitSceneOnceReadyCoroutine(scene.name));
-        }
-    }
-
-    private IEnumerator InitSceneOnceReadyCoroutine(string sceneName)
-    {
-        while (this.remoteClientLoadedScene != sceneName)
-        {
-            yield return null;            
-        }
-        this.ServerSceneInit(sceneName);
-    }
-
-    //setup scene references on all clients ASAP to avoid null refs that can occur when setting them via async Rpcs
-    private void LocalSceneInit(string sceneName)
-    {
-        if (sceneName == "Menu")
-        {
-           //Destroy(this.gameObject);
-        }
-
-        if (sceneName == "Draft")
-            this.draftUI = GameObject.FindWithTag("DraftUI").GetComponent<DraftUI>();
-
-        if (sceneName == "MainGame")
-        {
-            Debug.Log("initiliazing map input handler ref from gamecontroller on some client");
-            Debug.Log(MapInputHandler.Singleton);
-            this.mapInputHandler = MapInputHandler.Singleton;
-            Debug.Log(this.mapInputHandler);
-        }
-    }
-
     #endregion
 
     #region Rpcs

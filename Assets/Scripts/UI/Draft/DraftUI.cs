@@ -21,6 +21,15 @@ public class DraftUI : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI instructionLabel;
 
+    private void Awake()
+    {
+        //just to avoid printing error when starting editor in wrong draft scene
+        //Gamecontroller should always exist otherwise
+        if (GameController.Singleton == null)
+            return;
+        GameController.Singleton.draftUI = this;
+    }
+
     [Server]
     public void Init()
     {

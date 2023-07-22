@@ -25,15 +25,11 @@ public class MapInputHandler : NetworkBehaviour
     private CharacterAbility currentAbilityStats;
     private Treasure currentTreasureStats;
 
-    private void OnEnable()
-    {
-
-    }
-
     private void Awake()
     {
         if (MapInputHandler.Singleton == null)
             MapInputHandler.Singleton = this;
+        GameController.Singleton.mapInputHandler = this;
         Debug.Log("MapInputHandler awakened");
         this.playingCharacter = null;
         this.SelectedHex = null;
