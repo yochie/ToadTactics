@@ -84,6 +84,15 @@ public class DraftUI : MonoBehaviour
 
     public void OnCharacterCrowned(int classID)
     {
-        this.instructionLabel.text = "Waiting for other player to choose his king.";
+        this.instructionLabel.text = "Waiting for other player to choose his king";
+    }
+
+    public void OnLocalPlayerTurnStart()
+    {
+        this.instructionLabel.text = "Pick a character";
+    }
+    public void OnLocalPlayerTurnEnd()
+    {
+        this.instructionLabel.text = "Waiting for other player to choose";
     }
 }
