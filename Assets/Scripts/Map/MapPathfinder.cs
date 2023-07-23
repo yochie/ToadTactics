@@ -38,7 +38,7 @@ public static class MapPathfinder
         foreach (HexCoordinates neighbourCoord in h.coordinates.NeighbhouringCoordinates())
         {
             Hex neighbour = Map.GetHex(hexGrid, neighbourCoord.X, neighbourCoord.Y);
-            if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && neighbour.holdsCharacterWithClassID == -1)
+            if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && !neighbour.HoldsACharacter())
             {
                 toReturn.Add(neighbour);
             }

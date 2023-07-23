@@ -45,6 +45,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     [SyncVar]
     public bool hasBeenSpawnedOnClient;
 
+    [SyncVar]
+    public int holdsCorpseWithClassID;
+
     #endregion
 
     #region Startup
@@ -58,6 +61,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.isStartingZone = false;
         this.startZoneForPlayerIndex = -1;
         this.holdsCharacterWithClassID = -1;
+        this.holdsCorpseWithClassID = -1;
         this.holdsObstacle = ObstacleType.none;
         this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
@@ -98,6 +102,11 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.holdsCharacterWithClassID = -1;
     }
 
+    internal void ClearCorpse()
+    {
+        this.holdsCorpseWithClassID = -1;
+    }
+
     public void Delete()
     {
         if (this.drawer != null)
@@ -121,11 +130,27 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         return (this.holdsCharacterWithClassID != -1);
     }
 
+    public bool HoldsACorpse()
+    {
+        return (this.holdsCorpseWithClassID != -1);
+    }
+
+
     public PlayerCharacter GetHeldCharacterObject()
     {
         if (!this.HoldsACharacter()) {
             Debug.Log("Trying to get held character from hex without one.");
             return null; 
+        }
+        return GameController.Singleton.playerCharacters[this.holdsCharacterWithClassID];
+    }
+
+    public PlayerCharacter GetHeldCorpseCharacterObject()
+    {
+        if (!this.HoldsACorpse())
+        {
+            Debug.Log("Trying to get held corpse character from hex without one.");
+            return null;
         }
         return GameController.Singleton.playerCharacters[this.holdsCharacterWithClassID];
     }

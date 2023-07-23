@@ -58,10 +58,19 @@ public class DefaultAttackAction : IAttackAction
                             this.AttackerStats.damageIterations,
                             prevLife,
                             this.DefenderCharacter.CurrentLife());
+
+            if (this.DefenderCharacter.IsDead())
+            {
+                Debug.LogFormat("{0} is dead.", this.DefenderCharacter);
+                this.TargetHex.ClearCharacter();
+                this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.charClassID;
+            }
+                
         }
 
         //PlayerCharacter state updated to track that attack was used
         this.ActorCharacter.UseAttack();
+
 
         //TODO Move to event listeners
         MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);

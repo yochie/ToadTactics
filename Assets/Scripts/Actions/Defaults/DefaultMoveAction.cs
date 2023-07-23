@@ -49,6 +49,7 @@ public class DefaultMoveAction : IMoveAction
             this.ActorHex != null &&
             this.TargetHex != null &&
             !this.TargetHex.HoldsACharacter() &&
+            !this.TargetHex.HoldsACorpse() &&
             this.TargetHex.holdsObstacle == ObstacleType.none &&
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
