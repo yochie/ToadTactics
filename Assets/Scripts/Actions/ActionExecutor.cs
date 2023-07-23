@@ -133,33 +133,40 @@ public class ActionExecutor : NetworkBehaviour
     //Utility for validation, used by individual IAction classes
     public static bool IsValidTargetType(PlayerCharacter actor, Hex targetedHex, List<TargetType> allowedTargets)
     {
-        bool selfTarget = false;
+        bool selfTarget = false;        
         bool friendlyTarget = false;
         bool ennemyTarget = false;
-        if (targetedHex.HoldsACharacter())
+        if (targetedHex.HoldsACharacter() || targetedHex.HoldsACorpse())
         {
-            PlayerCharacter targetedCharacter = targetedHex.GetHeldCharacterObject();
+            PlayerCharacter targetedCharacter = targetedHex.HoldsACharacter() ? targetedHex.GetHeldCharacterObject() : targetedHex.GetHeldCorpseCharacterObject();
             selfTarget = (actor.charClassID == targetedCharacter.charClassID);
             friendlyTarget = (actor.ownerID == targetedCharacter.ownerID);
             ennemyTarget = !friendlyTarget;
-
         }
-        bool emptyTarget = !targetedHex.HoldsACharacter() && targetedHex.holdsObstacle == ObstacleType.none;
+        bool liveTarget = targetedHex.HoldsACharacter();
+        bool corpseTarget = targetedHex.HoldsACorpse();
+        bool emptyTarget = !targetedHex.HoldsACharacter() && !targetedHex.HoldsACorpse() && (targetedHex.holdsObstacle == ObstacleType.none);
         bool obstacleTarget = targetedHex.holdsObstacle != ObstacleType.none;
 
-        if (!allowedTargets.Contains(TargetType.ennemy_chars) && ennemyTarget)
+        if (!allowedTargets.Contains(TargetType.ennemy_chars) && (ennemyTarget && liveTarget))
             return false;
 
-        if (!allowedTargets.Contains(TargetType.other_friendly_chars) && friendlyTarget && !selfTarget)
+        if (!allowedTargets.Contains(TargetType.other_friendly_chars) && (friendlyTarget && !selfTarget && liveTarget))
             return false;
 
-        if (!allowedTargets.Contains(TargetType.self) && selfTarget)
+        if (!allowedTargets.Contains(TargetType.self) && (selfTarget && liveTarget))
             return false;
 
         if (!allowedTargets.Contains(TargetType.empty_hex) && emptyTarget)
             return false;
 
         if (!allowedTargets.Contains(TargetType.obstacle) && obstacleTarget)
+            return false;
+
+        if (!allowedTargets.Contains(TargetType.ennemy_corpse) && (ennemyTarget && corpseTarget))
+            return false;
+
+        if (!allowedTargets.Contains(TargetType.friendly_corpse) && (friendlyTarget && corpseTarget))
             return false;
 
         return true;
