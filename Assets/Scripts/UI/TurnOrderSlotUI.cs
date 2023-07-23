@@ -16,10 +16,8 @@ public class TurnOrderSlotUI : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI lifeLabel;
 
-
     [SerializeField]
-    GameObject crownSpriteImage;
-
+    private Image crownSpriteImage;
 
     public int holdsCharacterWithClassID = -1;
 
@@ -55,10 +53,28 @@ public class TurnOrderSlotUI : MonoBehaviour
     }
     internal void ShowCrown()
     {
-        this.crownSpriteImage.SetActive(true);
+        this.crownSpriteImage.gameObject.SetActive(true);
     }
     internal void HideCrown()
     {
-        this.crownSpriteImage.SetActive(false);
+        this.crownSpriteImage.gameObject.SetActive(false);
+    }
+
+    public void OnCharacterDeath(int classID)
+    {
+        if (this.holdsCharacterWithClassID == classID)
+        {
+            this.characterImage.color = Utility.GrayOutColor(this.characterImage.color, true);
+            this.crownSpriteImage.color = Utility.GrayOutColor(this.characterImage.color, true);
+        }
+    }
+
+    public void OnCharacterResurrect(int classID)
+    {
+        if (this.holdsCharacterWithClassID == classID)
+        {
+            this.characterImage.color = Utility.GrayOutColor(this.characterImage.color, false);
+            this.crownSpriteImage.color = Utility.GrayOutColor(this.characterImage.color, false);
+        }
     }
 }
