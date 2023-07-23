@@ -30,6 +30,15 @@ public static class Utility
 
     }
 
+    internal static Color GrayOutColor(Color oldColor, bool state)
+    {
+        Color unGrayedOutColor = oldColor;
+        Color grayedOutColor = oldColor;
+        unGrayedOutColor.a = 1f;
+        grayedOutColor.a = 0.2f;
+        return state ? grayedOutColor : unGrayedOutColor;
+    }
+
     internal static int ApplyKingLifeBuff(int maxHealth)
     {
         return maxHealth * 2;

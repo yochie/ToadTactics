@@ -6,9 +6,24 @@ using System;
 
 public class PlayerCharacter : NetworkBehaviour
 {
-    public CharacterClass charClass;
+    #region Editor vars
+
+    [SerializeField]
+    private SpriteRenderer spriteRenderer;
+
+    [SerializeField]
+    private IntGameEventSO onCharacterDeath;
+
+    [SerializeField]
+    private IntGameEventSO onCharacterResurrect;
+
+    #endregion
+
+    #region Sync vars
+
     [SyncVar(hook = nameof(OnCharClassIDChanged))]
     public int charClassID;
+    public CharacterClass charClass;
     [SyncVar]
     private int currentLife;
     [SyncVar]
@@ -29,6 +44,11 @@ public class PlayerCharacter : NetworkBehaviour
     public int ownerID;
     [SyncVar]
     public bool isKing;
+    [SyncVar]
+    private bool isDead;
+    #endregion
+
+    #region Startup
 
     public override void OnStartClient()
     {
@@ -36,10 +56,25 @@ public class PlayerCharacter : NetworkBehaviour
         this.OnCharClassIDChanged(-1, this.charClassID);
     }
 
-    public override void OnStartServer()
+    //Called when char class is set in callback
+    [Command(requiresAuthority = false)]
+    private void CmdInitCharacter(NetworkConnectionToClient sender = null)
     {
-        base.OnStartServer();
+        this.currentStats = this.charClass.stats;
+        if (this.isKing)
+            this.currentStats = new CharacterStats(this.currentStats, maxHealth: Utility.ApplyKingLifeBuff(this.currentStats.maxHealth));
+
+        this.isDead = false;
+        this.currentLife = this.currentStats.maxHealth;
+        this.equippedTreasureIDs = new();
+        this.hasUsedAbility = false;
+        this.hasUsedTreasure = false;
+        this.ResetTurnState();
     }
+
+    #endregion
+
+    #region Callbacks
 
     [Client]
     private void OnCharClassIDChanged(int _, int newID)
@@ -57,40 +92,14 @@ public class PlayerCharacter : NetworkBehaviour
         }
     }
 
-    [Command(requiresAuthority = false)]
-    private void CmdInitCharacter(NetworkConnectionToClient sender = null)
-    {
-        this.currentStats = this.charClass.stats;
-        if (this.isKing)
-            this.currentStats = new CharacterStats(this.currentStats, maxHealth : Utility.ApplyKingLifeBuff(this.currentStats.maxHealth));
+    #endregion
 
-        this.currentLife = this.currentStats.maxHealth;
-        this.equippedTreasureIDs = new();
-        this.hasUsedAbility = false;
-        this.hasUsedTreasure = false;
-        this.ResetTurnState();
-    }
+    #region State management
 
+    [Server]
     public void SetOwner(int ownerID)
     {
         this.ownerID = ownerID;
-    }
-
-    public bool HasRemainingActions()
-    {
-        if (this.hasMoved && this.hasAttacked && this.hasUsedAbility && this.hasUsedTreasure)
-            return false;
-        else
-            return true;
-    }
-    public int CanMoveDistance()
-    {
-       return remainingMoves;
-    }
-
-    public int CurrentLife()
-    {
-        return this.currentLife;
     }
 
     [Server]
@@ -130,6 +139,25 @@ public class PlayerCharacter : NetworkBehaviour
     public void TakeRawDamage(int dmgAmount)
     {
         this.currentLife = Mathf.Clamp(currentLife - dmgAmount, 0, this.currentStats.maxHealth);
+        if(this.currentLife == 0)
+        {
+            this.Die();
+        }
+    }
+
+    [Server]
+    public void Die()
+    {
+        this.isDead = true;
+        this.RpcOnCharacterDeath();
+        
+    }
+
+    [Server]
+    public void Resurrect()
+    {
+        this.isDead = false;
+        this.RpcOnCharacterResurrect();        
     }
 
     //update position on all clients
@@ -138,5 +166,52 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.transform.position = position;
     }
+    #endregion
 
+    #region Events
+    [ClientRpc]
+    private void RpcOnCharacterDeath()
+    {
+        this.onCharacterDeath.Raise(this.charClassID);
+    }
+
+    [ClientRpc]
+    private void RpcOnCharacterResurrect()
+    {
+        this.onCharacterResurrect.Raise(this.charClassID);
+    }
+
+    public void OnCharacterDeath(int classID)
+    {
+        if(classID == this.charClassID)
+            this.spriteRenderer.color = Utility.GrayOutColor(this.spriteRenderer.color, true);
+    }
+
+    public void OnCharacterResurrect(int classID)
+    {
+        if(classID == this.charClassID)
+            this.spriteRenderer.color = Utility.GrayOutColor(this.spriteRenderer.color, false);
+    }
+    #endregion
+
+    #region Utility
+    public bool HasRemainingActions()
+    {
+        if (this.hasMoved && this.hasAttacked && this.hasUsedAbility && this.hasUsedTreasure)
+            return false;
+        else
+            return true;
+    }
+
+    public int CanMoveDistance()
+    {
+       return remainingMoves;
+    }
+
+    public int CurrentLife()
+    {
+        return this.currentLife;
+    }
+
+    #endregion
 }

@@ -9,7 +9,7 @@ using System.IO;
 public class ClassDataSO : ScriptableObject
 {
     [SerializeField]
-    private List<GameObject> characterPrefabs;
+    private List<PlayerCharacter> characterPrefabs;
 
     //keys are classID
     private Dictionary<int, CharacterClass> characterClasses;
@@ -32,9 +32,9 @@ public class ClassDataSO : ScriptableObject
 
     public Sprite GetSpriteByClassID(int classID)
     {
-        foreach (GameObject prefab in characterPrefabs)
+        foreach (PlayerCharacter prefab in characterPrefabs)
         {
-            if(prefab.GetComponent<PlayerCharacter>().charClassID == classID)
+            if(prefab.charClassID == classID)
             {
                 return prefab.GetComponent<SpriteRenderer>().sprite;
             }
@@ -43,11 +43,11 @@ public class ClassDataSO : ScriptableObject
         throw new Exception("Requested sprite for undocumented classID.");
     }
 
-    public GameObject GetPrefabByClassID(int classID)
+    public PlayerCharacter GetPrefabByClassID(int classID)
     {
-        foreach (GameObject prefab in characterPrefabs)
+        foreach (PlayerCharacter prefab in characterPrefabs)
         {
-            if (prefab.GetComponent<PlayerCharacter>().charClassID == classID)
+            if (prefab.charClassID == classID)
             {
                 return prefab;
             }

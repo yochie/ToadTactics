@@ -139,9 +139,10 @@ public class MainHUD : NetworkBehaviour
         Debug.Log("Test button response");
         foreach (PlayerCharacter character in GameController.Singleton.playerCharacters.Values)
         {
-            character.currentStats = new CharacterStats(character.currentStats, maxHealth : character.currentStats.maxHealth + 100);
+            character.TakeRawDamage(999);
+            //character.currentStats = new CharacterStats(character.currentStats, maxHealth: character.currentStats.maxHealth + 100);
         }
-        this.RpcUpdateLifeLabels();
+        //this.RpcUpdateLifeLabels();
     }
 
     //For tests
