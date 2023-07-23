@@ -630,5 +630,10 @@ public class GameController : NetworkBehaviour
         return null;
     }
 
+    internal int GetScore(int playerID)
+    {
+        return this.playerScores[playerID];
+    }
+
     #endregion
 }
