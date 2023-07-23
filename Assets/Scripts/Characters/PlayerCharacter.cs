@@ -150,7 +150,6 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.isDead = true;
         this.RpcOnCharacterDeath();
-        
     }
 
     [Server]

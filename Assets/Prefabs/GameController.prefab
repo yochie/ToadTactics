@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5036168387978012705}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2398882097957036555
 MonoBehaviour:
@@ -54,6 +54,10 @@ MonoBehaviour:
   onLocalPlayerTurnStart: {fileID: 11400000, guid: 18a4cdf9090449042a8f58bdb7182019, type: 2}
   onLocalPlayerTurnEnd: {fileID: 11400000, guid: c0029f6b08fcc0b4db9ca68b9d0c2e49, type: 2}
   onInitGameplayMode: {fileID: 11400000, guid: c3b9a04fcadefcd46afc2509aaec3a54, type: 2}
+  onRoundWon: {fileID: 11400000, guid: ee14021437a35d74aac147496719798a, type: 2}
+  onRoundLost: {fileID: 11400000, guid: 4bcefb8653ee0f243b5b327e56b80ea4, type: 2}
+  onGameWon: {fileID: 11400000, guid: 7e989a42b66b88045a36328cf5faa61b, type: 2}
+  onGameLost: {fileID: 11400000, guid: ca4e7ea06672be24c82f393d6c465fb0, type: 2}
   playerControllers: []
   mapInputHandler: {fileID: 0}
   draftUI: {fileID: 0}

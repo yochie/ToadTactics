@@ -24,7 +24,9 @@ public class ActionExecutor : NetworkBehaviour
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter movingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
 
-        ActionExecutor.Singleton.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
+        bool success = ActionExecutor.Singleton.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
+        if (success)
+            this.CheckForRoundEnd();
     }
 
 
@@ -39,16 +41,17 @@ public class ActionExecutor : NetworkBehaviour
             targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
         }
 
-
+        bool success;
         if (targetedCharacter != null)
         {
-            ActionExecutor.Singleton.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
-
+            success = ActionExecutor.Singleton.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
         }
         else
         {
-            ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
+            success = ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
         }
+        if (success)
+            this.CheckForRoundEnd();
     }
 
     [Server]
@@ -170,5 +173,18 @@ public class ActionExecutor : NetworkBehaviour
             return false;
 
         return true;
+    }
+
+    [Server]
+    private void CheckForRoundEnd()
+    {
+        foreach(PlayerCharacter p in GameController.Singleton.playerCharacters.Values)
+        {
+            if (p.isKing && p.IsDead())
+            {
+                Debug.Log("The king is dead. Long live the king.");
+                GameController.Singleton.EndRound(p.ownerID);
+            }
+        }
     }
 }

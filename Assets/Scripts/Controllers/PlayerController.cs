@@ -10,6 +10,7 @@ public class PlayerController : NetworkBehaviour
     //TODO : Make into syncvar..
     //0 for host
     //1 for client
+    [SyncVar]
     public int playerID;
 
     [SerializeField]
@@ -45,18 +46,7 @@ public class PlayerController : NetworkBehaviour
         foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
             OnPlayerCharactersNetIDsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
 
-        if (isServer && this.isOwned) {
-            this.playerID = 0;
-        } else if (isServer && !this.isOwned)
-        {
-            this.playerID = 1;
-        } else if (!isServer && this.isOwned)
-        {
-            this.playerID = 1;
-        } else if (!isServer && !this.isOwned)
-        {
-            this.playerID = 0;
-        }
+
 
         if (!this.isOwned)
         {
@@ -78,6 +68,10 @@ public class PlayerController : NetworkBehaviour
     {
         base.OnStartServer();
         this.kingClassID = -1;
+
+        this.playerID = this.isOwned ? 0 : 1;
+
+        GameController.Singleton.SetScore(this.playerID, 0);
     }
 
     public override void OnStopServer()

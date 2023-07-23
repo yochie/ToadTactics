@@ -30,6 +30,18 @@ public class GameController : NetworkBehaviour
     [SerializeField]
     private GameEventSO onInitGameplayMode;
 
+    [SerializeField]
+    private GameEventSO onRoundWon;
+
+    [SerializeField]
+    private GameEventSO onRoundLost;
+
+    [SerializeField]
+    private GameEventSO onGameWon;
+
+    [SerializeField]
+    private GameEventSO onGameLost;
+
     #endregion
 
     #region Runtime vars
@@ -77,6 +89,8 @@ public class GameController : NetworkBehaviour
 
     [SyncVar]
     public int currentRound;
+    
+    private readonly SyncDictionary<int, int> playerScores = new();
 
     //sceneName => awokenState
     public readonly SyncDictionary<string, bool> remoteAwokenScenes = new();
@@ -148,6 +162,7 @@ public class GameController : NetworkBehaviour
             return false;
     }
 
+    //TODO : not used???
     private bool SceneAwokenOnLocalClient(string sceneName)
     {
         if (this.isServer)
@@ -321,6 +336,43 @@ public class GameController : NetworkBehaviour
         this.RpcOnCharAddedToTurnOrder(classID);
     }
 
+    [Server]
+    internal void EndRound(int looserID)
+    {
+        Debug.Log("Ending round.");
+        int winnerID = this.OtherPlayer(looserID);
+        NetworkConnectionToClient winnerClient = this.GetConnectionForPlayerID(winnerID);
+        NetworkConnectionToClient looserClient = this.GetConnectionForPlayerID(looserID);
+
+        bool gameEnded = this.WinRound(winnerID);
+        if (gameEnded)
+        {
+            Debug.Log("Game ended.");
+            this.TargetRpcOnGameWon(winnerClient);
+            this.TargetRpcOnGameLost(looserClient);
+        }
+        else
+        {
+            Debug.Log("Time for another round.");
+            this.TargetRpcOnRoundWon(winnerClient);
+            this.TargetRpcOnRoundLost(looserClient);
+        }            
+    }
+
+    [Server]
+    internal void SetScore(int playerID, int score)
+    {
+        this.playerScores[playerID] = score;
+    }
+
+    [Server]
+    private bool WinRound(int winnerID)
+    {
+        Debug.Log("Incrementing score for winner");
+        this.playerScores[winnerID] += 1;
+        bool gameEnded = (this.playerScores[winnerID] == 2);
+        return gameEnded;
+    }
     #endregion
 
     #region Callbacks
@@ -414,6 +466,30 @@ public class GameController : NetworkBehaviour
         {
             this.onLocalPlayerTurnEnd.Raise();
         }
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnGameWon(NetworkConnectionToClient target)
+    {
+        this.onGameWon.Raise();
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnGameLost(NetworkConnectionToClient target)
+    {
+        this.onGameLost.Raise();
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnRoundWon(NetworkConnectionToClient target)
+    {
+        this.onRoundWon.Raise();
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnRoundLost(NetworkConnectionToClient target)
+    {
+        this.onRoundLost.Raise();
     }
     #endregion
 
