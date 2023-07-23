@@ -32,7 +32,7 @@ public class MainHUD : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void RpcGrayOutMoveButton(NetworkConnectionToClient target)
+    public void TargetRpcGrayOutMoveButton(NetworkConnectionToClient target)
     {
         this.moveButton.GetComponent<Button>().interactable = false;
         this.moveButton.GetComponent<Image>().color = Color.white;
@@ -40,7 +40,7 @@ public class MainHUD : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void RpcGrayOutAttackButton(NetworkConnectionToClient target)
+    public void TargetRpcGrayOutAttackButton(NetworkConnectionToClient target)
     {
         this.attackButton.GetComponent<Button>().interactable = false;
         this.attackButton.GetComponent<Image>().color = Color.white;

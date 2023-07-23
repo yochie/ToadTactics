@@ -36,7 +36,7 @@ public class DefaultMoveAction : IMoveAction
         //Update UI/Gamecontroller
         if (this.ActorCharacter.CanMoveDistance() == 0)
         {
-            MainHUD.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
+            MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
             if (!ActorCharacter.hasAttacked)
                 MapInputHandler.Singleton.TargetRpcSetControlModeOnClient(this.RequestingClient, ControlMode.attack);
         }

@@ -64,7 +64,7 @@ public class DefaultAttackAction : IAttackAction
         this.ActorCharacter.UseAttack();
 
         //TODO Move to event listeners
-        MainHUD.Singleton.RpcGrayOutAttackButton(this.RequestingClient);
+        MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);
 
         if (this.ActorCharacter.CanMoveDistance() > 0)
         {
@@ -72,7 +72,7 @@ public class DefaultAttackAction : IAttackAction
         }
         else
         {
-            MainHUD.Singleton.RpcGrayOutMoveButton(this.RequestingClient);
+            MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
             MapInputHandler.Singleton.TargetRpcSetControlModeOnClient(this.RequestingClient, ControlMode.none);
         }
 
