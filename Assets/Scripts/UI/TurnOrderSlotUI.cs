@@ -21,25 +21,20 @@ public class TurnOrderSlotUI : MonoBehaviour
 
     public int holdsCharacterWithClassID = -1;
 
-    private bool isHighlighted = false;
-    private bool IsHighlighted
+    private void SetHighlight(bool state)
     {
-        set
-        {
-            isHighlighted = value;
-            Color oldColor = this.highlightImage.color;
-            this.highlightImage.color = Utility.SetHighlight(oldColor, value);
-        }
+        Color oldColor = this.highlightImage.color;
+        this.highlightImage.color = Utility.SetHighlight(oldColor, state);
     }
 
     internal void Highlight()
     {
-        this.IsHighlighted = true;
+        this.SetHighlight(true);
     }
 
     internal void Unhighlight()
     {
-        this.IsHighlighted = false;
+        this.SetHighlight(false);
     }
 
     internal void SetLifeLabel(int currentLife, int maxHealth)

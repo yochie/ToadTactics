@@ -203,15 +203,11 @@ public class PlayerCharacter : NetworkBehaviour
             return true;
     }
 
-    public int CanMoveDistance()
-    {
-       return remainingMoves;
-    }
+    public int CanMoveDistance() => this.remainingMoves;
 
-    public int CurrentLife()
-    {
-        return this.currentLife;
-    }
+    public int CurrentLife() => this.currentLife;
+
+    public bool IsDead() => this.isDead;
 
     #endregion
 }

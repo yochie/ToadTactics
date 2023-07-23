@@ -44,43 +44,43 @@ public class GameplayPhase : IGamePhase
             Controller.SwapPlayerTurn();
         }
 
-        Controller.assignControlModesForNewTurn(Controller.playerTurn, ControlMode.move);
+        Controller.AssignControlModesForNewTurn(Controller.playerTurn, ControlMode.move);
         Controller.RpcOnInitGameplayMode();
     }
 
     [Server]
     public void Tick()
     {
-        //loops through turn order        
-        Controller.turnOrderIndex++;
-        if (Controller.turnOrderIndex >= Controller.sortedTurnOrder.Count)
-            Controller.turnOrderIndex = 0;
+        //loops through turn order                
+        if (this.Controller.turnOrderIndex >= this.Controller.sortedTurnOrder.Count - 1)
+            this.Controller.turnOrderIndex = 0;
+        else
+            this.Controller.turnOrderIndex++;
 
         //finds character class id for the next turn so that we can check who owns it
-        int currentCharacterClassID = -1;
-        int i = 0;
-        foreach (int classID in Controller.sortedTurnOrder.Values)
+        
+        int playingCharacterClassID = this.Controller.ClassIdForTurn();
+        if (playingCharacterClassID == -1)
         {
-            if (i == Controller.turnOrderIndex)
-            {
-                currentCharacterClassID = classID;
-            }
-            i++;
-        }
-        if (currentCharacterClassID == -1)
-        {
-            Debug.Log("Error : Bad code for iterating turn order");
+            throw new System.Exception("Error : couldn't find playing character in turn order");
         }
 
-        PlayerCharacter currentCharacter = Controller.playerCharacters[currentCharacterClassID];
+        PlayerCharacter currentCharacter = this.Controller.playerCharacters[playingCharacterClassID];
+        if (currentCharacter.IsDead())
+        {
+            //skips turn
+            this.Controller.CmdNextTurn();
+            return;
+        }
+
         currentCharacter.ResetTurnState();
 
         //if we don't own that char, swap player turn
-        if (Controller.playerTurn != Controller.draftedCharacterOwners[currentCharacterClassID])
+        if (this.Controller.playerTurn != this.Controller.draftedCharacterOwners[playingCharacterClassID])
         {
-            Controller.SwapPlayerTurn();
+            this.Controller.SwapPlayerTurn();
         }
 
-        Controller.assignControlModesForNewTurn(Controller.playerTurn, ControlMode.move);
+        this.Controller.AssignControlModesForNewTurn(this.Controller.playerTurn, ControlMode.move);
     }
 }

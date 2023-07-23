@@ -16,8 +16,6 @@ public class DraftUI : MonoBehaviour
     [SerializeField]
     private List<DraftableCharacterSlotUI> draftableSlots;
 
-    private List<DraftableCharacterSlotUI> kingChoiceSlots;
-
     [SerializeField]
     private TextMeshProUGUI instructionLabel;
 
@@ -43,17 +41,6 @@ public class DraftUI : MonoBehaviour
             slot.TargetRpcInit(waitingPlayerClient, classIDsToDraft[i], false);
             i++;
         }
-    }
-
-    private DraftableCharacterSlotUI GetSlotForID(int classID)
-    {
-        foreach (DraftableCharacterSlotUI slot in draftableSlots)
-        {
-            if (slot.holdsClassID == classID)
-                return slot;
-        }
-
-        throw new System.Exception("No slot with given ID was found");
     }
 
     public void SetupKingSelection(List<int> classIDs)

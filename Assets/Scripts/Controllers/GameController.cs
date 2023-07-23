@@ -62,7 +62,7 @@ public class GameController : NetworkBehaviour
     public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
 
     //maps character initiative to classID
-    public readonly SyncIDictionary<float, int> sortedTurnOrder = new SyncIDictionary<float, int>(new SortedList<float, int>());
+    public readonly SyncIDictionary<float, int> sortedTurnOrder = new(new SortedList<float, int>());
 
     //index of currently playing character during gameplay phase
     [SyncVar(hook = nameof(OnTurnOrderIndexChanged))]
@@ -259,7 +259,7 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
-    public void assignControlModesForNewTurn(int playerTurn, ControlMode activePlayerMode)
+    public void AssignControlModesForNewTurn(int playerTurn, ControlMode activePlayerMode)
     {
         List<NetworkConnectionToClient> connections = new();
         NetworkServer.connections.Values.CopyTo(connections);
