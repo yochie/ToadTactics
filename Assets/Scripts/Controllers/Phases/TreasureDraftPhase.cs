@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class TreasureDraftPhase : IGamePhase
 {
-    public GameController Controller => throw new System.NotImplementedException();
+    public GameController Controller { get; set; }
 
-    public string Name { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public string Name { get; set; }
 
-    public GamePhaseID ID => throw new System.NotImplementedException();
+    public GamePhaseID ID => GamePhaseID.treasureDraft;
 
     public void Init(string name, GameController controller)
     {
-        throw new System.NotImplementedException();
+        //skip for now
+        GameController.Singleton.CmdChangeToScene("Maingame");
+        //MyNetworkManager.singleton.ServerChangeScene("Maingame");
     }
 
     public void Tick()

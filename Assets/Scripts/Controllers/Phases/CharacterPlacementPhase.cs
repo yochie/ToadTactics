@@ -13,11 +13,19 @@ public class CharacterPlacementPhase : IGamePhase
     public void Init(string name, GameController controller)
     {
         Debug.Log("Initializing character placement mode");
-        Debug.Log(controller.draftedCharacterOwners);
-        Debug.Log(controller.mapInputHandler);
-        Debug.Log(Map.Singleton);
+        //Debug.Log(controller.draftedCharacterOwners);
+        //Debug.Log(controller.mapInputHandler);
+        //Debug.Log(Map.Singleton);
         this.Name = name;
         this.Controller = controller;
+
+        //Clear all state from any previous iterations of this phase
+        this.Controller.turnOrderIndex = 0;
+        this.Controller.sortedTurnOrder.Clear();
+        this.Controller.playerCharactersNetIDs.Clear();
+        this.Controller.playerCharacters.Clear();
+
+        this.Controller.currentRound++;
 
         Map.Singleton.Initialize();
 

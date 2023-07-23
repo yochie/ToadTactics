@@ -43,7 +43,7 @@ public class MapGenerator : MonoBehaviour
     #endregion
 
     #region Runtime vars
-    private Dictionary<Vector2Int, Hex> generatedHexes = new();
+    private Dictionary<Vector2Int, Hex> generatedHexes;
     #endregion
 
     [Server]
@@ -72,6 +72,7 @@ public class MapGenerator : MonoBehaviour
     [Server]
     private void GenerateHexes()
     {
+        this.generatedHexes = new();
         float paddedHexWidth = this.hexWidth + this.padding;
         float paddedHexHeight = this.hexHeight + this.padding;
         for (int x = -this.xSize + 1; x < this.xSize; x++)

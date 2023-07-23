@@ -55,6 +55,7 @@ public class GameController : NetworkBehaviour
     //Only filled on server
     public IGamePhase currentPhaseObject;
 
+
     public List<PlayerController> playerControllers = new();
 
     //Only exist in some scenes, so they need to plug themselves here in their own Awake()
@@ -89,7 +90,6 @@ public class GameController : NetworkBehaviour
 
     [SyncVar]
     public int currentRound;
-    
     private readonly SyncDictionary<int, int> playerScores = new();
 
     //sceneName => awokenState
@@ -142,6 +142,16 @@ public class GameController : NetworkBehaviour
     #endregion
 
     #region Scene management
+    [Server]
+    public void CmdChangeToScene(string newSceneName)
+    {
+        //mark current scene as unloaded
+        string currentScene = SceneManager.GetActiveScene().name;
+        this.remoteAwokenScenes[currentScene] = false;
+        this.hostAwokenScenes[currentScene] = false;
+        MyNetworkManager.singleton.ServerChangeScene(newSceneName);
+    }
+
     [Command(requiresAuthority = false)]
     public void NotifySceneAwoken(bool onServer, string sceneName)
     {
@@ -226,6 +236,9 @@ public class GameController : NetworkBehaviour
             case "MainGame":
                 this.SetPhase(new CharacterPlacementPhase());
                 break;
+            case "TreasureDraft":
+                this.SetPhase(new TreasureDraftPhase());
+                break;
         }
     }
     #endregion
@@ -260,6 +273,9 @@ public class GameController : NetworkBehaviour
                 break;
             case GamePhaseID.gameplay:
                 newPhase.Init("Gameplay " + this.currentRound, this);
+                break;
+            case GamePhaseID.treasureDraft:
+                newPhase.Init("Treasure draft" + this.currentRound, this);
                 break;
         }
     }
@@ -319,7 +335,8 @@ public class GameController : NetworkBehaviour
         if (this.AllPlayersAssignedKings())
         {
             //just change scene, scene changed callback will set phase once all clients have loaded scene
-            NetworkManager.singleton.ServerChangeScene("MainGame");
+            CmdChangeToScene("MainGame");
+            //NetworkManager.singleton.ServerChangeScene("MainGame");
         }
     }
 
@@ -524,7 +541,7 @@ public class GameController : NetworkBehaviour
 
     //note that characters are created as they are placed on board
     public bool AllPlayerCharactersCreated() { 
-        foreach (int classID in this.sortedTurnOrder.Values)
+        foreach (int classID in this.draftedCharacterOwners.Keys)
         {
             if (!this.playerCharacters.ContainsKey(classID))
             {

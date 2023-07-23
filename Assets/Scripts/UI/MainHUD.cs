@@ -131,25 +131,4 @@ public class MainHUD : NetworkBehaviour
         GameController.Singleton.CmdNextTurn();
     }
 
-
-    //For tests
-    [Command(requiresAuthority = false)]
-    public void CmdOnTestButtonClicked()
-    {
-        Debug.Log("Test button response");
-        foreach (PlayerCharacter character in GameController.Singleton.playerCharacters.Values)
-        {
-            character.TakeRawDamage(999);
-            //character.currentStats = new CharacterStats(character.currentStats, maxHealth: character.currentStats.maxHealth + 100);
-        }
-        //this.RpcUpdateLifeLabels();
-    }
-
-    //For tests
-    [ClientRpc]
-    public void RpcUpdateLifeLabels()
-    {
-
-        TurnOrderHUD.Singleton.ResetLifeLabels();
-    }
 }

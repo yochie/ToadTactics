@@ -39,6 +39,8 @@ public class TurnOrderSlotUI : MonoBehaviour
 
     internal void SetLifeLabel(int currentLife, int maxHealth)
     {
+        //Debug.Log(currentLife);
+        //Debug.Log(maxHealth);
         this.lifeLabel.text = String.Format("{0}/{1}", currentLife, maxHealth);
     }
 

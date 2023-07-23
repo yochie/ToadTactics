@@ -22,10 +22,6 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]
     private IntGameEventSO onCharacterCrowned;
 
-    //maps classID to PlayerCharacter
-    public readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
-    public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
-
     [SyncVar]
     public int kingClassID;
 
@@ -40,13 +36,6 @@ public class PlayerController : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-
-        //setup sync dict callbacks to sync actual objects from netids
-        this.playerCharactersNetIDs.Callback += OnPlayerCharactersNetIDsChange;
-        foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
-            OnPlayerCharactersNetIDsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
-
-
 
         if (!this.isOwned)
         {
@@ -161,7 +150,6 @@ public class PlayerController : NetworkBehaviour
 
         //add player to both lists
         GameController.Singleton.playerCharactersNetIDs.Add(characterClassID, newCharObject.GetComponent<NetworkIdentity>().netId);
-        this.playerCharactersNetIDs.Add(characterClassID, newCharObject.GetComponent<NetworkIdentity>().netId);
 
         //update Hex state, synced to clients by syncvar
         destinationHex.holdsCharacterWithClassID = characterClassID;
@@ -174,43 +162,7 @@ public class PlayerController : NetworkBehaviour
     }
     #endregion
 
-    #region Callbacks
-    //callback for syncing list of active characters
-    [Client]
-    private void OnPlayerCharactersNetIDsChange(SyncIDictionary<int, uint>.Operation op, int key, uint netidArg)
-    {
-        switch (op)
-        {
-            case SyncDictionary<int, uint>.Operation.OP_ADD:
-                this.playerCharacters[key] = null;
-                if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
-                    this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
-                else
-                    StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_SET:
-                // entry changed
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_REMOVE:
-                // entry removed
-                break;
-            case SyncDictionary<int, uint>.Operation.OP_CLEAR:
-                // Dictionary was cleared
-                break;
-        }
-    }
-
-    //coroutine for finishing syncvar netid matching
-    [Client]
-    private IEnumerator PlayerFromNetIDCoroutine(int key, uint netIdArg)
-    {
-        while (this.playerCharacters[key] == null)
-        {
-            yield return null;
-            if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
-                this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
-        }
-    }
+    #region Callbacks    
 
     [TargetRpc]
     private void TargetRpcOnCharacterPlaced(NetworkConnectionToClient sender, int charClassID)

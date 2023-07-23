@@ -95,6 +95,12 @@ public class MyNetworkManager : NetworkManager
     /// <param name="newSceneName"></param>
     public override void ServerChangeScene(string newSceneName)
     {
+        //if (GameController.Singleton != null)
+        //{
+        //    string currentScene = SceneManager.GetActiveScene().name;
+        //    GameController.Singleton.remoteAwokenScenes[currentScene] = false;
+        //    GameController.Singleton.hostAwokenScenes[currentScene] = false;
+        //}
         base.ServerChangeScene(newSceneName);
     }
 
@@ -172,7 +178,7 @@ public class MyNetworkManager : NetworkManager
 
         if (this.numPlayers == 2)
         {
-            NetworkManager.singleton.ServerChangeScene("Draft");
+            GameController.Singleton.CmdChangeToScene("Draft");
         }
     }
 
