@@ -139,7 +139,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass cavalier = new(
             classID: 1,
             name: "Cavalier",
-            description: "Rapidly reaches the backline or treasure",
+            description: "A cavalier is a knightly warrior, embodying the virtues of courage, honor, and nobility. They are skilled riders, mounted on majestic steeds, and known for their prowess in both mounted and on-foot combat. Cavaliers are defenders of justice and champions of their allies, carrying the banner of honor into battle.",
             stats: new(
                 maxHealth: 180,
                 armor: 8,
@@ -169,7 +169,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass archer = new(
             classID: 2,
             name: "Archer",
-            description: "Evasive and deals ranged damage",
+            description: "An archer is a highly skilled marksman, specializing in ranged attacks and deadly accuracy. They are masters of long-range combat, utilizing bows, to deliver precise and devastating shots from a safe distance. Archers excel at dealing sustained damage and evade their enemies attacks with grace and agility.",
             stats: new(
                 maxHealth: 150,
                 armor: 5,
@@ -187,7 +187,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass rogue = new(
             classID: 3,
             name: "Rogue",
-            description: "Can guarantee a treasure or a kill on low armor characters",
+            description: "A rogue is a nimble and deadly character, specializing in covert operations, precise strikes, and evasion tactics. They excel at quickly dispatching enemies with swift attacks and taking advantage of their opponents' vulnerabilities. Armed with dual daggers rogues are masters of close-quarters combat.",
             stats: new(
                 maxHealth: 170,
                 armor: 6,
@@ -205,7 +205,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass warrior = new(
             classID: 4,
             name: "Warrior",
-            description: "Tanky character with great mobility",
+            description: "A warrior is a seasoned and battle-hardened fighter, wielding weapons and armor with exceptional skill and precision. They are masters of martial combat, specializing in close-quarters combat and being at the forefront of the battlefield. Warriors possess a deep understanding of various weapons and can adapt their fighting style to suit different situations.",
             stats: new(
                 maxHealth: 180,
                 armor: 8,
@@ -223,7 +223,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass paladin = new(
             classID: 5,
             name: "Paladin",
-            description: "Buffs allies and tanks",
+            description: "A paladin is a righteous champion, wielding both martial skills and holy magic in service of a higher purpose. They are imbued with divine favor and possess a deep connection to the forces of light. Paladins combine the might of a warrior with the protective abilities of a holy caster, making them versatile and valuable assets in any group.",
             stats: new(
                 maxHealth: 200,
                 armor: 10,
@@ -241,7 +241,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass druid = new(
             classID: 6,
             name: "Druid",
-            description: "Impedes character movement, delaying damage or access to treasure",
+            description: "A druid is a guardian of nature, deeply attuned to the natural balance of the world. They draw their power from the spirits of the wild, enabling them to wield primal magic. Druids are also capable of tapping into the forces of nature to support their allies and hinder their enemies. ",
             stats: new(
                 maxHealth: 150,
                 armor: 6,
@@ -260,7 +260,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass necromancer = new(
             classID: 7,
             name: "Necromancer",
-            description: "Enables constant damage on distant targets but deals low damage by himself",
+            description: "A grim figure living only to inflict excruciating pain on his foes. The necromancer feasts on souls and channels his spells through dark rituals. Defying the physical realm of mortals, their magic tears through the flesh of opponents.",
             stats: new(
                 maxHealth: 160,
                 armor: 3,
@@ -279,7 +279,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass wizard = new(
             classID: 8,
             name: "Wizard",
-            description: "Deals large ranged damage that ignores armor",
+            description: "A wizard is a scholar of arcane arts, delving into the mysteries of magic to harness its immense power. They are masters of the elemental forces and possess an extensive repertoire of spells that can shape reality itself. Wizards command devastating spells, annihilate their foes and outmaneuver them.",
             stats: new(
                 maxHealth: 150,
                 armor: 3,
@@ -298,7 +298,7 @@ public class ClassDataSO : ScriptableObject
         CharacterClass priest = new(
             classID: 9,
             name: "Priest",
-            description: "Healer",
+            description: "A priest is a devout and dedicated individual, devoted to the divine arts and the well-being of their allies. They draw their power from their unwavering faith and their connection to higher beings. As masters of the light, they keep their allies healthy and save them from certain death.",
             stats: new(
                 maxHealth: 150,
                 armor: 3,
