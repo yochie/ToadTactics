@@ -228,6 +228,8 @@ public class ClassDataSO : ScriptableObject
                 maxHealth: 200,
                 armor: 10,
                 damage: 20,
+                critChance: 0.1f,
+                critMultiplier: 1.5f,
                 moveSpeed: 2,
                 initiative: 6,
                 range: 1,
