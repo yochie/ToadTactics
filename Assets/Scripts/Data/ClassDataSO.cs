@@ -116,19 +116,21 @@ public class ClassDataSO : ScriptableObject
     {
         List<CharacterClass> classes = new();
 
-        CharacterStats barbStats = new(maxHealth: 10,
-                                       armor: 2,
-                                       damage: 5,
+        CharacterStats barbStats = new(maxHealth: 170,
+                                       armor: 5,
+                                       damage: 20,
+                                       critChance: 0.15f,
+                                       critMultiplier: 1.3f,
                                        damageType: DamageType.normal,
-                                       moveSpeed: 3,
+                                       moveSpeed: 4,
                                        initiative: 1,
                                        range: 1,
-                                       damageIterations: 3);
+                                       damageIterations: 2);
         //Barb
         CharacterClass barbarian = new(
             classID: 0,
             name: "Barbarian",
-            description: "Glass cannon, kill or get killed",
+            description: "A barbarian is a primal warrior, embodying raw power and untamed fury on the battlefield. They eschew finesse and tactical subtlety in favor of sheer physical might. Wielding massive weapons in each hand, barbarians charge into combat with a relentless assault.",
             stats: barbStats
         );
         classes.Add(barbarian);
@@ -139,10 +141,12 @@ public class ClassDataSO : ScriptableObject
             name: "Cavalier",
             description: "Rapidly reaches the backline or treasure",
             stats: new(
-                maxHealth: 12,
-                armor: 3,
-                damage: 5,
-                moveSpeed: 3,
+                maxHealth: 180,
+                armor: 8,
+                damage: 30,
+                critChance: 0.15f,
+                critMultiplier: 1.5f,
+                moveSpeed: 4,
                 initiative: 2,
                 range: 2,
                 damageIterations: 1),
@@ -167,10 +171,12 @@ public class ClassDataSO : ScriptableObject
             name: "Archer",
             description: "Evasive and deals ranged damage",
             stats: new(
-                maxHealth: 10,
-                armor: 2,
-                damage: 8,
-                moveSpeed: 1,
+                maxHealth: 150,
+                armor: 5,
+                damage: 30,
+                critChance: 0.2f,
+                critMultiplier: 1.6f,
+                moveSpeed: 2,
                 initiative: 3,
                 range: 3,
                 damageIterations: 1)
@@ -183,10 +189,12 @@ public class ClassDataSO : ScriptableObject
             name: "Rogue",
             description: "Can guarantee a treasure or a kill on low armor characters",
             stats: new(
-                maxHealth: 10,
-                armor: 2,
-                damage: 7,
-                moveSpeed: 2,
+                maxHealth: 170,
+                armor: 6,
+                damage: 15,
+                critChance: 0.3f,
+                critMultiplier: 1.8f,
+                moveSpeed: 3,
                 initiative: 4,
                 range: 1,
                 damageIterations: 2)
@@ -199,10 +207,12 @@ public class ClassDataSO : ScriptableObject
             name: "Warrior",
             description: "Tanky character with great mobility",
             stats: new(
-                maxHealth: 15,
-                armor: 4,
-                damage: 5,
-                moveSpeed: 2,
+                maxHealth: 180,
+                armor: 8,
+                damage: 30,
+                critChance: 0.2f,
+                critMultiplier: 1.5f,
+                moveSpeed: 3,
                 initiative: 5,
                 range: 1,
                 damageIterations: 1)
@@ -215,9 +225,9 @@ public class ClassDataSO : ScriptableObject
             name: "Paladin",
             description: "Buffs allies and tanks",
             stats: new(
-                maxHealth: 15,
-                armor: 4,
-                damage: 5,
+                maxHealth: 200,
+                armor: 10,
+                damage: 20,
                 moveSpeed: 2,
                 initiative: 6,
                 range: 1,
@@ -231,15 +241,17 @@ public class ClassDataSO : ScriptableObject
             name: "Druid",
             description: "Impedes character movement, delaying damage or access to treasure",
             stats: new(
-                maxHealth: 10,
-                armor: 2,
-                damage: 5,
+                maxHealth: 150,
+                armor: 6,
+                damage: 20,
                 damageType: DamageType.magic,
-                moveSpeed: 1,
+                critChance: 0.1f,
+                critMultiplier: 1.5f,
+                moveSpeed: 2,
                 initiative: 7,
-                range: 2,
+                range: 3,
                 damageIterations: 1)
-            );
+            ); ;
         classes.Add(druid);
 
         //Necromancer
@@ -248,13 +260,15 @@ public class ClassDataSO : ScriptableObject
             name: "Necromancer",
             description: "Enables constant damage on distant targets but deals low damage by himself",
             stats: new(
-                maxHealth: 8,
+                maxHealth: 160,
                 armor: 3,
-                damage: 3,
+                damage: 20,
                 damageType: DamageType.magic,
-                moveSpeed: 1,
+                critChance: 0.1f,
+                critMultiplier: 1.5f,
+                moveSpeed: 3,
                 initiative: 8,
-                range: 30,
+                range: 20,
                 damageIterations: 1)
             );
         classes.Add(necromancer);
@@ -265,11 +279,13 @@ public class ClassDataSO : ScriptableObject
             name: "Wizard",
             description: "Deals large ranged damage that ignores armor",
             stats: new(
-                maxHealth: 8,
-                armor: 1,
-                damage: 5,
+                maxHealth: 150,
+                armor: 3,
+                damage: 30,
                 damageType: DamageType.magic,
-                moveSpeed: 1,
+                critChance: 0.2f,
+                critMultiplier: 1.3f,
+                moveSpeed: 2,
                 initiative: 9,
                 range: 3,
                 damageIterations: 1)
@@ -282,11 +298,13 @@ public class ClassDataSO : ScriptableObject
             name: "Priest",
             description: "Healer",
             stats: new(
-                maxHealth: 9,
-                armor: 1,
-                damage: 5,
+                maxHealth: 150,
+                armor: 3,
+                damage: 30,
                 damageType: DamageType.healing,
-                moveSpeed: 2,
+                critChance: 0.1f,
+                critMultiplier: 1.5f,
+                moveSpeed: 3,
                 initiative: 10,
                 range: 3,
                 damageIterations: 1,
