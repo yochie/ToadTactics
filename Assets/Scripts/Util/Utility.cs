@@ -43,4 +43,17 @@ public static class Utility
     {
         return maxHealth * 2;
     }
+
+    internal static bool RollCrit(float critChance)
+    {
+        if (UnityEngine.Random.Range(0f, 0.999f) < critChance)
+            return true;
+        else
+            return false;
+    }
+
+    internal static int CalculateCritDamage(int damage, float critMultiplier)
+    {
+        return Convert.ToInt32(damage * critMultiplier);
+    }
 }
