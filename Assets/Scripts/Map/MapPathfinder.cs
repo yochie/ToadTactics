@@ -163,56 +163,73 @@ public static class MapPathfinder
         return toReturn;
     }
 
-    public static Dictionary<Hex, LOSTargetType> FindAttackRange(Hex source, int range, Dictionary<Vector2Int, Hex> hexGrid)
+    public static Dictionary<Hex, LOSTargetType> FindAttackRange(Hex source, int range, Dictionary<Vector2Int, Hex> hexGrid, List<TargetType> allowedTargetTypes, PlayerCharacter attacker)
     {
-        LayerMask hexMask = LayerMask.GetMask("MapHex");
-        Dictionary<Hex, LOSTargetType> hexesInRange = new();
+        Dictionary<Hex, LOSTargetType> hexTargetableTypes = new();
         List<Hex> allHexesInRange = MapPathfinder.Range(source, range, hexGrid);
 
         allHexesInRange.Sort(Comparer<Hex>.Create((Hex h1, Hex h2) => MapPathfinder.HexDistance(source, h1).CompareTo(MapPathfinder.HexDistance(source, h2))));
-        foreach (Hex target in allHexesInRange)
+        foreach (Hex targetHex in allHexesInRange)
         {
 
-            bool unobstructed = true;
-            RaycastHit2D[] hits;
-            Vector2 sourcePos = source.transform.position;
-            Vector2 targetPos = target.transform.position;
-            Vector2 direction = targetPos - sourcePos;
+            bool unobstructed = MapPathfinder.IsHexReachableByLOS(source, targetHex);
 
-            hits = Physics2D.RaycastAll(sourcePos, direction, direction.magnitude, hexMask);
-            Array.Sort(hits, Comparer<RaycastHit2D>.Create((RaycastHit2D x, RaycastHit2D y) => x.distance.CompareTo(y.distance)));
-            int hitIndex = 0;
-            foreach (RaycastHit2D hit in hits)
-            {
-                //first hit is always source hex
-                if (hitIndex == 0)
-                {
-                    hitIndex++;
-                    continue;
-                }
-
-                GameObject hitObject = hit.collider.gameObject;
-                Hex hitHex = hitObject.GetComponent<Hex>();
-                if (hitHex != null && hitHex.BreaksLOS(target))
-                {
-                    if (!hexesInRange.ContainsKey(hitHex) || hexesInRange[hitHex] == LOSTargetType.targetable)
-                        hexesInRange[hitHex] = LOSTargetType.obstructing;
-                    unobstructed = false;
-                    for (int i = hitIndex + 1; i < hits.Length; i++)
-                    {
-                        Hex nextHex = hits[i].collider.gameObject.GetComponent<Hex>();
-                        if (!hexesInRange.ContainsKey(nextHex))
-                            hexesInRange[nextHex] = LOSTargetType.unreachable;
-                    }
-                    break;
-                }
-                hitIndex++;
-            }
             if (unobstructed)
-                if (!hexesInRange.ContainsKey(target) || (hexesInRange.ContainsKey(target) && hexesInRange[target] != LOSTargetType.obstructing))
-                    hexesInRange[target] = LOSTargetType.targetable;
+            {
+                if (ActionExecutor.IsValidTargetType(attacker, targetHex, allowedTargetTypes))
+                    hexTargetableTypes[targetHex] = LOSTargetType.targetable;
+                else
+                    hexTargetableTypes[targetHex] = LOSTargetType.inRange;
+            }
+            else
+                hexTargetableTypes[targetHex] = LOSTargetType.outOfRange;
+
+            //if (!hexTargetableTypes.ContainsKey(hitHex) || hexTargetableTypes[hitHex] == LOSTargetType.inRange)
+            //    hexTargetableTypes[hitHex] = LOSTargetType.targetable;
+            //unobstructed = false;
+            //for (int i = hitIndex + 1; i < hits.Length; i++)
+            //{
+            //    Hex nextHex = hits[i].collider.gameObject.GetComponent<Hex>();
+            //    if (!hexTargetableTypes.ContainsKey(nextHex))
+            //        hexTargetableTypes[nextHex] = LOSTargetType.outOfRange;
+            //}
+            //break;
+            if (unobstructed)
+                if (!hexTargetableTypes.ContainsKey(targetHex) || (hexTargetableTypes.ContainsKey(targetHex) && hexTargetableTypes[targetHex] != LOSTargetType.targetable))
+                    hexTargetableTypes[targetHex] = LOSTargetType.inRange;
         }
-        return hexesInRange;
+        return hexTargetableTypes;
+    }
+
+    private static bool IsHexReachableByLOS(Hex source, Hex target)
+    {
+        LayerMask hexMask = LayerMask.GetMask("MapHex");
+        RaycastHit2D[] hits;
+        Vector2 sourcePos = source.transform.position;
+        Vector2 targetPos = target.transform.position;
+        Vector2 direction = targetPos - sourcePos;
+
+        hits = Physics2D.RaycastAll(sourcePos, direction, direction.magnitude, hexMask);
+        Array.Sort(hits, Comparer<RaycastHit2D>.Create((RaycastHit2D x, RaycastHit2D y) => x.distance.CompareTo(y.distance)));
+
+        bool firstHit = true;
+        foreach (RaycastHit2D raycastHit in hits)
+        {
+            //skip first hit, its always source hex
+            if (firstHit)
+            {
+                firstHit = false;
+                continue;
+            }
+
+            Hex hitHex = raycastHit.collider.GetComponent<Hex>();
+            if (hitHex != null && hitHex.BreaksLOSToTarget(target))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static bool LOSReaches(Hex source, Hex target, int range)
@@ -234,7 +251,7 @@ public static class MapPathfinder
         {
             GameObject hitObject = hit.collider.gameObject;
             Hex hitHex = hitObject.GetComponent<Hex>();
-            if (hitHex != null && hitHex != source && hitHex.BreaksLOS(target))
+            if (hitHex != null && hitHex != source && hitHex.BreaksLOSToTarget(target))
             {
                 //hitHex.DisplayLOSObstruction(true);
                 unobstructed = false;

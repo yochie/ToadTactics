@@ -155,7 +155,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         return GameController.Singleton.playerCharacters[this.holdsCorpseWithClassID];
     }
 
-    public bool BreaksLOS(Hex targetHex)
+    public bool BreaksLOSToTarget(Hex targetHex)
     {
         if (this.Equals(targetHex))
             return false;

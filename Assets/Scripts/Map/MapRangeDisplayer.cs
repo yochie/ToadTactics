@@ -18,7 +18,7 @@ public class MapRangeDisplayer : MonoBehaviour
             //selected hex stays at selected color state
             if (h != source)
             {
-                h.drawer.DisplayMoveRange(true);
+                h.drawer.DisplayInMoveRange(true);
             }
         }
     }
@@ -27,7 +27,7 @@ public class MapRangeDisplayer : MonoBehaviour
     {
         foreach (Hex h in this.displayedMoveRange)
         {
-            h.drawer.DisplayMoveRange(false);
+            h.drawer.DisplayInMoveRange(false);
         }
     }
 
@@ -57,22 +57,22 @@ public class MapRangeDisplayer : MonoBehaviour
         }
     }
 
-    public void DisplayAttackRange(Hex source, int range)
+    public void DisplayAttackRange(Hex source, int range, PlayerCharacter attacker)
     {
-        Dictionary<Hex, LOSTargetType> attackRange = MapPathfinder.FindAttackRange(source, range, this.map.hexGrid);
+        Dictionary<Hex, LOSTargetType> attackRange = MapPathfinder.FindAttackRange(source, range, this.map.hexGrid, attacker.charClass.stats.allowedAttackTargets, attacker);
         this.displayedAttackRange = attackRange;
         foreach (Hex h in attackRange.Keys)
         {
             //selected hex stays at selected color state
             if (h != source)
             {
-                if (attackRange[h] == LOSTargetType.targetable)
-                    h.drawer.DisplayAttackRange(true);
-                else if (attackRange[h] == LOSTargetType.obstructing)
-                    h.drawer.DisplayLOSObstruction(true);
-                else if (attackRange[h] == LOSTargetType.unreachable)
+                if (attackRange[h] == LOSTargetType.inRange)
+                    h.drawer.DisplayInActionRange(true);
+                else if (attackRange[h] == LOSTargetType.targetable)
+                    h.drawer.DisplayTargetable(true);
+                else if (attackRange[h] == LOSTargetType.outOfRange)
                 {
-                    h.drawer.DisplayOutOfAttackRange(true);
+                    h.drawer.DisplayOutOfActionRange(true);
                 }
             }
         }
@@ -82,13 +82,13 @@ public class MapRangeDisplayer : MonoBehaviour
     {
         foreach (Hex h in this.displayedAttackRange.Keys)
         {
-            if (this.displayedAttackRange[h] == LOSTargetType.targetable)
-                h.drawer.DisplayAttackRange(false);
-            else if (this.displayedAttackRange[h] == LOSTargetType.obstructing)
-                h.drawer.DisplayLOSObstruction(false);
-            else if (this.displayedAttackRange[h] == LOSTargetType.unreachable)
+            if (this.displayedAttackRange[h] == LOSTargetType.inRange)
+                h.drawer.DisplayInActionRange(false);
+            else if (this.displayedAttackRange[h] == LOSTargetType.targetable)
+                h.drawer.DisplayTargetable(false);
+            else if (this.displayedAttackRange[h] == LOSTargetType.outOfRange)
             {
-                h.drawer.DisplayOutOfAttackRange(false);
+                h.drawer.DisplayOutOfActionRange(false);
             }
         }
     }

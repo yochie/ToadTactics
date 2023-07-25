@@ -8,6 +8,9 @@ using UnityEngine.UI;
 public class MainHUD : NetworkBehaviour
 {
     [SerializeField]
+    private TextMeshProUGUI instructionLabel;
+
+    [SerializeField]
     private GameObject endTurnButton;
 
     [SerializeField]
@@ -19,16 +22,11 @@ public class MainHUD : NetworkBehaviour
     [SerializeField]
     private GameObject actionButtonsGrid;
 
-    [SerializeField]
-    private IntGameEventSOListener onTurnOrderIndexChangedListener;
-
     public static MainHUD Singleton { get; set; }
 
     private void Awake()
     {
         MainHUD.Singleton = this;
-
-        onTurnOrderIndexChangedListener.Response.AddListener(OnTurnOrderIndexChanged);
     }
 
     [TargetRpc]
@@ -87,6 +85,7 @@ public class MainHUD : NetworkBehaviour
     public void OnLocalPlayerTurnStart()
     {
         //todo: display "Its your turn" msg
+        this.instructionLabel.text = "Your turn";
         this.endTurnButton.SetActive(true);
         if (GameController.Singleton.currentPhaseID == GamePhaseID.gameplay)
         {
@@ -97,7 +96,8 @@ public class MainHUD : NetworkBehaviour
     [Client]
     public void OnLocalPlayerTurnEnd()
     {
-        //todo : display "Waiting for other player" msg            
+        //todo : display "Waiting for other player" msg
+        this.instructionLabel.text = "Waiting...";
         this.endTurnButton.SetActive(false);
         if (GameController.Singleton.currentPhaseID == GamePhaseID.gameplay)
         {
@@ -114,7 +114,7 @@ public class MainHUD : NetworkBehaviour
         }
     }
 
-    private void OnTurnOrderIndexChanged(int newTurnIndex)
+    public void OnTurnOrderIndexChanged(int newTurnIndex)
     {
         if (newTurnIndex == -1)
             return;

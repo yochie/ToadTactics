@@ -15,11 +15,11 @@ public class HexDrawer : MonoBehaviour
     private static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
     private static readonly Color HEX_HOVER_COLOR = Color.cyan;
     private static readonly Color HEX_SELECT_COLOR = Color.green;
-    private static readonly Color HEX_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
-    private static readonly Color HEX_LOS_OBSTRUCT_COLOR = Color.yellow;
+    private static readonly Color HEX_IN_MOVE_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+    private static readonly Color HEX_TARGETABLE_COLOR = Color.yellow;
     private static readonly Color HEX_ATTACK_HOVER_COLOR = new(1f, 0.45f, 0f);
-    private static readonly Color HEX_ATTACK_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
-    private static readonly Color HEX_OUT_OF_ATTACK_RANGE_COLOR = Color.red;
+    private static readonly Color HEX_IN_ACTION_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+    private static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.red;
 
     #endregion
 
@@ -120,27 +120,27 @@ public class HexDrawer : MonoBehaviour
         this.currentColor = mode ? HexDrawer.HEX_HOVER_COLOR : this.unHoveredColor;
     }
 
-    public void DisplayMoveRange(bool mode)
+    public void DisplayInMoveRange(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_RANGE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_RANGE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? HexDrawer.HEX_IN_MOVE_RANGE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_IN_MOVE_RANGE_COLOR : this.baseColor;
     }
-    public void DisplayAttackRange(bool mode)
+    public void DisplayInActionRange(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_ATTACK_RANGE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_ATTACK_RANGE_COLOR : this.baseColor;
-    }
-
-    public void DisplayLOSObstruction(bool mode)
-    {
-        this.unHoveredColor = mode ? HexDrawer.HEX_LOS_OBSTRUCT_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_LOS_OBSTRUCT_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? HexDrawer.HEX_IN_ACTION_RANGE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_IN_ACTION_RANGE_COLOR : this.baseColor;
     }
 
-    internal void DisplayOutOfAttackRange(bool mode)
+    public void DisplayTargetable(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_OUT_OF_ATTACK_RANGE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_OUT_OF_ATTACK_RANGE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? HexDrawer.HEX_TARGETABLE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_TARGETABLE_COLOR : this.baseColor;
+    }
+
+    internal void DisplayOutOfActionRange(bool mode)
+    {
+        this.unHoveredColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
     }
 
     public void AttackHover(bool mode)
