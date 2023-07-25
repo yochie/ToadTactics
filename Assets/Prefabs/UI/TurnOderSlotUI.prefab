@@ -276,6 +276,7 @@ MonoBehaviour:
   characterImage: {fileID: 5189058874712394693}
   lifeLabel: {fileID: 3145154948340756796}
   crownSpriteImage: {fileID: 7643809803563925950}
+  onCharacterSheetDisplayed: {fileID: 11400000, guid: 41dfc3699ccdb3d438c4801410371c4a, type: 2}
   holdsCharacterWithClassID: -1
 --- !u!114 &2030279633735216416
 MonoBehaviour:

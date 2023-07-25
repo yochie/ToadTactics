@@ -21,6 +21,7 @@ public class StatsTable : MonoBehaviour
 
     internal void RenderFromDictionary(Dictionary<string, string> dictionary, bool asKingCandidate)
     {
+        this.Clear();
         foreach (KeyValuePair<string, string> stat in dictionary)
         {
             GameObject nameLabelObject = Instantiate(this.statNameLabelPrefab, this.statsNameTable.gameObject.transform);
@@ -38,6 +39,20 @@ public class StatsTable : MonoBehaviour
                 valueLabel.text = stat.Value;
             }
             
+        }
+    }
+
+
+    private void Clear()
+    {
+        foreach (TextMeshProUGUI child in this.statsNameTable.GetComponentsInChildren<TextMeshProUGUI>())
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (TextMeshProUGUI child in this.statsValueTable.GetComponentsInChildren<TextMeshProUGUI>())
+        {
+            Destroy(child.gameObject);
         }
     }
 }

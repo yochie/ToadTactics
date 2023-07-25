@@ -29,7 +29,7 @@ public class CharacterSlotsHUD : MonoBehaviour
     {
         foreach (CharacterSlotUI slot in this.characterSlots)
         {
-            if (slot.HoldsCharacterWithClassID == classID)
+            if (slot.holdsCharacterWithClassID == classID)
             {
                 slot.HasBeenPlacedOnBoard = true;
             }
@@ -40,14 +40,19 @@ public class CharacterSlotsHUD : MonoBehaviour
     {
         if (!GameController.Singleton.HeOwnsThisCharacter(GameController.Singleton.LocalPlayer.playerID, classID))
             return;
+        
 
         GameObject characterSlotObject = Instantiate(this.characterSlotPrefab, this.transform);        
         CharacterSlotUI characterSlot = characterSlotObject.GetComponent<CharacterSlotUI>();
         characterSlot.SetInputHandler(this.inputHandler);
+        
         characterSlots.Add(characterSlot);
 
         characterSlot.GetComponent<Image>().sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
 
-        characterSlot.HoldsCharacterWithClassID = classID;
+        characterSlot.holdsCharacterWithClassID = classID;
+
+        if (GameController.Singleton.IsAKing(classID))
+            characterSlot.DisplayCrown();
     }
 }

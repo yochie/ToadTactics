@@ -21,6 +21,7 @@ public class AbilitiesTable : MonoBehaviour
 
     internal void RenderFromDictionary(Dictionary<string, string> dictionary)
     {
+        this.Clear();
         foreach(KeyValuePair<string, string> ability in dictionary)
         {
             GameObject nameLabelObject = Instantiate(this.abilityNameLabelPrefab, this.abilitiesNameTable.gameObject.transform);
@@ -30,6 +31,19 @@ public class AbilitiesTable : MonoBehaviour
             GameObject valueLabelObject = Instantiate(this.abilityDescriptionLabelPrefab, this.abilitiesDescriptionTable.gameObject.transform);
             TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
             valueLabel.text = ability.Value;
+        }
+    }
+
+    private void Clear()
+    {
+        foreach (TextMeshProUGUI child in this.abilitiesNameTable.GetComponentsInChildren<TextMeshProUGUI>())
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (TextMeshProUGUI child in this.abilitiesDescriptionTable.GetComponentsInChildren<TextMeshProUGUI>())
+        {
+            Destroy(child.gameObject);
         }
     }
 }

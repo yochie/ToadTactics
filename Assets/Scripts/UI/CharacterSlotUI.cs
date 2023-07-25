@@ -8,12 +8,18 @@ using System;
 
 
 //RTODO: Character creation should be handled by playerController since he stores the PlayerCharacter thereafter. Means he should maybe be registerd here as observer of drag.
-public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     private MapInputHandler mapInputHandler;
 
+    [SerializeField]
+    private GameObject crown;
+
+    [SerializeField]
+    private IntGameEventSO onCharacterSheetDisplayed;
+
     private Vector3 dragStartPosition;
-    public int HoldsCharacterWithClassID { get; set; }
+    public int holdsCharacterWithClassID;
 
     private bool hasBeenPlacedOnBoard = false;
     public bool HasBeenPlacedOnBoard
@@ -27,6 +33,8 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private Image highlightImage;
     private bool isHighlighted = false;
+    private bool dragging;
+
     public bool IsHighlighted
     {
         get { return isHighlighted; }
@@ -53,7 +61,14 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (this.IsDraggable())
             this.dragStartPosition = this.transform.position;
+        this.dragging = true;
     }
+
+    internal void DisplayCrown()
+    {
+        this.crown.SetActive(true);
+    }
+
     public void OnDrag(PointerEventData eventData)
     {
         if (this.IsDraggable())
@@ -67,12 +82,14 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        this.dragging = false;
+
         if (this.IsDraggable())
         {
             this.transform.position = this.dragStartPosition;
             Hex destinationHex = this.mapInputHandler.HoveredHex;
             if (destinationHex == null) { return; }
-            GameController.Singleton.LocalPlayer.CmdCreateCharOnBoard(this.HoldsCharacterWithClassID, destinationHex);
+            GameController.Singleton.LocalPlayer.CmdCreateCharOnBoard(this.holdsCharacterWithClassID, destinationHex);
         }
     }
 
@@ -103,4 +120,10 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         return toReturn;
     }
 
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (this.dragging)
+            return;
+        this.onCharacterSheetDisplayed.Raise(this.holdsCharacterWithClassID);
+    }
 }

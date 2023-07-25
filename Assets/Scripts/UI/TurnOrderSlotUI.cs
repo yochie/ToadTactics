@@ -4,8 +4,9 @@ using UnityEngine;
 using TMPro;
 using System;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class TurnOrderSlotUI : MonoBehaviour
+public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField]
     private Image highlightImage;
@@ -18,6 +19,9 @@ public class TurnOrderSlotUI : MonoBehaviour
 
     [SerializeField]
     private Image crownSpriteImage;
+
+    [SerializeField]
+    private IntGameEventSO onCharacterSheetDisplayed;
 
     public int holdsCharacterWithClassID = -1;
 
@@ -73,5 +77,10 @@ public class TurnOrderSlotUI : MonoBehaviour
             this.characterImage.color = Utility.GrayOutColor(this.characterImage.color, false);
             this.crownSpriteImage.color = Utility.GrayOutColor(this.characterImage.color, false);
         }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        this.onCharacterSheetDisplayed.Raise(this.holdsCharacterWithClassID);
     }
 }
