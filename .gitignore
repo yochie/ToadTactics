@@ -114,6 +114,9 @@ Temporary Items
 # Windows
 # =========================
 
+#zipped build
+Builds.zip
+
 # Windows image file caches
 Thumbs.db
 Thumbs.db.meta
