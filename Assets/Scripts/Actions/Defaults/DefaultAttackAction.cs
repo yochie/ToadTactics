@@ -34,13 +34,13 @@ public class DefaultAttackAction : IAttackAction
         } else 
         {
             //attacking character
-            float critChance = this.AttackerStats.critChance;
-            bool isCrit = Utility.RollCrit(critChance);
-            int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AttackerStats.damage, this.AttackerStats.critMultiplier) : this.AttackerStats.damage;
+            float critChance = this.AttackerStats.critChance;           
 
-            int prevLife = this.DefenderCharacter.CurrentLife();
             for (int i = 0; i < this.AttackerStats.damageIterations; i++)
             {
+                int prevLife = this.DefenderCharacter.CurrentLife();
+                bool isCrit = Utility.RollCrit(critChance);
+                int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AttackerStats.damage, this.AttackerStats.critMultiplier) : this.AttackerStats.damage;
                 switch (this.AttackerStats.damageType)
                 {
                     case DamageType.normal:
@@ -53,16 +53,15 @@ public class DefaultAttackAction : IAttackAction
                         this.DefenderCharacter.TakeRawDamage(-rolledDamage);
                         break;
                 }
-            }
 
-            Debug.LogFormat("{0} has attacked {1} for {2}x{3} ({6}) leaving him with {4} => {5} life.",
-                            this.ActorCharacter,
-                            this.DefenderCharacter,
-                            rolledDamage,                            
-                            this.AttackerStats.damageIterations,
-                            prevLife,
-                            this.DefenderCharacter.CurrentLife(),
-                            isCrit ? "crit" : "nocrit");
+                Debug.LogFormat("{0} has hit {1} for {2} ({6}) leaving him with {4} => {5} life.",
+                this.ActorCharacter,
+                this.DefenderCharacter,
+                rolledDamage,
+                prevLife,
+                this.DefenderCharacter.CurrentLife(),
+                isCrit ? "crit" : "nocrit");
+            }
 
             if (this.DefenderCharacter.IsDead())
             {
