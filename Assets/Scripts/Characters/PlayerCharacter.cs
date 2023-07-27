@@ -136,9 +136,29 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    public void TakeRawDamage(int dmgAmount)
+    public void TakeDamage(int damageAmount, DamageType damageType, bool bypassArmor = false)
     {
-        this.currentLife = Mathf.Clamp(currentLife - dmgAmount, 0, this.currentStats.maxHealth);
+        switch (damageType)
+        {
+            case DamageType.normal:
+                if(!bypassArmor)
+                    this.TakeRawDamage(damageAmount - this.currentStats.armor);
+                else
+                    this.TakeRawDamage(damageAmount);
+                break;
+            case DamageType.magic:
+                this.TakeRawDamage(damageAmount);
+                break;
+            case DamageType.healing:
+                this.TakeRawDamage(-damageAmount);
+                break;
+        }
+    }
+
+    [Server]
+    private void TakeRawDamage(int damageAmount)
+    {
+        this.currentLife = Mathf.Clamp(currentLife - damageAmount, 0, this.currentStats.maxHealth);
         if(this.currentLife == 0)
         {
             this.Die();

@@ -44,18 +44,7 @@ public class DefaultAttackAction : IAttackAction
                 int prevLife = this.DefenderCharacter.CurrentLife();
                 bool isCrit = Utility.RollCrit(critChance);
                 int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AttackerStats.damage, this.AttackerStats.critMultiplier) : this.AttackerStats.damage;
-                switch (this.AttackerStats.damageType)
-                {
-                    case DamageType.normal:
-                        this.DefenderCharacter.TakeRawDamage(rolledDamage - this.DefenderStats.armor);
-                        break;
-                    case DamageType.magic:
-                        this.DefenderCharacter.TakeRawDamage(rolledDamage);
-                        break;
-                    case DamageType.healing:
-                        this.DefenderCharacter.TakeRawDamage(-rolledDamage);
-                        break;
-                }
+                this.DefenderCharacter.TakeDamage(rolledDamage, this.AttackerStats.damageType);
 
                 Debug.LogFormat("{0} hit {1} for {2} ({5}) leaving him with {3} => {4} life.",
                 this.ActorCharacter,
@@ -64,20 +53,19 @@ public class DefaultAttackAction : IAttackAction
                 prevLife,
                 this.DefenderCharacter.CurrentLife(),
                 isCrit ? "crit" : "nocrit");
-            }
 
-            if (this.DefenderCharacter.IsDead())
-            {
-                Debug.LogFormat("{0} is dead.", this.DefenderCharacter);
-                this.TargetHex.ClearCharacter();
-                this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.charClassID;
+                if (this.DefenderCharacter.IsDead())
+                {
+                    Debug.LogFormat("{0} is dead.", this.DefenderCharacter);
+                    this.TargetHex.ClearCharacter();
+                    this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.charClassID;
+                    break;
+                }
             }
-                
         }
 
         //PlayerCharacter state updated to track that attack was used
         this.ActorCharacter.UseAttack();
-
 
         //TODO Move to event listeners
         MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);
