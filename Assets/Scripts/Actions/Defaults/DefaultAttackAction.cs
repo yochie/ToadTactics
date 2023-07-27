@@ -33,7 +33,6 @@ public class DefaultAttackAction : IAttackAction
             Object.Destroy(attackedTree);
             TargetHex.holdsObstacle = ObstacleType.none;
             Debug.LogFormat("{0} attacked tree to destroy it", this.ActorCharacter);
-
         }
         else 
         {
