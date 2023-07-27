@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 public readonly struct CharacterAbilityStats
-
 {
     public readonly string stringID;
     public readonly string interfaceName;
@@ -16,7 +15,6 @@ public readonly struct CharacterAbilityStats
     public readonly bool requiresLOS;
     public readonly Type actionType;
     public readonly List<TargetType> allowedAbilityTargets;
-
 
     public CharacterAbilityStats(string stringID,
                             string interfaceName,

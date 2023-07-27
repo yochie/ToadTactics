@@ -10,9 +10,9 @@ public readonly struct Treasure
     public readonly TreasureQuality quality;
     public readonly CharacterStats statBonus;
     public readonly bool isActivated;
-    public readonly TreasureAbility ability;
+    public readonly TreasureAction ability;
 
-    public Treasure(uint treasureID, string name, TreasureQuality quality, CharacterStats statBonus, bool isActivated, TreasureAbility ability)
+    public Treasure(uint treasureID, string name, TreasureQuality quality, CharacterStats statBonus, bool isActivated, TreasureAction ability)
     {
         this.treasureID = treasureID;
         this.name = name;
