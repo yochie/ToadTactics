@@ -15,6 +15,7 @@ public readonly struct CharacterAbility
     public readonly int aoe;
     public readonly bool requiresLOS;
     public readonly Type actionType;
+    public readonly List<TargetType> allowedAbilityTargets;
 
 
     public CharacterAbility(string stringID,
@@ -27,7 +28,8 @@ public readonly struct CharacterAbility
                             bool requiresLOS = true,
                             int damageIterations = 1,
                             DamageType damageType = DamageType.normal,
-                            Type actionType = null)
+                            Type actionType = null,
+                            List<TargetType> allowedAbilityTargets = null)
     {
         this.stringID = stringID;
         this.interfaceName = interfaceName;
@@ -40,5 +42,14 @@ public readonly struct CharacterAbility
         this.damageIterations = damageIterations;
         this.damageType = damageType;
         this.actionType = actionType;
+
+        if (allowedAbilityTargets == null)
+        {
+            this.allowedAbilityTargets = new List<TargetType> { TargetType.ennemy_chars};
+        }
+        else
+        {
+            this.allowedAbilityTargets = new List<TargetType>(allowedAbilityTargets);
+        }
     }
 }

@@ -14,6 +14,7 @@ public class DefaultAttackAction : IAttackAction
 
     //ITargetedAction
     public Hex TargetHex { get; set; }
+    public List<TargetType> AllowedTargetTypes { get; set; }
 
     //IAttackAction
     public CharacterStats AttackerStats { get; set; }
@@ -30,8 +31,11 @@ public class DefaultAttackAction : IAttackAction
             GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
             GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
             Object.Destroy(attackedTree);
-            TargetHex.holdsObstacle = ObstacleType.none;            
-        } else 
+            TargetHex.holdsObstacle = ObstacleType.none;
+            Debug.LogFormat("{0} attacked tree to destroy it", this.ActorCharacter);
+
+        }
+        else 
         {
             //attacking character
             float critChance = this.AttackerStats.critChance;           
@@ -54,7 +58,7 @@ public class DefaultAttackAction : IAttackAction
                         break;
                 }
 
-                Debug.LogFormat("{0} has hit {1} for {2} ({6}) leaving him with {4} => {5} life.",
+                Debug.LogFormat("{0} hit {1} for {2} ({5}) leaving him with {3} => {4} life.",
                 this.ActorCharacter,
                 this.DefenderCharacter,
                 rolledDamage,
@@ -109,7 +113,7 @@ public class DefaultAttackAction : IAttackAction
             this.RequestingPlayerID == this.ActorCharacter.ownerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
             GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
-            ActionExecutor.IsValidTargetType(this.ActorCharacter, this.TargetHex, this.AttackerStats.allowedAttackTargets)
+            ActionExecutor.IsValidTargetType(this.ActorCharacter, this.TargetHex, this.AllowedTargetTypes)
             )
             return true;
         else

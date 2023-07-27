@@ -93,7 +93,7 @@ public class ActionExecutor : NetworkBehaviour
                                   Hex attackerHex,
                                   Hex defenderHex)
     {
-        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
+        IAttackAction attackAction = ActionFactory.CreateObstacleAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
         bool success = this.TryAction(attackAction);
         if (success)
             this.RpcInvokeAttackEvent(attackAction.ActorCharacter.charClassID, -1);

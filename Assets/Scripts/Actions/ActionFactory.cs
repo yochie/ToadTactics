@@ -23,9 +23,10 @@ public class ActionFactory : MonoBehaviour
 
         //ITargetedAction
         moveAction.TargetHex = targetHex;
+        moveAction.AllowedTargetTypes = new List<TargetType> { TargetType.empty_hex };
 
         //IMoveAction
-        moveAction.MoverStats = moverStats;        
+        moveAction.MoverStats = moverStats;
 
         return moveAction;
     }
@@ -50,6 +51,7 @@ public class ActionFactory : MonoBehaviour
 
         //ITargetedAction
         attackAction.TargetHex = defenderHex;
+        attackAction.AllowedTargetTypes = attackerStats.allowedAttackTargets;
 
         //IAttackAction
         attackAction.AttackerStats = attackerStats;
@@ -60,7 +62,7 @@ public class ActionFactory : MonoBehaviour
     }
 
     //For attacking obstacles
-    public static IAttackAction CreateAttackAction(NetworkConnectionToClient sender, 
+    public static IAttackAction CreateObstacleAttackAction(NetworkConnectionToClient sender, 
                                                int requestingPlayerID,
                                                PlayerCharacter attackerCharacter,
                                                CharacterStats attackerStats,
@@ -75,13 +77,13 @@ public class ActionFactory : MonoBehaviour
         attackAction.ActorHex = attackerHex;
         attackAction.RequestingClient = sender;
 
-
         //ITargetedAction
         attackAction.TargetHex = defenderHex;
+        attackAction.AllowedTargetTypes = new List<TargetType> { TargetType.obstacle};
 
         //IAttackAction
         attackAction.AttackerStats = attackerStats;
-        attackAction.DefenderCharacter = null;        
+        attackAction.DefenderCharacter = null;
 
         return attackAction;
     }
@@ -107,6 +109,7 @@ public class ActionFactory : MonoBehaviour
         {
             ITargetedAction actionWithTarget = abilityAction as ITargetedAction;
             actionWithTarget.TargetHex = targetHex;
+            actionWithTarget.AllowedTargetTypes = ability.allowedAbilityTargets;
         }
         
         return abilityAction;

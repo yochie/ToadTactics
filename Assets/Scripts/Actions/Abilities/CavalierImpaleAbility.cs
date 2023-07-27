@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System.Collections.Generic;
 
 public class CavalierImpaleAbility : NetworkBehaviour, IAbilityAction, ITargetedAction
 {
@@ -16,6 +17,7 @@ public class CavalierImpaleAbility : NetworkBehaviour, IAbilityAction, ITargeted
 
     //ITargetedAction
     public Hex TargetHex { get; set; }
+    public List<TargetType> AllowedTargetTypes { get; set; }
 
     [Server]
     public void ServerUse()

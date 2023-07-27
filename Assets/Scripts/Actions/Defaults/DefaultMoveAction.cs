@@ -13,6 +13,7 @@ public class DefaultMoveAction : IMoveAction
 
     //ITargetedAction
     public Hex TargetHex { get; set; }
+    public List<TargetType> AllowedTargetTypes { get; set; }
 
     //IMoveAction
     public CharacterStats MoverStats { get; set; }
@@ -57,7 +58,8 @@ public class DefaultMoveAction : IMoveAction
             this.ActorCharacter.CanMoveDistance() > 0 &&
             this.RequestingPlayerID == this.ActorCharacter.ownerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID))
+            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
+            ActionExecutor.IsValidTargetType(this.ActorCharacter, this.TargetHex, this.AllowedTargetTypes))
         {
             //Validate path
             List<Hex> path = MapPathfinder.FindMovementPath(this.ActorHex, this.TargetHex, Map.Singleton.hexGrid);
