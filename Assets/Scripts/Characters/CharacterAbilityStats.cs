@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public readonly struct CharacterAbility
+public readonly struct CharacterAbilityStats
 
 {
     public readonly string stringID;
@@ -18,7 +18,7 @@ public readonly struct CharacterAbility
     public readonly List<TargetType> allowedAbilityTargets;
 
 
-    public CharacterAbility(string stringID,
+    public CharacterAbilityStats(string stringID,
                             string interfaceName,
                             string description,
                             int damage,

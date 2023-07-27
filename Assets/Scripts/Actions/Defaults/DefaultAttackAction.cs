@@ -15,6 +15,8 @@ public class DefaultAttackAction : IAttackAction
     //ITargetedAction
     public Hex TargetHex { get; set; }
     public List<TargetType> AllowedTargetTypes { get; set; }
+    public bool RequiresLOS { get; set; }
+    public int Range { get; set; }
 
     //IAttackAction
     public CharacterStats AttackerStats { get; set; }
@@ -96,12 +98,11 @@ public class DefaultAttackAction : IAttackAction
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
-            MapPathfinder.LOSReaches(this.ActorHex, this.TargetHex, this.AttackerStats.range) &&
             !this.ActorCharacter.hasAttacked &&
             this.RequestingPlayerID == this.ActorCharacter.ownerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
             GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
-            ActionExecutor.IsValidTargetType(this.ActorCharacter, this.TargetHex, this.AllowedTargetTypes)
+            ITargetedAction.ValidateTarget(this)
             )
             return true;
         else

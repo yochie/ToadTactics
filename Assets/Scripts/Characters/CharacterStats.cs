@@ -27,11 +27,14 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
 
     public readonly List<TargetType> allowedAttackTargets;
 
+    public readonly bool attacksRequireLOS;
+
     public CharacterStats(int maxHealth,
                           int armor,
                           int damage,
                           int moveSpeed,
                           int initiative,
+                          bool attacksRequireLOS = true,
                           float critChance = 0f,
                           float critMultiplier = 1f,
                           int range = 1,
@@ -49,6 +52,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.moveSpeed = moveSpeed;
         this.initiative = initiative;
         this.range = range;
+        this.attacksRequireLOS = attacksRequireLOS;
         if(allowedAttackTargets == null)
         {
             this.allowedAttackTargets = new List<TargetType> { TargetType.ennemy_chars, TargetType.obstacle };
@@ -58,7 +62,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         }
     }
 
-    public CharacterStats(CharacterStats toCopy, 
+    public CharacterStats(CharacterStats toCopy,
                       int maxHealth = -1,
                       int armor = -1,
                       int damage = -1,
@@ -68,6 +72,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                       float critMultiplier = -1f,
                       int range = -1,
                       int damageIterations = -1,
+                      bool? attacksRequireLOS = null,
                       DamageType damageType = DamageType.none,
                       List<TargetType> allowedAttackTargets = null)
     {
@@ -81,7 +86,9 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.moveSpeed = moveSpeed == -1 ? toCopy.moveSpeed : moveSpeed;
         this.initiative = initiative == -1 ? toCopy.initiative : initiative;
         this.range = range == -1 ? toCopy.range : range;
-        this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : this.allowedAttackTargets = allowedAttackTargets;
+        this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : allowedAttackTargets;
+        //nullable bool requires conversion
+        this.attacksRequireLOS = attacksRequireLOS == null ? toCopy.attacksRequireLOS : attacksRequireLOS.GetValueOrDefault();
     }
 
     public Dictionary<string, string> GetPrintableDictionary()

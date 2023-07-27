@@ -10,9 +10,9 @@ public class CharacterClass
     public readonly string name;
     public readonly string description;
     public readonly CharacterStats stats;
-    public readonly List<CharacterAbility> abilities = new();
+    public readonly List<CharacterAbilityStats> abilities = new();
 
-    public CharacterClass(int classID, string name, string description, CharacterStats stats, List<CharacterAbility> abilities = null)
+    public CharacterClass(int classID, string name, string description, CharacterStats stats, List<CharacterAbilityStats> abilities = null)
     {
         this.classID = classID;
         this.name = name;
@@ -29,7 +29,7 @@ public class CharacterClass
         if (this.abilities == null)
             return toPrint;
 
-        foreach (CharacterAbility ability in this.abilities)
+        foreach (CharacterAbilityStats ability in this.abilities)
         {
             toPrint.Add(ability.interfaceName, ability.description);
         }        

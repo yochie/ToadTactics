@@ -150,7 +150,7 @@ public class ClassDataSO : ScriptableObject
                 initiative: 2,
                 range: 2,
                 damageIterations: 1),
-            abilities: new List<CharacterAbility> {
+            abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "CavalierStun",
                     interfaceName: "Lance Throw",

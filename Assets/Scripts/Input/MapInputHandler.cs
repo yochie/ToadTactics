@@ -22,7 +22,7 @@ public class MapInputHandler : NetworkBehaviour
         private set;
     }
 
-    private CharacterAbility currentAbilityStats;
+    private CharacterAbilityStats currentAbilityStats;
     private Treasure currentTreasureStats;
 
     private void Awake()
@@ -34,7 +34,7 @@ public class MapInputHandler : NetworkBehaviour
         this.playingCharacter = null;
         this.SelectedHex = null;
         this.HoveredHex = null;
-        this.currentAbilityStats = new CharacterAbility();
+        this.currentAbilityStats = new CharacterAbilityStats();
         this.currentTreasureStats = new Treasure();
         this.CurrentControlMode = ControlMode.none;
     }

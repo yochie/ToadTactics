@@ -13,11 +13,13 @@ public class CavalierImpaleAbility : NetworkBehaviour, IAbilityAction, ITargeted
     public NetworkConnectionToClient RequestingClient { get; set; }
 
     //IAbilityAction
-    public CharacterAbility Ability { get; set; }
+    public CharacterAbilityStats Ability { get; set; }
 
     //ITargetedAction
     public Hex TargetHex { get; set; }
     public List<TargetType> AllowedTargetTypes { get; set; }
+    public bool RequiresLOS { get; set; }
+    public int Range { get; set; }
 
     [Server]
     public void ServerUse()

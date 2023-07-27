@@ -104,7 +104,7 @@ public class ActionExecutor : NetworkBehaviour
     public bool TryAbility(NetworkConnectionToClient sender,
                            int actingPlayerID,
                            PlayerCharacter actingCharacter,
-                           CharacterAbility ability,
+                           CharacterAbilityStats ability,
                            Hex source,
                            Hex target)
     {
@@ -133,10 +133,24 @@ public class ActionExecutor : NetworkBehaviour
         this.attackEvent?.Invoke(attackerID, defenderID);
     }
 
-    //Utility for validation, used by individual IAction classes
+    [Server]
+    private void CheckForRoundEnd()
+    {
+        foreach(PlayerCharacter p in GameController.Singleton.playerCharacters.Values)
+        {
+            if (p.isKing && p.IsDead())
+            {
+                Debug.Log("The king is dead. Long live the king.");
+                GameController.Singleton.EndRound(p.ownerID);
+            }
+        }
+    }
+
+
+    //Utility for validation of ITargetedActions and to find attack range in MapPathFinder
     public static bool IsValidTargetType(PlayerCharacter actor, Hex targetedHex, List<TargetType> allowedTargets)
     {
-        bool selfTarget = false;        
+        bool selfTarget = false;
         bool friendlyTarget = false;
         bool ennemyTarget = false;
         if (targetedHex.HoldsACharacter() || targetedHex.HoldsACorpse())
@@ -173,18 +187,5 @@ public class ActionExecutor : NetworkBehaviour
             return false;
 
         return true;
-    }
-
-    [Server]
-    private void CheckForRoundEnd()
-    {
-        foreach(PlayerCharacter p in GameController.Singleton.playerCharacters.Values)
-        {
-            if (p.isKing && p.IsDead())
-            {
-                Debug.Log("The king is dead. Long live the king.");
-                GameController.Singleton.EndRound(p.ownerID);
-            }
-        }
     }
 }

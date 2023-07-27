@@ -24,6 +24,8 @@ public class ActionFactory : MonoBehaviour
         //ITargetedAction
         moveAction.TargetHex = targetHex;
         moveAction.AllowedTargetTypes = new List<TargetType> { TargetType.empty_hex };
+        moveAction.RequiresLOS = false;
+        moveAction.Range = moverStats.moveSpeed;
 
         //IMoveAction
         moveAction.MoverStats = moverStats;
@@ -52,6 +54,8 @@ public class ActionFactory : MonoBehaviour
         //ITargetedAction
         attackAction.TargetHex = defenderHex;
         attackAction.AllowedTargetTypes = attackerStats.allowedAttackTargets;
+        attackAction.RequiresLOS = attackerStats.attacksRequireLOS;
+        attackAction.Range = attackerStats.range;
 
         //IAttackAction
         attackAction.AttackerStats = attackerStats;
@@ -80,6 +84,8 @@ public class ActionFactory : MonoBehaviour
         //ITargetedAction
         attackAction.TargetHex = defenderHex;
         attackAction.AllowedTargetTypes = new List<TargetType> { TargetType.obstacle};
+        attackAction.RequiresLOS = attackerStats.attacksRequireLOS;
+        attackAction.Range = attackerStats.range;
 
         //IAttackAction
         attackAction.AttackerStats = attackerStats;
@@ -88,7 +94,7 @@ public class ActionFactory : MonoBehaviour
         return attackAction;
     }
 
-    public static IAbilityAction CreateAbilityAction(NetworkConnectionToClient sender, int requestingPlayerID, PlayerCharacter actingCharacter, CharacterAbility ability, Hex userHex, Hex targetHex)
+    public static IAbilityAction CreateAbilityAction(NetworkConnectionToClient sender, int requestingPlayerID, PlayerCharacter actingCharacter, CharacterAbilityStats ability, Hex userHex, Hex targetHex)
     {
         Type actionType = ability.actionType;
         IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(actionType);
@@ -110,6 +116,8 @@ public class ActionFactory : MonoBehaviour
             ITargetedAction actionWithTarget = abilityAction as ITargetedAction;
             actionWithTarget.TargetHex = targetHex;
             actionWithTarget.AllowedTargetTypes = ability.allowedAbilityTargets;
+            actionWithTarget.Range = ability.range;
+            actionWithTarget.RequiresLOS = ability.requiresLOS;
         }
         
         return abilityAction;
