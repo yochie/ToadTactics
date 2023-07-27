@@ -172,7 +172,11 @@ public static class MapPathfinder
         foreach (Hex targetHex in allHexesInRange)
         {
 
-            bool unobstructed = MapPathfinder.IsHexReachableByLOS(source, targetHex);
+            bool unobstructed;
+            if (attacker.currentStats.attacksRequireLOS)
+                unobstructed = MapPathfinder.IsHexReachableByLOS(source, targetHex);
+            else
+                unobstructed = true;
 
             if (unobstructed)
             {
@@ -184,16 +188,6 @@ public static class MapPathfinder
             else
                 hexTargetableTypes[targetHex] = LOSTargetType.outOfRange;
 
-            //if (!hexTargetableTypes.ContainsKey(hitHex) || hexTargetableTypes[hitHex] == LOSTargetType.inRange)
-            //    hexTargetableTypes[hitHex] = LOSTargetType.targetable;
-            //unobstructed = false;
-            //for (int i = hitIndex + 1; i < hits.Length; i++)
-            //{
-            //    Hex nextHex = hits[i].collider.gameObject.GetComponent<Hex>();
-            //    if (!hexTargetableTypes.ContainsKey(nextHex))
-            //        hexTargetableTypes[nextHex] = LOSTargetType.outOfRange;
-            //}
-            //break;
             if (unobstructed)
                 if (!hexTargetableTypes.ContainsKey(targetHex) || (hexTargetableTypes.ContainsKey(targetHex) && hexTargetableTypes[targetHex] != LOSTargetType.targetable))
                     hexTargetableTypes[targetHex] = LOSTargetType.inRange;
