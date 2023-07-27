@@ -46,13 +46,14 @@ public class DefaultAttackAction : IAttackAction
                 int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AttackerStats.damage, this.AttackerStats.critMultiplier) : this.AttackerStats.damage;
                 this.DefenderCharacter.TakeDamage(rolledDamage, this.AttackerStats.damageType);
 
-                Debug.LogFormat("{0} hit {1} for {2} ({5}) leaving him with {3} => {4} life.",
+                Debug.LogFormat("{0} hit {1} for {2} ({6} {5}) leaving him with {3} => {4} life.",
                 this.ActorCharacter,
                 this.DefenderCharacter,
                 rolledDamage,
                 prevLife,
                 this.DefenderCharacter.CurrentLife(),
-                isCrit ? "crit" : "nocrit");
+                isCrit ? "crit" : "normal",
+                this.AttackerStats.damageType);
 
                 if (this.DefenderCharacter.IsDead())
                 {

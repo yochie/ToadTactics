@@ -140,7 +140,7 @@ public class PlayerCharacter : NetworkBehaviour
     {
         switch (damageType)
         {
-            case DamageType.normal:
+            case DamageType.physical:
                 if(!bypassArmor)
                     this.TakeRawDamage(damageAmount - this.currentStats.armor);
                 else

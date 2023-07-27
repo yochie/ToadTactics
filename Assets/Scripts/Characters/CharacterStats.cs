@@ -36,7 +36,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                           float critMultiplier = 1f,
                           int range = 1,
                           int damageIterations = 1,
-                          DamageType damageType = DamageType.normal,
+                          DamageType damageType = DamageType.physical,
                           List<TargetType> allowedAttackTargets = null)
     {
         this.maxHealth = maxHealth;

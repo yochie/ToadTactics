@@ -27,7 +27,7 @@ public readonly struct CharacterAbility
                             int turnDuration,
                             bool requiresLOS = true,
                             int damageIterations = 1,
-                            DamageType damageType = DamageType.normal,
+                            DamageType damageType = DamageType.physical,
                             Type actionType = null,
                             List<TargetType> allowedAbilityTargets = null)
     {

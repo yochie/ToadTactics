@@ -121,7 +121,7 @@ public class ClassDataSO : ScriptableObject
                                        damage: 20,
                                        critChance: 0.15f,
                                        critMultiplier: 1.3f,
-                                       damageType: DamageType.normal,
+                                       damageType: DamageType.physical,
                                        moveSpeed: 4,
                                        initiative: 1,
                                        range: 1,
