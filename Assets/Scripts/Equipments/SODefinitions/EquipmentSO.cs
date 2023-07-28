@@ -11,7 +11,7 @@ public class EquipmentSO : ScriptableObject
     [field: SerializeField]
     public string NameUI { get; private set; }
 
-    [SerializeField]
+    [field: SerializeField]
     public Sprite Sprite { get; private set; }
 
     [field: SerializeField]

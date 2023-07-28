@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <EquipmentID>k__BackingField: Range2
   <NameUI>k__BackingField: Range II
+  <Sprite>k__BackingField: {fileID: 21300000, guid: b2a5c6aff0cd3cc4fbb61052519e603d, type: 3}
   <Description>k__BackingField: 
   <RangeOffset>k__BackingField: 2
   <Quality>k__BackingField: 1
