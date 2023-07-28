@@ -33,7 +33,7 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
 
     #region Startup
     [TargetRpc]
-    public void TargetRpcInit(NetworkConnectionToClient target, int classID, bool itsYourTurn)
+    public void TargetRpcInitForDraft(NetworkConnectionToClient target, int classID, bool itsYourTurn)
     {
         this.Init(classID, itsYourTurn);
     }
@@ -82,8 +82,6 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
 
     public void OnLocalPlayerTurnStart()
     {
-        CharacterDraftPhase currentPhase = GameController.Singleton.currentPhaseObject as CharacterDraftPhase;
-
         if (GameController.Singleton.CharacterHasBeenDrafted(this.holdsClassID))
             return;
 

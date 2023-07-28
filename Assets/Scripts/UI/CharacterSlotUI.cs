@@ -114,7 +114,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 break;
             case GamePhaseID.characterDraft:
                 break;
-            case GamePhaseID.treasureDraft:
+            case GamePhaseID.equipmentDraft:
                 break;
         }
         return toReturn;

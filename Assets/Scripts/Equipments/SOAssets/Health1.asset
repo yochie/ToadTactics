@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0b487e395fb6d4439e80643d3cdced7, type: 3}
   m_Name: Health1
   m_EditorClassIdentifier: 
-  equipmentID: Health1
-  nameUI: Life I
-  sprite: {fileID: 0}
+  <EquipmentID>k__BackingField: Health1
+  <NameUI>k__BackingField: Life I
+  <Description>k__BackingField: 
   <Quality>k__BackingField: 0
   <HealthOffset>k__BackingField: 40

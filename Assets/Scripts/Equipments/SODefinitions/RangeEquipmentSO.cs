@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-
 
 [CreateAssetMenu(fileName = "Range", menuName = "Equipments/RangeEquipment")]
 public class RangeEquipmentSO : EquipmentSO, IEquipmentQuality, IRangeModifier
@@ -13,4 +10,12 @@ public class RangeEquipmentSO : EquipmentSO, IEquipmentQuality, IRangeModifier
     [field: SerializeField]
     public EquipmentQuality Quality { get; set; }
 
+    public Dictionary<string, string> GetPrintableStatDictionary()
+    {
+        Dictionary<string, string> toPrint = new();
+
+        toPrint.Add("Range", System.String.Format("{0}", this.RangeOffset));
+
+        return toPrint;
+    }
 }

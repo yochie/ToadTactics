@@ -10,7 +10,11 @@ using UnityEngine.SceneManagement;
 public class GameController : NetworkBehaviour
 {
     #region Editor vars
-    public uint defaultNumCharsPerPlayer = 3;
+    [field: SerializeField]
+    public uint defaultNumCharsPerPlayer { get; private set; }
+
+    [field: SerializeField]
+    public uint defaultNumEquipmentsDraftedBetweenRounds { get; private set; }
 
     #endregion
 
@@ -54,6 +58,7 @@ public class GameController : NetworkBehaviour
 
     //Only filled on server
     public IGamePhase currentPhaseObject;
+    private int lastRoundLoserID;
 
 
     public List<PlayerController> playerControllers = new();
@@ -62,6 +67,7 @@ public class GameController : NetworkBehaviour
     //dont try to set them here, too tricky to wait for them before handling scene initialization
     public MapInputHandler mapInputHandler;
     public DraftUI draftUI;
+    public EquipmentDraftUI equipmentDraftUI;
 
     #endregion
 
@@ -217,10 +223,13 @@ public class GameController : NetworkBehaviour
 
     private IEnumerator InitSceneOnceAllClientsReadyCoroutine(string sceneName)
     {
+        Debug.Log("Waiting for scene to Awake on all clients");
         while (!SceneAwokenOnAllClients(sceneName))
         {
             yield return null;
         }
+
+        Debug.Log("Scene awoke, initing phase");
         this.NewScenePhaseInit(sceneName);
     }
 
@@ -236,8 +245,8 @@ public class GameController : NetworkBehaviour
             case "MainGame":
                 this.SetPhase(new CharacterPlacementPhase());
                 break;
-            case "TreasureDraft":
-                this.SetPhase(new TreasureDraftPhase());
+            case "EquipmentDraft":
+                this.SetPhase(new EquipmentDraftPhase(this.lastRoundLoserID));
                 break;
         }
     }
@@ -274,8 +283,8 @@ public class GameController : NetworkBehaviour
             case GamePhaseID.gameplay:
                 newPhase.Init("Gameplay " + this.currentRound, this);
                 break;
-            case GamePhaseID.treasureDraft:
-                newPhase.Init("Treasure draft" + this.currentRound, this);
+            case GamePhaseID.equipmentDraft:
+                newPhase.Init("Equipment draft" + this.currentRound, this);
                 break;
         }
     }
@@ -311,7 +320,6 @@ public class GameController : NetworkBehaviour
                     excessClients = true;
                 idleClient = conn;
             }
-
         }
 
         if (excessClients)
@@ -335,8 +343,7 @@ public class GameController : NetworkBehaviour
         if (this.AllPlayersAssignedKings())
         {
             //just change scene, scene changed callback will set phase once all clients have loaded scene
-            CmdChangeToScene("MainGame");
-            //NetworkManager.singleton.ServerChangeScene("MainGame");
+            this.CmdChangeToScene("MainGame");
         }
     }
 
@@ -387,6 +394,7 @@ public class GameController : NetworkBehaviour
     {
         Debug.Log("Incrementing score for winner");
         this.playerScores[winnerID] += 1;
+        this.lastRoundLoserID = this.OtherPlayer(winnerID);
         bool gameEnded = (this.playerScores[winnerID] == 2);
         return gameEnded;
     }
@@ -631,6 +639,12 @@ public class GameController : NetworkBehaviour
     internal bool CharacterHasBeenDrafted(int classID)
     {
         return this.draftedCharacterOwners.ContainsKey(classID);
+    }
+
+    internal bool EquipmentHasBeenDrafted(string holdsEquipmentID)
+    {
+        //TODO fill...
+        return false;
     }
 
     internal NetworkConnectionToClient GetConnectionForPlayerID(int playerID)

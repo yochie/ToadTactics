@@ -9,11 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24e0ae313a069864b97fbc03dc0b5884, type: 3}
-  m_Name: Range1
+  m_Script: {fileID: 11500000, guid: f1b238bc018442f4ea383028d87dc010, type: 3}
+  m_Name: OnEquipmentAssigned
   m_EditorClassIdentifier: 
-  <EquipmentID>k__BackingField: Range1
-  <NameUI>k__BackingField: Range I
-  <Description>k__BackingField: 
-  <RangeOffset>k__BackingField: 1
-  <Quality>k__BackingField: 0

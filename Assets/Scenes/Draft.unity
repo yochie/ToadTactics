@@ -2033,7 +2033,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 4044031974028053451, guid: 5ef90768766ce0a4980d63ac9dd4d879, type: 3}
-  CharacterSheetsList: {fileID: 679029631}
+  characterSheetsList: {fileID: 679029631}
   draftableSlots:
   - {fileID: 1613451703}
   - {fileID: 1859820989}

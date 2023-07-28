@@ -11,7 +11,7 @@ public class DraftUI : MonoBehaviour
     private GameObject slotPrefab;
 
     [SerializeField]
-    private GameObject CharacterSheetsList;
+    private GameObject characterSheetsList;
 
     [SerializeField]
     private List<DraftableCharacterSlotUI> draftableSlots;
@@ -37,8 +37,8 @@ public class DraftUI : MonoBehaviour
         int i = 0;
         foreach (DraftableCharacterSlotUI slot in draftableSlots)
         {
-            slot.TargetRpcInit(currentPlayerClient, classIDsToDraft[i], true);
-            slot.TargetRpcInit(waitingPlayerClient, classIDsToDraft[i], false);
+            slot.TargetRpcInitForDraft(currentPlayerClient, classIDsToDraft[i], true);
+            slot.TargetRpcInitForDraft(waitingPlayerClient, classIDsToDraft[i], false);
             i++;
         }
     }
@@ -54,7 +54,7 @@ public class DraftUI : MonoBehaviour
     {
         foreach (int classID in classIDs)
         {
-            GameObject kingCandidateSlotObject = Instantiate(this.slotPrefab, this.CharacterSheetsList.transform);
+            GameObject kingCandidateSlotObject = Instantiate(this.slotPrefab, this.characterSheetsList.transform);
             DraftableCharacterSlotUI kingCandidateSlot = kingCandidateSlotObject.GetComponent<DraftableCharacterSlotUI>();
             kingCandidateSlot.Init(classID, true, true);
         }

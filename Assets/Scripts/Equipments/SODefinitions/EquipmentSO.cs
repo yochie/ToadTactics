@@ -1,15 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EquipmentSO : ScriptableObject
 {
-    [SerializeField]
-    private string equipmentID;
+    [field: SerializeField]
+    public string EquipmentID { get; private set; }
+
+    [field: SerializeField]
+    public string NameUI { get; private set; }
 
     [SerializeField]
-    private string nameUI;
+    public Sprite Sprite { get; private set; }
 
-    [SerializeField]
-    private Sprite sprite;
+    [field: SerializeField]
+    public string Description { get; private set; }
 }

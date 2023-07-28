@@ -26,8 +26,6 @@ public class RoundEndScreen : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        //MyNetworkManager.singleton.StopClient();
-        //MyNetworkManager.singleton.ServerChangeScene("Menu");
         if (GameController.Singleton.isServer)
             MyNetworkManager.singleton.StopHost();
         else
@@ -40,7 +38,6 @@ public class RoundEndScreen : MonoBehaviour
             //TODO : make it so both players have to click button, not just host
             this.buttonText.text = "Waiting for host to proceed";
         else
-            GameController.Singleton.CmdChangeToScene("TreasureDraft");
-            //MyNetworkManager.singleton.ServerChangeScene("TreasureDraft");
+            GameController.Singleton.CmdChangeToScene("EquipmentDraft");
     }
 }

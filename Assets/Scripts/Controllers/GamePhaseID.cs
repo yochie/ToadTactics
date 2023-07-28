@@ -1,4 +1,4 @@
 ﻿public enum GamePhaseID
 {
-    waitingForClient, characterDraft, characterPlacement, gameplay, treasureDraft
+    waitingForClient, characterDraft, characterPlacement, gameplay, equipmentDraft
 }

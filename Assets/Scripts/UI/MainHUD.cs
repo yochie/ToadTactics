@@ -131,4 +131,18 @@ public class MainHUD : NetworkBehaviour
         GameController.Singleton.CmdNextTurn();
     }
 
+    //For tests
+    //TODO : remove along with button for final version
+    public void OnTestButtonClicked()
+    {
+        this.CmdOnTestButtonClicked();
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdOnTestButtonClicked(NetworkConnectionToClient sender = null)
+    {
+        Debug.Log("pretending you lost round");
+        GameController.Singleton.EndRound(sender.identity.GetComponent<PlayerController>().playerID);
+    }
+
 }
