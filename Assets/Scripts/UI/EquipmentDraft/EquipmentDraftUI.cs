@@ -4,11 +4,15 @@ using UnityEngine;
 using Mirror;
 using TMPro;
 using System;
+using System.Linq;
 
 public class EquipmentDraftUI : MonoBehaviour
 {
     [SerializeField]
-    private GameObject slotPrefab;
+    private GameObject equipmentSlotPrefab;
+
+    [SerializeField]
+    private GameObject characterSlotPrefab;
 
     [field: SerializeField]
     public GameObject EquipmentSheetsList { get; private set; }
@@ -17,6 +21,8 @@ public class EquipmentDraftUI : MonoBehaviour
     private TextMeshProUGUI instructionLabel;
 
     private List<DraftableEquipmentSlotUI> draftableSlots;
+
+    public string currentlyAssigningEquipmentID;
 
     private void Awake()
     {
@@ -29,7 +35,7 @@ public class EquipmentDraftUI : MonoBehaviour
     }
 
     [Server]
-    public void InitSlotContents(List<string> equipmentIDsToDraft)
+    public void InitSlotsForDraft(List<string> equipmentIDsToDraft)
     {
         int currentPlayerID = GameController.Singleton.playerTurn;
         NetworkConnectionToClient currentPlayerClient = GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
@@ -37,7 +43,7 @@ public class EquipmentDraftUI : MonoBehaviour
         int i = 0;
         foreach (string equipmentID in equipmentIDsToDraft)
         {
-            GameObject slotObject = Instantiate(this.slotPrefab, this.EquipmentSheetsList.transform);
+            GameObject slotObject = Instantiate(this.equipmentSlotPrefab, this.EquipmentSheetsList.transform);
             DraftableEquipmentSlotUI slot = slotObject.GetComponent<DraftableEquipmentSlotUI>();
             NetworkServer.Spawn(slot.gameObject);
             Debug.Log("Spawned DraftableEquipmentSlot");
@@ -47,22 +53,28 @@ public class EquipmentDraftUI : MonoBehaviour
         }
     }
 
-    public void SetupEquipmentAssigning(List<string> equipmentIDs)
-    {
-        this.ClearDraftableSlots();
-        this.GenerateAssignCandidates(equipmentIDs);
-        this.instructionLabel.text = "Assign your equipments";
-    }
+    //[ClientRpc]
+    //public void RpcSetupEquipmentAssignment(List<string> equipmentIDs)
+    //{
+    //    this.ClearDraftableSlots();
+    //    List<int> charactersToAssignTo = new();
+    //    GameController.Singleton.playerCharacters.Keys.CopyTo(charactersToAssignTo);
+    //    int localPlayer = GameController.Singleton.LocalPlayer.playerID;
+    //    charactersToAssignTo.Where(characterID => !GameController.Singleton.HeOwnsThisCharacter(localPlayer, ))
+    //    this.GenerateEquipmentAssignCandidates(.);
+    //    this.currentlyAssigningEquipmentID = equipmentIDs[0];
+    //    this.instructionLabel.text = "Assign your equipments";
+    //}
 
-    private void GenerateAssignCandidates(List<string> equipmentIDs)
-    {
-        foreach (string equipmentID in equipmentIDs)
-        {
-            GameObject slotObject = Instantiate(this.slotPrefab, this.EquipmentSheetsList.transform);
-            DraftableEquipmentSlotUI equipmentSlot = slotObject.GetComponent<DraftableEquipmentSlotUI>();
-            equipmentSlot.Init(equipmentID: equipmentID, itsYourTurn: true, asAssignmentCandidate: true);
-        }
-    }
+    //private void GenerateEquipmentAssignCandidates(List<int> playerCharacters)
+    //{
+    //    foreach (string equipmentID in equipmentIDs)
+    //    {
+    //        GameObject slotObject = Instantiate(this.equipmentSlotPrefab, this.EquipmentSheetsList.transform);
+    //        DraftableEquipmentSlotUI equipmentSlot = slotObject.GetComponent<DraftableEquipmentSlotUI>();
+    //        equipmentSlot.Init(equipmentID: equipmentID, itsYourTurn: true, asAssignmentCandidate: true);
+    //    }
+    //}
 
     private void ClearDraftableSlots()
     {

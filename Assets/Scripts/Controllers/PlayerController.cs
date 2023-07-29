@@ -13,6 +13,13 @@ public class PlayerController : NetworkBehaviour
     [SyncVar]
     public int playerID;
 
+    [SyncVar]
+    public int kingClassID;
+    
+    private readonly SyncList<string> draftedEquipmentIDs = new();
+
+    private readonly SyncDictionary<string, int> equipmentsAssignedToClassIDs = new();
+
     [SerializeField]
     private IntGameEventSO onCharacterPlaced;
 
@@ -22,8 +29,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]
     private IntGameEventSO onCharacterCrowned;
 
-    [SyncVar]
-    public int kingClassID;
+    [SerializeField]
+    private StringIntGameEventSO onEquipmentDrafted;
 
     #region Startup
 
@@ -120,6 +127,24 @@ public class PlayerController : NetworkBehaviour
         this.RpcOnCharacterDrafted(this.playerID, classID);
     }
 
+    [Command]
+    public void CmdAssignEquipment(string equipmentID, int classID)
+    {
+        equipmentsAssignedToClassIDs.Add("equipmentID", classID);
+    }
+
+    [Command]
+    public void CmdDraftEquipment(string equipmentID)
+    {
+        this.draftedEquipmentIDs.Add(equipmentID);
+
+        GameController.Singleton.CmdNextTurn();
+
+        //throw event that updates UI elements
+        this.RpcOnEquipmentDrafted(equipmentID, this.playerID);
+    }
+
+
     [Command(requiresAuthority = false)]
     public void CmdCreateCharOnBoard(int characterClassID, Hex destinationHex, NetworkConnectionToClient sender = null)
     {
@@ -162,7 +187,7 @@ public class PlayerController : NetworkBehaviour
     }
     #endregion
 
-    #region Callbacks    
+    #region Rpcs    
 
     [TargetRpc]
     private void TargetRpcOnCharacterPlaced(NetworkConnectionToClient sender, int charClassID)
@@ -181,5 +206,11 @@ public class PlayerController : NetworkBehaviour
     {
         this.onCharacterCrowned.Raise(charClassID);
     }
+
+    private void RpcOnEquipmentDrafted(string equipmentID, int playerID)
+    {
+        this.onEquipmentDrafted.Raise(equipmentID, playerID);
+    }
+
     #endregion
 }

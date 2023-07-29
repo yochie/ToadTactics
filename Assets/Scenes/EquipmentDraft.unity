@@ -1293,9 +1293,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d923703b92b58ed4d907e267f2ff6a5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotPrefab: {fileID: 4044031974028053451, guid: e443d6d503206b34484262ddb1660a2a, type: 3}
+  equipmentSlotPrefab: {fileID: 4044031974028053451, guid: e443d6d503206b34484262ddb1660a2a, type: 3}
+  characterSlotPrefab: {fileID: 587111892145604511, guid: 21be98e575a49f84dbd1897962007ef8, type: 3}
   <EquipmentSheetsList>k__BackingField: {fileID: 1477655165}
   instructionLabel: {fileID: 1711116548}
+  currentlyAssigningEquipmentID: 
 --- !u!114 &2038516027
 MonoBehaviour:
   m_ObjectHideFlags: 0

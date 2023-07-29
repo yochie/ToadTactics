@@ -12,6 +12,9 @@ public class EquipmentDraftPhase : IGamePhase
 
     private int startingPlayerID;
 
+    private int remainingCountToDraft;
+    private List<string> equipmentIDstoAssign;
+
     public EquipmentDraftPhase(int startingPlayerID = 0)
     {
         this.startingPlayerID = startingPlayerID;
@@ -25,6 +28,7 @@ public class EquipmentDraftPhase : IGamePhase
         this.Controller.playerTurn = this.startingPlayerID;
 
         uint numToRoll = this.Controller.defaultNumEquipmentsDraftedBetweenRounds;
+        this.remainingCountToDraft = (int) numToRoll;
         List<string> rolledIDs = new();
         for (int i = 0; i < numToRoll; i++)
         {
@@ -35,11 +39,28 @@ public class EquipmentDraftPhase : IGamePhase
         }
 
         //will init slots using Rpcs (careful, async, need to set all state before)
-        this.Controller.equipmentDraftUI.InitSlotContents(rolledIDs);
+        this.equipmentIDstoAssign = rolledIDs;
+        this.Controller.equipmentDraftUI.InitSlotsForDraft(rolledIDs);
     }
 
     public void Tick()
     {
-        throw new System.NotImplementedException();
+        Controller.SwapPlayerTurn();
+
+        this.remainingCountToDraft--;
+
+        if (this.AllCharactersAreDrafted())
+        {
+            Debug.Log("All chars drafted. Setting up king selection.");
+            //this.Controller.equipmentDraftUI.RpcSetupEquipmentAssignment(equipmentIDstoAssign);
+        }
+    }
+
+    private bool AllCharactersAreDrafted()
+    {
+        if (this.remainingCountToDraft <= 0)
+            return true;
+        else
+            return false;
     }
 }

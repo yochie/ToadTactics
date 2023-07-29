@@ -25,9 +25,6 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
     [SerializeField]
     private GameObject draftButton;
 
-    [SerializeField]
-    private GameObject assignButton;
-
     #region Startup
 
     public void Awake()
@@ -35,7 +32,7 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
         Debug.LogFormat("{0} has awoken", this);
     }
 
-    public void Init(string equipmentID, bool itsYourTurn, bool asAssignmentCandidate = false)
+    public void Init(string equipmentID, bool itsYourTurn)
     {
         this.transform.SetParent(GameController.Singleton.equipmentDraftUI.EquipmentSheetsList.transform, false);
         this.holdsEquipmentID = equipmentID;
@@ -52,16 +49,8 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
             this.statsTable.RenderFromDictionary(statEquipment.GetPrintableStatDictionary(), false);
         }
 
-        if (asAssignmentCandidate)
-        {
-            //hides draft buttons
-            this.SetButtonActiveState(state: false, asAssignmentCandidate: false);
-            //displays assignment buttons
-            this.SetButtonActiveState(state: true, asAssignmentCandidate: true);
-        }
-        else
-            //shows draft buttons if its your turn
-            this.SetButtonActiveState(state: itsYourTurn, asAssignmentCandidate: false);
+        //shows draft buttons if its your turn
+        this.SetButtonActiveState(state: itsYourTurn);
     }
 
     #endregion
@@ -81,11 +70,6 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
         this.SetButtonActiveState(false);
     }
 
-    public void OnEquipmentAssigned(string equipmentID, int playerID, int classID)
-    {
-        this.SetButtonActiveState(false, true);
-    }
-
     public void OnLocalPlayerTurnStart()
     {
         EquipmentDraftPhase equipmentDraftPhase = GameController.Singleton.currentPhaseObject as EquipmentDraftPhase;
@@ -102,25 +86,15 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
     }
 
     //called by button
-    //public void DraftEquipment()
-    //{
-    //    GameController.Singleton.LocalPlayer.CmdDraftEquipment(this.holdsEquipmentID);
-    //}
-
-    //called by button
-
-    //public void assignEquipment()
-    //{
-    //    GameController.Singleton.LocalPlayer.CmdAssignEquipment(this.holdsEquipmentID);
-    //}
+    public void DraftEquipment()
+    {
+        GameController.Singleton.LocalPlayer.CmdDraftEquipment(this.holdsEquipmentID);
+    }
 
     #endregion
 
-    internal void SetButtonActiveState(bool state, bool asAssignmentCandidate = false)
+    internal void SetButtonActiveState(bool state)
     {
-        if (!asAssignmentCandidate)
             this.draftButton.SetActive(state);
-        else
-            this.assignButton.SetActive(state);
     }
 }

@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8989470354416063670}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -428.4919, y: -3820.9321, z: -49.92396}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6404392409865025268
 MonoBehaviour:
@@ -66,7 +66,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   playerID: 0
+  kingClassID: 0
   onCharacterPlaced: {fileID: 11400000, guid: 90c6609506ffa2c47a76a22c3f64360b, type: 2}
   onCharacterDrafted: {fileID: 11400000, guid: 95970226cb210e04091fc105eb0a841e, type: 2}
   onCharacterCrowned: {fileID: 11400000, guid: 0bb5e1cc09a6b8b44ae685d30613de5f, type: 2}
-  kingClassID: 0
+  onEquipmentDrafted: {fileID: 11400000, guid: bc284ebd304b8704f8a469d9dca43fa6, type: 2}

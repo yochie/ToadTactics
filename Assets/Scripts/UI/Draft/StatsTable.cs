@@ -19,7 +19,7 @@ public class StatsTable : MonoBehaviour
     [SerializeField]
     private GameObject statsValueTable;
 
-    internal void RenderFromDictionary(Dictionary<string, string> dictionary, bool asKingCandidate)
+    internal void RenderFromDictionary(Dictionary<string, string> dictionary, bool isAKing)
     {
         this.Clear();
         foreach (KeyValuePair<string, string> stat in dictionary)
@@ -30,7 +30,7 @@ public class StatsTable : MonoBehaviour
 
             GameObject valueLabelObject = Instantiate(this.statValueLabelPrefab, this.statsValueTable.gameObject.transform);
             TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
-            if(asKingCandidate && stat.Key == "Health")
+            if(isAKing && stat.Key == "Health")
             {
                 valueLabel.text = (Utility.ApplyKingLifeBuff(Int32.Parse(stat.Value))).ToString();
                 valueLabel.color = Color.green;
