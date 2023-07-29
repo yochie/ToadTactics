@@ -52,14 +52,26 @@ public class AssignmentCharacterSheetUI : MonoBehaviour
     #region Events
 
     //called by button
-    public void assignEquipment()
+    public void AssignEquipment()
     {
         GameController.Singleton.LocalPlayer.CmdAssignEquipment(GameController.Singleton.equipmentDraftUI.currentlyAssigningEquipmentID, this.holdsClassID);
     }
+
+    public void OnEquipmentAssigned(string equipmentID, int playerID, int classID)
+    {
+        if (classID == this.holdsClassID
+            && playerID == GameController.Singleton.LocalPlayer.playerID
+            && equipmentID == GameController.Singleton.equipmentDraftUI.currentlyAssigningEquipmentID)
+        {
+            //TODO : add stats and equipment icon
+        }
+    }
+
     #endregion
 
     internal void SetButtonActiveState(bool state)
     {
         this.assignEquipmentButton.SetActive(state);
     }
+    
 }

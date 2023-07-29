@@ -71,3 +71,4 @@ MonoBehaviour:
   onCharacterDrafted: {fileID: 11400000, guid: 95970226cb210e04091fc105eb0a841e, type: 2}
   onCharacterCrowned: {fileID: 11400000, guid: 0bb5e1cc09a6b8b44ae685d30613de5f, type: 2}
   onEquipmentDrafted: {fileID: 11400000, guid: bc284ebd304b8704f8a469d9dca43fa6, type: 2}
+  onEquipmentAssigned: {fileID: 11400000, guid: d2c64e882a3299c47881215aca8560ab, type: 2}

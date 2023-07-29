@@ -33,6 +33,9 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]
     private StringIntGameEventSO onEquipmentDrafted;
 
+    [SerializeField]
+    private StringIntIntGameEventSO onEquipmentAssigned;
+
     #region Startup
 
     //needs to be in start : https://mirror-networking.gitbook.io/docs/manual/components/networkbehaviour
@@ -161,9 +164,11 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
-    public void CmdAssignEquipment(string equipmentID, int classID)
+    public void CmdAssignEquipment(string equipmentID, int classID, NetworkConnectionToClient sender = null)
     {
         assignedEquipments.Add("equipmentID", classID);
+
+        this.TargetRpcOnEquipmentAssigned(sender, equipmentID, this.playerID, classID);
     }
 
     [Command]
@@ -238,9 +243,16 @@ public class PlayerController : NetworkBehaviour
         this.onCharacterCrowned.Raise(charClassID);
     }
 
+    [ClientRpc]
     private void RpcOnEquipmentDrafted(string equipmentID, int playerID)
     {
         this.onEquipmentDrafted.Raise(equipmentID, playerID);
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnEquipmentAssigned(NetworkConnectionToClient target, string equipmentID, int playerID, int classID)
+    {
+        this.onEquipmentAssigned.Raise(equipmentID, playerID, classID);
     }
 
     #endregion
