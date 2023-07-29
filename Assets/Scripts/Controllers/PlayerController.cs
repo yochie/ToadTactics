@@ -18,7 +18,8 @@ public class PlayerController : NetworkBehaviour
     
     private readonly SyncList<string> draftedEquipmentIDs = new();
 
-    private readonly SyncDictionary<string, int> equipmentsAssignedToClassIDs = new();
+    //equipmentID -> classID
+    private readonly SyncDictionary<string, int> assignedEquipments = new();
 
     [SerializeField]
     private IntGameEventSO onCharacterPlaced;
@@ -53,6 +54,38 @@ public class PlayerController : NetworkBehaviour
         }
 
         GameController.Singleton.playerControllers.Add(this);
+
+        this.draftedEquipmentIDs.Callback += OnDraftedEquipementIDsChanged;
+        for (int index = 0; index < draftedEquipmentIDs.Count; index++)
+            OnDraftedEquipementIDsChanged(SyncList<string>.Operation.OP_ADD, index, "", draftedEquipmentIDs[index]);
+    }
+
+    void OnDraftedEquipementIDsChanged(SyncList<string>.Operation op, int index, string oldItem, string newItem)
+    {
+        switch (op)
+        {
+            case SyncList<string>.Operation.OP_ADD:
+                Debug.Log("New equipment added to drafted list in player controller.");
+                // index is where it was added into the list
+                // newItem is the new item
+                break;
+            case SyncList<string>.Operation.OP_INSERT:
+                // index is where it was inserted into the list
+                // newItem is the new item
+                break;
+            case SyncList<string>.Operation.OP_REMOVEAT:
+                // index is where it was removed from the list
+                // oldItem is the item that was removed
+                break;
+            case SyncList<string>.Operation.OP_SET:
+                // index is of the item that was changed
+                // oldItem is the previous value for the item at the index
+                // newItem is the new value for the item at the index
+                break;
+            case SyncList<string>.Operation.OP_CLEAR:
+                // list got cleared
+                break;
+        }
     }
 
     public override void OnStartLocalPlayer()
@@ -130,20 +163,18 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdAssignEquipment(string equipmentID, int classID)
     {
-        equipmentsAssignedToClassIDs.Add("equipmentID", classID);
+        assignedEquipments.Add("equipmentID", classID);
     }
 
     [Command]
     public void CmdDraftEquipment(string equipmentID)
     {
         this.draftedEquipmentIDs.Add(equipmentID);
-
         GameController.Singleton.CmdNextTurn();
 
         //throw event that updates UI elements
         this.RpcOnEquipmentDrafted(equipmentID, this.playerID);
     }
-
 
     [Command(requiresAuthority = false)]
     public void CmdCreateCharOnBoard(int characterClassID, Hex destinationHex, NetworkConnectionToClient sender = null)
@@ -212,5 +243,29 @@ public class PlayerController : NetworkBehaviour
         this.onEquipmentDrafted.Raise(equipmentID, playerID);
     }
 
+    #endregion
+
+    #region Utility
+    internal bool HasDraftedEquipment(string equipmentID)
+    {
+        if (this.draftedEquipmentIDs.Contains(equipmentID))
+            return true;
+        else
+            return false;
+    }
+
+    internal bool HasAssignedEquipment(string equipmentID)
+    {
+        if (this.assignedEquipments.ContainsKey(equipmentID))
+            return true;
+        else
+            return false;
+    }
+
+    internal List<string> GetDraftedEquipmentIDs()
+    {
+        List<string> copy = new(this.draftedEquipmentIDs);
+        return copy;
+    }
     #endregion
 }

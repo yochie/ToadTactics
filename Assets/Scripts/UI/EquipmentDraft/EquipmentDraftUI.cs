@@ -6,7 +6,7 @@ using TMPro;
 using System;
 using System.Linq;
 
-public class EquipmentDraftUI : MonoBehaviour
+public class EquipmentDraftUI : NetworkBehaviour
 {
     [SerializeField]
     private GameObject equipmentSlotPrefab;
@@ -46,10 +46,30 @@ public class EquipmentDraftUI : MonoBehaviour
             GameObject slotObject = Instantiate(this.equipmentSlotPrefab, this.EquipmentSheetsList.transform);
             DraftableEquipmentSlotUI slot = slotObject.GetComponent<DraftableEquipmentSlotUI>();
             NetworkServer.Spawn(slot.gameObject);
-            Debug.Log("Spawned DraftableEquipmentSlot");
-            slot.TargetRpcInitForDraft(currentPlayerClient, equipmentIDsToDraft[i], true);
-            slot.TargetRpcInitForDraft(waitingPlayerClient, equipmentIDsToDraft[i], false);
+            //Debug.Log("Spawned DraftableEquipmentSlot");
+            slot.TargetRpcInitForDraft(target: currentPlayerClient, equipmentID: equipmentIDsToDraft[i], itsYourTurn: true);
+            slot.TargetRpcInitForDraft(target: waitingPlayerClient, equipmentID: equipmentIDsToDraft[i], itsYourTurn: false);
             i++;
+        }
+    }
+
+    //called by slots in their init
+    internal void RegisterSpawnedSlot(DraftableEquipmentSlotUI slot)
+    {
+        if (this.draftableSlots == null)
+            this.draftableSlots = new();
+        this.draftableSlots.Add(slot);
+    }
+
+    [TargetRpc]
+    internal void TargetRpcUpdateDraftSlotsForTurn(NetworkConnectionToClient target, bool itsYourTurn, List<string> alreadyDrafted)
+    {
+        foreach(DraftableEquipmentSlotUI slot in this.draftableSlots)
+        {
+            if (itsYourTurn && !alreadyDrafted.Contains(slot.holdsEquipmentID))
+                slot.SetButtonActiveState(true);
+            else
+                slot.SetButtonActiveState(false);
         }
     }
 

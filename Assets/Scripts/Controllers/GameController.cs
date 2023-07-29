@@ -14,7 +14,7 @@ public class GameController : NetworkBehaviour
     public uint defaultNumCharsPerPlayer { get; private set; }
 
     [field: SerializeField]
-    public uint defaultNumEquipmentsDraftedBetweenRounds { get; private set; }
+    public uint numEquipmentsDraftedBetweenRounds { get; private set; }
 
     #endregion
 
@@ -83,14 +83,6 @@ public class GameController : NetworkBehaviour
     //maps character initiative to classID
     public readonly SyncIDictionary<float, int> sortedTurnOrder = new(new SortedList<float, int>());
 
-    //index of currently playing character during gameplay phase
-    [SyncVar(hook = nameof(OnTurnOrderIndexChanged))]
-    public int turnOrderIndex;
-
-    //currently playing playerID
-    [SyncVar(hook = nameof(OnPlayerTurnChanged))]
-    public int playerTurn;
-
     [SyncVar]
     public GamePhaseID currentPhaseID;
 
@@ -101,6 +93,19 @@ public class GameController : NetworkBehaviour
     //sceneName => awokenState
     public readonly SyncDictionary<string, bool> remoteAwokenScenes = new();
     public readonly SyncDictionary<string, bool> hostAwokenScenes = new();
+
+    private readonly SyncList<string> equipmentsToDraft = new();
+    private readonly SyncList<string> equipmentsToAssign = new();
+
+    //Needs to be at bottom of syncvars since it updates UI based on state (order of syncvars determines execution order)
+    //index of currently playing character during gameplay phase
+    [SyncVar(hook = nameof(OnTurnOrderIndexChanged))]
+    public int turnOrderIndex;
+
+    //Needs to be at bottom of syncvars since it updates UI based on state (order of syncvars determines execution order)
+    //currently playing playerID
+    [SyncVar(hook = nameof(OnPlayerTurnChanged))]
+    public int playerTurn;
 
     #endregion
 
@@ -398,6 +403,23 @@ public class GameController : NetworkBehaviour
         bool gameEnded = (this.playerScores[winnerID] == 2);
         return gameEnded;
     }
+
+    internal void SetEquipmentsToDraft(List<string> equipmentIDs)
+    {
+        foreach(string equipmentToAdd in equipmentIDs)
+        {
+            this.equipmentsToDraft.Add(equipmentToAdd);
+        }
+    }
+
+    internal void SetEquipmentsToAssign(List<string> equipmentIDs)
+    {
+        foreach (string equipmentToAdd in equipmentIDs)
+        {
+            this.equipmentsToAssign.Add(equipmentToAdd);
+        }
+    }
+
     #endregion
 
     #region Callbacks
@@ -641,12 +663,6 @@ public class GameController : NetworkBehaviour
         return this.draftedCharacterOwners.ContainsKey(classID);
     }
 
-    internal bool EquipmentHasBeenDrafted(string holdsEquipmentID)
-    {
-        //TODO fill...
-        return false;
-    }
-
     internal NetworkConnectionToClient GetConnectionForPlayerID(int playerID)
     {
         foreach(PlayerController p in this.playerControllers)
@@ -664,6 +680,57 @@ public class GameController : NetworkBehaviour
     internal int GetScore(int playerID)
     {
         return this.playerScores[playerID];
+    }
+
+    public bool AllEquipmentsDrafted()
+    {
+        foreach (string equipmentIDToDraft in this.equipmentsToDraft)
+        {
+            bool hasBeenDraftedByAPlayer = false;
+            foreach (PlayerController player in this.playerControllers)
+            {
+                if (player.HasDraftedEquipment(equipmentIDToDraft))
+                    hasBeenDraftedByAPlayer = true;
+            }
+            if (!hasBeenDraftedByAPlayer)
+                return false;
+        }
+
+        return true;
+    }
+
+    public bool EquipmentHasBeenDrafted(string equipmentID)
+    {
+        foreach (PlayerController player in this.playerControllers)
+        {
+            if (player.HasDraftedEquipment(equipmentID))
+                return true;
+        }
+        return false;
+    }
+
+    public bool AllEquipmentsAssigned()
+    {
+        foreach (string equipmentIDToDraft in this.equipmentsToAssign)
+        {
+            foreach (PlayerController player in this.playerControllers)
+            {
+                if (!player.HasDraftedEquipment(equipmentIDToDraft))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool EquipmentHasBeenAssigned(string equipmentID)
+    {
+        foreach (PlayerController player in this.playerControllers)
+        {
+            if (player.HasAssignedEquipment(equipmentID))
+                return true;
+        }
+        return false;
     }
 
     #endregion

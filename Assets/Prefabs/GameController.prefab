@@ -49,7 +49,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   <defaultNumCharsPerPlayer>k__BackingField: 3
-  <defaultNumEquipmentsDraftedBetweenRounds>k__BackingField: 4
+  <numEquipmentsDraftedBetweenRounds>k__BackingField: 4
   onCharAddedToTurnOrder: {fileID: 11400000, guid: 8953317fb65d86347a5a2990de93360c, type: 2}
   onTurnOrderIndexChanged: {fileID: 11400000, guid: 50fde46ae2412d44b9c0286f9878cf78, type: 2}
   onLocalPlayerTurnStart: {fileID: 11400000, guid: 18a4cdf9090449042a8f58bdb7182019, type: 2}
@@ -59,7 +59,6 @@ MonoBehaviour:
   onRoundLost: {fileID: 11400000, guid: 4bcefb8653ee0f243b5b327e56b80ea4, type: 2}
   onGameWon: {fileID: 11400000, guid: 7e989a42b66b88045a36328cf5faa61b, type: 2}
   onGameLost: {fileID: 11400000, guid: ca4e7ea06672be24c82f393d6c465fb0, type: 2}
-  lastRoundLoserID: 0
   playerControllers: []
   mapInputHandler: {fileID: 0}
   draftUI: {fileID: 0}
