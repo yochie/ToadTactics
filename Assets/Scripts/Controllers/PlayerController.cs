@@ -36,6 +36,9 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]
     private StringIntIntGameEventSO onEquipmentAssigned;
 
+    [SerializeField]
+    private GameEventSO onLocalPlayerAssignedAllEquipments;
+
     #region Startup
 
     //needs to be in start : https://mirror-networking.gitbook.io/docs/manual/components/networkbehaviour
@@ -166,9 +169,41 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdAssignEquipment(string equipmentID, int classID, NetworkConnectionToClient sender = null)
     {
-        assignedEquipments.Add("equipmentID", classID);
-
+        Debug.LogFormat("Assigning equipment {0} to {1} for player {2}", equipmentID, classID, sender.identity.GetComponent<PlayerController>().playerID);
+        this.assignedEquipments.Add(equipmentID, classID);
+       
         this.TargetRpcOnEquipmentAssigned(sender, equipmentID, this.playerID, classID);
+
+        string nextToAssign = null;
+        foreach(string draftedEquipmentID in this.draftedEquipmentIDs)
+        {
+            if (!this.assignedEquipments.ContainsKey(draftedEquipmentID))
+            {
+                nextToAssign = draftedEquipmentID;
+                break;
+            }
+        }
+
+        //tick phase to indicate that this player has finished all assignments
+        //if both players have ticked phase while all characters are drafted, it will trigger next phase
+        if(nextToAssign == null) 
+        {
+            Debug.LogFormat("No more equipments to assign, ticking phase.");
+
+            GameController.Singleton.CmdNextTurn();
+            this.TargetRpcOnLocalPlayerAssignedAllEquipments(sender);
+        } else
+        {
+            Debug.LogFormat("Displaying next equipment.");
+
+            GameController.Singleton.equipmentDraftUI.TargetRpcUpdateEquipmentAssignment(target: sender, nextEquipmentID: nextToAssign);
+        }        
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnLocalPlayerAssignedAllEquipments(NetworkConnectionToClient sender)
+    {
+        this.onLocalPlayerAssignedAllEquipments.Raise();
     }
 
     [Command]
@@ -272,6 +307,16 @@ public class PlayerController : NetworkBehaviour
             return true;
         else
             return false;
+    }
+
+    internal bool HasAssignedAllEquipments()
+    {
+        foreach(string equipmentID in this.draftedEquipmentIDs)
+        {
+            if (!this.assignedEquipments.ContainsKey(equipmentID))
+                return false;
+        }
+        return true;
     }
 
     internal List<string> GetDraftedEquipmentIDs()

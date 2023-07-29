@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class AssignmentCharacterSlotUI : NetworkBehaviour
+public class DraftableCharacterSlotUI : NetworkBehaviour
 {
     public int holdsClassID;
 
@@ -31,9 +31,6 @@ public class AssignmentCharacterSlotUI : NetworkBehaviour
     [SerializeField]
     private GameObject crownButton;
 
-    [SerializeField]
-    private GameObject assignEquipmentButton;
-
     #region Startup
     [TargetRpc]
     public void TargetRpcInitForDraft(NetworkConnectionToClient target, int classID, bool itsYourTurn)
@@ -41,7 +38,7 @@ public class AssignmentCharacterSlotUI : NetworkBehaviour
         this.Init(classID, itsYourTurn);
     }
 
-    public void Init(int classID, bool itsYourTurn, bool asKingCandidate = false, bool asEquipmentAssignCandidate = false)
+    public void Init(int classID, bool itsYourTurn, bool asKingCandidate = false)
     {
         this.holdsClassID = classID;
 
@@ -61,10 +58,6 @@ public class AssignmentCharacterSlotUI : NetworkBehaviour
             this.SetButtonActiveState(state: false, asKingCandidate: false);
             //displays crown buttons
             this.SetButtonActiveState(state: true, asKingCandidate: true);
-        }
-        else if (asEquipmentAssignCandidate)
-        {
-            this.SetButtonActiveState(state: true, asKingCandidate: false, asEquipmentAssignCandidate: true);
         }
         else
             this.SetButtonActiveState(itsYourTurn, false);
@@ -113,19 +106,12 @@ public class AssignmentCharacterSlotUI : NetworkBehaviour
         GameController.Singleton.LocalPlayer.CmdCrownCharacter(this.holdsClassID);
     }
 
-    //called by button
-    public void assignEquipment()
-    {
-        GameController.Singleton.LocalPlayer.CmdAssignEquipment(GameController.Singleton.equipmentDraftUI.currentlyAssigningEquipmentID, this.holdsClassID);
-    }
     #endregion
 
-    internal void SetButtonActiveState(bool state, bool asKingCandidate = false, bool asEquipmentAssignCandidate = false)
+    internal void SetButtonActiveState(bool state, bool asKingCandidate = false)
     {
         if (asKingCandidate)
             this.crownButton.SetActive(state);
-        else if(asEquipmentAssignCandidate)
-            this.assignEquipmentButton.SetActive(state);
         else
             this.draftButton.SetActive(state);
     }

@@ -714,15 +714,11 @@ public class GameController : NetworkBehaviour
     [Server]
     public bool AllEquipmentsAssigned()
     {
-        foreach (string equipmentIDToDraft in this.equipmentsToAssign)
+        foreach (PlayerController player in this.playerControllers)
         {
-            foreach (PlayerController player in this.playerControllers)
-            {
-                if (!player.HasDraftedEquipment(equipmentIDToDraft))
-                    return false;
-            }
+            if (!player.HasAssignedAllEquipments())
+                return false;
         }
-
         return true;
     }
 

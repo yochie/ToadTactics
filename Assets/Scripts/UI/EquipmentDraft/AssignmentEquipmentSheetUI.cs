@@ -22,8 +22,9 @@ public class AssignmentEquipmentSheetUI : MonoBehaviour
     [SerializeField]
     private StatsTable statsTable;
 
-    public void Init(string equipmentID)
+    public void FillWithEquipmentData(string equipmentID)
     {
+        Debug.LogFormat("Filling equipment slot with data for {0}", equipmentID);
         this.holdsEquipmentID = equipmentID;
 
         EquipmentSO equipmentData = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID);

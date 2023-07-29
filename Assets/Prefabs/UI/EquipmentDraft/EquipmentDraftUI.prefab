@@ -584,6 +584,7 @@ GameObject:
   - component: {fileID: 4022491025840272948}
   - component: {fileID: 8537482888627092807}
   - component: {fileID: 8685854213405997647}
+  - component: {fileID: 1877647940234697466}
   m_Layer: 5
   m_Name: EquipmentDraftUI
   m_TagString: DraftUI
@@ -774,9 +775,37 @@ MonoBehaviour:
   assignmentCharacterSheetPrefab: {fileID: 587111892145604511, guid: 21be98e575a49f84dbd1897962007ef8, type: 3}
   <DraftEquipmentSheetsList>k__BackingField: {fileID: 1082487626224405466}
   <AssignmentEquipmentSheetContainer>k__BackingField: {fileID: 1423586905004734015}
-  <AssignmentCharacterSheets>k__BackingField: {fileID: 2772852758591901955}
+  <AssignmentCharacterSheetsList>k__BackingField: {fileID: 2772852758591901955}
   instructionLabel: {fileID: 3668149686730090619}
   currentlyAssigningEquipmentID: 
+--- !u!114 &1877647940234697466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7999096988513316336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcdfe653ddc233d4986f95bba225726e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: ef18f729c09838c4593d77ef56b43b2b, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8685854213405997647}
+        m_TargetAssemblyTypeName: EquipmentDraftUI, Assembly-CSharp
+        m_MethodName: OnLocalPlayerAssignedAllEquipments
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8082232581301167497
 GameObject:
   m_ObjectHideFlags: 0
