@@ -14,7 +14,7 @@ public class DraftUI : MonoBehaviour
     private GameObject characterSheetsList;
 
     [SerializeField]
-    private List<DraftableCharacterSlotUI> draftableSlots;
+    private List<AssignmentCharacterSlotUI> draftableSlots;
 
     [SerializeField]
     private TextMeshProUGUI instructionLabel;
@@ -35,7 +35,7 @@ public class DraftUI : MonoBehaviour
         NetworkConnectionToClient currentPlayerClient =  GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
         NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
         int i = 0;
-        foreach (DraftableCharacterSlotUI slot in draftableSlots)
+        foreach (AssignmentCharacterSlotUI slot in draftableSlots)
         {
             slot.TargetRpcInitForDraft(currentPlayerClient, classIDsToDraft[i], true);
             slot.TargetRpcInitForDraft(waitingPlayerClient, classIDsToDraft[i], false);
@@ -55,14 +55,14 @@ public class DraftUI : MonoBehaviour
         foreach (int classID in classIDs)
         {
             GameObject kingCandidateSlotObject = Instantiate(this.slotPrefab, this.characterSheetsList.transform);
-            DraftableCharacterSlotUI kingCandidateSlot = kingCandidateSlotObject.GetComponent<DraftableCharacterSlotUI>();
+            AssignmentCharacterSlotUI kingCandidateSlot = kingCandidateSlotObject.GetComponent<AssignmentCharacterSlotUI>();
             kingCandidateSlot.Init(classID, true, true);
         }
     }
 
     private void ClearDraftableSlots()
     {
-        foreach (DraftableCharacterSlotUI slot in this.draftableSlots)
+        foreach (AssignmentCharacterSlotUI slot in this.draftableSlots)
         {
             Destroy(slot.gameObject);
         }

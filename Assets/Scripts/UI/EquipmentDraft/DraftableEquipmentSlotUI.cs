@@ -32,11 +32,17 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
         Debug.LogFormat("{0} has awoken", this);
     }
 
+    [TargetRpc]
+    public void TargetRpcInitForDraft(NetworkConnectionToClient target, string equipmentID, bool itsYourTurn)
+    {
+        this.Init(equipmentID, itsYourTurn);
+    }
+
     public void Init(string equipmentID, bool itsYourTurn)
     {
         //register to Equipment Draft UI on each client
         GameController.Singleton.equipmentDraftUI.RegisterSpawnedSlot(this);
-        this.transform.SetParent(GameController.Singleton.equipmentDraftUI.EquipmentSheetsList.transform, false);
+        this.transform.SetParent(GameController.Singleton.equipmentDraftUI.DraftEquipmentSheetsList.transform, false);
         this.holdsEquipmentID = equipmentID;
 
         EquipmentSO equipmentData = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID);
@@ -57,12 +63,6 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
 
     #endregion
 
-    [TargetRpc]
-    public void TargetRpcInitForDraft(NetworkConnectionToClient target, string equipmentID, bool itsYourTurn)
-    {
-        this.Init(equipmentID, itsYourTurn);
-    }
-
     #region Events
     //redundant with Update in draft UI, but might avoid issues when that update takes too much time by triggering earlier
     public void OnEquipmentDrafted(string equipmentID, int playerID)
@@ -81,8 +81,10 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
 
     #endregion
 
+    #region Utility
     internal void SetButtonActiveState(bool state)
     {
             this.draftButton.SetActive(state);
     }
+    #endregion
 }

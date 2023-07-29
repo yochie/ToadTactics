@@ -59,7 +59,8 @@ public class GameController : NetworkBehaviour
     //Only filled on server
     public IGamePhase currentPhaseObject;
     private int lastRoundLoserID;
-
+    private readonly List<string> equipmentsToDraft = new();
+    private readonly List<string> equipmentsToAssign = new();
 
     public List<PlayerController> playerControllers = new();
 
@@ -93,9 +94,6 @@ public class GameController : NetworkBehaviour
     //sceneName => awokenState
     public readonly SyncDictionary<string, bool> remoteAwokenScenes = new();
     public readonly SyncDictionary<string, bool> hostAwokenScenes = new();
-
-    private readonly SyncList<string> equipmentsToDraft = new();
-    private readonly SyncList<string> equipmentsToAssign = new();
 
     //Needs to be at bottom of syncvars since it updates UI based on state (order of syncvars determines execution order)
     //index of currently playing character during gameplay phase
@@ -483,6 +481,9 @@ public class GameController : NetworkBehaviour
         this.onCharAddedToTurnOrder.Raise(classID);
     }
 
+    //TODO: ensure all handlers for these events avoid checking syncvars to ensure no race condition between syncvar propagation and RPC execution
+    //TODO: caveat here is that execution order can be made deterministic by ordering syncvar declarations as long as hooks that call RPCs are defined in same file as syncvars
+    //TODO: if state checks are necessary, instead use RPCs that send all required state as args
     //called on on all clients by syncvar hook
     [Client]
     private void OnTurnOrderIndexChanged(int prevTurnIndex, int newTurnIndex)
@@ -699,6 +700,7 @@ public class GameController : NetworkBehaviour
         return true;
     }
 
+    [Server]
     public bool EquipmentHasBeenDrafted(string equipmentID)
     {
         foreach (PlayerController player in this.playerControllers)
@@ -709,6 +711,7 @@ public class GameController : NetworkBehaviour
         return false;
     }
 
+    [Server]
     public bool AllEquipmentsAssigned()
     {
         foreach (string equipmentIDToDraft in this.equipmentsToAssign)

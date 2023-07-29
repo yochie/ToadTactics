@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class DraftableCharacterSlotUI : NetworkBehaviour
+public class AssignmentCharacterSlotUI : NetworkBehaviour
 {
     public int holdsClassID;
 

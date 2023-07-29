@@ -8,14 +8,24 @@ using System.Linq;
 
 public class EquipmentDraftUI : NetworkBehaviour
 {
-    [SerializeField]
-    private GameObject equipmentSlotPrefab;
 
     [SerializeField]
-    private GameObject characterSlotPrefab;
+    private GameObject draftableEquipmentSlotPrefab;
+
+    [SerializeField]
+    private GameObject assignmentEquipmentSheetPrefab;
+
+    [SerializeField]
+    private GameObject assignmentCharacterSheetPrefab;
 
     [field: SerializeField]
-    public GameObject EquipmentSheetsList { get; private set; }
+    public GameObject DraftEquipmentSheetsList { get; private set; }
+
+    [field: SerializeField]
+    public  GameObject AssignmentEquipmentSheetContainer { get; private set; }
+
+    [field: SerializeField]
+    public GameObject AssignmentCharacterSheets { get; private set; }
 
     [SerializeField]
     private TextMeshProUGUI instructionLabel;
@@ -34,6 +44,7 @@ public class EquipmentDraftUI : NetworkBehaviour
         GameController.Singleton.equipmentDraftUI = this;
     }
 
+    //TODO: move net code to phase object, keep this UI only as RPC
     [Server]
     public void InitSlotsForDraft(List<string> equipmentIDsToDraft)
     {
@@ -43,7 +54,7 @@ public class EquipmentDraftUI : NetworkBehaviour
         int i = 0;
         foreach (string equipmentID in equipmentIDsToDraft)
         {
-            GameObject slotObject = Instantiate(this.equipmentSlotPrefab, this.EquipmentSheetsList.transform);
+            GameObject slotObject = Instantiate(this.draftableEquipmentSlotPrefab, this.DraftEquipmentSheetsList.transform);
             DraftableEquipmentSlotUI slot = slotObject.GetComponent<DraftableEquipmentSlotUI>();
             NetworkServer.Spawn(slot.gameObject);
             //Debug.Log("Spawned DraftableEquipmentSlot");
@@ -73,28 +84,37 @@ public class EquipmentDraftUI : NetworkBehaviour
         }
     }
 
-    //[ClientRpc]
-    //public void RpcSetupEquipmentAssignment(List<string> equipmentIDs)
-    //{
-    //    this.ClearDraftableSlots();
-    //    List<int> charactersToAssignTo = new();
-    //    GameController.Singleton.playerCharacters.Keys.CopyTo(charactersToAssignTo);
-    //    int localPlayer = GameController.Singleton.LocalPlayer.playerID;
-    //    charactersToAssignTo.Where(characterID => !GameController.Singleton.HeOwnsThisCharacter(localPlayer, ))
-    //    this.GenerateEquipmentAssignCandidates(.);
-    //    this.currentlyAssigningEquipmentID = equipmentIDs[0];
-    //    this.instructionLabel.text = "Assign your equipments";
-    //}
+    [TargetRpc]
+    public void TargetRpcSetupEquipmentAssignment(NetworkConnectionToClient target, string firstEquipmentID, List<int> charactersToAssignTo)
+    {
+        Destroy(this.DraftEquipmentSheetsList);
+        this.AssignmentCharacterSheets.SetActive(true);
+        this.AssignmentEquipmentSheetContainer.SetActive(true);
+        this.ClearDraftableSlots();
+        
+        this.currentlyAssigningEquipmentID = firstEquipmentID;
+        this.instructionLabel.text = "Assign your equipments";
 
-    //private void GenerateEquipmentAssignCandidates(List<int> playerCharacters)
-    //{
-    //    foreach (string equipmentID in equipmentIDs)
-    //    {
-    //        GameObject slotObject = Instantiate(this.equipmentSlotPrefab, this.EquipmentSheetsList.transform);
-    //        DraftableEquipmentSlotUI equipmentSlot = slotObject.GetComponent<DraftableEquipmentSlotUI>();
-    //        equipmentSlot.Init(equipmentID: equipmentID, itsYourTurn: true, asAssignmentCandidate: true);
-    //    }
-    //}
+        this.GenerateAssignmentEquipmentSheet(firstEquipmentID);
+        this.GenerateAssignmentCharacterSheets(charactersToAssignTo);
+    }
+
+    private void GenerateAssignmentEquipmentSheet(string firstEquipmentID)
+    {
+        GameObject slotObject = Instantiate(this.assignmentEquipmentSheetPrefab, this.AssignmentEquipmentSheetContainer.transform);
+        AssignmentEquipmentSheetUI assignmentEquipmentSheet = slotObject.GetComponent<AssignmentEquipmentSheetUI>();
+        assignmentEquipmentSheet.Init(firstEquipmentID);
+    }
+
+    private void GenerateAssignmentCharacterSheets(List<int> classIDs)
+    {
+        foreach (int classID in classIDs)
+        {
+            GameObject slotObject = Instantiate(this.assignmentCharacterSheetPrefab, this.AssignmentCharacterSheets.transform);
+            AssignmentCharacterSheetUI assignmentCharacterSheet = slotObject.GetComponent<AssignmentCharacterSheetUI>();
+            assignmentCharacterSheet.Init(classID);
+        }
+    }
 
     private void ClearDraftableSlots()
     {

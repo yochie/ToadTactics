@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System.Linq;
 
 public class EquipmentDraftPhase : IGamePhase
 {
@@ -50,20 +51,44 @@ public class EquipmentDraftPhase : IGamePhase
     [Server]
     public void Tick()
     {
-        this.Controller.SwapPlayerTurn();
+        if (!this.doneDrafting && !this.Controller.AllEquipmentsDrafted())
+        {
+            Debug.Log("Drafting equipment turn swap.");
 
-        this.UpdateDraftUI();
+            this.Controller.SwapPlayerTurn();
 
-        if (!this.doneDrafting && this.Controller.AllEquipmentsDrafted())
+            this.UpdateDraftUI();
+        }
+        else if (!this.doneDrafting && this.Controller.AllEquipmentsDrafted())
         {
             Debug.Log("All equipments drafted. Setting up equipment assigning.");
             this.doneDrafting = true;
-            //this.Controller.equipmentDraftUI.RpcSetupEquipmentAssignment(equipmentIDstoAssign);
+
+            this.SetupEquipmentAssignment();
         }
         else if (doneDrafting && this.Controller.AllEquipmentsAssigned())
         {
+            //Should be called once both players tick after havin assigned all their own equipments
             Debug.Log("All equipments assigned. Starting new round.");
             this.Controller.CmdChangeToScene("MainGame");
+        }
+    }
+
+    private void SetupEquipmentAssignment()
+    {
+        int currentPlayerID = GameController.Singleton.playerTurn;
+        NetworkConnectionToClient currentPlayerClient = GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
+        NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
+
+        foreach (PlayerController pc in this.Controller.playerControllers)
+        {
+            NetworkConnectionToClient client = GameController.Singleton.GetConnectionForPlayerID(pc.playerID);
+            string firstEquipmentToAssign = pc.GetDraftedEquipmentIDs()[0];
+            List<int> characterIDs = new();
+            this.Controller.draftedCharacterOwners.Keys.CopyTo(characterIDs);
+            List<int> characterIDsForPlayer = characterIDs.Where(characterID => GameController.Singleton.HeOwnsThisCharacter(pc.playerID, characterID)).ToList();
+
+            this.Controller.equipmentDraftUI.TargetRpcSetupEquipmentAssignment(client, firstEquipmentToAssign, characterIDsForPlayer);
         }
     }
 
