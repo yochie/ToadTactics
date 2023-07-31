@@ -71,7 +71,7 @@ public class PlayerController : NetworkBehaviour
         switch (op)
         {
             case SyncList<string>.Operation.OP_ADD:
-                Debug.Log("New equipment added to drafted list in player controller.");
+                //Debug.Log("New equipment added to drafted list in player controller.");
                 // index is where it was added into the list
                 // newItem is the new item
                 break;
@@ -169,7 +169,7 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdAssignEquipment(string equipmentID, int classID, NetworkConnectionToClient sender = null)
     {
-        Debug.LogFormat("Assigning equipment {0} to {1} for player {2}", equipmentID, classID, sender.identity.GetComponent<PlayerController>().playerID);
+        Debug.LogFormat("Assigning equipment {0} to {1} for player {2}", equipmentID, ClassDataSO.Singleton.GetClassByID(classID).name, sender.identity.GetComponent<PlayerController>().playerID);
         this.assignedEquipments.Add(equipmentID, classID);
        
         this.TargetRpcOnEquipmentAssigned(sender, equipmentID, this.playerID, classID);
@@ -194,7 +194,7 @@ public class PlayerController : NetworkBehaviour
             this.TargetRpcOnLocalPlayerAssignedAllEquipments(sender);
         } else
         {
-            Debug.LogFormat("Displaying next equipment.");
+            //Debug.LogFormat("Displaying next equipment.");
 
             GameController.Singleton.equipmentDraftUI.TargetRpcUpdateEquipmentAssignment(target: sender, nextEquipmentID: nextToAssign);
         }        
@@ -209,6 +209,7 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdDraftEquipment(string equipmentID)
     {
+        Debug.LogFormat("Player {0} drafted equipment {1}", this.playerID, EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).name);
         this.draftedEquipmentIDs.Add(equipmentID);
         GameController.Singleton.CmdNextTurn();
 
@@ -217,7 +218,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdCreateCharOnBoard(int characterClassID, Hex destinationHex, NetworkConnectionToClient sender = null)
+    public void CmdCreateCharOnBoard(int charIDToCreate, Hex destinationHex, NetworkConnectionToClient sender = null)
     {
         int ownerPlayerIndex = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         //validate destination
@@ -230,7 +231,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        PlayerCharacter characterPrefab = ClassDataSO.Singleton.GetPrefabByClassID(characterClassID);
+        PlayerCharacter characterPrefab = ClassDataSO.Singleton.GetPrefabByClassID(charIDToCreate);
         Vector3 destinationWorldPos = destinationHex.transform.position;
         GameObject newCharObject =
             Instantiate(characterPrefab.gameObject, destinationWorldPos, Quaternion.identity);
@@ -241,18 +242,25 @@ public class PlayerController : NetworkBehaviour
             newChar.isKing = true;
         newChar.transform.position = destinationWorldPos;
 
+        //update Hex state, synced to clients by syncvar
+        destinationHex.holdsCharacterWithClassID = charIDToCreate;
+        Map.Singleton.characterPositions[charIDToCreate] = destinationHex.coordinates;
+
+        //Apply equipments
+        foreach(KeyValuePair<string, int> assignedEquipment in this.assignedEquipments)
+        {
+            if(assignedEquipment.Value == charIDToCreate)
+            {
+                newChar.GiveEquipment(assignedEquipment.Key);
+            }
+        }
+
         //will actually init character on server using class data and state set above
         NetworkServer.Spawn(newCharObject, connectionToClient);
 
-        //add player to both lists
-        GameController.Singleton.playerCharactersNetIDs.Add(characterClassID, newCharObject.GetComponent<NetworkIdentity>().netId);
+        GameController.Singleton.playerCharactersNetIDs.Add(charIDToCreate, newCharObject.GetComponent<NetworkIdentity>().netId);
 
-        //update Hex state, synced to clients by syncvar
-        destinationHex.holdsCharacterWithClassID = characterClassID;
-        this.TargetRpcOnCharacterPlaced(sender, characterClassID);
-
-
-        Map.Singleton.characterPositions[characterClassID] = destinationHex.coordinates;
+        this.TargetRpcOnCharacterPlaced(sender, charIDToCreate);
 
         GameController.Singleton.CmdNextTurn();
     }

@@ -24,7 +24,7 @@ public class AssignmentEquipmentSheetUI : MonoBehaviour
 
     public void FillWithEquipmentData(string equipmentID)
     {
-        Debug.LogFormat("Filling equipment slot with data for {0}", equipmentID);
+        //Debug.LogFormat("Filling equipment slot with data for {0}", equipmentID);
         this.holdsEquipmentID = equipmentID;
 
         EquipmentSO equipmentData = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID);
@@ -36,7 +36,7 @@ public class AssignmentEquipmentSheetUI : MonoBehaviour
         if (typeof(IStatModifier).IsAssignableFrom(equipmentData.GetType()))
         {
             IStatModifier statEquipment = equipmentData as IStatModifier;
-            this.statsTable.RenderFromDictionary(statEquipment.GetPrintableStatDictionary(), false);
+            this.statsTable.RenderForEquipment(statEquipment);
         }
 
     }

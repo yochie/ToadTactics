@@ -226,13 +226,13 @@ public class GameController : NetworkBehaviour
 
     private IEnumerator InitSceneOnceAllClientsReadyCoroutine(string sceneName)
     {
-        Debug.Log("Waiting for scene to Awake on all clients");
+        //Debug.Log("Waiting for scene to Awake on all clients");
         while (!SceneAwokenOnAllClients(sceneName))
         {
             yield return null;
         }
 
-        Debug.Log("Scene awoke, initing phase");
+        //Debug.Log("Scene awoke, initing phase");
         this.NewScenePhaseInit(sceneName);
     }
 

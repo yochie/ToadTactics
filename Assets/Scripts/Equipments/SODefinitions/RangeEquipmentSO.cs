@@ -10,6 +10,12 @@ public class RangeEquipmentSO : EquipmentSO, IEquipmentQuality, IRangeModifier
     [field: SerializeField]
     public EquipmentQuality Quality { get; set; }
 
+    public void ApplyStatModification(PlayerCharacter playerCharacter)
+    {
+        int currentRange = playerCharacter.currentStats.range;
+        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, range: currentRange + this.RangeOffset);
+    }
+
     public Dictionary<string, string> GetPrintableStatDictionary()
     {
         Dictionary<string, string> toPrint = new();

@@ -37,11 +37,12 @@ public class AssignmentCharacterSheetUI : MonoBehaviour
         CharacterClass classData = ClassDataSO.Singleton.GetClassByID(classID);
         Sprite sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
 
+
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderFromDictionary(classData.GetPrintableAbilityDictionary());
-        this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary(), asKing);
+        this.abilitiesTable.RenderForClass(classData);
+        this.statsTable.RenderForBaseStats(classData.stats, asKing);
 
         this.SetButtonActiveState(state: true);
 

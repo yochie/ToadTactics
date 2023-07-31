@@ -53,7 +53,7 @@ public class EquipmentDraftPhase : IGamePhase
     {
         if (!this.doneDrafting && !this.Controller.AllEquipmentsDrafted())
         {
-            Debug.Log("Drafting equipment turn swap.");
+            //Debug.Log("Drafting equipment turn swap.");
 
             this.Controller.SwapPlayerTurn();
 

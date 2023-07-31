@@ -33,7 +33,7 @@ public class CharacterSheetUI : MonoBehaviour
 
     #region Startup
 
-    public void FillWithClassData(int classID)
+    public void FillWithClassData(int classID, bool isAKing)
     {
         this.holdsClassID = classID;
 
@@ -43,8 +43,22 @@ public class CharacterSheetUI : MonoBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderFromDictionary(classData.GetPrintableAbilityDictionary());
-        this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary(), false);
+        this.abilitiesTable.RenderForClass(classData);
+        this.statsTable.RenderForBaseStats(classData.stats, isAKing);
+    }
+
+    public void FillWithActiveCharacterData(int classID, CharacterStats currentStats, bool isAKing)
+    {
+        this.holdsClassID = classID;
+
+        CharacterClass classData = ClassDataSO.Singleton.GetClassByID(classID);
+        Sprite sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
+
+        this.spriteImage.sprite = sprite;
+        this.nameLabel.text = classData.name;
+        this.descriptionLabel.text = classData.description;
+        this.abilitiesTable.RenderForClass(classData);
+        this.statsTable.RenderForCurrentStats(currentStats, isAKing);
     }
 
     #endregion
@@ -59,7 +73,10 @@ public class CharacterSheetUI : MonoBehaviour
 
     public void OnCharacterSheetDisplayed(int classID)
     {
-        this.FillWithClassData(classID);
+        if (!GameController.Singleton.playerCharacters.ContainsKey(classID) || GameController.Singleton.playerCharacters[classID] == null)
+            this.FillWithClassData(classID, GameController.Singleton.IsAKing(classID));
+        else
+            this.FillWithActiveCharacterData(classID, GameController.Singleton.playerCharacters[classID].currentStats, GameController.Singleton.IsAKing(classID));
         this.content.SetActive(true);
     }
     #endregion

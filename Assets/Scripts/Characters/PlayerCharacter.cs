@@ -17,17 +17,18 @@ public class PlayerCharacter : NetworkBehaviour
     [SerializeField]
     private IntGameEventSO onCharacterResurrect;
 
+    [SerializeField]
+    private IntIntIntGameEventSO onCharacterLifeChanged;
     #endregion
 
     #region Sync vars
+    public CharacterClass charClass;
 
+    private readonly SyncList<string> equipmentIDs = new();
     [SyncVar(hook = nameof(OnCharClassIDChanged))]
     public int charClassID;
-    public CharacterClass charClass;
     [SyncVar]
     private int currentLife;
-    [SyncVar]
-    public List<uint> equippedTreasureIDs;
     [SyncVar]
     public CharacterStats currentStats;
     [SyncVar]
@@ -37,7 +38,7 @@ public class PlayerCharacter : NetworkBehaviour
     [SyncVar]
     public bool hasUsedAbility;
     [SyncVar]
-    public bool hasUsedTreasure;
+    public bool hasUsedAllEquipments;
     [SyncVar]
     private int remainingMoves;
     [SyncVar]
@@ -57,18 +58,26 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     //Called when char class is set in callback
-    [Command(requiresAuthority = false)]
-    private void CmdInitCharacter(NetworkConnectionToClient sender = null)
+    [Server]
+    private void InitCharacterSyncvars(NetworkConnectionToClient sender = null)
     {
         this.currentStats = this.charClass.stats;
+
         if (this.isKing)
             this.currentStats = new CharacterStats(this.currentStats, maxHealth: Utility.ApplyKingLifeBuff(this.currentStats.maxHealth));
+        
+        this.currentLife = this.currentStats.maxHealth;
+
+        foreach (string equipmentID in this.equipmentIDs)
+        {
+            this.ApplyEquipment(equipmentID);
+        }
+
+        this.RpcOnCharacterLifeChanged(this.CurrentLife(), this.currentStats.maxHealth);
 
         this.isDead = false;
-        this.currentLife = this.currentStats.maxHealth;
-        this.equippedTreasureIDs = new();
         this.hasUsedAbility = false;
-        this.hasUsedTreasure = false;
+        this.hasUsedAllEquipments = false;
         this.ResetTurnState();
     }
 
@@ -84,7 +93,8 @@ public class PlayerCharacter : NetworkBehaviour
         if (ClassDataSO.Singleton.GetClassByID(this.charClassID) != null)
         {
             this.charClass = ClassDataSO.Singleton.GetClassByID(this.charClassID);
-            this.CmdInitCharacter();
+            if(isServer)
+                this.InitCharacterSyncvars();
         }
         else
         {
@@ -158,8 +168,9 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     private void TakeRawDamage(int damageAmount)
     {
-        this.currentLife = Mathf.Clamp(currentLife - damageAmount, 0, this.currentStats.maxHealth);
-        if(this.currentLife == 0)
+        this.currentLife = Mathf.Clamp(this.currentLife - damageAmount, 0, this.currentStats.maxHealth);
+
+        if (this.currentLife == 0)
         {
             this.Die();
         }
@@ -185,6 +196,21 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.transform.position = position;
     }
+
+    [Server]
+    internal void ApplyEquipment(string equipmentID)
+    {
+        
+        EquipmentSO equipment = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID);
+        Debug.LogFormat("Applying equipment {0} to {1}", equipment.NameUI, this.charClass.name);
+        //call apply method if stat equipment
+        IStatModifier statEquipment = equipment as IStatModifier;
+        if (statEquipment != null)
+        {
+            statEquipment.ApplyStatModification(this);
+        }
+    }
+
     #endregion
 
     #region Events
@@ -211,12 +237,20 @@ public class PlayerCharacter : NetworkBehaviour
         if(classID == this.charClassID)
             this.spriteRenderer.color = Utility.GrayOutColor(this.spriteRenderer.color, false);
     }
+
+    //Careful not to call several times in quick succession, order of rpc calls is unreliable in that case
+    //means we can't use in TakeDamage, instead we use after whole attack (in action executor) and after char full init
+    [ClientRpc]
+    public void RpcOnCharacterLifeChanged(int currentLife, int maxHealth)
+    {
+        this.onCharacterLifeChanged.Raise(this.charClassID, currentLife, maxHealth);
+    }
     #endregion
 
     #region Utility
     public bool HasRemainingActions()
     {
-        if (this.hasMoved && this.hasAttacked && this.hasUsedAbility && this.hasUsedTreasure)
+        if (this.hasMoved && this.hasAttacked && this.hasUsedAbility && this.hasUsedAllEquipments)
             return false;
         else
             return true;
@@ -227,6 +261,12 @@ public class PlayerCharacter : NetworkBehaviour
     public int CurrentLife() => this.currentLife;
 
     public bool IsDead() => this.isDead;
+
+    internal void GiveEquipment(string equipmentID)
+    {
+        this.equipmentIDs.Add(equipmentID);
+    }
+
 
     #endregion
 }

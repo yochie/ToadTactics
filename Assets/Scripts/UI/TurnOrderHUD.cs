@@ -59,6 +59,11 @@ public class TurnOrderHUD : MonoBehaviour
         this.ResetTurnOrderSlots();
     }
 
+    public void OnCharacterLifeChanged(int classID, int currentLife, int maxHealth)
+    {
+        this.UpdateLifeLabels();
+    }
+
     #endregion
 
     #region Utility
@@ -113,8 +118,20 @@ public class TurnOrderHUD : MonoBehaviour
         {
             int classID = slot.holdsCharacterWithClassID;
 
-            PlayerCharacter currentCharacter = GameController.Singleton.playerCharacters[classID];
-            slot.SetLifeLabel(currentCharacter.CurrentLife(), currentCharacter.currentStats.maxHealth);
+            int currentHealth; 
+            int maxHealth;
+            if (!GameController.Singleton.playerCharacters.ContainsKey(classID) || GameController.Singleton.playerCharacters[classID] == null)
+            {
+                currentHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
+                maxHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
+            }
+            else
+            {
+                PlayerCharacter currentCharacter = GameController.Singleton.playerCharacters[classID];
+                currentHealth = currentCharacter.CurrentLife();
+                maxHealth = currentCharacter.currentStats.maxHealth;
+            }
+            slot.SetLifeLabel(currentHealth, maxHealth);
         }
     }
 

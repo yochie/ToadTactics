@@ -48,8 +48,8 @@ public class DraftableCharacterSlotUI : NetworkBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderFromDictionary(classData.GetPrintableAbilityDictionary());
-        this.statsTable.RenderFromDictionary(classData.stats.GetPrintableDictionary(), asKingCandidate);
+        this.abilitiesTable.RenderForClass(classData);
+        this.statsTable.RenderForBaseStats(classData.stats, asKingCandidate);
 
 
         if (asKingCandidate)

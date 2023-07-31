@@ -3,4 +3,6 @@
 public interface IStatModifier
 {
     public Dictionary<string, string> GetPrintableStatDictionary();
+
+    public void ApplyStatModification(PlayerCharacter playerCharacter);
 }

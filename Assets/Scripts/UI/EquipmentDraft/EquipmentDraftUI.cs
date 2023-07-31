@@ -118,7 +118,7 @@ public class EquipmentDraftUI : NetworkBehaviour
             GameObject slotObject = Instantiate(this.assignmentCharacterSheetPrefab, this.AssignmentCharacterSheetsList.transform);
             AssignmentCharacterSheetUI assignmentCharacterSheet = slotObject.GetComponent<AssignmentCharacterSheetUI>();
             this.assignmentCharacterSheets.Add(assignmentCharacterSheet);
-            assignmentCharacterSheet.Init(classID);
+            assignmentCharacterSheet.Init(classID, GameController.Singleton.IsAKing(classID));
         }
     }
 
@@ -151,7 +151,7 @@ public class EquipmentDraftUI : NetworkBehaviour
     [TargetRpc]
     internal void TargetRpcUpdateEquipmentAssignment(NetworkConnectionToClient target, string nextEquipmentID)
     {
-        Debug.LogFormat("Rpc for updating equipment slot with data for {0}", nextEquipmentID);
+        //Debug.LogFormat("Rpc for updating equipment slot with data for {0}", nextEquipmentID);
 
         this.currentlyAssigningEquipmentID = nextEquipmentID;
         this.currentAssigmentEquipmentSheet.FillWithEquipmentData(nextEquipmentID);

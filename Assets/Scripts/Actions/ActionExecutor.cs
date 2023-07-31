@@ -81,7 +81,7 @@ public class ActionExecutor : NetworkBehaviour
         IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);
         bool success = this.TryAction(attackAction);
         if (success)
-            this.RpcInvokeAttackEvent(attackAction.ActorCharacter.charClassID, attackAction.DefenderCharacter.charClassID);
+            defenderCharacter.RpcOnCharacterLifeChanged(defenderCharacter.CurrentLife(), defenderCharacter.currentStats.maxHealth);
         return success;
     }
 
@@ -95,8 +95,6 @@ public class ActionExecutor : NetworkBehaviour
     {
         IAttackAction attackAction = ActionFactory.CreateObstacleAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
         bool success = this.TryAction(attackAction);
-        if (success)
-            this.RpcInvokeAttackEvent(attackAction.ActorCharacter.charClassID, -1);
         return success;
     }
 
@@ -125,12 +123,6 @@ public class ActionExecutor : NetworkBehaviour
             Debug.LogFormat("Action {0} validation failed.", action);
             return false;
         }
-    }
-
-    [ClientRpc]
-    private void RpcInvokeAttackEvent(int attackerID, int defenderID)
-    {
-        this.attackEvent?.Invoke(attackerID, defenderID);
     }
 
     [Server]

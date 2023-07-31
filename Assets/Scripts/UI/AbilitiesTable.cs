@@ -19,7 +19,29 @@ public class AbilitiesTable : MonoBehaviour
     [SerializeField]
     private GameObject abilitiesDescriptionTable;
 
-    internal void RenderFromDictionary(Dictionary<string, string> dictionary)
+    public void RenderForClass(CharacterClass charClass)
+    {
+        var toPrint = this.GetPrintableAbilityDictionary(charClass);
+        this.RenderFromDictionary(toPrint);
+    }
+
+    private Dictionary<string, string> GetPrintableAbilityDictionary(CharacterClass charClass)
+    {
+        Dictionary<string, string> toPrint = new();
+
+        //return empty list if no abilities
+        if (charClass.abilities == null)
+            return toPrint;
+
+        foreach (CharacterAbilityStats ability in charClass.abilities)
+        {
+            toPrint.Add(ability.interfaceName, ability.description);
+        }
+
+        return toPrint;
+    }
+
+    private void RenderFromDictionary(Dictionary<string, string> dictionary)
     {
         this.Clear();
         foreach(KeyValuePair<string, string> ability in dictionary)

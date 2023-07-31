@@ -20,20 +20,4 @@ public class CharacterClass
         this.stats = stats;
         this.abilities = abilities;
     }
-
-    public Dictionary<string, string> GetPrintableAbilityDictionary()
-    {
-        Dictionary<string, string> toPrint = new();
-
-        //return empty list if no abilities
-        if (this.abilities == null)
-            return toPrint;
-
-        foreach (CharacterAbilityStats ability in this.abilities)
-        {
-            toPrint.Add(ability.interfaceName, ability.description);
-        }        
-
-        return toPrint;
-    }
 }
