@@ -2,17 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IArmorModifier : MonoBehaviour
+public interface IArmorModifier : IStatModifier
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public int ArmorOffset { get; set; }
 }

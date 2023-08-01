@@ -24,7 +24,7 @@ public class HealthEquipmentSO : EquipmentSO, IHealthModifier, IEquipmentQuality
     {
         Dictionary<string, string> toPrint = new();
 
-        toPrint.Add("Health", String.Format("{0}", this.HealthOffset));       
+        toPrint.Add("Health", String.Format("+{0}", this.HealthOffset));       
 
         return toPrint;
     }

@@ -332,5 +332,21 @@ public class PlayerController : NetworkBehaviour
         List<string> copy = new(this.draftedEquipmentIDs);
         return copy;
     }
+
+    internal string GetUnassignedEquipmentID()
+    {
+        string nextToAssign = null;
+        foreach (string draftedEquipmentID in this.draftedEquipmentIDs)
+        {
+            if (!this.assignedEquipments.ContainsKey(draftedEquipmentID))
+            {
+                nextToAssign = draftedEquipmentID;
+                break;
+            }
+        }
+
+        return nextToAssign;
+
+    }
     #endregion
 }

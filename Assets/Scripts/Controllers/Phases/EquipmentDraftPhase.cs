@@ -31,12 +31,17 @@ public class EquipmentDraftPhase : IGamePhase
 
         uint numToRoll = this.Controller.numEquipmentsDraftedBetweenRounds;
         List<string> rolledIDs = new();
+
+        //checks for equipments drafted during previous rounds
+        int previouslyDrafted = GameController.Singleton.GetEquipmentsToDraft().Count;
+        if (EquipmentDataSO.Singleton.GetEquipmentIDs().Count - previouslyDrafted < numToRoll)
+            throw new System.Exception("Not enough equipments available for draft... fix");
+
         for (int i = 0; i < numToRoll; i++)
         {
             string newEquipmentID;
-            if (EquipmentDataSO.Singleton.GetEquipmentIDs().Count < numToRoll)
-                throw new System.Exception("Not enough equipments available for draft... fix");
-            do { newEquipmentID = EquipmentDataSO.Singleton.GetRandomEquipmentID(); } while (rolledIDs.Contains(newEquipmentID));
+
+            do { newEquipmentID = EquipmentDataSO.Singleton.GetRandomEquipmentID(); } while (rolledIDs.Contains(newEquipmentID) || GameController.Singleton.EquipmentHasBeenDrafted(newEquipmentID));
             rolledIDs.Add(newEquipmentID);
         }
 
@@ -83,7 +88,7 @@ public class EquipmentDraftPhase : IGamePhase
         foreach (PlayerController pc in this.Controller.playerControllers)
         {
             NetworkConnectionToClient client = GameController.Singleton.GetConnectionForPlayerID(pc.playerID);
-            string firstEquipmentToAssign = pc.GetDraftedEquipmentIDs()[0];
+            string firstEquipmentToAssign = pc.GetUnassignedEquipmentID();
             List<int> characterIDs = new();
             this.Controller.draftedCharacterOwners.Keys.CopyTo(characterIDs);
             List<int> characterIDsForPlayer = characterIDs.Where(characterID => GameController.Singleton.HeOwnsThisCharacter(pc.playerID, characterID)).ToList();

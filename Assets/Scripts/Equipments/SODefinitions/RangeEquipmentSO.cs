@@ -20,7 +20,7 @@ public class RangeEquipmentSO : EquipmentSO, IEquipmentQuality, IRangeModifier
     {
         Dictionary<string, string> toPrint = new();
 
-        toPrint.Add("Range", System.String.Format("{0}", this.RangeOffset));
+        toPrint.Add("Range", System.String.Format("+{0}", this.RangeOffset));
 
         return toPrint;
     }

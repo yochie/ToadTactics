@@ -404,14 +404,24 @@ public class GameController : NetworkBehaviour
 
     internal void SetEquipmentsToDraft(List<string> equipmentIDs)
     {
+        this.equipmentsToDraft.Clear();
         foreach(string equipmentToAdd in equipmentIDs)
         {
             this.equipmentsToDraft.Add(equipmentToAdd);
         }
     }
 
+    internal List<string> GetEquipmentsToDraft()
+    {
+        List<string> toReturn = new();
+        this.equipmentsToDraft.CopyTo(toReturn);
+        return toReturn;
+    }
+
+
     internal void SetEquipmentsToAssign(List<string> equipmentIDs)
     {
+        this.equipmentsToAssign.Clear();
         foreach (string equipmentToAdd in equipmentIDs)
         {
             this.equipmentsToAssign.Add(equipmentToAdd);
