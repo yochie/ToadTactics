@@ -137,6 +137,9 @@ public class MapInputHandler : NetworkBehaviour
             case ControlMode.attack:
                 hoveredHex.drawer.AttackHover(true);
                 break;
+            case ControlMode.useAbility:
+                hoveredHex.drawer.AbilityHover(true);
+                break;
         }
     }
 
@@ -163,6 +166,9 @@ public class MapInputHandler : NetworkBehaviour
             case ControlMode.attack:
                 unhoveredHex.drawer.AttackHover(false);
                 break;
+            case ControlMode.useAbility:
+                unhoveredHex.drawer.AbilityHover(false);
+                break;
         }
     }
 
@@ -178,6 +184,12 @@ public class MapInputHandler : NetworkBehaviour
         this.SetControlMode(ControlMode.move);
     }
 
+    //Used by button
+    public void SetControlModeAbility()
+    {
+        this.SetControlMode(ControlMode.useAbility);
+    }
+
     public void SetControlMode(ControlMode mode)
     {
         MainHUD.Singleton.HighlightGameplayButton(mode);
@@ -189,11 +201,11 @@ public class MapInputHandler : NetworkBehaviour
             || mode == ControlMode.useAbility
             || mode == ControlMode.useEquipment))
         {
-            this.updateSelectedHex();
+            this.SelectHexForPlayingCharacter();
         }
     }
 
-    private void updateSelectedHex()
+    private void SelectHexForPlayingCharacter()
     {
         HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.ClassIdForTurn()];
         Hex toSelect = Map.GetHex(Map.Singleton.hexGrid, toSelectCoords.X, toSelectCoords.Y);
@@ -201,13 +213,13 @@ public class MapInputHandler : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcUpdateSelectedHex(NetworkConnectionToClient target, Hex dest)
+    public void TargetRpcSelectHex(NetworkConnectionToClient target, Hex toSelect)
     {
-        this.SelectHex(dest);
+        this.SelectHex(toSelect);
     }
 
     [TargetRpc]
-    public void TargetRpcSetControlModeOnClient(NetworkConnectionToClient target, ControlMode mode)
+    public void TargetRpcSetControlMode(NetworkConnectionToClient target, ControlMode mode)
     {
         this.SetControlMode(mode);
     }

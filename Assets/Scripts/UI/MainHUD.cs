@@ -20,13 +20,21 @@ public class MainHUD : NetworkBehaviour
     private GameObject attackButton;
 
     [SerializeField]
+    private GameObject abilityButton;
+
+    [SerializeField]
     private GameObject actionButtonsGrid;
+
+    private Dictionary<ControlMode, GameObject> gameplayButtons;
 
     public static MainHUD Singleton { get; set; }
 
     private void Awake()
     {
         MainHUD.Singleton = this;
+        this.gameplayButtons.Add(ControlMode.move, this.moveButton);
+        this.gameplayButtons.Add(ControlMode.attack, this.attackButton);
+        this.gameplayButtons.Add(ControlMode.useAbility, this.abilityButton);
     }
 
     [TargetRpc]
@@ -34,7 +42,6 @@ public class MainHUD : NetworkBehaviour
     {
         this.moveButton.GetComponent<Button>().interactable = false;
         this.moveButton.GetComponent<Image>().color = Color.white;
-
     }
 
     [TargetRpc]
@@ -42,41 +49,79 @@ public class MainHUD : NetworkBehaviour
     {
         this.attackButton.GetComponent<Button>().interactable = false;
         this.attackButton.GetComponent<Image>().color = Color.white;
+    }
 
+    [TargetRpc]
+    public void TargetRpcGrayOutAbilityButton(NetworkConnectionToClient target)
+    {
+        this.abilityButton.GetComponent<Button>().interactable = false;
+        this.abilityButton.GetComponent<Image>().color = Color.white;
     }
 
     [Client]
     private void SetInteractableGameplayButtons(bool state)
     {
-        this.moveButton.GetComponent<Button>().interactable = state;
-        this.attackButton.GetComponent<Button>().interactable = state;
-        if (!state)
+        foreach(GameObject buttonObject in this.gameplayButtons.Values)
         {
-            this.moveButton.GetComponent<Image>().color = Color.white;
-            this.attackButton.GetComponent<Image>().color = Color.white;
+            Button button = buttonObject.GetComponent<Button>();
+            button.interactable = state;
+            if (!state)
+                buttonObject.GetComponent<Image>().color = Color.white;
         }
+
+        //this.moveButton.GetComponent<Button>().interactable = state;
+        //this.attackButton.GetComponent<Button>().interactable = state;
+        //this.abilityButton.GetComponent<Button>().interactable = state;
+        //if (!state)
+        //{
+        //    this.moveButton.GetComponent<Image>().color = Color.white;
+        //    this.attackButton.GetComponent<Image>().color = Color.white;
+        //    this.abilityButton.GetComponent<Image>().color = Color.white;
+        //}
     }
 
     [Client]
     private void SetActiveGameplayButtons(bool state)
     {
-        this.moveButton.SetActive(state);
-        this.attackButton.SetActive(state);
+        foreach (GameObject buttonObject in this.gameplayButtons.Values)
+        {
+            buttonObject.SetActive(state);
+        }
+        //this.moveButton.SetActive(state);
+        //this.attackButton.SetActive(state);
+        //this.abilityButton.SetActive(state);
     }
 
     public void HighlightGameplayButton(ControlMode mode)
     {
-        switch (mode)
+
+        foreach (KeyValuePair<ControlMode, GameObject> controlModeToButton in this.gameplayButtons)
         {
-            case ControlMode.move:
-                this.moveButton.GetComponent<Image>().color = Color.green;
-                this.attackButton.GetComponent<Image>().color = Color.white;
-                break;
-            case ControlMode.attack:
-                this.moveButton.GetComponent<Image>().color = Color.white;
-                this.attackButton.GetComponent<Image>().color = Color.green;
-                break;
+            Image buttonImage = controlModeToButton.Value.GetComponent<Image>();
+            if (controlModeToButton.Key == mode)
+
+                buttonImage.color = Color.green;
+            else
+                buttonImage.color = Color.white;
         }
+        //switch (mode)
+        //{
+        //    case ControlMode.move:
+        //        this.moveButton.GetComponent<Image>().color = Color.green;
+        //        this.attackButton.GetComponent<Image>().color = Color.white;
+        //        this.abilityButton.GetComponent<Image>().color = Color.white;
+        //        break;
+        //    case ControlMode.attack:
+        //        this.moveButton.GetComponent<Image>().color = Color.white;
+        //        this.attackButton.GetComponent<Image>().color = Color.green;
+        //        this.abilityButton.GetComponent<Image>().color = Color.white;
+        //        break;
+        //    case ControlMode.useAbility:
+        //        this.moveButton.GetComponent<Image>().color = Color.white;
+        //        this.attackButton.GetComponent<Image>().color = Color.white;
+        //        this.abilityButton.GetComponent<Image>().color = Color.green;
+        //        break;
+        //}
     }
 
     #region Events
@@ -105,6 +150,7 @@ public class MainHUD : NetworkBehaviour
         }
     }
 
+    //TODO : Remove, its called by RPC/syncvar hook and checks recently set syncvar, big nono,  i dont event think its necessary but needs to be tested
     [Client]
     public void OnInitGameplayMode()
     {
@@ -114,6 +160,8 @@ public class MainHUD : NetworkBehaviour
         }
     }
 
+    //TODO : Remove, its called by RPC/syncvar hook and checks recently set syncvar, big nono
+    //TODO : could perhaps be replaced by new event : LocalPlayerCharacterTurnStart (other similar event should be renamed LocalPlayerTakeControl)
     public void OnTurnOrderIndexChanged(int newTurnIndex)
     {
         if (newTurnIndex == -1)

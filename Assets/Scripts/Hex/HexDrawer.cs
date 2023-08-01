@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System;
 
 public class HexDrawer : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class HexDrawer : MonoBehaviour
     private static readonly Color HEX_ATTACK_HOVER_COLOR = new(1f, 0.45f, 0f);
     private static readonly Color HEX_IN_ACTION_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
     private static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.red;
+    private static readonly Color HEX_ABILITY_HOVER_COLOR = new Color32(143, 0, 254, 1);
 
     #endregion
 
@@ -141,6 +143,12 @@ public class HexDrawer : MonoBehaviour
     {
         this.unHoveredColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
         this.currentColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
+    }
+
+    internal void AbilityHover(bool mode)
+    {
+        if (mode) { this.unHoveredColor = this.currentColor; }
+        this.currentColor = mode ? HexDrawer.HEX_ABILITY_HOVER_COLOR : this.unHoveredColor;
     }
 
     public void AttackHover(bool mode)

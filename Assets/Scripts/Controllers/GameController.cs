@@ -328,8 +328,8 @@ public class GameController : NetworkBehaviour
         if (excessClients)
             Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
 
-        this.mapInputHandler.TargetRpcSetControlModeOnClient(playingClient, activePlayerMode);
-        this.mapInputHandler.TargetRpcSetControlModeOnClient(idleClient, ControlMode.none);
+        this.mapInputHandler.TargetRpcSetControlMode(playingClient, activePlayerMode);
+        this.mapInputHandler.TargetRpcSetControlMode(idleClient, ControlMode.none);
     }
 
     [Server]
