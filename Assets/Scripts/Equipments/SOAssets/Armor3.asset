@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ee3abf8537b1fa4187ab62ca79a182a, type: 3}
+  m_Name: Armor3
+  m_EditorClassIdentifier: 
+  <EquipmentID>k__BackingField: Armor3
+  <NameUI>k__BackingField: Armor III
+  <Sprite>k__BackingField: {fileID: 21300000, guid: 6c5260aeddba0f64180882f793f61598, type: 3}
+  <Description>k__BackingField: 
+  <ArmorOffset>k__BackingField: 7
+  <Quality>k__BackingField: 2
