@@ -89,7 +89,7 @@ public class MapInputHandler : NetworkBehaviour
             case ControlMode.useAbility:
                 Debug.Log("Trying to select hex while control mode is useAbility (currently unsupported).");
                 break;
-            case ControlMode.useTreasure:
+            case ControlMode.useEquipment:
                 Debug.Log("Trying to select hex while control mode is useTreasure(currently unsupported).");
                 break;
         }
@@ -187,7 +187,7 @@ public class MapInputHandler : NetworkBehaviour
             (mode == ControlMode.move
             || mode == ControlMode.attack
             || mode == ControlMode.useAbility
-            || mode == ControlMode.useTreasure))
+            || mode == ControlMode.useEquipment))
         {
             this.updateSelectedHex();
         }
