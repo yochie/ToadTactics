@@ -59,7 +59,7 @@ public class GameplayPhase : IGamePhase
 
         //finds character class id for the next turn so that we can check who owns it
         
-        int playingCharacterClassID = this.Controller.ClassIdForTurn();
+        int playingCharacterClassID = this.Controller.GetCharacterIDForTurn();
         if (playingCharacterClassID == -1)
         {
             throw new System.Exception("Error : couldn't find playing character in turn order");

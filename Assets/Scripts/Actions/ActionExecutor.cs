@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.Events;
+using System;
 
 public class ActionExecutor : NetworkBehaviour
 {
@@ -50,6 +51,17 @@ public class ActionExecutor : NetworkBehaviour
         {
             success = ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
         }
+        if (success)
+            this.CheckForRoundEnd();
+    }
+
+    [Command(requiresAuthority = false)]
+    internal void CmdUseAbility(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter usingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+
+        bool success = ActionExecutor.Singleton.TryAbility(sender, playerID, usingCharacter, abilityStats, source, target);
         if (success)
             this.CheckForRoundEnd();
     }

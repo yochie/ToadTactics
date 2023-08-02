@@ -29,7 +29,7 @@ public class TurnOrderHUD : MonoBehaviour
         //Debug.Log("OnCharacterTurnChanged");
 
         //finds class ID for character whose turn it is
-        int newTurnCharacterId = GameController.Singleton.ClassIdForTurn(newTurnIndex);
+        int newTurnCharacterId = GameController.Singleton.GetCharacterIDForTurn(newTurnIndex);
 
         //highlights turnOrderSlotUI for currently playing character
         this.HighlightSlot(newTurnCharacterId);

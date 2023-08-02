@@ -13,8 +13,23 @@ public readonly struct CharacterAbilityStats
     public readonly int range;
     public readonly int aoe;
     public readonly bool requiresLOS;
-    public readonly Type actionType;
     public readonly List<TargetType> allowedAbilityTargets;
+
+    public CharacterAbilityStats(bool fake)
+    {
+        this.stringID = "";
+        this.interfaceName = "";
+        this.description = "";
+        this.damage = 0;
+        this.range = 0;
+        this.aoe = 0;
+        this.turnDuration = 0;
+        this.requiresLOS = false; ;
+        this.damageIterations = 0; ;
+        this.damageType = DamageType.none;
+        this.allowedAbilityTargets = new();
+
+    }
 
     public CharacterAbilityStats(string stringID,
                             string interfaceName,
@@ -39,7 +54,6 @@ public readonly struct CharacterAbilityStats
         this.requiresLOS = requiresLOS;
         this.damageIterations = damageIterations;
         this.damageType = damageType;
-        this.actionType = actionType;
 
         if (allowedAbilityTargets == null)
         {

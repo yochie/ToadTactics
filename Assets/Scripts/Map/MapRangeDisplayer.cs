@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,7 @@ public class MapRangeDisplayer : MonoBehaviour
     [SerializeField]
     private Map map;
     private HashSet<Hex> displayedMoveRange = new();
-    private Dictionary<Hex, LOSTargetType> displayedAttackRange = new();
+    private Dictionary<Hex, LOSTargetType> displayedActionRange = new();
     private List<Hex> displayedPath = new();
 
     public void DisplayMovementRange(Hex source, int moveDistance)
@@ -59,8 +60,10 @@ public class MapRangeDisplayer : MonoBehaviour
 
     public void DisplayAttackRange(Hex source, int range, PlayerCharacter attacker)
     {
-        Dictionary<Hex, LOSTargetType> attackRange = MapPathfinder.FindAttackRange(source, range, this.map.hexGrid, attacker.charClass.stats.allowedAttackTargets, attacker);
-        this.displayedAttackRange = attackRange;
+        List<TargetType> allowedTargets = attacker.charClass.stats.allowedAttackTargets;
+        bool requiresLOS = attacker.currentStats.attacksRequireLOS;
+        Dictionary<Hex, LOSTargetType> attackRange = MapPathfinder.FindActionRange(this.map.hexGrid, source, range, allowedTargets, attacker, requiresLOS);
+        this.displayedActionRange = attackRange;
         foreach (Hex h in attackRange.Keys)
         {
             //selected hex stays at selected color state
@@ -78,15 +81,44 @@ public class MapRangeDisplayer : MonoBehaviour
         }
     }
 
-    public void HideAttackRange()
+    internal void DisplayAbilityRange(Hex source, CharacterAbilityStats abilityStats, PlayerCharacter user)
     {
-        foreach (Hex h in this.displayedAttackRange.Keys)
+        if (abilityStats.stringID == "")
         {
-            if (this.displayedAttackRange[h] == LOSTargetType.inRange)
+            Debug.Log("No ability to display");
+            return;
+        }
+        List<TargetType> allowedTargets = abilityStats.allowedAbilityTargets;
+        bool requiresLOS = abilityStats.requiresLOS;
+        int range = abilityStats.range;
+        Dictionary<Hex, LOSTargetType> abilityRange = MapPathfinder.FindActionRange(this.map.hexGrid, source, range, allowedTargets, user, requiresLOS);
+        this.displayedActionRange = abilityRange;
+        foreach (Hex h in abilityRange.Keys)
+        {
+            //selected hex stays at selected color state
+            if (h != source)
+            {
+                if (abilityRange[h] == LOSTargetType.inRange)
+                    h.drawer.DisplayInActionRange(true);
+                else if (abilityRange[h] == LOSTargetType.targetable)
+                    h.drawer.DisplayTargetable(true);
+                else if (abilityRange[h] == LOSTargetType.outOfRange)
+                {
+                    h.drawer.DisplayOutOfActionRange(true);
+                }
+            }
+        }
+    }
+
+    public void HideActionRange()
+    {
+        foreach (Hex h in this.displayedActionRange.Keys)
+        {
+            if (this.displayedActionRange[h] == LOSTargetType.inRange)
                 h.drawer.DisplayInActionRange(false);
-            else if (this.displayedAttackRange[h] == LOSTargetType.targetable)
+            else if (this.displayedActionRange[h] == LOSTargetType.targetable)
                 h.drawer.DisplayTargetable(false);
-            else if (this.displayedAttackRange[h] == LOSTargetType.outOfRange)
+            else if (this.displayedActionRange[h] == LOSTargetType.outOfRange)
             {
                 h.drawer.DisplayOutOfActionRange(false);
             }

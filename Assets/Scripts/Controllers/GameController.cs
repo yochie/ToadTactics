@@ -565,7 +565,7 @@ public class GameController : NetworkBehaviour
 
     public bool ItsThisCharactersTurn(int classID)
     {
-        return this.ClassIdForTurn() == classID;
+        return this.GetCharacterIDForTurn() == classID;
     }
 
     public bool HeOwnsThisCharacter(int playerID, int classID)
@@ -610,7 +610,7 @@ public class GameController : NetworkBehaviour
     }
     
     //return -1 if no character matches turn order index
-    public int ClassIdForTurn(int turnOrderIndex = -1)
+    public int GetCharacterIDForTurn(int turnOrderIndex = -1)
     {
         //finds prefab ID for character whose turn it is
         int currentTurnOrderIndex = (turnOrderIndex == -1 ? this.turnOrderIndex : turnOrderIndex);

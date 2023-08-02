@@ -881,7 +881,7 @@ MonoBehaviour:
   endTurnButton: {fileID: 1106533433}
   moveButton: {fileID: 1047991522}
   attackButton: {fileID: 445087650}
-  useAbilityButton: {fileID: 1656368876}
+  abilityButton: {fileID: 1656368876}
   actionButtonsGrid: {fileID: 156891758}
 --- !u!114 &297310966
 MonoBehaviour:

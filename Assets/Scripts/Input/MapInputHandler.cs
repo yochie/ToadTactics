@@ -56,6 +56,9 @@ public class MapInputHandler : NetworkBehaviour
             case ControlMode.attack:                
                 ActionExecutor.Singleton.CmdAttack(this.SelectedHex, clickedHex);
                 break;
+            case ControlMode.useAbility:
+                ActionExecutor.Singleton.CmdUseAbility(this.SelectedHex, clickedHex, this.currentAbilityStats);
+                break;
         }
     }
 
@@ -87,7 +90,8 @@ public class MapInputHandler : NetworkBehaviour
                 this.rangeDisplayer.DisplayAttackRange(h, heldCharacter.currentStats.range, heldCharacter);
                 break;
             case ControlMode.useAbility:
-                Debug.Log("Trying to select hex while control mode is useAbility (currently unsupported).");
+                this.rangeDisplayer.DisplayAbilityRange(h, currentAbilityStats, heldCharacter);
+                //Debug.Log("Trying to select hex while control mode is useAbility (currently unsupported).");
                 break;
             case ControlMode.useEquipment:
                 Debug.Log("Trying to select hex while control mode is useTreasure(currently unsupported).");
@@ -105,7 +109,7 @@ public class MapInputHandler : NetworkBehaviour
 
         this.rangeDisplayer.HidePath();
         this.rangeDisplayer.HideMovementRange();
-        this.rangeDisplayer.HideAttackRange();
+        this.rangeDisplayer.HideActionRange();
     }
 
     public void HoverHex(Hex hoveredHex)
@@ -195,6 +199,25 @@ public class MapInputHandler : NetworkBehaviour
         MainHUD.Singleton.HighlightGameplayButton(mode);
         this.UnselectHex();
         this.CurrentControlMode = mode;
+        
+        if(mode == ControlMode.useAbility)
+        {
+            int classID = GameController.Singleton.GetCharacterIDForTurn();
+            PlayerCharacter currentlyPlayingCharacter = GameController.Singleton.playerCharacters[classID];
+            //TODO: fetch correct ability here instead of juste getting first one
+            if (currentlyPlayingCharacter.charClass.abilities != null && currentlyPlayingCharacter.charClass.abilities.Count < 1)
+            {
+                Debug.LogFormat("{0} has no defined abilities to fetch.", currentlyPlayingCharacter);
+                this.currentAbilityStats = new(true);
+            }                
+             else
+            {
+                CharacterAbilityStats abilityStats = currentlyPlayingCharacter.charClass.abilities[0];
+                this.currentAbilityStats = abilityStats;
+            }
+
+        }
+
         if (GameController.Singleton.ItsMyTurn() &&
             (mode == ControlMode.move
             || mode == ControlMode.attack
@@ -207,7 +230,7 @@ public class MapInputHandler : NetworkBehaviour
 
     private void SelectHexForPlayingCharacter()
     {
-        HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.ClassIdForTurn()];
+        HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.GetCharacterIDForTurn()];
         Hex toSelect = Map.GetHex(Map.Singleton.hexGrid, toSelectCoords.X, toSelectCoords.Y);
         this.SelectHex(toSelect);
     }

@@ -163,7 +163,12 @@ public static class MapPathfinder
         return toReturn;
     }
 
-    public static Dictionary<Hex, LOSTargetType> FindAttackRange(Hex source, int range, Dictionary<Vector2Int, Hex> hexGrid, List<TargetType> allowedTargetTypes, PlayerCharacter attacker)
+    public static Dictionary<Hex, LOSTargetType> FindActionRange(Dictionary<Vector2Int, Hex> hexGrid,
+                                                                 Hex source,
+                                                                 int range,
+                                                                 List<TargetType> allowedTargetTypes,
+                                                                 PlayerCharacter actor,
+                                                                 bool requiresLOS)
     {
         Dictionary<Hex, LOSTargetType> hexTargetableTypes = new();
         List<Hex> allHexesInRange = MapPathfinder.Range(source, range, hexGrid);
@@ -173,14 +178,14 @@ public static class MapPathfinder
         {
 
             bool unobstructed;
-            if (attacker.currentStats.attacksRequireLOS)
+            if (requiresLOS)
                 unobstructed = MapPathfinder.IsHexReachableByLOS(source, targetHex);
             else
                 unobstructed = true;
 
             if (unobstructed)
             {
-                if (ActionExecutor.IsValidTargetType(attacker, targetHex, allowedTargetTypes))
+                if (ActionExecutor.IsValidTargetType(actor, targetHex, allowedTargetTypes))
                     hexTargetableTypes[targetHex] = LOSTargetType.targetable;
                 else
                     hexTargetableTypes[targetHex] = LOSTargetType.inRange;

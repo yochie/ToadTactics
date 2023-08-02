@@ -32,6 +32,7 @@ public class MainHUD : NetworkBehaviour
     private void Awake()
     {
         MainHUD.Singleton = this;
+        this.gameplayButtons = new();
         this.gameplayButtons.Add(ControlMode.move, this.moveButton);
         this.gameplayButtons.Add(ControlMode.attack, this.attackButton);
         this.gameplayButtons.Add(ControlMode.useAbility, this.abilityButton);

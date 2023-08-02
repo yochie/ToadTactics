@@ -13,6 +13,7 @@ public class ClassDataSO : ScriptableObject
 
     //keys are classID
     private Dictionary<int, CharacterClass> characterClasses;
+    private Dictionary<string, Type> abilityActionTypes;
 
     //singleton loaded from resources
     private const string resourcePath = "ClassData";
@@ -28,6 +29,7 @@ public class ClassDataSO : ScriptableObject
     private void Awake()
     {
         ClassDataSO.Singleton.characterClasses = this.DefineClasses().ToDictionary(charClass => charClass.classID);
+        ClassDataSO.Singleton.abilityActionTypes = this.LinkAbilitiesToTheirActionTypes();
     }
 
     public Sprite GetSpriteByClassID(int classID)
@@ -74,13 +76,18 @@ public class ClassDataSO : ScriptableObject
         return this.characterClasses[classID];
     }
 
+    public Type GetActionTypeByID(string abilityID)
+    {
+        return this.abilityActionTypes[abilityID];
+    }
+
 
     #region Static definitions
 
     //Instantiate all classes to set their definitions here
     //TODO: find better spot to do this
     //probably should load from file (CSV)
-    public List<CharacterClass> DefineClassesFromCSV(string statsFilename, string abilitiesFilname, string classFilename)
+    private List<CharacterClass> DefineClassesFromCSV(string statsFilename, string abilitiesFilname, string classFilename)
     {
 
         //Read in character stats
@@ -112,7 +119,7 @@ public class ClassDataSO : ScriptableObject
         return null;
     }
 
-    public List<CharacterClass> DefineClasses()
+    private List<CharacterClass> DefineClasses()
     {
         List<CharacterClass> classes = new();
 
@@ -158,8 +165,7 @@ public class ClassDataSO : ScriptableObject
                     damage: 5,
                     range: 3,
                     aoe: 0,
-                    turnDuration: 1,
-                    actionType:typeof(CavalierImpaleAbility)
+                    turnDuration: 1
                 )
             }
         );
@@ -317,6 +323,16 @@ public class ClassDataSO : ScriptableObject
         classes.Add(priest);
 
         return classes;
+    }
+
+    private Dictionary<string, Type> LinkAbilitiesToTheirActionTypes()
+    {
+        Dictionary<string, Type> abilityClassesByID = new();
+
+        abilityClassesByID.Add("CavalierStun", typeof(CavalierImpaleAbility));
+
+        return abilityClassesByID;
+
     }
     #endregion
 }

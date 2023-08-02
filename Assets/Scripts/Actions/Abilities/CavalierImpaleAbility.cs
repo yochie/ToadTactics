@@ -1,7 +1,8 @@
 ﻿using Mirror;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class CavalierImpaleAbility : NetworkBehaviour, IAbilityAction, ITargetedAction
+public class CavalierImpaleAbility : IAbilityAction, ITargetedAction
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -29,12 +30,29 @@ public class CavalierImpaleAbility : NetworkBehaviour, IAbilityAction, ITargeted
         //attack.CmdUse();
 
         //target.addBuff(new StunBuff(user, 1));
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
+        Debug.Log("Using cavalier ability!");
     }
 
     [Server]
     public bool ServerValidate()
     {
-        throw new System.NotImplementedException();
+
+        //TODO check for individual ability uses instead of single hasUsedAbility to allow multiple abilities
+        if (this.ActorCharacter != null &&
+            this.ActorHex != null &&
+            this.TargetHex != null &&
+            this.RequestingPlayerID != -1 &&
+            this.ActorHex.HoldsACharacter() &&
+            this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
+            this.RequestingPlayerID == this.ActorCharacter.ownerID &&
+            GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
+            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
+            ITargetedAction.ValidateTarget(this) &&
+            !this.ActorCharacter.hasUsedAbility
+            )
+            return true;
+        else
+            return false;
     }
 }
