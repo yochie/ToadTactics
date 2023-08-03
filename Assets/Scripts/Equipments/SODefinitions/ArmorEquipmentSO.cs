@@ -24,4 +24,10 @@ public class ArmorEquipmentSO : EquipmentSO, IEquipmentQuality, IArmorModifier
 
         return toPrint;
     }
+
+    public void RemoveStatModification(PlayerCharacter playerCharacter)
+    {
+        int currentArmor = playerCharacter.currentStats.armor;
+        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, armor: currentArmor - this.ArmorOffset);
+    }
 }

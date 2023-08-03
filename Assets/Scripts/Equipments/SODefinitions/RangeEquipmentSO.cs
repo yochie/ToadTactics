@@ -24,4 +24,10 @@ public class RangeEquipmentSO : EquipmentSO, IEquipmentQuality, IRangeModifier
 
         return toPrint;
     }
+
+    public void RemoveStatModification(PlayerCharacter playerCharacter)
+    {
+        int currentRange = playerCharacter.currentStats.range;
+        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, range: currentRange - this.RangeOffset);
+    }
 }

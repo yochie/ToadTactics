@@ -28,4 +28,14 @@ public class HealthEquipmentSO : EquipmentSO, IHealthModifier, IEquipmentQuality
 
         return toPrint;
     }
+
+    public void RemoveStatModification(PlayerCharacter playerCharacter)
+    {
+        int currentMaxHealth = playerCharacter.currentStats.maxHealth;
+
+        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, maxHealth: currentMaxHealth - this.HealthOffset);
+
+        //should just apply clamping to current health
+        playerCharacter.TakeDamage(0, DamageType.healing);
+    }
 }
