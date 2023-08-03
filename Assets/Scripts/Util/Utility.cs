@@ -41,7 +41,7 @@ public static class Utility
 
     internal static int ApplyKingLifeBuff(int maxHealth)
     {
-        return maxHealth * 2;
+        return maxHealth + 100;
     }
 
     internal static bool RollCrit(float critChance)

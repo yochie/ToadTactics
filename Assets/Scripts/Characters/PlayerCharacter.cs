@@ -63,15 +63,15 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.currentStats = this.charClass.stats;
 
-        if (this.isKing)
-            this.currentStats = new CharacterStats(this.currentStats, maxHealth: Utility.ApplyKingLifeBuff(this.currentStats.maxHealth));
-        
         this.currentLife = this.currentStats.maxHealth;
 
         foreach (string equipmentID in this.equipmentIDs)
         {
             this.ApplyEquipment(equipmentID);
         }
+
+        if (this.isKing)
+            this.currentStats = new CharacterStats(this.currentStats, maxHealth: Utility.ApplyKingLifeBuff(this.currentStats.maxHealth));
 
         this.RpcOnCharacterLifeChanged(this.CurrentLife(), this.currentStats.maxHealth);
 
