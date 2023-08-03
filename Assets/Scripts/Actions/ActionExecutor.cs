@@ -78,16 +78,16 @@ public class ActionExecutor : NetworkBehaviour
         {
             targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
         }
-
         if (targetedCharacter != null)
         {
             ActionExecutor.Singleton.TryAbilityAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, abilityStats, source, target);
         }
         else
         {
-            Debug.Log("Ability attack has no targeted character, currently unsupported.");
+            ActionExecutor.Singleton.TryAbilityAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, abilityStats, source, target);
         }
     }
+
 
 
     [Server]
@@ -151,7 +151,7 @@ public class ActionExecutor : NetworkBehaviour
                                Hex attackerHex,
                                Hex defenderHex)
     {
-        AbilityAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(sender,
+        AbilityAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackCharacterAction(sender,
                                                                                           actingPlayerID,
                                                                                           attackerCharacter,
                                                                                           defenderCharacter,
@@ -160,7 +160,20 @@ public class ActionExecutor : NetworkBehaviour
                                                                                           abilityStats,
                                                                                           attackerHex,
                                                                                           defenderHex);
-        return this.TryAction(abilityAttackAction); ;
+        return this.TryAction(abilityAttackAction);
+    }
+
+
+    private bool TryAbilityAttackObstacle(NetworkConnectionToClient sender, int playerID, PlayerCharacter attackingCharacter, CharacterStats attackerStats, CharacterAbilityStats abilityStats, Hex attackerHex, Hex defenderHex)
+    {
+        AbilityAttackAction abilityAttackObstacleAction = ActionFactory.CreateAbilityAttackObstacleAction(sender,
+                                                                                          playerID,
+                                                                                          attackingCharacter,
+                                                                                          attackerStats,
+                                                                                          abilityStats,
+                                                                                          attackerHex,
+                                                                                          defenderHex);
+        return this.TryAction(abilityAttackObstacleAction);
     }
 
 

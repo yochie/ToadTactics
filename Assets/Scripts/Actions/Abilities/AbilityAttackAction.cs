@@ -33,12 +33,11 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
         if(this.TargetHex.holdsObstacle != ObstacleType.none && this.DefenderCharacter == null)
         {
             //attacking obstacle
-            Debug.Log("Currently unsopported. Should not have passed validation.");
-            //GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-            //GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
-            //Object.Destroy(attackedTree);
-            //TargetHex.holdsObstacle = ObstacleType.none;
-            //Debug.LogFormat("{0} attacked tree to destroy it", this.ActorCharacter);
+            GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+            GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
+            Object.Destroy(attackedTree);
+            TargetHex.holdsObstacle = ObstacleType.none;
+            Debug.LogFormat("{0} attacked tree to destroy it", this.ActorCharacter);
         }
         else 
         {
@@ -75,11 +74,13 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
     [Server]
     public bool ServerValidate()
     {
+        //if this is NOT an obstacle attack, make sure targets are correctly configured
+        if (this.TargetHex.HoldsACharacter() && this.TargetHex.GetHeldCharacterObject() != this.DefenderCharacter)
+            return false;
+
         if (this.ActorCharacter != null &&
             this.ActorHex != null &&            
             this.TargetHex != null &&
-            this.TargetHex.HoldsACharacter() &&
-            this.TargetHex.GetHeldCharacterObject() == this.DefenderCharacter &&
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&

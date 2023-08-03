@@ -165,7 +165,8 @@ public class ClassDataSO : ScriptableObject
                     damage: 20,
                     range: 3,
                     aoe: 0,
-                    turnDuration: 1
+                    turnDuration: 1,
+                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle }
                 )
             }
         );
