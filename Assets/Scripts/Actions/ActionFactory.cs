@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Mirror;
+using System.Linq;
 
 public class ActionFactory : MonoBehaviour
 {
@@ -107,7 +108,7 @@ public class ActionFactory : MonoBehaviour
 
 
         //IAbilityAction
-        abilityAction.Ability = ability;
+        abilityAction.AbilityStats = ability;
         
         //ITargetedAction (conditionally)
         //Assign target hex if ability implements ITargetedAction
@@ -121,5 +122,41 @@ public class ActionFactory : MonoBehaviour
         }
         
         return abilityAction;
+    }
+
+    public static AbilityAttackAction CreateAbilityAttackAction(NetworkConnectionToClient sender,
+                                                                int requestingPlayerID,
+                                                                PlayerCharacter attackerCharacter,
+                                                                PlayerCharacter defenderCharacter,
+                                                                CharacterStats attackerStats,
+                                                                CharacterStats defenderStats,
+                                                                CharacterAbilityStats abilityStats,
+                                                                Hex attackerHex,
+                                                                Hex defenderHex)
+    {
+        AbilityAttackAction abilityAttackAction = new AbilityAttackAction();
+
+        //IAction
+        abilityAttackAction.RequestingPlayerID = requestingPlayerID;
+        abilityAttackAction.ActorCharacter = attackerCharacter;
+        abilityAttackAction.ActorHex = attackerHex;
+        abilityAttackAction.RequestingClient = sender;
+
+        //ITargetedAction
+        //We are trusting main ability to assign valid targets to these sub actions since we might want to use different criteria than those for main ability action
+        abilityAttackAction.TargetHex = defenderHex;        
+        abilityAttackAction.AllowedTargetTypes = Enum.GetValues(typeof(TargetType)).Cast<TargetType>().ToList();
+        abilityAttackAction.RequiresLOS = false;
+        abilityAttackAction.Range = 99;
+
+        //IAttackAction
+        abilityAttackAction.AttackerStats = attackerStats;
+        abilityAttackAction.DefenderCharacter = defenderCharacter;
+        abilityAttackAction.DefenderStats = defenderStats;
+
+        //IAbilityAction
+        abilityAttackAction.AbilityStats = abilityStats;
+
+        return abilityAttackAction;
     }
 }

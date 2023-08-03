@@ -14,6 +14,7 @@ public readonly struct CharacterAbilityStats
     public readonly int aoe;
     public readonly bool requiresLOS;
     public readonly List<TargetType> allowedAbilityTargets;
+    public readonly bool canCrit;
 
     public CharacterAbilityStats(bool fake)
     {
@@ -28,6 +29,7 @@ public readonly struct CharacterAbilityStats
         this.damageIterations = 0; ;
         this.damageType = DamageType.none;
         this.allowedAbilityTargets = new();
+        this.canCrit = false;
 
     }
 
@@ -42,7 +44,8 @@ public readonly struct CharacterAbilityStats
                             int damageIterations = 1,
                             DamageType damageType = DamageType.physical,
                             Type actionType = null,
-                            List<TargetType> allowedAbilityTargets = null)
+                            List<TargetType> allowedAbilityTargets = null,
+                            bool canCrit = false)
     {
         this.stringID = stringID;
         this.interfaceName = interfaceName;
@@ -63,5 +66,7 @@ public readonly struct CharacterAbilityStats
         {
             this.allowedAbilityTargets = new List<TargetType>(allowedAbilityTargets);
         }
+
+        this.canCrit = canCrit;
     }
 }

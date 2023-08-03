@@ -14,7 +14,7 @@ public class CavalierImpaleAbility : IAbilityAction, ITargetedAction
     public NetworkConnectionToClient RequestingClient { get; set; }
 
     //IAbilityAction
-    public CharacterAbilityStats Ability { get; set; }
+    public CharacterAbilityStats AbilityStats { get; set; }
 
     //ITargetedAction
     public Hex TargetHex { get; set; }
@@ -25,12 +25,9 @@ public class CavalierImpaleAbility : IAbilityAction, ITargetedAction
     [Server]
     public void ServerUse()
     {
-        //Action attack = new CustomAttackAction(user, target, abilityStats.damage, abilityStats.damageType, damageIterations: 1);
-        //if (!attack.validate){ Debug.Log(); return;}
-        //attack.CmdUse();
+        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
 
         //target.addBuff(new StunBuff(user, 1));
-        //throw new System.NotImplementedException();
         Debug.Log("Using cavalier ability!");
     }
 

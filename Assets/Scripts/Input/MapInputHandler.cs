@@ -205,7 +205,7 @@ public class MapInputHandler : NetworkBehaviour
             int classID = GameController.Singleton.GetCharacterIDForTurn();
             PlayerCharacter currentlyPlayingCharacter = GameController.Singleton.playerCharacters[classID];
             //TODO: fetch correct ability here instead of juste getting first one
-            if (currentlyPlayingCharacter.charClass.abilities != null && currentlyPlayingCharacter.charClass.abilities.Count < 1)
+            if (currentlyPlayingCharacter.charClass.abilities == null || currentlyPlayingCharacter.charClass.abilities.Count < 1)
             {
                 Debug.LogFormat("{0} has no defined abilities to fetch.", currentlyPlayingCharacter);
                 this.currentAbilityStats = new(true);

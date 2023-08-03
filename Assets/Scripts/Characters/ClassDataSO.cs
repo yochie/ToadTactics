@@ -162,7 +162,7 @@ public class ClassDataSO : ScriptableObject
                     stringID: "CavalierStun",
                     interfaceName: "Lance Throw",
                     description: "Throws a lance at an enemy in a 3 tile radius, dealing damage and stunning the target until next turn.",
-                    damage: 5,
+                    damage: 20,
                     range: 3,
                     aoe: 0,
                     turnDuration: 1

@@ -27,7 +27,7 @@ public class ActionExecutor : NetworkBehaviour
 
         bool success = ActionExecutor.Singleton.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
         if (success)
-            this.CheckForRoundEnd();
+            this.FinishAction();
     }
 
 
@@ -52,7 +52,7 @@ public class ActionExecutor : NetworkBehaviour
             success = ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
         }
         if (success)
-            this.CheckForRoundEnd();
+            this.FinishAction();
     }
 
     [Command(requiresAuthority = false)]
@@ -63,8 +63,32 @@ public class ActionExecutor : NetworkBehaviour
 
         bool success = ActionExecutor.Singleton.TryAbility(sender, playerID, usingCharacter, abilityStats, source, target);
         if (success)
-            this.CheckForRoundEnd();
+            this.FinishAction();
     }
+
+    //should only be used from abilities to handle their attack portions
+    //since called within another action, dont call FinishAction(), parent action will take care of that
+    [Server]
+    public void AbilityAttack(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        PlayerCharacter targetedCharacter = null;
+        if (target.HoldsACharacter())
+        {
+            targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
+        }
+
+        if (targetedCharacter != null)
+        {
+            ActionExecutor.Singleton.TryAbilityAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, abilityStats, source, target);
+        }
+        else
+        {
+            Debug.Log("Ability attack has no targeted character, currently unsupported.");
+        }
+    }
+
 
     [Server]
     public bool TryMove(NetworkConnectionToClient sender,
@@ -75,9 +99,7 @@ public class ActionExecutor : NetworkBehaviour
                                    Hex targetHex)
     {
         IAction toTry = ActionFactory.CreateMoveAction(sender, actingPlayerID, moverCharacter, moverStats, moverHex, targetHex);
-
-        bool moveSuccess = this.TryAction(toTry);
-        return moveSuccess;
+        return this.TryAction(toTry);
     }
 
     [Server]
@@ -90,11 +112,8 @@ public class ActionExecutor : NetworkBehaviour
                                    Hex attackerHex,
                                    Hex defenderHex)
     {
-        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);
-        bool success = this.TryAction(attackAction);
-        if (success)
-            defenderCharacter.RpcOnCharacterLifeChanged(defenderCharacter.CurrentLife(), defenderCharacter.currentStats.maxHealth);
-        return success;
+        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);       
+        return this.TryAction(attackAction);
     }
 
     [Server]
@@ -106,8 +125,7 @@ public class ActionExecutor : NetworkBehaviour
                                   Hex defenderHex)
     {
         IAttackAction attackAction = ActionFactory.CreateObstacleAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
-        bool success = this.TryAction(attackAction);
-        return success;
+        return this.TryAction(attackAction);
     }
 
     [Server]
@@ -118,9 +136,33 @@ public class ActionExecutor : NetworkBehaviour
                            Hex source,
                            Hex target)
     {
-        IAbilityAction toTry = ActionFactory.CreateAbilityAction(sender, actingPlayerID, actingCharacter, ability, source, target);
-        return this.TryAction(toTry);
+        IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, actingPlayerID, actingCharacter, ability, source, target);       
+        return this.TryAction(abilityAction);
     }
+
+    [Server]
+    public bool TryAbilityAttackCharacter(NetworkConnectionToClient sender,
+                               int actingPlayerID,
+                               PlayerCharacter attackerCharacter,
+                               PlayerCharacter defenderCharacter,
+                               CharacterStats attackerStats,
+                               CharacterStats defenderStats,
+                               CharacterAbilityStats abilityStats,
+                               Hex attackerHex,
+                               Hex defenderHex)
+    {
+        AbilityAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(sender,
+                                                                                          actingPlayerID,
+                                                                                          attackerCharacter,
+                                                                                          defenderCharacter,
+                                                                                          attackerStats,
+                                                                                          defenderStats,
+                                                                                          abilityStats,
+                                                                                          attackerHex,
+                                                                                          defenderHex);
+        return this.TryAction(abilityAttackAction); ;
+    }
+
 
     [Server]
     private bool TryAction(IAction action)
@@ -138,18 +180,21 @@ public class ActionExecutor : NetworkBehaviour
     }
 
     [Server]
-    private void CheckForRoundEnd()
-    {
-        foreach(PlayerCharacter p in GameController.Singleton.playerCharacters.Values)
+    private void FinishAction()
+    {        
+        foreach(PlayerCharacter playerCharacter in GameController.Singleton.playerCharacters.Values)
         {
-            if (p.isKing && p.IsDead())
+            //not necessarily changed but always call just in case
+            playerCharacter.RpcOnCharacterLifeChanged(playerCharacter.CurrentLife(), playerCharacter.currentStats.maxHealth);
+
+            //check for end of round
+            if (playerCharacter.isKing && playerCharacter.IsDead())
             {
                 Debug.Log("The king is dead. Long live the king.");
-                GameController.Singleton.EndRound(p.ownerID);
+                GameController.Singleton.EndRound(playerCharacter.ownerID);
             }
-        }
+        }        
     }
-
 
     //Utility for validation of ITargetedActions and to find attack range in MapPathFinder
     public static bool IsValidTargetType(PlayerCharacter actor, Hex targetedHex, List<TargetType> allowedTargets)
