@@ -49,7 +49,20 @@ public class PlayerCharacter : NetworkBehaviour
     private bool isDead;
     #endregion
 
+    #region Server only vars
+    public List<IBuffEffect> buffsIApplied;
+    public List<IBuffEffect> buffsThatAffectMe;
+    #endregion
+
+
     #region Startup
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        buffsIApplied = new();
+        buffsThatAffectMe = new();
+    }
 
     public override void OnStartClient()
     {
@@ -267,6 +280,17 @@ public class PlayerCharacter : NetworkBehaviour
         this.equipmentIDs.Add(equipmentID);
     }
 
+    [Server]
+    internal void AddBuffAppliedToHim(IBuffEffect buff)
+    {
+        this.buffsIApplied.Add(buff);
+    }
+
+    [Server]
+    internal void AddBuffHeApplied(IBuffEffect buff)
+    {
+        this.buffsThatAffectMe.Add(buff);
+    }
 
     #endregion
 }

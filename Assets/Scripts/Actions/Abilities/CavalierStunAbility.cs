@@ -1,8 +1,9 @@
 ﻿using Mirror;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CavalierImpaleAbility : IAbilityAction, ITargetedAction
+public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -22,13 +23,21 @@ public class CavalierImpaleAbility : IAbilityAction, ITargetedAction
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
 
+    public Type AppliesBuffType { get => typeof(CavalierStunEffect); }
+
     [Server]
     public void ServerUse()
     {
         ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
+        
+        //ability was used only as attack on obstacle
+        if (!TargetHex.HoldsACharacter() || TargetHex.GetHeldCharacterObject() == null)
+            return;
 
-        //target.addBuff(new StunBuff(user, 1));
-        Debug.Log("Using cavalier ability!");
+        Debug.Log("Using cavalier stun debuff!");
+        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.charClassID, this.TargetHex.holdsCharacterWithClassID);
+        BuffManager.Singleton.ApplyBuff(buff);
+
     }
 
     [Server]
@@ -36,6 +45,7 @@ public class CavalierImpaleAbility : IAbilityAction, ITargetedAction
     {
 
         //TODO check for individual ability uses instead of single hasUsedAbility to allow multiple abilities
+
         if (this.ActorCharacter != null &&
             this.ActorHex != null &&
             this.TargetHex != null &&

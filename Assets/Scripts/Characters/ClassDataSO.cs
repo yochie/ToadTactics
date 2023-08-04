@@ -330,7 +330,7 @@ public class ClassDataSO : ScriptableObject
     {
         Dictionary<string, Type> abilityClassesByID = new();
 
-        abilityClassesByID.Add("CavalierStun", typeof(CavalierImpaleAbility));
+        abilityClassesByID.Add("CavalierStun", typeof(CavalierStunAbility));
 
         return abilityClassesByID;
 

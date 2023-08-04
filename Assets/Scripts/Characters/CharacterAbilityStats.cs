@@ -6,7 +6,7 @@ public readonly struct CharacterAbilityStats
     public readonly string stringID;
     public readonly string interfaceName;
     public readonly string description;
-    public readonly int turnDuration;
+    public readonly int buffTurnDuration;
     public readonly int damage;
     public readonly int damageIterations;
     public readonly DamageType damageType;
@@ -24,7 +24,7 @@ public readonly struct CharacterAbilityStats
         this.damage = 0;
         this.range = 0;
         this.aoe = 0;
-        this.turnDuration = 0;
+        this.buffTurnDuration = 0;
         this.requiresLOS = false; ;
         this.damageIterations = 0; ;
         this.damageType = DamageType.none;
@@ -53,7 +53,7 @@ public readonly struct CharacterAbilityStats
         this.damage = damage;
         this.range = range;
         this.aoe = aoe;
-        this.turnDuration = turnDuration;        
+        this.buffTurnDuration = turnDuration;        
         this.requiresLOS = requiresLOS;
         this.damageIterations = damageIterations;
         this.damageType = damageType;
