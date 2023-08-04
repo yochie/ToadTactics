@@ -17,7 +17,7 @@ public class CharacterDraftPhase : IGamePhase
     {
         this.Name = name;
         this.Controller = controller;
-        this.Controller.playerTurn = 0;
+        this.Controller.SetPlayerTurn(0);
 
         uint numToRoll = this.Controller.defaultNumCharsPerPlayer * 2;
         List<int> rolledIDs = new();

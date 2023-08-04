@@ -41,22 +41,28 @@ public class MainHUD : NetworkBehaviour
     [TargetRpc]
     public void TargetRpcGrayOutMoveButton(NetworkConnectionToClient target)
     {
-        this.moveButton.GetComponent<Button>().interactable = false;
-        this.moveButton.GetComponent<Image>().color = Color.white;
+        GrayOutGameplayButton(ControlMode.move);
+
     }
 
     [TargetRpc]
     public void TargetRpcGrayOutAttackButton(NetworkConnectionToClient target)
     {
-        this.attackButton.GetComponent<Button>().interactable = false;
-        this.attackButton.GetComponent<Image>().color = Color.white;
+        this.GrayOutGameplayButton(ControlMode.attack);
+
     }
 
     [TargetRpc]
     public void TargetRpcGrayOutAbilityButton(NetworkConnectionToClient target)
     {
-        this.abilityButton.GetComponent<Button>().interactable = false;
-        this.abilityButton.GetComponent<Image>().color = Color.white;
+        this.GrayOutGameplayButton(ControlMode.useAbility);
+    }
+
+    private void GrayOutGameplayButton(ControlMode mode)
+    {
+        GameObject buttonObject = this.gameplayButtons[mode];
+        buttonObject.GetComponent<Button>().interactable = false;
+        buttonObject.GetComponent<Image>().color = Color.white;
     }
 
     [Client]
@@ -129,11 +135,10 @@ public class MainHUD : NetworkBehaviour
 
     [Client]
     public void OnLocalPlayerTurnStart()
-    {
-        //todo: display "Its your turn" msg
+    {        
         this.instructionLabel.text = "Your turn";
         this.endTurnButton.SetActive(true);
-        if (GameController.Singleton.currentPhaseID == GamePhaseID.gameplay)
+        if (GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
         {
             this.SetActiveGameplayButtons(true);
         }
@@ -142,10 +147,9 @@ public class MainHUD : NetworkBehaviour
     [Client]
     public void OnLocalPlayerTurnEnd()
     {
-        //todo : display "Waiting for other player" msg
         this.instructionLabel.text = "Waiting...";
         this.endTurnButton.SetActive(false);
-        if (GameController.Singleton.currentPhaseID == GamePhaseID.gameplay)
+        if (GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
         {
             this.SetActiveGameplayButtons(false);
         }
@@ -168,10 +172,17 @@ public class MainHUD : NetworkBehaviour
         if (newTurnIndex == -1)
             return;
 
-        if (GameController.Singleton.ItsMyTurn())
-        {
-            this.SetInteractableGameplayButtons(true);
-        }
+        this.SetInteractableGameplayButtons(true);
+
+        PlayerCharacter newTurnCharacter = GameController.Singleton.PlayerCharacters[GameController.Singleton.GetCharacterIDForTurn(newTurnIndex)];
+
+        if (!newTurnCharacter.CanMove)
+            this.GrayOutGameplayButton(ControlMode.move);
+
+        //if (GameController.Singleton.ItsMyTurn())
+        //{
+        //    this.SetInteractableGameplayButtons(true);
+        //}
     }
     #endregion
 
@@ -193,5 +204,17 @@ public class MainHUD : NetworkBehaviour
         Debug.Log("pretending you lost round");
         GameController.Singleton.EndRound(sender.identity.GetComponent<PlayerController>().playerID);
     }
+
+    //private void Update()
+    //{
+    //    if(GameController.Singleton.ItsMyTurn())
+    //        this.
+
+                
+    //    if (!canTakeTurn)
+    //        return;
+    //    if (!canMove)
+    //        this.GrayOutGameplayButton(ControlMode.move);            
+    //}
 
 }

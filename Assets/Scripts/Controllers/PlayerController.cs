@@ -124,7 +124,7 @@ public class PlayerController : NetworkBehaviour
         List<int> usedClasses = new();
 
         //make characters used by other clients unavailable
-        foreach (int classID in GameController.Singleton.draftedCharacterOwners.Keys)
+        foreach (int classID in GameController.Singleton.DraftedCharacterOwners.Keys)
         {
             usedClasses.Add(classID);
         }
@@ -238,8 +238,8 @@ public class PlayerController : NetworkBehaviour
         PlayerCharacter newChar = newCharObject.GetComponent<PlayerCharacter>();
 
         newChar.SetOwner(ownerPlayerIndex);
-        if(newChar.charClassID == this.kingClassID)
-            newChar.isKing = true;
+        if (newChar.CharClassID == this.kingClassID)
+            newChar.SetKing(true);
         newChar.transform.position = destinationWorldPos;
 
         //update Hex state, synced to clients by syncvar
@@ -258,7 +258,7 @@ public class PlayerController : NetworkBehaviour
         //will actually init character on server using class data and state set above
         NetworkServer.Spawn(newCharObject, connectionToClient);
 
-        GameController.Singleton.playerCharactersNetIDs.Add(charIDToCreate, newCharObject.GetComponent<NetworkIdentity>().netId);
+        GameController.Singleton.PlayerCharactersNetIDs.Add(charIDToCreate, newCharObject.GetComponent<NetworkIdentity>().netId);
 
         this.TargetRpcOnCharacterPlaced(sender, charIDToCreate);
 

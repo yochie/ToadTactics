@@ -873,6 +873,7 @@ GameObject:
   - component: {fileID: 1891631879}
   - component: {fileID: 1891631878}
   - component: {fileID: 1891631877}
+  - component: {fileID: 1891631881}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -993,6 +994,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1891631881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891631876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96b149f511061407fb54895c057b7736, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wrap: {fileID: 1891631877}
+  jitter: 0.02
+  jitterSpeed: 1
+  reliableLatency: 100
+  unreliableLoss: 2
+  unreliableLatency: 100
+  unreliableScramble: 2
 --- !u!1 &1987820076
 GameObject:
   m_ObjectHideFlags: 0

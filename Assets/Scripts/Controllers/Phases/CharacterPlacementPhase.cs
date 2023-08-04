@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class CharacterPlacementPhase : IGamePhase
 {
@@ -20,25 +21,24 @@ public class CharacterPlacementPhase : IGamePhase
         this.Controller = controller;
 
         //Clear all state from any previous iterations of this phase
-        this.Controller.turnOrderIndex = 0;
-        this.Controller.sortedTurnOrder.Clear();
-        this.Controller.playerCharactersNetIDs.Clear();
-        this.Controller.playerCharacters.Clear();
+        this.Controller.SetTurnOrderIndex(-1);
+        this.Controller.ClearTurnOrder();
+        this.Controller.ClearPlayerCharacters();
 
-        this.Controller.currentRound++;
+        this.Controller.SetCurrentRound(this.Controller.CurrentRound + 1);
 
         Map.Singleton.Initialize();
 
         //setup turn order list
-        foreach (int classID in this.Controller.draftedCharacterOwners.Keys)
+        foreach (int classID in this.Controller.DraftedCharacterOwners.Keys)
         {
             this.Controller.AddCharToTurnOrder(classID);
         }
 
         //do a false setting to trigger new player turn event even if he was last to play during draft
         //todo : avoid need for this somehow when i have more brainpower left
-        this.Controller.playerTurn = -1;
-        this.Controller.playerTurn = 0;
+        this.Controller.SetPlayerTurn(-1);
+        this.Controller.SetPlayerTurn(0);
 
         this.Controller.mapInputHandler.RpcSetControlModeOnAllClients(ControlMode.characterPlacement);
     }
@@ -46,14 +46,23 @@ public class CharacterPlacementPhase : IGamePhase
     [Server]
     public void Tick()
     {
-        if (!Controller.AllHisCharactersAreOnBoard(Controller.OtherPlayer(Controller.playerTurn)))
+        if (!Controller.AllHisCharactersAreOnBoard(Controller.OtherPlayer(Controller.PlayerTurn)))
         {
             Controller.SwapPlayerTurn();
         }
 
-        if (Controller.AllPlayerCharactersCreated())
+        if (Controller.AllCharactersPlaced())
         {
-            Controller.SetPhase(new GameplayPhase());
+            this.Controller.StartCoroutine(WaitForAllCharactersInstantiatedOnAllClients());
         }
+    }
+
+    private IEnumerator WaitForAllCharactersInstantiatedOnAllClients()
+    {
+        while (!Controller.AllCharactersInstantiatedOnClients())
+        {
+            yield return null;
+        }
+        Controller.SetPhase(new GameplayPhase());
     }
 }

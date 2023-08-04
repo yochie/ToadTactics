@@ -51,7 +51,7 @@ public class EquipmentDraftUI : NetworkBehaviour
     [Server]
     public void InitSlotsForDraft(List<string> equipmentIDsToDraft)
     {
-        int currentPlayerID = GameController.Singleton.playerTurn;
+        int currentPlayerID = GameController.Singleton.PlayerTurn;
         NetworkConnectionToClient currentPlayerClient = GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
         NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
         int i = 0;

@@ -96,7 +96,7 @@ public class StatsTable : MonoBehaviour
     internal void RenderForActiveCharacter(PlayerCharacter playerCharacter)
     {
         this.Clear();
-        CharacterStats currentStats = playerCharacter.currentStats;
+        CharacterStats currentStats = playerCharacter.CurrentStats;
         CharacterStats baseStats = playerCharacter.charClass.stats;
 
         throw new NotImplementedException();

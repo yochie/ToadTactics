@@ -3,21 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Effect", menuName = "Buffs/CavalierStunEffect")]
-public class CavalierStunEffect : StunEffectBase
+public class CavalierStunEffect : StunEffectBase, IAbilityBuffEffect
 {
-    [field: SerializeField]
-    public override string StringID { get; set; }
-    [field: SerializeField]
-    public override string UIName { get; set; }
-    [field: SerializeField]
-    public override Sprite Icon { get; set; }
-    [field: SerializeField]
-    public override bool NeedsToBeReAppliedEachTurn { get; set; }
-    [field: SerializeField]
-    public override bool IsPositive { get; set; }
+    public override string StringID => "CavalierStunEffect";
+    public override string UIName => "Cavalier Stun";
+    public override string IconName => "CavalierStunIcon.png";
 
-    public override int AppliedToCharacterID { get; set; }
-
-    public override int TurnDurationRemaining { get; set; }
+    //IAbilityBuffEffect
+    //set at runtime
+    public int ApplyingCharacterID {get; set;}
+    public CharacterAbilityStats AppliedByAbility { get; set; }
 }

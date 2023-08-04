@@ -24,10 +24,10 @@ internal class BuffManager : MonoBehaviour
         //IAbilityBuffEffect
         IAbilityBuffEffect buff = (IAbilityBuffEffect)Activator.CreateInstance(buffType);
         buff.AppliedByAbility = abilityStats;
-        buff.AppliedByCharacterID = applyingCharacterID;
+        buff.ApplyingCharacterID = applyingCharacterID;
 
         //IBuffEffect
-        buff.AppliedToCharacterID = targetCharacterID;
+        buff.AffectedCharacterID = targetCharacterID;
 
         //ITimedEffect
         ITimedEffect timedBuff = buff as ITimedEffect;
@@ -51,14 +51,14 @@ internal class BuffManager : MonoBehaviour
     }
     public void ApplyBuff(IBuffEffect buff)
     {
-        PlayerCharacter targetedCharacter = GameController.Singleton.playerCharacters[buff.AppliedToCharacterID];
-        targetedCharacter.AddBuffAppliedToHim(buff);
+        PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[buff.AffectedCharacterID];
+        affectedCharacter.AddAffectingBuff(buff);
 
         IAbilityBuffEffect abilityBuff = buff as IAbilityBuffEffect;
         if (abilityBuff != null)
         {
-            PlayerCharacter applyingCharacter = GameController.Singleton.playerCharacters[abilityBuff.AppliedByCharacterID];
-            applyingCharacter.AddBuffHeApplied(buff);
+            PlayerCharacter applyingCharacter = GameController.Singleton.PlayerCharacters[abilityBuff.ApplyingCharacterID];
+            applyingCharacter.AddAppliedBuff(buff);
         }
 
         buff.ApplyEffect(isReapplication: false);

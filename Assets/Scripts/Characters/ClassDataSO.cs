@@ -36,7 +36,7 @@ public class ClassDataSO : ScriptableObject
     {
         foreach (PlayerCharacter prefab in characterPrefabs)
         {
-            if(prefab.charClassID == classID)
+            if(prefab.CharClassID == classID)
             {
                 return prefab.GetComponent<SpriteRenderer>().sprite;
             }
@@ -49,7 +49,7 @@ public class ClassDataSO : ScriptableObject
     {
         foreach (PlayerCharacter prefab in characterPrefabs)
         {
-            if (prefab.charClassID == classID)
+            if (prefab.CharClassID == classID)
             {
                 return prefab;
             }

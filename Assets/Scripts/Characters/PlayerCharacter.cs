@@ -7,7 +7,6 @@ using System;
 public class PlayerCharacter : NetworkBehaviour
 {
     #region Editor vars
-
     [SerializeField]
     private SpriteRenderer spriteRenderer;
 
@@ -22,71 +21,93 @@ public class PlayerCharacter : NetworkBehaviour
     #endregion
 
     #region Sync vars
-    public CharacterClass charClass;
-
     private readonly SyncList<string> equipmentIDs = new();
+    //TODO: serialized charClassID might be an issue according to best practices documented here : https://unitystation.github.io/unitystation/development/SyncVar-Best-Practices-for-Easy-Networking/
+    //TODO : consider changing to seperate field used for init...
     [SyncVar(hook = nameof(OnCharClassIDChanged))]
-    public int charClassID;
+    [SerializeField]
+    private int charClassID;
+    public int CharClassID => this.charClassID;
+    public CharacterClass charClass;
     [SyncVar]
     private int currentLife;
+    public int CurrentLife => this.currentLife;
     [SyncVar]
-    public CharacterStats currentStats;
+    private CharacterStats currentStats;
+    public CharacterStats CurrentStats { get => this.currentStats; }
     [SyncVar]
-    public bool hasMoved;
+    private bool hasMoved;
+    public bool HasMoved => this.hasMoved;
     [SyncVar]
-    public bool hasAttacked;
+    private bool hasAttacked;
+    public bool HasAttacked => this.hasAttacked;
     [SyncVar]
-    public bool hasUsedAbility;
+    private bool hasUsedAbility;
+    public bool HasUsedAbility => this.hasUsedAbility;
     [SyncVar]
-    public bool hasUsedAllEquipments;
+    private bool hasUsedAllEquipments;
     [SyncVar]
     private int remainingMoves;
+    public int RemainingMoves => this.remainingMoves;
     [SyncVar]
-    public int ownerID;
+    private int ownerID;
+    public int OwnerID => this.ownerID;
     [SyncVar]
-    public bool isKing;
+    private bool isKing;
+    public bool IsKing { get => this.isKing;}
     [SyncVar]
     private bool isDead;
+    public bool IsDead { get => this.isDead; }
+
+    [SyncVar]
+    private bool canMove;
+    public bool CanMove { get => this.canMove;}
+
+    [SyncVar]
+    private bool canTakeTurns;
+    public bool CanTakeTurns { get => this.canTakeTurns; }
+
     #endregion
 
     #region Server only vars
-    public List<IBuffEffect> buffsIApplied;
-    public List<IBuffEffect> buffsThatAffectMe;
+    public List<IBuffEffect> appliedBuffs;
+    public List<IBuffEffect> affectingBuffs;
     #endregion
-
 
     #region Startup
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-        buffsIApplied = new();
-        buffsThatAffectMe = new();
+        appliedBuffs = new();
+        affectingBuffs = new();
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        this.OnCharClassIDChanged(-1, this.charClassID);
+        this.OnCharClassIDChanged(-1, this.CharClassID);
     }
 
     //Called when char class is set in callback
     [Server]
     private void InitCharacterSyncvars(NetworkConnectionToClient sender = null)
     {
-        this.currentStats = this.charClass.stats;
+        this.canTakeTurns = true;
+        this.canMove = true;
+        this.SetCurrentStats(this.charClass.stats);
 
-        this.currentLife = this.currentStats.maxHealth;
+        this.currentLife = this.CurrentStats.maxHealth;
 
         foreach (string equipmentID in this.equipmentIDs)
         {
             this.ApplyEquipment(equipmentID);
         }
 
-        if (this.isKing)
-            this.currentStats = new CharacterStats(this.currentStats, maxHealth: Utility.ApplyKingLifeBuff(this.currentStats.maxHealth));
+        if (this.IsKing)
+            this.SetCurrentStats(new CharacterStats(this.CurrentStats, maxHealth: Utility.ApplyKingLifeBuff(this.CurrentStats.maxHealth)));
 
-        this.RpcOnCharacterLifeChanged(this.CurrentLife(), this.currentStats.maxHealth);
+        this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
 
         this.isDead = false;
         this.hasUsedAbility = false;
@@ -103,9 +124,9 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.charClass = null;
 
-        if (ClassDataSO.Singleton.GetClassByID(this.charClassID) != null)
+        if (ClassDataSO.Singleton.GetClassByID(this.CharClassID) != null)
         {
-            this.charClass = ClassDataSO.Singleton.GetClassByID(this.charClassID);
+            this.charClass = ClassDataSO.Singleton.GetClassByID(this.CharClassID);
             if(isServer)
                 this.InitCharacterSyncvars();
         }
@@ -120,17 +141,41 @@ public class PlayerCharacter : NetworkBehaviour
     #region State management
 
     [Server]
-    public void SetOwner(int ownerID)
+    public void SetOwner(int value)
     {
-        this.ownerID = ownerID;
+        this.ownerID = value;
+    }
+
+    [Server]
+    public void SetKing(bool value)
+    {
+        this.isKing = value;
+    }
+
+    [Server]
+    public void SetCanMove(bool value)
+    {
+        this.canMove = value;
+    }
+
+    [Server]
+    public void SetCanTakeTurns(bool value)
+    {
+        this.canTakeTurns = value;
+    }
+
+    [Server]
+    public void SetCurrentStats(CharacterStats value)
+    {
+        this.currentStats = value;
     }
 
     [Server]
     public void UseMoves(int moveDistance)
     {
-        if (this.CanMoveDistance() < moveDistance)
+        if (this.RemainingMoves < moveDistance)
         {
-            Debug.LogFormat("Attempting to move {0} by {1} while it only has {2} moves left. You should validate move beforehand.", this.charClass.name, moveDistance, this.CanMoveDistance());
+            Debug.LogFormat("Attempting to move {0} by {1} while it only has {2} moves left. You should validate move beforehand.", this.charClass.name, moveDistance, this.RemainingMoves);
             return;
         }
         this.remainingMoves -= moveDistance;
@@ -155,7 +200,7 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.hasMoved = false;
         this.hasAttacked = false;
-        this.remainingMoves = this.currentStats.moveSpeed;
+        this.remainingMoves = this.CurrentStats.moveSpeed;
     }
 
     [Server]
@@ -165,7 +210,7 @@ public class PlayerCharacter : NetworkBehaviour
         {
             case DamageType.physical:
                 if(!bypassArmor)
-                    this.TakeRawDamage(damageAmount - this.currentStats.armor);
+                    this.TakeRawDamage(damageAmount - this.CurrentStats.armor);
                 else
                     this.TakeRawDamage(damageAmount);
                 break;
@@ -181,7 +226,7 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     private void TakeRawDamage(int damageAmount)
     {
-        this.currentLife = Mathf.Clamp(this.currentLife - damageAmount, 0, this.currentStats.maxHealth);
+        this.currentLife = Mathf.Clamp(this.currentLife - damageAmount, 0, this.CurrentStats.maxHealth);
 
         if (this.currentLife == 0)
         {
@@ -224,30 +269,47 @@ public class PlayerCharacter : NetworkBehaviour
         }
     }
 
+    [Server]
+    internal void GiveEquipment(string equipmentID)
+    {
+        this.equipmentIDs.Add(equipmentID);
+    }
+
+    [Server]
+    internal void AddAffectingBuff(IBuffEffect buff)
+    {
+        this.affectingBuffs.Add(buff);
+    }
+
+    [Server]
+    internal void AddAppliedBuff(IBuffEffect buff)
+    {
+        this.appliedBuffs.Add(buff);
+    }
     #endregion
 
     #region Events
     [ClientRpc]
     private void RpcOnCharacterDeath()
     {
-        this.onCharacterDeath.Raise(this.charClassID);
+        this.onCharacterDeath.Raise(this.CharClassID);
     }
 
     [ClientRpc]
     private void RpcOnCharacterResurrect()
     {
-        this.onCharacterResurrect.Raise(this.charClassID);
+        this.onCharacterResurrect.Raise(this.CharClassID);
     }
 
     public void OnCharacterDeath(int classID)
     {
-        if(classID == this.charClassID)
+        if(classID == this.CharClassID)
             this.spriteRenderer.color = Utility.GrayOutColor(this.spriteRenderer.color, true);
     }
 
     public void OnCharacterResurrect(int classID)
     {
-        if(classID == this.charClassID)
+        if(classID == this.CharClassID)
             this.spriteRenderer.color = Utility.GrayOutColor(this.spriteRenderer.color, false);
     }
 
@@ -256,7 +318,7 @@ public class PlayerCharacter : NetworkBehaviour
     [ClientRpc]
     public void RpcOnCharacterLifeChanged(int currentLife, int maxHealth)
     {
-        this.onCharacterLifeChanged.Raise(this.charClassID, currentLife, maxHealth);
+        this.onCharacterLifeChanged.Raise(this.CharClassID, currentLife, maxHealth);
     }
     #endregion
 
@@ -268,29 +330,5 @@ public class PlayerCharacter : NetworkBehaviour
         else
             return true;
     }
-
-    public int CanMoveDistance() => this.remainingMoves;
-
-    public int CurrentLife() => this.currentLife;
-
-    public bool IsDead() => this.isDead;
-
-    internal void GiveEquipment(string equipmentID)
-    {
-        this.equipmentIDs.Add(equipmentID);
-    }
-
-    [Server]
-    internal void AddBuffAppliedToHim(IBuffEffect buff)
-    {
-        this.buffsIApplied.Add(buff);
-    }
-
-    [Server]
-    internal void AddBuffHeApplied(IBuffEffect buff)
-    {
-        this.buffsThatAffectMe.Add(buff);
-    }
-
     #endregion
 }

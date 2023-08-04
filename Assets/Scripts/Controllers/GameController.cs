@@ -69,41 +69,76 @@ public class GameController : NetworkBehaviour
     public MapInputHandler mapInputHandler;
     public DraftUI draftUI;
     public EquipmentDraftUI equipmentDraftUI;
+    List<int> charactersInstantiantedOnRemote;
+
 
     #endregion
 
     #region Synced vars
 
     //maps classID to playerID
-    public readonly SyncDictionary<int, int> draftedCharacterOwners = new();
+    private readonly SyncDictionary<int, int> draftedCharacterOwners = new();
+
+    public SyncDictionary<int, int> DraftedCharacterOwners => this.draftedCharacterOwners;
 
     //maps classID to PlayerCharacter
-    public readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
+    private readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
+    public SyncDictionary<int, uint> PlayerCharactersNetIDs => this.playerCharactersNetIDs;
+
+
     public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
+    public Dictionary<int, PlayerCharacter> PlayerCharacters => this.playerCharacters;
 
     //maps character initiative to classID
-    public readonly SyncIDictionary<float, int> sortedTurnOrder = new(new SortedList<float, int>());
+    private readonly SyncIDictionary<float, int> sortedTurnOrder = new(new SortedList<float, int>());
+    public SyncIDictionary<float, int> SortedTurnOrder => this.sortedTurnOrder;
 
     [SyncVar]
-    public GamePhaseID currentPhaseID;
+    private GamePhaseID currentPhaseID;
+    public GamePhaseID CurrentPhaseID { get => this.currentPhaseID;}
+    [Server]
+    public void SetCurrentPhaseID(GamePhaseID value)
+    {
+        this.currentPhaseID = value;
+    }
 
     [SyncVar]
-    public int currentRound;
+    private int currentRound;
+    public int CurrentRound { get => this.currentRound;}
+    [Server]
+    public void SetCurrentRound(int value)
+    {
+        this.currentRound = value;
+    }
+
     private readonly SyncDictionary<int, int> playerScores = new();
 
     //sceneName => awokenState
-    public readonly SyncDictionary<string, bool> remoteAwokenScenes = new();
-    public readonly SyncDictionary<string, bool> hostAwokenScenes = new();
+    private readonly SyncDictionary<string, bool> remoteAwokenScenes = new();
+    private readonly SyncDictionary<string, bool> hostAwokenScenes = new();
 
     //Needs to be at bottom of syncvars since it updates UI based on state (order of syncvars determines execution order)
     //index of currently playing character during gameplay phase
     [SyncVar(hook = nameof(OnTurnOrderIndexChanged))]
-    public int turnOrderIndex;
+    private int turnOrderIndex;
+    public int TurnOrderIndex { get => this.turnOrderIndex; }
+    [Server]
+    public void SetTurnOrderIndex(int value)
+    {
+        this.turnOrderIndex = value;
+    }
 
     //Needs to be at bottom of syncvars since it updates UI based on state (order of syncvars determines execution order)
     //currently playing playerID
     [SyncVar(hook = nameof(OnPlayerTurnChanged))]
-    public int playerTurn;
+    private int playerTurn;    
+
+    public int PlayerTurn { get => this.playerTurn;}
+    [Server]
+    public void SetPlayerTurn(int value)
+    {
+        this.playerTurn = value;
+    }
 
     #endregion
 
@@ -133,8 +168,8 @@ public class GameController : NetworkBehaviour
         base.OnStartClient();
 
         //setup sync dict callbacks to sync actual objects from netids
-        this.playerCharactersNetIDs.Callback += OnPlayerCharactersNetIDsChange;
-        foreach (KeyValuePair<int, uint> kvp in playerCharactersNetIDs)
+        this.PlayerCharactersNetIDs.Callback += OnPlayerCharactersNetIDsChange;
+        foreach (KeyValuePair<int, uint> kvp in PlayerCharactersNetIDs)
             OnPlayerCharactersNetIDsChange(SyncDictionary<int, uint>.Operation.OP_ADD, kvp.Key, kvp.Value);
     }
 
@@ -146,6 +181,7 @@ public class GameController : NetworkBehaviour
         this.turnOrderIndex = -1;
         this.playerTurn = -1;
         this.currentRound = -1;
+        this.charactersInstantiantedOnRemote = new();
     }
 
     #endregion
@@ -253,6 +289,12 @@ public class GameController : NetworkBehaviour
                 break;
         }
     }
+
+    [Command(requiresAuthority = false)]
+    public void CmdNotifyCharacterInstantiatedOnRemote(int classID)
+    {
+        this.charactersInstantiantedOnRemote.Add(classID);
+    }
     #endregion
 
     #region Commands/Server
@@ -281,13 +323,13 @@ public class GameController : NetworkBehaviour
                 newPhase.Init("Drafting characters", this);
                 break;
             case GamePhaseID.characterPlacement:
-                newPhase.Init("Placement " + this.currentRound, this);
+                newPhase.Init("Placement " + this.CurrentRound, this);
                 break;
             case GamePhaseID.gameplay:
-                newPhase.Init("Gameplay " + this.currentRound, this);
+                newPhase.Init("Gameplay " + this.CurrentRound, this);
                 break;
             case GamePhaseID.equipmentDraft:
-                newPhase.Init("Equipment draft" + this.currentRound, this);
+                newPhase.Init("Equipment draft" + this.CurrentRound, this);
                 break;
         }
     }
@@ -335,7 +377,7 @@ public class GameController : NetworkBehaviour
     [Server]
     public void CmdDraftCharacter(int draftedByPlayerID, int classID)
     {
-        this.draftedCharacterOwners.Add(classID, draftedByPlayerID);
+        this.DraftedCharacterOwners.Add(classID, draftedByPlayerID);
 
         this.CmdNextTurn();
     }
@@ -354,12 +396,12 @@ public class GameController : NetworkBehaviour
     public void AddCharToTurnOrder(int classID)
     {
         float initiative = ClassDataSO.Singleton.GetClassByID(classID).stats.initiative;
-        if (Utility.DictContainsValue(this.sortedTurnOrder, classID))
+        if (Utility.DictContainsValue(this.SortedTurnOrder, classID))
         {
             Debug.Log("Error : Character is already in turnOrder.");
             return;
         }
-        this.sortedTurnOrder.Add(initiative, classID);
+        this.SortedTurnOrder.Add(initiative, classID);
         this.RpcOnCharAddedToTurnOrder(classID);
     }
 
@@ -402,6 +444,7 @@ public class GameController : NetworkBehaviour
         return gameEnded;
     }
 
+    [Server]
     internal void SetEquipmentsToDraft(List<string> equipmentIDs)
     {
         this.equipmentsToDraft.Clear();
@@ -411,6 +454,7 @@ public class GameController : NetworkBehaviour
         }
     }
 
+    [Server]
     internal List<string> GetEquipmentsToDraft()
     {
         List<string> toReturn = new();
@@ -418,7 +462,7 @@ public class GameController : NetworkBehaviour
         return toReturn;
     }
 
-
+    [Server]
     internal void SetEquipmentsToAssign(List<string> equipmentIDs)
     {
         this.equipmentsToAssign.Clear();
@@ -426,6 +470,17 @@ public class GameController : NetworkBehaviour
         {
             this.equipmentsToAssign.Add(equipmentToAdd);
         }
+    }
+
+    internal void ClearTurnOrder()
+    {
+        this.sortedTurnOrder.Clear();
+    }
+
+    internal void ClearPlayerCharacters()
+    {
+        this.playerCharactersNetIDs.Clear();
+        this.playerCharacters.Clear();
     }
 
     #endregion
@@ -437,9 +492,13 @@ public class GameController : NetworkBehaviour
         switch (op)
         {
             case SyncDictionary<int, uint>.Operation.OP_ADD:
-                this.playerCharacters[key] = null;
+                this.PlayerCharacters[key] = null;
                 if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
-                    this.playerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
+                {
+                    this.PlayerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
+                    if(!isServer)
+                        this.CmdNotifyCharacterInstantiatedOnRemote(key);
+                }
                 else
                     StartCoroutine(PlayerFromNetIDCoroutine(key, netidArg));
                 break;
@@ -458,11 +517,14 @@ public class GameController : NetworkBehaviour
     //coroutine for finishing syncvar netid matching
     private IEnumerator PlayerFromNetIDCoroutine(int key, uint netIdArg)
     {
-        while (this.playerCharacters[key] == null)
+        while (this.PlayerCharacters[key] == null)
         {
             yield return null;
             if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
-                this.playerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+            {
+                this.PlayerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+                this.CmdNotifyCharacterInstantiatedOnRemote(key);
+            }
         }
     }
     #endregion
@@ -473,7 +535,7 @@ public class GameController : NetworkBehaviour
     public void RpcSetupKingSelection()
     {
         List<int> kingCandidates = new();
-        foreach (KeyValuePair<int, int> entry in this.draftedCharacterOwners)
+        foreach (KeyValuePair<int, int> entry in this.DraftedCharacterOwners)
         {
             if (entry.Value == this.LocalPlayer.playerID)
                 kingCandidates.Add(entry.Key);
@@ -555,12 +617,12 @@ public class GameController : NetworkBehaviour
 
     public bool ItsMyTurn()
     {
-        return this.LocalPlayer.playerID == this.playerTurn;
+        return this.LocalPlayer.playerID == this.PlayerTurn;
     }
 
     public bool ItsThisPlayersTurn(int playerID)
     {
-        return playerID == this.playerTurn;
+        return playerID == this.PlayerTurn;
     }
 
     public bool ItsThisCharactersTurn(int classID)
@@ -570,7 +632,7 @@ public class GameController : NetworkBehaviour
 
     public bool HeOwnsThisCharacter(int playerID, int classID)
     {
-        if (this.draftedCharacterOwners[classID] == playerID)
+        if (this.DraftedCharacterOwners[classID] == playerID)
         {
             return true;
         }
@@ -581,10 +643,10 @@ public class GameController : NetworkBehaviour
     }
 
     //note that characters are created as they are placed on board
-    public bool AllPlayerCharactersCreated() { 
-        foreach (int classID in this.draftedCharacterOwners.Keys)
+    public bool AllCharactersPlaced() { 
+        foreach (int classID in this.DraftedCharacterOwners.Keys)
         {
-            if (!this.playerCharacters.ContainsKey(classID))
+            if (!this.PlayerCharactersNetIDs.ContainsKey(classID))
             {
                 return false;
             }
@@ -594,11 +656,11 @@ public class GameController : NetworkBehaviour
 
     public bool ThisCharacterIsPlacedOnBoard(int classID)
     {
-        return this.playerCharacters.ContainsKey(classID);
+        return this.PlayerCharacters.ContainsKey(classID);
     }
 
     public bool AllHisCharactersAreOnBoard(int playerID) {
-        foreach (int classID in this.sortedTurnOrder.Values)
+        foreach (int classID in this.SortedTurnOrder.Values)
         {
             if (HeOwnsThisCharacter(playerID, classID) &&
                 !ThisCharacterIsPlacedOnBoard(classID))
@@ -613,9 +675,9 @@ public class GameController : NetworkBehaviour
     public int GetCharacterIDForTurn(int turnOrderIndex = -1)
     {
         //finds prefab ID for character whose turn it is
-        int currentTurnOrderIndex = (turnOrderIndex == -1 ? this.turnOrderIndex : turnOrderIndex);
+        int currentTurnOrderIndex = (turnOrderIndex == -1 ? this.TurnOrderIndex : turnOrderIndex);
         int sortedTurnOrderIndex = 0;
-        foreach (int classID in this.sortedTurnOrder.Values)
+        foreach (int classID in this.SortedTurnOrder.Values)
         {
             if (sortedTurnOrderIndex == currentTurnOrderIndex)
             {
@@ -663,7 +725,7 @@ public class GameController : NetworkBehaviour
 
     internal bool AllCharactersDrafted()
     {
-        if (this.draftedCharacterOwners.Count == this.defaultNumCharsPerPlayer * 2)
+        if (this.DraftedCharacterOwners.Count == this.defaultNumCharsPerPlayer * 2)
             return true;
         else
             return false;
@@ -671,7 +733,7 @@ public class GameController : NetworkBehaviour
 
     internal bool CharacterHasBeenDrafted(int classID)
     {
-        return this.draftedCharacterOwners.ContainsKey(classID);
+        return this.DraftedCharacterOwners.ContainsKey(classID);
     }
 
     internal NetworkConnectionToClient GetConnectionForPlayerID(int playerID)
@@ -740,6 +802,22 @@ public class GameController : NetworkBehaviour
                 return true;
         }
         return false;
+    }
+
+    [Server]
+    internal bool AllCharactersInstantiatedOnClients()
+    {
+        foreach (int draftedCharacterID in this.draftedCharacterOwners.Keys)
+        {
+            if (!this.playerCharacters.ContainsKey(draftedCharacterID) || this.playerCharacters[draftedCharacterID] == null)
+            {
+                return false;
+            }
+
+            if (!this.charactersInstantiantedOnRemote.Contains(draftedCharacterID))
+                return false;
+        }
+        return true;
     }
 
     #endregion

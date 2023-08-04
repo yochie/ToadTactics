@@ -12,8 +12,8 @@ public class RangeEquipmentSO : EquipmentSO, IEquipmentQuality, IRangeModifier
 
     public void ApplyStatModification(PlayerCharacter playerCharacter)
     {
-        int currentRange = playerCharacter.currentStats.range;
-        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, range: currentRange + this.RangeOffset);
+        int currentRange = playerCharacter.CurrentStats.range;
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, range: currentRange + this.RangeOffset));
     }
 
     public Dictionary<string, string> GetPrintableStatDictionary()
@@ -27,7 +27,7 @@ public class RangeEquipmentSO : EquipmentSO, IEquipmentQuality, IRangeModifier
 
     public void RemoveStatModification(PlayerCharacter playerCharacter)
     {
-        int currentRange = playerCharacter.currentStats.range;
-        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, range: currentRange - this.RangeOffset);
+        int currentRange = playerCharacter.CurrentStats.range;
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, range: currentRange - this.RangeOffset));
     }
 }

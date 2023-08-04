@@ -61,7 +61,7 @@ public class MapRangeDisplayer : MonoBehaviour
     public void DisplayAttackRange(Hex source, int range, PlayerCharacter attacker)
     {
         List<TargetType> allowedTargets = attacker.charClass.stats.allowedAttackTargets;
-        bool requiresLOS = attacker.currentStats.attacksRequireLOS;
+        bool requiresLOS = attacker.CurrentStats.attacksRequireLOS;
         Dictionary<Hex, LOSTargetType> attackRange = MapPathfinder.FindActionRange(this.map.hexGrid, source, range, allowedTargets, attacker, requiresLOS);
         this.displayedActionRange = attackRange;
         foreach (Hex h in attackRange.Keys)

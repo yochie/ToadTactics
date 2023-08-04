@@ -1,5 +1,5 @@
 public interface IAbilityBuffEffect : IBuffEffect
 {
-    public int AppliedByCharacterID { get; set; }
+    public int ApplyingCharacterID { get; set; }
     public CharacterAbilityStats AppliedByAbility { get; set; }
 }

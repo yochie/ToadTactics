@@ -73,7 +73,7 @@ public class TurnOrderHUD : MonoBehaviour
     {
         //Debug.Log("Updating turnOrderSlots");
         int i = 0;
-        foreach (int classID in GameController.Singleton.sortedTurnOrder.Values)
+        foreach (int classID in GameController.Singleton.SortedTurnOrder.Values)
         {
             //stops joining clients from trying to fill slots that weren't created yet
             //happens because this function is sometimes called out of order on clients
@@ -84,7 +84,7 @@ public class TurnOrderHUD : MonoBehaviour
             slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
             slot.holdsCharacterWithClassID = classID;
 
-            if (GameController.Singleton.turnOrderIndex == i)
+            if (GameController.Singleton.TurnOrderIndex == i)
                 slot.Highlight();
             else
                 slot.Unhighlight();
@@ -120,16 +120,16 @@ public class TurnOrderHUD : MonoBehaviour
 
             int currentHealth; 
             int maxHealth;
-            if (!GameController.Singleton.playerCharacters.ContainsKey(classID) || GameController.Singleton.playerCharacters[classID] == null)
+            if (!GameController.Singleton.PlayerCharacters.ContainsKey(classID) || GameController.Singleton.PlayerCharacters[classID] == null)
             {
                 currentHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
                 maxHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
             }
             else
             {
-                PlayerCharacter currentCharacter = GameController.Singleton.playerCharacters[classID];
-                currentHealth = currentCharacter.CurrentLife();
-                maxHealth = currentCharacter.currentStats.maxHealth;
+                PlayerCharacter currentCharacter = GameController.Singleton.PlayerCharacters[classID];
+                currentHealth = currentCharacter.CurrentLife;
+                maxHealth = currentCharacter.CurrentStats.maxHealth;
             }
             slot.SetLifeLabel(currentHealth, maxHealth);
         }

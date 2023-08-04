@@ -23,9 +23,9 @@ public class ActionExecutor : NetworkBehaviour
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter movingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        PlayerCharacter movingCharacter = GameController.Singleton.PlayerCharacters[source.holdsCharacterWithClassID];
 
-        bool success = ActionExecutor.Singleton.TryMove(sender, playerID, movingCharacter, movingCharacter.currentStats, source, dest);
+        bool success = ActionExecutor.Singleton.TryMove(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
         if (success)
             this.FinishAction();
     }
@@ -35,21 +35,21 @@ public class ActionExecutor : NetworkBehaviour
     public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        PlayerCharacter attackingCharacter = GameController.Singleton.PlayerCharacters[source.holdsCharacterWithClassID];
         PlayerCharacter targetedCharacter = null;
         if (target.HoldsACharacter())
         {
-            targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
+            targetedCharacter = GameController.Singleton.PlayerCharacters[target.holdsCharacterWithClassID];
         }
 
         bool success;
         if (targetedCharacter != null)
         {
-            success = ActionExecutor.Singleton.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, source, target);
+            success = ActionExecutor.Singleton.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.CurrentStats, targetedCharacter.CurrentStats, source, target);
         }
         else
         {
-            success = ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, source, target);
+            success = ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
         }
         if (success)
             this.FinishAction();
@@ -59,7 +59,7 @@ public class ActionExecutor : NetworkBehaviour
     internal void CmdUseAbility(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter usingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        PlayerCharacter usingCharacter = GameController.Singleton.PlayerCharacters[source.holdsCharacterWithClassID];
 
         bool success = ActionExecutor.Singleton.TryAbility(sender, playerID, usingCharacter, abilityStats, source, target);
         if (success)
@@ -72,19 +72,19 @@ public class ActionExecutor : NetworkBehaviour
     public void AbilityAttack(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = GameController.Singleton.playerCharacters[source.holdsCharacterWithClassID];
+        PlayerCharacter attackingCharacter = GameController.Singleton.PlayerCharacters[source.holdsCharacterWithClassID];
         PlayerCharacter targetedCharacter = null;
         if (target.HoldsACharacter())
         {
-            targetedCharacter = GameController.Singleton.playerCharacters[target.holdsCharacterWithClassID];
+            targetedCharacter = GameController.Singleton.PlayerCharacters[target.holdsCharacterWithClassID];
         }
         if (targetedCharacter != null)
         {
-            ActionExecutor.Singleton.TryAbilityAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.currentStats, targetedCharacter.currentStats, abilityStats, source, target);
+            ActionExecutor.Singleton.TryAbilityAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.CurrentStats, targetedCharacter.CurrentStats, abilityStats, source, target);
         }
         else
         {
-            ActionExecutor.Singleton.TryAbilityAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.currentStats, abilityStats, source, target);
+            ActionExecutor.Singleton.TryAbilityAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, abilityStats, source, target);
         }
     }
 
@@ -195,16 +195,16 @@ public class ActionExecutor : NetworkBehaviour
     [Server]
     private void FinishAction()
     {        
-        foreach(PlayerCharacter playerCharacter in GameController.Singleton.playerCharacters.Values)
+        foreach(PlayerCharacter playerCharacter in GameController.Singleton.PlayerCharacters.Values)
         {
             //not necessarily changed but always call just in case
-            playerCharacter.RpcOnCharacterLifeChanged(playerCharacter.CurrentLife(), playerCharacter.currentStats.maxHealth);
+            playerCharacter.RpcOnCharacterLifeChanged(playerCharacter.CurrentLife, playerCharacter.CurrentStats.maxHealth);
 
             //check for end of round
-            if (playerCharacter.isKing && playerCharacter.IsDead())
+            if (playerCharacter.IsKing && playerCharacter.IsDead)
             {
                 Debug.Log("The king is dead. Long live the king.");
-                GameController.Singleton.EndRound(playerCharacter.ownerID);
+                GameController.Singleton.EndRound(playerCharacter.OwnerID);
             }
         }        
     }
@@ -218,8 +218,8 @@ public class ActionExecutor : NetworkBehaviour
         if (targetedHex.HoldsACharacter() || targetedHex.HoldsACorpse())
         {
             PlayerCharacter targetedCharacter = targetedHex.HoldsACharacter() ? targetedHex.GetHeldCharacterObject() : targetedHex.GetHeldCorpseCharacterObject();
-            selfTarget = (actor.charClassID == targetedCharacter.charClassID);
-            friendlyTarget = (actor.ownerID == targetedCharacter.ownerID);
+            selfTarget = (actor.CharClassID == targetedCharacter.CharClassID);
+            friendlyTarget = (actor.OwnerID == targetedCharacter.OwnerID);
             ennemyTarget = !friendlyTarget;
         }
         bool liveTarget = targetedHex.HoldsACharacter();

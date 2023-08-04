@@ -2,19 +2,19 @@ using UnityEngine;
 
 public interface IBuffEffect
 {
-    //Set in SO
-    public string StringID { get; set; }
+    //Set in class definition
+    public string StringID { get;}
 
-    public bool IsPositive { get; set; }
+    public bool IsPositive { get; }
 
-    public Sprite Icon { get; set; }
+    public string IconName{ get; }
 
-    public string UIName { get; set; }
+    public string UIName { get; }
 
-    public bool NeedsToBeReAppliedEachTurn { get; set; }
+    public bool NeedsToBeReAppliedEachTurn { get;}
 
     //Set at runtime
-    public int AppliedToCharacterID { get; set; }
+    public int AffectedCharacterID { get; set; }
 
     public bool ApplyEffect(bool isReapplication);
 

@@ -43,7 +43,7 @@ public class DefaultAttackAction : IAttackAction
 
             for (int i = 0; i < this.AttackerStats.damageIterations; i++)
             {
-                int prevLife = this.DefenderCharacter.CurrentLife();
+                int prevLife = this.DefenderCharacter.CurrentLife;
                 bool isCrit = Utility.RollCrit(critChance);
                 int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AttackerStats.damage, this.AttackerStats.critMultiplier) : this.AttackerStats.damage;
                 this.DefenderCharacter.TakeDamage(rolledDamage, this.AttackerStats.damageType);
@@ -53,15 +53,15 @@ public class DefaultAttackAction : IAttackAction
                 this.DefenderCharacter,
                 rolledDamage,
                 prevLife,
-                this.DefenderCharacter.CurrentLife(),
+                this.DefenderCharacter.CurrentLife,
                 isCrit ? "crit" : "normal",
                 this.AttackerStats.damageType);
 
-                if (this.DefenderCharacter.IsDead())
+                if (this.DefenderCharacter.IsDead)
                 {
                     Debug.LogFormat("{0} is dead.", this.DefenderCharacter);
                     this.TargetHex.ClearCharacter();
-                    this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.charClassID;
+                    this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.CharClassID;
                     break;
                 }
             }
@@ -73,7 +73,7 @@ public class DefaultAttackAction : IAttackAction
         //TODO Move to event listeners
         MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);
 
-        if (this.ActorCharacter.CanMoveDistance() > 0)
+        if (this.ActorCharacter.RemainingMoves > 0)
         {
             MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.move);
         }
@@ -98,10 +98,10 @@ public class DefaultAttackAction : IAttackAction
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
-            !this.ActorCharacter.hasAttacked &&
-            this.RequestingPlayerID == this.ActorCharacter.ownerID &&
+            !this.ActorCharacter.HasAttacked &&
+            this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
+            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
             ITargetedAction.ValidateTarget(this)
             )
             return true;

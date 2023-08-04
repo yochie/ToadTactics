@@ -46,7 +46,7 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
 
             for (int i = 0; i < this.AbilityStats.damageIterations; i++)
             {
-                int prevLife = this.DefenderCharacter.CurrentLife();
+                int prevLife = this.DefenderCharacter.CurrentLife;
                 bool isCrit = this.AbilityStats.canCrit ? Utility.RollCrit(critChance) : false;
                 int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AbilityStats.damage, this.AbilityStats.damageIterations) : this.AbilityStats.damage;
                 this.DefenderCharacter.TakeDamage(rolledDamage, this.AbilityStats.damageType);
@@ -56,15 +56,15 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
                 this.DefenderCharacter,
                 rolledDamage,
                 prevLife,
-                this.DefenderCharacter.CurrentLife(),
+                this.DefenderCharacter.CurrentLife,
                 isCrit ? "crit" : "normal",
                 this.AbilityStats.damageType);
 
-                if (this.DefenderCharacter.IsDead())
+                if (this.DefenderCharacter.IsDead)
                 {
                     Debug.LogFormat("{0} is dead.", this.DefenderCharacter);
                     this.TargetHex.ClearCharacter();
-                    this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.charClassID;
+                    this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.CharClassID;
                     break;
                 }
             }
@@ -84,9 +84,9 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
-            this.RequestingPlayerID == this.ActorCharacter.ownerID &&
+            this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
+            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
             ITargetedAction.ValidateTarget(this)
             )
             return true;

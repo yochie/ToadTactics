@@ -32,15 +32,15 @@ public class DefaultMoveAction : IMoveAction
         //update state
         ActorCharacter.UseMoves(this.moveCost);
         this.TargetHex.holdsCharacterWithClassID = this.ActorHex.holdsCharacterWithClassID;
-        Map.Singleton.characterPositions[this.ActorCharacter.charClassID] = this.TargetHex.coordinates;
+        Map.Singleton.characterPositions[this.ActorCharacter.CharClassID] = this.TargetHex.coordinates;
         MapInputHandler.Singleton.TargetRpcSelectHex(this.RequestingClient, this.TargetHex);
         this.ActorHex.ClearCharacter();
 
         //Update UI/Gamecontroller
-        if (this.ActorCharacter.CanMoveDistance() == 0)
+        if (this.ActorCharacter.RemainingMoves == 0)
         {
             MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
-            if (!ActorCharacter.hasAttacked)
+            if (!ActorCharacter.HasAttacked)
                 MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.attack);
         }
     }
@@ -57,10 +57,11 @@ public class DefaultMoveAction : IMoveAction
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&                        
-            this.ActorCharacter.CanMoveDistance() > 0 &&
-            this.RequestingPlayerID == this.ActorCharacter.ownerID &&
+            this.ActorCharacter.RemainingMoves > 0 &&
+            this.ActorCharacter.CanMove &&
+            this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
+            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
             ITargetedAction.ValidateTarget(this))
         {
             //Validate path
@@ -71,7 +72,7 @@ public class DefaultMoveAction : IMoveAction
             }
 
             this.moveCost = MapPathfinder.PathCost(path);
-            if (this.moveCost > this.ActorCharacter.CanMoveDistance())
+            if (this.moveCost > this.ActorCharacter.RemainingMoves)
             {
                 Debug.Log("Client requested move outside his current range");
                 return false;

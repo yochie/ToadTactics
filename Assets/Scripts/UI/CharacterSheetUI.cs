@@ -73,10 +73,10 @@ public class CharacterSheetUI : MonoBehaviour
 
     public void OnCharacterSheetDisplayed(int classID)
     {
-        if (!GameController.Singleton.playerCharacters.ContainsKey(classID) || GameController.Singleton.playerCharacters[classID] == null)
+        if (!GameController.Singleton.PlayerCharacters.ContainsKey(classID) || GameController.Singleton.PlayerCharacters[classID] == null)
             this.FillWithClassData(classID, GameController.Singleton.IsAKing(classID));
         else
-            this.FillWithActiveCharacterData(classID, GameController.Singleton.playerCharacters[classID].currentStats, GameController.Singleton.IsAKing(classID));
+            this.FillWithActiveCharacterData(classID, GameController.Singleton.PlayerCharacters[classID].CurrentStats, GameController.Singleton.IsAKing(classID));
         this.content.SetActive(true);
     }
     #endregion

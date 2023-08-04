@@ -1,29 +1,30 @@
 using UnityEngine;
 
-public abstract class StunEffectBase : ScriptableObject, IBuffEffect, ITimedEffect
+public abstract class StunEffectBase : IBuffEffect, ITimedEffect
 {
-    //Set in base SO
-    public abstract bool NeedsToBeReAppliedEachTurn { get; set; }    
-    public abstract bool IsPositive { get; set; }
+    public bool NeedsToBeReAppliedEachTurn => false;
+    public bool IsPositive => false;
 
-    //set in subclasses
-    public abstract string StringID { get; set; }
-    public abstract Sprite Icon { get; set; }
-    public abstract string UIName { get; set; }
+    //set in subclass definition
+    public abstract string StringID { get;}
+    public abstract string IconName { get;}
+    public abstract string UIName { get; }
 
     //set at runtime
-    public abstract int AppliedToCharacterID { get; set; }
-    public abstract int TurnDurationRemaining { get; set; }
+    public int AffectedCharacterID { get; set; }
+    public int TurnDurationRemaining { get; set; }
 
     public bool ApplyEffect(bool isReapplication = false)
     {
-        if(isReapplication)
-            GameController.Singleton.CmdNextTurn();
+        PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[this.AffectedCharacterID];
+
+        affectedCharacter.SetCanTakeTurns(false);
         return true;
     }
 
     public void UnApply()
     {
-        //nothing to do...
+        PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[this.AffectedCharacterID];
+        affectedCharacter.SetCanTakeTurns(true);
     }
 }

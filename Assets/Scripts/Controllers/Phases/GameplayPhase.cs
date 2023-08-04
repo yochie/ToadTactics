@@ -19,15 +19,15 @@ public class GameplayPhase : IGamePhase
         this.Name = name;
         this.Controller = controller;
 
-        Controller.turnOrderIndex = 0;
-        Controller.playerTurn = 0;
+        Controller.SetTurnOrderIndex(0);
+        Controller.SetPlayerTurn(0);
 
         //finds character class id for the next turn so that we can check who owns it
         int currentCharacterClassID = -1;
         int i = 0;
-        foreach (int classID in Controller.sortedTurnOrder.Values)
+        foreach (int classID in Controller.SortedTurnOrder.Values)
         {
-            if (i == Controller.turnOrderIndex)
+            if (i == Controller.TurnOrderIndex)
             {
                 currentCharacterClassID = classID;
             }
@@ -39,12 +39,12 @@ public class GameplayPhase : IGamePhase
         }
 
         //if we don't own that char, swap player turn
-        if (Controller.playerTurn != Controller.draftedCharacterOwners[currentCharacterClassID])
+        if (Controller.PlayerTurn != Controller.DraftedCharacterOwners[currentCharacterClassID])
         {
             Controller.SwapPlayerTurn();
         }
 
-        Controller.AssignControlModesForNewTurn(Controller.playerTurn, ControlMode.move);
+        Controller.AssignControlModesForNewTurn(Controller.PlayerTurn, ControlMode.move);
         Controller.RpcOnInitGameplayMode();
     }
 
@@ -52,10 +52,10 @@ public class GameplayPhase : IGamePhase
     public void Tick()
     {
         //loops through turn order                
-        if (this.Controller.turnOrderIndex >= this.Controller.sortedTurnOrder.Count - 1)
-            this.Controller.turnOrderIndex = 0;
+        if (this.Controller.TurnOrderIndex >= this.Controller.SortedTurnOrder.Count - 1)
+            this.Controller.SetTurnOrderIndex(0);
         else
-            this.Controller.turnOrderIndex++;
+            this.Controller.SetTurnOrderIndex(this.Controller.TurnOrderIndex + 1);
 
         //finds character class id for the next turn so that we can check who owns it
         
@@ -65,8 +65,8 @@ public class GameplayPhase : IGamePhase
             throw new System.Exception("Error : couldn't find playing character in turn order");
         }
 
-        PlayerCharacter currentCharacter = this.Controller.playerCharacters[playingCharacterClassID];
-        if (currentCharacter.IsDead())
+        PlayerCharacter currentCharacter = this.Controller.PlayerCharacters[playingCharacterClassID];
+        if (currentCharacter.IsDead || !currentCharacter.CanTakeTurns)
         {
             //skips turn
             this.Controller.CmdNextTurn();
@@ -76,11 +76,11 @@ public class GameplayPhase : IGamePhase
         currentCharacter.ResetTurnState();
 
         //if we don't own that char, swap player turn
-        if (this.Controller.playerTurn != this.Controller.draftedCharacterOwners[playingCharacterClassID])
+        if (this.Controller.PlayerTurn != this.Controller.DraftedCharacterOwners[playingCharacterClassID])
         {
             this.Controller.SwapPlayerTurn();
         }
 
-        this.Controller.AssignControlModesForNewTurn(this.Controller.playerTurn, ControlMode.move);
+        this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, ControlMode.move);
     }
 }

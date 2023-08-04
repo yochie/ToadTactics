@@ -35,7 +35,7 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
             return;
 
         Debug.Log("Using cavalier stun debuff!");
-        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.charClassID, this.TargetHex.holdsCharacterWithClassID);
+        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, this.TargetHex.holdsCharacterWithClassID);
         BuffManager.Singleton.ApplyBuff(buff);
 
     }
@@ -52,11 +52,11 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
-            this.RequestingPlayerID == this.ActorCharacter.ownerID &&
+            this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.charClassID) &&
+            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
             ITargetedAction.ValidateTarget(this) &&
-            !this.ActorCharacter.hasUsedAbility
+            !this.ActorCharacter.HasUsedAbility
             )
             return true;
         else

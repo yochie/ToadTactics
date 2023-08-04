@@ -27,7 +27,7 @@ public class EquipmentDraftPhase : IGamePhase
         Debug.Log("Initializing equipment draft phase");
         this.Name = name;
         this.Controller = controller;
-        this.Controller.playerTurn = this.startingPlayerID;
+        this.Controller.SetPlayerTurn(this.startingPlayerID);
 
         uint numToRoll = this.Controller.numEquipmentsDraftedBetweenRounds;
         List<string> rolledIDs = new();
@@ -81,7 +81,7 @@ public class EquipmentDraftPhase : IGamePhase
 
     private void SetupEquipmentAssignment()
     {
-        int currentPlayerID = GameController.Singleton.playerTurn;
+        int currentPlayerID = GameController.Singleton.PlayerTurn;
         NetworkConnectionToClient currentPlayerClient = GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
         NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
 
@@ -90,7 +90,7 @@ public class EquipmentDraftPhase : IGamePhase
             NetworkConnectionToClient client = GameController.Singleton.GetConnectionForPlayerID(pc.playerID);
             string firstEquipmentToAssign = pc.GetUnassignedEquipmentID();
             List<int> characterIDs = new();
-            this.Controller.draftedCharacterOwners.Keys.CopyTo(characterIDs);
+            this.Controller.DraftedCharacterOwners.Keys.CopyTo(characterIDs);
             List<int> characterIDsForPlayer = characterIDs.Where(characterID => GameController.Singleton.HeOwnsThisCharacter(pc.playerID, characterID)).ToList();
 
             this.Controller.equipmentDraftUI.TargetRpcSetupEquipmentAssignment(client, firstEquipmentToAssign, characterIDsForPlayer);
@@ -100,7 +100,7 @@ public class EquipmentDraftPhase : IGamePhase
     [Server]
     private void UpdateDraftUI()
     {
-        int currentPlayerID = GameController.Singleton.playerTurn;
+        int currentPlayerID = GameController.Singleton.PlayerTurn;
         NetworkConnectionToClient currentPlayerClient = GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
         NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
 

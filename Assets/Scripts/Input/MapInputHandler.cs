@@ -74,7 +74,7 @@ public class MapInputHandler : NetworkBehaviour
             throw new System.Exception("Selecting hex without character is currently unsupported. Programmer should fix.");
 
         int heldCharacterID = h.holdsCharacterWithClassID;
-        PlayerCharacter heldCharacter = GameController.Singleton.playerCharacters[heldCharacterID];
+        PlayerCharacter heldCharacter = GameController.Singleton.PlayerCharacters[heldCharacterID];
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -84,10 +84,10 @@ public class MapInputHandler : NetworkBehaviour
                 Debug.Log("Trying to select hex while control mode is characterPlacement.");
                 break;
             case ControlMode.move:
-                this.rangeDisplayer.DisplayMovementRange(h, heldCharacter.CanMoveDistance());
+                this.rangeDisplayer.DisplayMovementRange(h, heldCharacter.RemainingMoves);
                 break;
             case ControlMode.attack:
-                this.rangeDisplayer.DisplayAttackRange(h, heldCharacter.currentStats.range, heldCharacter);
+                this.rangeDisplayer.DisplayAttackRange(h, heldCharacter.CurrentStats.range, heldCharacter);
                 break;
             case ControlMode.useAbility:
                 this.rangeDisplayer.DisplayAbilityRange(h, currentAbilityStats, heldCharacter);
@@ -203,7 +203,7 @@ public class MapInputHandler : NetworkBehaviour
         if(mode == ControlMode.useAbility)
         {
             int classID = GameController.Singleton.GetCharacterIDForTurn();
-            PlayerCharacter currentlyPlayingCharacter = GameController.Singleton.playerCharacters[classID];
+            PlayerCharacter currentlyPlayingCharacter = GameController.Singleton.PlayerCharacters[classID];
             //TODO: fetch correct ability here instead of juste getting first one
             if (currentlyPlayingCharacter.charClass.abilities == null || currentlyPlayingCharacter.charClass.abilities.Count < 1)
             {

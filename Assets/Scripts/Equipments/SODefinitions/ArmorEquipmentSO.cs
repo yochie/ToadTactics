@@ -12,8 +12,8 @@ public class ArmorEquipmentSO : EquipmentSO, IEquipmentQuality, IArmorModifier
 
     public void ApplyStatModification(PlayerCharacter playerCharacter)
     {
-        int currentArmor = playerCharacter.currentStats.armor;
-        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, armor: currentArmor + this.ArmorOffset);
+        int currentArmor = playerCharacter.CurrentStats.armor;
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, armor: currentArmor + this.ArmorOffset));
     }
 
     public Dictionary<string, string> GetPrintableStatDictionary()
@@ -27,7 +27,7 @@ public class ArmorEquipmentSO : EquipmentSO, IEquipmentQuality, IArmorModifier
 
     public void RemoveStatModification(PlayerCharacter playerCharacter)
     {
-        int currentArmor = playerCharacter.currentStats.armor;
-        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, armor: currentArmor - this.ArmorOffset);
+        int currentArmor = playerCharacter.CurrentStats.armor;
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, armor: currentArmor - this.ArmorOffset));
     }
 }

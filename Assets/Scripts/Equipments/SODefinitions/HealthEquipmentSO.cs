@@ -14,9 +14,9 @@ public class HealthEquipmentSO : EquipmentSO, IHealthModifier, IEquipmentQuality
 
     public void ApplyStatModification(PlayerCharacter playerCharacter)
     {
-        int currentMaxHealth = playerCharacter.currentStats.maxHealth;
+        int currentMaxHealth = playerCharacter.CurrentStats.maxHealth;
 
-        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, maxHealth: currentMaxHealth + this.HealthOffset);
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, maxHealth: currentMaxHealth + this.HealthOffset));
         playerCharacter.TakeDamage(HealthOffset, DamageType.healing);
     }
 
@@ -31,9 +31,9 @@ public class HealthEquipmentSO : EquipmentSO, IHealthModifier, IEquipmentQuality
 
     public void RemoveStatModification(PlayerCharacter playerCharacter)
     {
-        int currentMaxHealth = playerCharacter.currentStats.maxHealth;
+        int currentMaxHealth = playerCharacter.CurrentStats.maxHealth;
 
-        playerCharacter.currentStats = new CharacterStats(playerCharacter.currentStats, maxHealth: currentMaxHealth - this.HealthOffset);
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, maxHealth: currentMaxHealth - this.HealthOffset));
 
         //should just apply clamping to current health
         playerCharacter.TakeDamage(0, DamageType.healing);
