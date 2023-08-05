@@ -89,7 +89,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             this.transform.position = this.dragStartPosition;
             Hex destinationHex = this.mapInputHandler.HoveredHex;
             if (destinationHex == null) { return; }
-            GameController.Singleton.LocalPlayer.CmdCreateCharOnBoard(this.holdsCharacterWithClassID, destinationHex);
+            GameController.Singleton.LocalPlayer.CmdPlaceCharOnBoard(this.holdsCharacterWithClassID, destinationHex);
         }
     }
 

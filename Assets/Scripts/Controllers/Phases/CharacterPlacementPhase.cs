@@ -29,6 +29,10 @@ public class CharacterPlacementPhase : IGamePhase
 
         Map.Singleton.Initialize();
 
+        //TODO: create playerCharacters here instead of on placement
+        //placement should only make it visible and change its position
+        //we probably also want to wait for creation on all clients before proceeding to generate UI and allow character placement
+
         //setup turn order list
         foreach (int classID in this.Controller.DraftedCharacterOwners.Keys)
         {

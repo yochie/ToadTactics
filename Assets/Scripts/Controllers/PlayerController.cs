@@ -218,9 +218,11 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdCreateCharOnBoard(int charIDToCreate, Hex destinationHex, NetworkConnectionToClient sender = null)
+    public void CmdPlaceCharOnBoard(int charIDToPlace, Hex destinationHex, NetworkConnectionToClient sender = null)
     {
-        int ownerPlayerIndex = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        int ownerPlayerIndex = GameController.Singleton.DraftedCharacterOwners[charIDToPlace];
+        PlayerCharacter toPlace = GameController.Singleton.playerCharacters[charIDToPlace];
+
         //validate destination
         if (destinationHex == null ||
             !destinationHex.isStartingZone ||
@@ -231,25 +233,34 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        PlayerCharacter characterPrefab = ClassDataSO.Singleton.GetPrefabByClassID(charIDToCreate);
         Vector3 destinationWorldPos = destinationHex.transform.position;
-        GameObject newCharObject =
-            Instantiate(characterPrefab.gameObject, destinationWorldPos, Quaternion.identity);
-        PlayerCharacter newChar = newCharObject.GetComponent<PlayerCharacter>();
 
+        toPlace.transform.position = destinationWorldPos;
+        toPlace.SetVisible(true);
+
+        //update Hex state, synced to clients by syncvar
+        destinationHex.holdsCharacterWithClassID = charIDToPlace;
+        Map.Singleton.characterPositions[charIDToPlace] = destinationHex.coordinates;
+
+        this.TargetRpcOnCharacterPlaced(sender, charIDToPlace);
+
+    }
+
+    public void CmndCreateCharacter(int charIDToCreate, NetworkConnectionToClient sender = null)
+    { 
+        int ownerPlayerIndex = GameController.Singleton.DraftedCharacterOwners[charIDToCreate];
+        PlayerCharacter characterPrefab = ClassDataSO.Singleton.GetPrefabByClassID(charIDToCreate);
+        GameObject newCharObject = Instantiate(characterPrefab.gameObject, Vector3.zero, Quaternion.identity);
+        PlayerCharacter newChar = newCharObject.GetComponent<PlayerCharacter>();
+        newChar.SetVisible(false);
         newChar.SetOwner(ownerPlayerIndex);
         if (newChar.CharClassID == this.kingClassID)
             newChar.SetKing(true);
-        newChar.transform.position = destinationWorldPos;
 
-        //update Hex state, synced to clients by syncvar
-        destinationHex.holdsCharacterWithClassID = charIDToCreate;
-        Map.Singleton.characterPositions[charIDToCreate] = destinationHex.coordinates;
-
-        //Apply equipments
-        foreach(KeyValuePair<string, int> assignedEquipment in this.assignedEquipments)
+        //Adds to owned equipments list, applied upon Init
+        foreach (KeyValuePair<string, int> assignedEquipment in this.assignedEquipments)
         {
-            if(assignedEquipment.Value == charIDToCreate)
+            if (assignedEquipment.Value == charIDToCreate)
             {
                 newChar.GiveEquipment(assignedEquipment.Key);
             }
@@ -259,8 +270,6 @@ public class PlayerController : NetworkBehaviour
         NetworkServer.Spawn(newCharObject, connectionToClient);
 
         GameController.Singleton.PlayerCharactersNetIDs.Add(charIDToCreate, newCharObject.GetComponent<NetworkIdentity>().netId);
-
-        this.TargetRpcOnCharacterPlaced(sender, charIDToCreate);
 
         GameController.Singleton.CmdNextTurn();
     }

@@ -330,5 +330,10 @@ public class PlayerCharacter : NetworkBehaviour
         else
             return true;
     }
+
+    public void SetVisible(bool state)
+    {
+        this.spriteRenderer.enabled = state;
+    }
     #endregion
 }

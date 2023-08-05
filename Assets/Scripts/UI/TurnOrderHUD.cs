@@ -109,8 +109,6 @@ public class TurnOrderHUD : MonoBehaviour
 
     }
 
-    //called by Attack event
-    //Characters should have been created previously
     public void UpdateLifeLabels()
     {
         //Debug.Log("Resetting life labels");
