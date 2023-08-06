@@ -51,6 +51,14 @@ public class GameplayPhase : IGamePhase
     [Server]
     public void Tick()
     {
+
+        int lastTurnCharacterID = this.Controller.GetCharacterIDForTurn();
+        if (lastTurnCharacterID == -1)
+        {
+            throw new System.Exception("Error : couldn't find playing character in turn order");
+        }
+        BuffManager.Singleton.TickBuffsForTurn(lastTurnCharacterID);
+
         //loops through turn order                
         if (this.Controller.TurnOrderIndex >= this.Controller.SortedTurnOrder.Count - 1)
             this.Controller.SetTurnOrderIndex(0);
@@ -59,15 +67,13 @@ public class GameplayPhase : IGamePhase
 
         //finds character class id for the next turn so that we can check who owns it
         
-        int playingCharacterClassID = this.Controller.GetCharacterIDForTurn();
-        if (playingCharacterClassID == -1)
+        int newTurnCharacterID = this.Controller.GetCharacterIDForTurn();
+        if (newTurnCharacterID == -1)
         {
             throw new System.Exception("Error : couldn't find playing character in turn order");
         }
 
-        BuffManager.Singleton.TickBuffsForTurn(playingCharacterClassID);
-
-        PlayerCharacter currentCharacter = this.Controller.PlayerCharacters[playingCharacterClassID];
+        PlayerCharacter currentCharacter = this.Controller.PlayerCharactersByID[newTurnCharacterID];
         if (currentCharacter.IsDead || !currentCharacter.CanTakeTurns)
         {
             //skips turn
@@ -78,7 +84,7 @@ public class GameplayPhase : IGamePhase
         currentCharacter.ResetTurnState();
 
         //if we don't own that char, swap player turn
-        if (this.Controller.PlayerTurn != this.Controller.DraftedCharacterOwners[playingCharacterClassID])
+        if (this.Controller.PlayerTurn != this.Controller.DraftedCharacterOwners[newTurnCharacterID])
         {
             this.Controller.SwapPlayerTurn();
         }

@@ -240,7 +240,16 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 6,
                 range: 1,
-                damageIterations: 1)
+                damageIterations: 1),
+            abilities: new List<CharacterAbilityStats> {
+                new (
+                    stringID: "PaladinTeamBuff",
+                    interfaceName: "Blessing of Kings",
+                    description: "Grants a bonus to health, armor and movement to all allies.",
+                    turnDuration: 3,
+                    allowedAbilityTargets: new List<TargetType>(){TargetType.self }
+                )
+            }
             );
         classes.Add(paladin);
 
@@ -331,6 +340,7 @@ public class ClassDataSO : ScriptableObject
         Dictionary<string, Type> abilityClassesByID = new();
 
         abilityClassesByID.Add("CavalierStun", typeof(CavalierStunAbility));
+        abilityClassesByID.Add("PaladinTeamBuff", typeof(PaladinTeamBuffAbility));
 
         return abilityClassesByID;
 

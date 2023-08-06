@@ -142,7 +142,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             Debug.Log("Trying to get held character from hex without one.");
             return null; 
         }
-        return GameController.Singleton.PlayerCharacters[this.holdsCharacterWithClassID];
+        return GameController.Singleton.PlayerCharactersByID[this.holdsCharacterWithClassID];
     }
 
     public PlayerCharacter GetHeldCorpseCharacterObject()
@@ -152,7 +152,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             Debug.Log("Trying to get held corpse character from hex without one.");
             return null;
         }
-        return GameController.Singleton.PlayerCharacters[this.holdsCorpseWithClassID];
+        return GameController.Singleton.PlayerCharactersByID[this.holdsCorpseWithClassID];
     }
 
     public bool BreaksLOSToTarget(Hex targetHex)

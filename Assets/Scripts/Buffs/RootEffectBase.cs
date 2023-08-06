@@ -20,7 +20,7 @@ public abstract class RootEffectBase : IBuffEffect, ITimedEffect
     {
         foreach (int affectedCharacterID in this.AffectedCharacterIDs) 
         { 
-            PlayerCharacter appliedTo = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            PlayerCharacter appliedTo = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             appliedTo.SetCanMove(false);
         }
         
@@ -31,7 +31,7 @@ public abstract class RootEffectBase : IBuffEffect, ITimedEffect
     {
         foreach (int affectedCharacterID in this.AffectedCharacterIDs)
         {
-            PlayerCharacter appliedTo = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            PlayerCharacter appliedTo = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             appliedTo.SetCanMove(true);
         }
     }

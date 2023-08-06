@@ -221,7 +221,7 @@ public class PlayerController : NetworkBehaviour
     public void CmdPlaceCharOnBoard(int charIDToPlace, Hex destinationHex, NetworkConnectionToClient sender = null)
     {
         int ownerPlayerIndex = GameController.Singleton.DraftedCharacterOwners[charIDToPlace];
-        PlayerCharacter toPlace = GameController.Singleton.playerCharactersByID[charIDToPlace];
+        PlayerCharacter toPlace = GameController.Singleton.PlayerCharactersByID[charIDToPlace];
 
         //validate destination
         if (destinationHex == null ||

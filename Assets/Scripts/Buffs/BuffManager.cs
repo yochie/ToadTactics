@@ -59,14 +59,14 @@ internal class BuffManager : NetworkBehaviour
     {
         foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
         {
-            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.AddAffectingBuff(buff);
         }
 
         IAbilityBuffEffect abilityBuff = buff as IAbilityBuffEffect;
         if (abilityBuff != null)
         {
-            PlayerCharacter applyingCharacter = GameController.Singleton.PlayerCharacters[abilityBuff.ApplyingCharacterID];
+            PlayerCharacter applyingCharacter = GameController.Singleton.PlayerCharactersByID[abilityBuff.ApplyingCharacterID];
             applyingCharacter.AddAppliedBuff(buff);
         }
 
@@ -77,7 +77,7 @@ internal class BuffManager : NetworkBehaviour
 
     public void TickBuffsForTurn(int playingCharacterID)
     {        
-        foreach(PlayerCharacter character in GameController.Singleton.playerCharactersByID.Values)
+        foreach(PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
         {
             if (character.CharClassID != playingCharacterID)
                 continue;

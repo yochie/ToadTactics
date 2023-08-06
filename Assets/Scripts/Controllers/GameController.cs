@@ -85,8 +85,8 @@ public class GameController : NetworkBehaviour
     public SyncDictionary<int, uint> PlayerCharactersNetIDs => this.playerCharactersNetIDs;
 
 
-    public readonly Dictionary<int, PlayerCharacter> playerCharactersByID = new();
-    public Dictionary<int, PlayerCharacter> PlayerCharacters => this.playerCharactersByID;
+    private readonly Dictionary<int, PlayerCharacter> playerCharactersByID = new();
+    public Dictionary<int, PlayerCharacter> PlayerCharactersByID => this.playerCharactersByID;
 
     //maps character initiative to classID
     private readonly SyncIDictionary<float, int> sortedTurnOrder = new(new SortedList<float, int>());
@@ -479,7 +479,7 @@ public class GameController : NetworkBehaviour
     internal void ClearPlayerCharacters()
     {
         this.playerCharactersNetIDs.Clear();
-        this.playerCharactersByID.Clear();
+        this.PlayerCharactersByID.Clear();
     }
 
     #endregion
@@ -491,10 +491,10 @@ public class GameController : NetworkBehaviour
         switch (op)
         {
             case SyncDictionary<int, uint>.Operation.OP_ADD:
-                this.PlayerCharacters[key] = null;
+                this.PlayerCharactersByID[key] = null;
                 if (NetworkClient.spawned.TryGetValue(netidArg, out NetworkIdentity netidObject))
                 {
-                    this.PlayerCharacters[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
+                    this.PlayerCharactersByID[key] = netidObject.gameObject.GetComponent<PlayerCharacter>();
                     if(!isServer)
                         this.CmdNotifyCharacterInstantiatedOnRemote(key);
                 }
@@ -516,12 +516,12 @@ public class GameController : NetworkBehaviour
     //coroutine for finishing syncvar netid matching
     private IEnumerator PlayerFromNetIDCoroutine(int key, uint netIdArg)
     {
-        while (this.PlayerCharacters[key] == null)
+        while (this.PlayerCharactersByID[key] == null)
         {
             yield return null;
             if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
             {
-                this.PlayerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
+                this.PlayerCharactersByID[key] = identity.gameObject.GetComponent<PlayerCharacter>();
                 if (!isServer)
                     this.CmdNotifyCharacterInstantiatedOnRemote(key);
             }
@@ -810,7 +810,7 @@ public class GameController : NetworkBehaviour
     {
         foreach (int draftedCharacterID in this.draftedCharacterOwners.Keys)
         {
-            if (!this.playerCharactersByID.ContainsKey(draftedCharacterID) || this.playerCharactersByID[draftedCharacterID] == null)
+            if (!this.PlayerCharactersByID.ContainsKey(draftedCharacterID) || this.PlayerCharactersByID[draftedCharacterID] == null)
             {
                 return false;
             }

@@ -20,7 +20,7 @@ public abstract class StunEffectBase : IBuffEffect, ITimedEffect
     {
         foreach(int affectedCharacterID in this.AffectedCharacterIDs)
         {
-            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.SetCanTakeTurns(false);
         }
 
@@ -31,7 +31,7 @@ public abstract class StunEffectBase : IBuffEffect, ITimedEffect
     {
         foreach (int affectedCharacterID in this.AffectedCharacterIDs)
         {
-            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.SetCanTakeTurns(true);
         }
     }

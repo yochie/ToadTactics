@@ -74,7 +74,7 @@ public class MapInputHandler : NetworkBehaviour
             throw new System.Exception("Selecting hex without character is currently unsupported. Programmer should fix.");
 
         int heldCharacterID = h.holdsCharacterWithClassID;
-        PlayerCharacter heldCharacter = GameController.Singleton.PlayerCharacters[heldCharacterID];
+        PlayerCharacter heldCharacter = GameController.Singleton.PlayerCharactersByID[heldCharacterID];
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -203,7 +203,7 @@ public class MapInputHandler : NetworkBehaviour
         if(mode == ControlMode.useAbility)
         {
             int classID = GameController.Singleton.GetCharacterIDForTurn();
-            PlayerCharacter currentlyPlayingCharacter = GameController.Singleton.PlayerCharacters[classID];
+            PlayerCharacter currentlyPlayingCharacter = GameController.Singleton.PlayerCharactersByID[classID];
             //TODO: fetch correct ability here instead of juste getting first one
             if (currentlyPlayingCharacter.charClass.abilities == null || currentlyPlayingCharacter.charClass.abilities.Count < 1)
             {

@@ -5,7 +5,7 @@ public interface IBuffEffect
 {
     
     //Set in class definition
-    public string BuffTypeID { get;}
+    public string BuffTypeID { get; }
 
     public bool IsPositive { get; }
 
@@ -17,6 +17,7 @@ public interface IBuffEffect
 
     //Set at runtime
     public int UniqueID { get; set; }
+
     public List<int> AffectedCharacterIDs { get; set; }
 
     public bool ApplyEffect(bool isReapplication);

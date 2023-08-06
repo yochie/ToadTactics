@@ -141,14 +141,14 @@ public class TurnOrderHUD : MonoBehaviour
 
             int currentHealth; 
             int maxHealth;
-            if (!GameController.Singleton.PlayerCharacters.ContainsKey(classID) || GameController.Singleton.PlayerCharacters[classID] == null)
+            if (!GameController.Singleton.PlayerCharactersByID.ContainsKey(classID) || GameController.Singleton.PlayerCharactersByID[classID] == null)
             {
                 currentHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
                 maxHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
             }
             else
             {
-                PlayerCharacter currentCharacter = GameController.Singleton.PlayerCharacters[classID];
+                PlayerCharacter currentCharacter = GameController.Singleton.PlayerCharactersByID[classID];
                 currentHealth = currentCharacter.CurrentLife;
                 maxHealth = currentCharacter.CurrentStats.maxHealth;
             }

@@ -174,7 +174,7 @@ public class MainHUD : NetworkBehaviour
 
         this.SetInteractableGameplayButtons(true);
 
-        PlayerCharacter newTurnCharacter = GameController.Singleton.PlayerCharacters[GameController.Singleton.GetCharacterIDForTurn(newTurnIndex)];
+        PlayerCharacter newTurnCharacter = GameController.Singleton.PlayerCharactersByID[GameController.Singleton.GetCharacterIDForTurn(newTurnIndex)];
 
         if (!newTurnCharacter.CanMove)
             this.GrayOutGameplayButton(ControlMode.move);
