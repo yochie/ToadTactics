@@ -235,24 +235,23 @@ public class PlayerController : NetworkBehaviour
 
         Vector3 destinationWorldPos = destinationHex.transform.position;
 
-        toPlace.transform.position = destinationWorldPos;
-        toPlace.SetVisible(true);
+        toPlace.RpcPlaceAndSetVisible(true, destinationWorldPos);
 
         //update Hex state, synced to clients by syncvar
         destinationHex.holdsCharacterWithClassID = charIDToPlace;
         Map.Singleton.characterPositions[charIDToPlace] = destinationHex.coordinates;
 
         this.TargetRpcOnCharacterPlaced(sender, charIDToPlace);
-
+        GameController.Singleton.CmdNextTurn();
     }
 
-    public void CmndCreateCharacter(int charIDToCreate, NetworkConnectionToClient sender = null)
+    [Server]
+    public void CreateCharacter(int charIDToCreate)
     { 
         int ownerPlayerIndex = GameController.Singleton.DraftedCharacterOwners[charIDToCreate];
         PlayerCharacter characterPrefab = ClassDataSO.Singleton.GetPrefabByClassID(charIDToCreate);
         GameObject newCharObject = Instantiate(characterPrefab.gameObject, Vector3.zero, Quaternion.identity);
         PlayerCharacter newChar = newCharObject.GetComponent<PlayerCharacter>();
-        newChar.SetVisible(false);
         newChar.SetOwner(ownerPlayerIndex);
         if (newChar.CharClassID == this.kingClassID)
             newChar.SetKing(true);
@@ -271,7 +270,6 @@ public class PlayerController : NetworkBehaviour
 
         GameController.Singleton.PlayerCharactersNetIDs.Add(charIDToCreate, newCharObject.GetComponent<NetworkIdentity>().netId);
 
-        GameController.Singleton.CmdNextTurn();
     }
     #endregion
 

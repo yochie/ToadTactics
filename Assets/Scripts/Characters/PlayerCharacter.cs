@@ -105,8 +105,11 @@ public class PlayerCharacter : NetworkBehaviour
         }
 
         if (this.IsKing)
+        {
             this.SetCurrentStats(new CharacterStats(this.CurrentStats, maxHealth: Utility.ApplyKingLifeBuff(this.CurrentStats.maxHealth)));
-
+            this.currentLife = currentStats.maxHealth;
+        }
+            
         this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
 
         this.isDead = false;
@@ -255,6 +258,13 @@ public class PlayerCharacter : NetworkBehaviour
         this.transform.position = position;
     }
 
+    [ClientRpc]
+    public void RpcPlaceAndSetVisible(bool visibleState, Vector3 position)
+    {
+        this.spriteRenderer.enabled = visibleState;
+        this.transform.position = position;
+    }
+
     [Server]
     internal void ApplyEquipment(string equipmentID)
     {
@@ -329,11 +339,6 @@ public class PlayerCharacter : NetworkBehaviour
             return false;
         else
             return true;
-    }
-
-    public void SetVisible(bool state)
-    {
-        this.spriteRenderer.enabled = state;
     }
     #endregion
 }

@@ -29,10 +29,21 @@ public class CharacterPlacementPhase : IGamePhase
 
         Map.Singleton.Initialize();
 
-        //TODO: create playerCharacters here instead of on placement
-        //placement should only make it visible and change its position
-        //we probably also want to wait for creation on all clients before proceeding to generate UI and allow character placement
+        //create characters
+        foreach (PlayerController player in this.Controller.playerControllers)
+        {
+            foreach (KeyValuePair<int, int> characterToOwner in this.Controller.DraftedCharacterOwners)
+            {
+                if (characterToOwner.Value == player.playerID)
+                    player.CreateCharacter(characterToOwner.Key);
+            }
+        }
 
+        this.Controller.StartCoroutine(WaitForCharacterInstantiationThenFinishInit());
+    }
+
+    private void FinishInit()
+    {
         //setup turn order list
         foreach (int classID in this.Controller.DraftedCharacterOwners.Keys)
         {
@@ -45,7 +56,8 @@ public class CharacterPlacementPhase : IGamePhase
         this.Controller.SetPlayerTurn(0);
 
         this.Controller.mapInputHandler.RpcSetControlModeOnAllClients(ControlMode.characterPlacement);
-    }
+    
+}
 
     [Server]
     public void Tick()
@@ -57,16 +69,17 @@ public class CharacterPlacementPhase : IGamePhase
 
         if (Controller.AllCharactersPlaced())
         {
-            this.Controller.StartCoroutine(WaitForAllCharactersInstantiatedOnAllClients());
+            Controller.SetPhase(new GameplayPhase());
         }
     }
 
-    private IEnumerator WaitForAllCharactersInstantiatedOnAllClients()
+    private IEnumerator WaitForCharacterInstantiationThenFinishInit()
     {
         while (!Controller.AllCharactersInstantiatedOnClients())
         {
             yield return null;
         }
-        Controller.SetPhase(new GameplayPhase());
+
+        this.FinishInit();
     }
 }

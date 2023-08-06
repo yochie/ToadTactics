@@ -71,7 +71,6 @@ public class GameController : NetworkBehaviour
     public EquipmentDraftUI equipmentDraftUI;
     List<int> charactersInstantiantedOnRemote;
 
-
     #endregion
 
     #region Synced vars
@@ -523,7 +522,8 @@ public class GameController : NetworkBehaviour
             if (NetworkClient.spawned.TryGetValue(netIdArg, out NetworkIdentity identity))
             {
                 this.PlayerCharacters[key] = identity.gameObject.GetComponent<PlayerCharacter>();
-                this.CmdNotifyCharacterInstantiatedOnRemote(key);
+                if (!isServer)
+                    this.CmdNotifyCharacterInstantiatedOnRemote(key);
             }
         }
     }
@@ -646,7 +646,8 @@ public class GameController : NetworkBehaviour
     public bool AllCharactersPlaced() { 
         foreach (int classID in this.DraftedCharacterOwners.Keys)
         {
-            if (!this.PlayerCharactersNetIDs.ContainsKey(classID))
+            
+            if (!Map.Singleton.characterPositions.ContainsKey(classID))
             {
                 return false;
             }
@@ -656,11 +657,11 @@ public class GameController : NetworkBehaviour
 
     public bool ThisCharacterIsPlacedOnBoard(int classID)
     {
-        return this.PlayerCharacters.ContainsKey(classID);
+        return Map.Singleton.characterPositions.ContainsKey(classID);
     }
 
     public bool AllHisCharactersAreOnBoard(int playerID) {
-        foreach (int classID in this.SortedTurnOrder.Values)
+        foreach (int classID in this.draftedCharacterOwners.Keys)
         {
             if (HeOwnsThisCharacter(playerID, classID) &&
                 !ThisCharacterIsPlacedOnBoard(classID))

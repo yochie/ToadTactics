@@ -56,12 +56,6 @@ MonoBehaviour:
   onCharacterResurrect: {fileID: 11400000, guid: ce14ce51e13a37648b544348ae2596f0, type: 2}
   onCharacterLifeChanged: {fileID: 11400000, guid: 9af4cc90318dd6d4eb3f53de4a099d53, type: 2}
   charClassID: -1
-  hasMoved: 0
-  hasAttacked: 0
-  hasUsedAbility: 0
-  hasUsedAllEquipments: 0
-  ownerID: 0
-  isKing: 0
 --- !u!212 &3809699183538865181
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -69,7 +63,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4270620172720993448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
