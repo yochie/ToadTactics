@@ -6,11 +6,12 @@ public abstract class StunEffectBase : IBuffEffect, ITimedEffect
     public bool IsPositive => false;
 
     //set in subclass definition
-    public abstract string StringID { get;}
+    public abstract string BuffTypeID { get;}
     public abstract string IconName { get;}
     public abstract string UIName { get; }
 
     //set at runtime
+    public int UniqueID { get; set; }
     public int AffectedCharacterID { get; set; }
     public int TurnDurationRemaining { get; set; }
 

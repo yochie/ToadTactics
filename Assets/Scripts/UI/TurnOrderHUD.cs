@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -107,6 +108,17 @@ public class TurnOrderHUD : MonoBehaviour
             i++;
         }
 
+    }    
+    internal void AddBuffIcon(int buffID, int affectedCharacterID, Sprite sprite)
+    {
+
+        foreach(TurnOrderSlotUI slot in this.turnOrderSlots)
+        {
+            if (slot.holdsCharacterWithClassID == affectedCharacterID)
+            {
+                slot.AddBuffIcon(buffID, sprite);
+            }
+        }
     }
 
     public void UpdateLifeLabels()

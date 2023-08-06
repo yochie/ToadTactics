@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
+using System.Runtime.Serialization;
 
-internal class BuffManager : MonoBehaviour
+internal class BuffManager : NetworkBehaviour
 {
     public static BuffManager Singleton { get; private set; }
+
+    [SerializeField]
+    private TurnOrderHUD turnOrderHud;
 
     private Dictionary<IBuffEffect, int> persistingPermanentBuffs;
 
@@ -27,6 +32,7 @@ internal class BuffManager : MonoBehaviour
         buff.ApplyingCharacterID = applyingCharacterID;
 
         //IBuffEffect
+        buff.UniqueID = IDGenerator.GetNewID();
         buff.AffectedCharacterID = targetCharacterID;
 
         //ITimedEffect
@@ -49,7 +55,7 @@ internal class BuffManager : MonoBehaviour
         return buff;
 
     }
-    public void ApplyBuff(IBuffEffect buff)
+    public void ApplyNewBuff(IBuffEffect buff)
     {
         PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[buff.AffectedCharacterID];
         affectedCharacter.AddAffectingBuff(buff);
@@ -62,5 +68,15 @@ internal class BuffManager : MonoBehaviour
         }
 
         buff.ApplyEffect(isReapplication: false);
+
+        this.RpcAddBuffIcon( buff.UniqueID, buff.AffectedCharacterID, buff.IconName);
     }
+
+    [ClientRpc]
+    private void RpcAddBuffIcon(int buffID, int affectedCharacterID, string iconName)
+    {
+        this.turnOrderHud.AddBuffIcon(buffID, affectedCharacterID, BuffIconsDataSO.Singleton.GetBuffIcon(iconName));
+    }
+
+
 }

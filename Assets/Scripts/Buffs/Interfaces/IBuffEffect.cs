@@ -2,8 +2,9 @@ using UnityEngine;
 
 public interface IBuffEffect
 {
+    
     //Set in class definition
-    public string StringID { get;}
+    public string BuffTypeID { get;}
 
     public bool IsPositive { get; }
 
@@ -14,6 +15,7 @@ public interface IBuffEffect
     public bool NeedsToBeReAppliedEachTurn { get;}
 
     //Set at runtime
+    public int UniqueID { get; set; }
     public int AffectedCharacterID { get; set; }
 
     public bool ApplyEffect(bool isReapplication);

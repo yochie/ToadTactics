@@ -12,6 +12,9 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     private Image highlightImage;
 
     [SerializeField]
+    private GameObject buffList;
+
+    [SerializeField]
     private Image characterImage;
 
     [SerializeField]
@@ -24,6 +27,12 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     private IntGameEventSO onCharacterSheetDisplayed;
 
     public int holdsCharacterWithClassID = -1;
+
+    [SerializeField]
+    private Image blankImagePrefab;
+
+    //unique buffID => image
+    private Dictionary<int, Image> displayedBuffs;
 
     private void SetHighlight(bool state)
     {
@@ -82,5 +91,28 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         this.onCharacterSheetDisplayed.Raise(this.holdsCharacterWithClassID);
+    }
+
+    public void AddBuffIcon(int buffID, Sprite sprite)
+    {
+        this.buffList.SetActive(true);        
+        Image buffImage = Instantiate(this.blankImagePrefab, this.buffList.transform);
+        buffImage.sprite = sprite;
+        if (this.displayedBuffs == null)
+            this.displayedBuffs = new();
+        this.displayedBuffs.Add(buffID, buffImage);
+    }
+
+    public void RemoveBuffIcon(int buffID)
+    {
+        if (!this.displayedBuffs.ContainsKey(buffID) || this.displayedBuffs[buffID] == null)
+            throw new Exception("Error :Slot asked to remove buff Icon it does not display.");
+
+        Image icon = this.displayedBuffs[buffID];
+        this.displayedBuffs.Remove(buffID);
+        Destroy(icon.gameObject);
+
+        if (this.displayedBuffs.Count == 0)
+            this.buffList.SetActive(false);
     }
 }
