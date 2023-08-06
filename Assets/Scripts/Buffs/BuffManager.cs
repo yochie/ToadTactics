@@ -8,9 +8,6 @@ internal class BuffManager : NetworkBehaviour
 {
     public static BuffManager Singleton { get; private set; }
 
-    [SerializeField]
-    private TurnOrderHUD turnOrderHud;
-
     private Dictionary<IBuffEffect, List<int>> persistingPermanentBuffs;
 
     private void Awake()
@@ -104,16 +101,22 @@ internal class BuffManager : NetworkBehaviour
         }
     }
 
+    //TODO : call and fill
+    public void ApplyPersistentBuffsForNewRound()
+    {
+        throw new NotImplementedException();
+    }
+
     [ClientRpc]
     private void RpcAddBuffIcons(int buffID, List<int> affectedCharacterIDs, string iconName)
     {
-        this.turnOrderHud.AddBuffIcons(buffID, affectedCharacterIDs, BuffIconsDataSO.Singleton.GetBuffIcon(iconName));
+        TurnOrderHUD.Singleton.AddBuffIcons(buffID, affectedCharacterIDs, BuffIconsDataSO.Singleton.GetBuffIcon(iconName));
     }
 
     [ClientRpc]
     private void RpcRemoveBuffIcons(int buffID, List<int> affectedCharacterIDs)
     {
-        this.turnOrderHud.RemoveBuffIcons(buffID, affectedCharacterIDs);
+        TurnOrderHUD.Singleton.RemoveBuffIcons(buffID, affectedCharacterIDs);
     }
 
 }

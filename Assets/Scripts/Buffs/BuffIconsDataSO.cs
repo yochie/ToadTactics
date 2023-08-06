@@ -25,7 +25,7 @@ public class BuffIconsDataSO : ScriptableObject
     {
         foreach(Sprite icon in this.buffIcons)
         {
-            Debug.Log(icon.name);
+            //Debug.Log(icon.name);
             if (icon.name == name)
             {
                 return icon;
