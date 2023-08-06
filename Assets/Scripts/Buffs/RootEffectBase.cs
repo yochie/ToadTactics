@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class RootEffectBase : IBuffEffect, ITimedEffect
@@ -11,21 +12,27 @@ public abstract class RootEffectBase : IBuffEffect, ITimedEffect
     public abstract string UIName { get; }
 
     //set at runtime
-    public int AffectedCharacterID { get; set; }
+    public List<int> AffectedCharacterIDs { get; set; }
     public int TurnDurationRemaining { get; set; }
     public int UniqueID { get; set; }
 
     public bool ApplyEffect(bool isReapplication = false)
     {
-        PlayerCharacter appliedTo = GameController.Singleton.PlayerCharacters[this.AffectedCharacterID];
-        appliedTo.SetCanMove(false);
+        foreach (int affectedCharacterID in this.AffectedCharacterIDs) 
+        { 
+            PlayerCharacter appliedTo = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            appliedTo.SetCanMove(false);
+        }
         
         return true;
     }
 
     public void UnApply()
     {
-        PlayerCharacter appliedTo = GameController.Singleton.PlayerCharacters[this.AffectedCharacterID];
-        appliedTo.SetCanMove(true);
+        foreach (int affectedCharacterID in this.AffectedCharacterIDs)
+        {
+            PlayerCharacter appliedTo = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            appliedTo.SetCanMove(true);
+        }
     }
 }

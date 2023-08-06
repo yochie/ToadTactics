@@ -109,14 +109,25 @@ public class TurnOrderHUD : MonoBehaviour
         }
 
     }    
-    internal void AddBuffIcon(int buffID, int affectedCharacterID, Sprite sprite)
+    internal void AddBuffIcons(int buffID, List<int> affectedCharacterIDs, Sprite sprite)
     {
 
         foreach(TurnOrderSlotUI slot in this.turnOrderSlots)
         {
-            if (slot.holdsCharacterWithClassID == affectedCharacterID)
+            if (affectedCharacterIDs.Contains(slot.holdsCharacterWithClassID))
             {
                 slot.AddBuffIcon(buffID, sprite);
+            }
+        }
+    }
+
+    internal void RemoveBuffIcons(int buffID, List<int> affectedCharacterIDs)
+    {
+        foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
+        {
+            if (affectedCharacterIDs.Contains(slot.holdsCharacterWithClassID))
+            {
+                slot.RemoveBuffIcon(buffID);
             }
         }
     }

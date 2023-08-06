@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IBuffEffect
@@ -16,7 +17,7 @@ public interface IBuffEffect
 
     //Set at runtime
     public int UniqueID { get; set; }
-    public int AffectedCharacterID { get; set; }
+    public List<int> AffectedCharacterIDs { get; set; }
 
     public bool ApplyEffect(bool isReapplication);
 

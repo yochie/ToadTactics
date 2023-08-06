@@ -11,7 +11,7 @@ internal class BuffManager : NetworkBehaviour
     [SerializeField]
     private TurnOrderHUD turnOrderHud;
 
-    private Dictionary<IBuffEffect, int> persistingPermanentBuffs;
+    private Dictionary<IBuffEffect, List<int>> persistingPermanentBuffs;
 
     private void Awake()
     {
@@ -23,7 +23,7 @@ internal class BuffManager : NetworkBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
-    internal IAbilityBuffEffect CreateAbilityBuff(Type buffType, CharacterAbilityStats abilityStats, int applyingCharacterID, int targetCharacterID)
+    internal IAbilityBuffEffect CreateAbilityBuff(Type buffType, CharacterAbilityStats abilityStats, int applyingCharacterID, List<int> affectedCharacterIDs)
     {
         
         //IAbilityBuffEffect
@@ -33,7 +33,7 @@ internal class BuffManager : NetworkBehaviour
 
         //IBuffEffect
         buff.UniqueID = IDGenerator.GetNewID();
-        buff.AffectedCharacterID = targetCharacterID;
+        buff.AffectedCharacterIDs = affectedCharacterIDs;
 
         //ITimedEffect
         ITimedEffect timedBuff = buff as ITimedEffect;
@@ -47,7 +47,7 @@ internal class BuffManager : NetworkBehaviour
         if(permanentBuff != null)
         {
             if (permanentBuff.PersistsBetweenRounds && !this.persistingPermanentBuffs.ContainsKey(buff))
-                this.persistingPermanentBuffs.Add(buff, targetCharacterID);
+                this.persistingPermanentBuffs.Add(buff, affectedCharacterIDs);
         }
 
         //TODO : IConditionalEffect
@@ -57,8 +57,11 @@ internal class BuffManager : NetworkBehaviour
     }
     public void ApplyNewBuff(IBuffEffect buff)
     {
-        PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[buff.AffectedCharacterID];
-        affectedCharacter.AddAffectingBuff(buff);
+        foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
+        {
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            affectedCharacter.AddAffectingBuff(buff);
+        }
 
         IAbilityBuffEffect abilityBuff = buff as IAbilityBuffEffect;
         if (abilityBuff != null)
@@ -69,14 +72,48 @@ internal class BuffManager : NetworkBehaviour
 
         buff.ApplyEffect(isReapplication: false);
 
-        this.RpcAddBuffIcon( buff.UniqueID, buff.AffectedCharacterID, buff.IconName);
+        this.RpcAddBuffIcons( buff.UniqueID, buff.AffectedCharacterIDs, buff.IconName);
+    }
+
+    public void TickBuffsForTurn(int playingCharacterID)
+    {        
+        foreach(PlayerCharacter character in GameController.Singleton.playerCharactersByID.Values)
+        {
+            if (character.CharClassID != playingCharacterID)
+                continue;
+            foreach(IBuffEffect buff in character.appliedBuffs)
+            {
+                ITimedEffect timedBuff = buff as ITimedEffect;
+                if (timedBuff == null)
+                    continue;                
+                timedBuff.TurnDurationRemaining--;
+                if (timedBuff.TurnDurationRemaining == 0)
+                {
+                    buff.UnApply();
+                    this.RpcRemoveBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs);
+                }
+            }
+
+            foreach (IBuffEffect buff in character.affectingBuffs)
+            {
+                if (buff.NeedsToBeReAppliedEachTurn)
+                {
+                    buff.ApplyEffect(isReapplication: true);
+                }
+            }
+        }
     }
 
     [ClientRpc]
-    private void RpcAddBuffIcon(int buffID, int affectedCharacterID, string iconName)
+    private void RpcAddBuffIcons(int buffID, List<int> affectedCharacterIDs, string iconName)
     {
-        this.turnOrderHud.AddBuffIcon(buffID, affectedCharacterID, BuffIconsDataSO.Singleton.GetBuffIcon(iconName));
+        this.turnOrderHud.AddBuffIcons(buffID, affectedCharacterIDs, BuffIconsDataSO.Singleton.GetBuffIcon(iconName));
     }
 
+    [ClientRpc]
+    private void RpcRemoveBuffIcons(int buffID, List<int> affectedCharacterIDs)
+    {
+        this.turnOrderHud.RemoveBuffIcons(buffID, affectedCharacterIDs);
+    }
 
 }

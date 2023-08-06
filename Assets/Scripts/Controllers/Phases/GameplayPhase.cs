@@ -65,6 +65,8 @@ public class GameplayPhase : IGamePhase
             throw new System.Exception("Error : couldn't find playing character in turn order");
         }
 
+        BuffManager.Singleton.TickBuffsForTurn(playingCharacterClassID);
+
         PlayerCharacter currentCharacter = this.Controller.PlayerCharacters[playingCharacterClassID];
         if (currentCharacter.IsDead || !currentCharacter.CanTakeTurns)
         {

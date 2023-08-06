@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class StunEffectBase : IBuffEffect, ITimedEffect
@@ -12,20 +13,26 @@ public abstract class StunEffectBase : IBuffEffect, ITimedEffect
 
     //set at runtime
     public int UniqueID { get; set; }
-    public int AffectedCharacterID { get; set; }
+    public List<int> AffectedCharacterIDs { get; set; }
     public int TurnDurationRemaining { get; set; }
 
     public bool ApplyEffect(bool isReapplication = false)
     {
-        PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[this.AffectedCharacterID];
+        foreach(int affectedCharacterID in this.AffectedCharacterIDs)
+        {
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            affectedCharacter.SetCanTakeTurns(false);
+        }
 
-        affectedCharacter.SetCanTakeTurns(false);
         return true;
     }
 
     public void UnApply()
     {
-        PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[this.AffectedCharacterID];
-        affectedCharacter.SetCanTakeTurns(true);
+        foreach (int affectedCharacterID in this.AffectedCharacterIDs)
+        {
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharacters[affectedCharacterID];
+            affectedCharacter.SetCanTakeTurns(true);
+        }
     }
 }

@@ -35,7 +35,8 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
             return;
 
         Debug.Log("Using cavalier stun debuff!");
-        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, this.TargetHex.holdsCharacterWithClassID);
+        List<int> affectedCharacterIDs = new List<int> { this.TargetHex.holdsCharacterWithClassID };
+        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
 
     }

@@ -85,8 +85,8 @@ public class GameController : NetworkBehaviour
     public SyncDictionary<int, uint> PlayerCharactersNetIDs => this.playerCharactersNetIDs;
 
 
-    public readonly Dictionary<int, PlayerCharacter> playerCharacters = new();
-    public Dictionary<int, PlayerCharacter> PlayerCharacters => this.playerCharacters;
+    public readonly Dictionary<int, PlayerCharacter> playerCharactersByID = new();
+    public Dictionary<int, PlayerCharacter> PlayerCharacters => this.playerCharactersByID;
 
     //maps character initiative to classID
     private readonly SyncIDictionary<float, int> sortedTurnOrder = new(new SortedList<float, int>());
@@ -479,7 +479,7 @@ public class GameController : NetworkBehaviour
     internal void ClearPlayerCharacters()
     {
         this.playerCharactersNetIDs.Clear();
-        this.playerCharacters.Clear();
+        this.playerCharactersByID.Clear();
     }
 
     #endregion
@@ -810,7 +810,7 @@ public class GameController : NetworkBehaviour
     {
         foreach (int draftedCharacterID in this.draftedCharacterOwners.Keys)
         {
-            if (!this.playerCharacters.ContainsKey(draftedCharacterID) || this.playerCharacters[draftedCharacterID] == null)
+            if (!this.playerCharactersByID.ContainsKey(draftedCharacterID) || this.playerCharactersByID[draftedCharacterID] == null)
             {
                 return false;
             }
