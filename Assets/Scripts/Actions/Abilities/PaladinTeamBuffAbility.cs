@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedAction
+public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedAction, ICooldownedAction
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -28,7 +28,7 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedActi
     public void ServerUse()
     {        
         Debug.Log("Using Paladin team buff!");
-
+        this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
         List<int> affectedCharacterIDs = new();
 
         foreach(PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
@@ -59,7 +59,8 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedActi
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
             GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
             ITargetedAction.ValidateTarget(this) &&
-            !this.ActorCharacter.HasUsedAbility
+            !this.ActorCharacter.AbilityUsesPerRoundExpended(this.AbilityStats.stringID) &&
+            !this.ActorCharacter.AbilityOnCooldown(this.AbilityStats.stringID)
             )
             return true;
         else

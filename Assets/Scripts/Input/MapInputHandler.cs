@@ -57,6 +57,9 @@ public class MapInputHandler : NetworkBehaviour
                 ActionExecutor.Singleton.CmdAttack(this.SelectedHex, clickedHex);
                 break;
             case ControlMode.useAbility:
+                //TODO :remove after implementation of all abilities
+                if (currentAbilityStats.stringID == "fake")
+                    return;
                 ActionExecutor.Singleton.CmdUseAbility(this.SelectedHex, clickedHex, this.currentAbilityStats);
                 break;
         }
@@ -208,7 +211,7 @@ public class MapInputHandler : NetworkBehaviour
             if (currentlyPlayingCharacter.charClass.abilities == null || currentlyPlayingCharacter.charClass.abilities.Count < 1)
             {
                 Debug.LogFormat("{0} has no defined abilities to fetch.", currentlyPlayingCharacter);
-                this.currentAbilityStats = new(true);
+                this.currentAbilityStats = new(fake: true);
             }                
              else
             {

@@ -36,7 +36,7 @@ internal class BuffManager : NetworkBehaviour
         ITimedEffect timedBuff = buff as ITimedEffect;
         if (timedBuff != null)
         {
-            timedBuff.TurnDurationRemaining = abilityStats.buffTurnDuration;
+            timedBuff.TurnDurationRemaining = abilityStats.buffTurnDuration + 1;
         }
 
         //IPermanentEffect

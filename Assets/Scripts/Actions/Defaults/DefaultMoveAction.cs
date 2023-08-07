@@ -30,7 +30,7 @@ public class DefaultMoveAction : IMoveAction
         this.ActorCharacter.RpcPlaceChar(this.TargetHex.transform.position);
 
         //update state
-        ActorCharacter.UseMoves(this.moveCost);
+        ActorCharacter.UsedMoves(this.moveCost);
         this.TargetHex.holdsCharacterWithClassID = this.ActorHex.holdsCharacterWithClassID;
         Map.Singleton.characterPositions[this.ActorCharacter.CharClassID] = this.TargetHex.coordinates;
         MapInputHandler.Singleton.TargetRpcSelectHex(this.RequestingClient, this.TargetHex);
@@ -40,7 +40,7 @@ public class DefaultMoveAction : IMoveAction
         if (this.ActorCharacter.RemainingMoves == 0)
         {
             MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
-            if (!ActorCharacter.HasAttacked)
+            if (!(ActorCharacter.AttackCountThisTurn >= ActorCharacter.CurrentStats.attacksPerTurn))
                 MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.attack);
         }
     }

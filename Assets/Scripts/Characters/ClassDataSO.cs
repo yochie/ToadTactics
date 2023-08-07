@@ -166,7 +166,8 @@ public class ClassDataSO : ScriptableObject
                     range: 3,
                     aoe: 0,
                     turnDuration: 1,
-                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle }
+                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
+                    cooldownDuration: 3                    
                 )
             }
         );
@@ -247,7 +248,8 @@ public class ClassDataSO : ScriptableObject
                     interfaceName: "Blessing of Kings",
                     description: "Grants a bonus to health, armor and movement to all allies.",
                     turnDuration: 3,
-                    allowedAbilityTargets: new List<TargetType>(){TargetType.self }
+                    allowedAbilityTargets: new List<TargetType>(){TargetType.self },
+                    cooldownDuration: 4
                 )
             }
             );

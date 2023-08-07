@@ -58,6 +58,7 @@ public class GameplayPhase : IGamePhase
             throw new System.Exception("Error : couldn't find playing character in turn order");
         }
         BuffManager.Singleton.TickBuffsForTurn(lastTurnCharacterID);
+        this.Controller.PlayerCharactersByID[lastTurnCharacterID].TickCooldownsForTurn();
 
         //loops through turn order                
         if (this.Controller.TurnOrderIndex >= this.Controller.SortedTurnOrder.Count - 1)

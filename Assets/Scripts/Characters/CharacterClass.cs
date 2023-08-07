@@ -18,6 +18,8 @@ public class CharacterClass
         this.name = name;
         this.description = description;
         this.stats = stats;
+        if (abilities == null)
+            abilities = new();
         this.abilities = abilities;
     }
 }

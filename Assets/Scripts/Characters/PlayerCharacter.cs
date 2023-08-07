@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
+using System.Linq;
 
 public class PlayerCharacter : NetworkBehaviour
 {
@@ -39,13 +40,8 @@ public class PlayerCharacter : NetworkBehaviour
     private bool hasMoved;
     public bool HasMoved => this.hasMoved;
     [SyncVar]
-    private bool hasAttacked;
-    public bool HasAttacked => this.hasAttacked;
-    [SyncVar]
-    private bool hasUsedAbility;
-    public bool HasUsedAbility => this.hasUsedAbility;
-    [SyncVar]
-    private bool hasUsedAllEquipments;
+    private int attackCountThisTurn;
+    public int AttackCountThisTurn => this.attackCountThisTurn;
     [SyncVar]
     private int remainingMoves;
     public int RemainingMoves => this.remainingMoves;
@@ -67,9 +63,13 @@ public class PlayerCharacter : NetworkBehaviour
     private bool canTakeTurns;
     public bool CanTakeTurns { get => this.canTakeTurns; }
 
+
+
     #endregion
 
     #region Server only vars
+    private readonly Dictionary<string, int> abilityCooldowns = new();
+    private readonly Dictionary<string, int> abilityUsesThisRound = new();
     public List<IBuffEffect> appliedBuffs;
     public List<IBuffEffect> affectingBuffs;
     #endregion
@@ -109,12 +109,16 @@ public class PlayerCharacter : NetworkBehaviour
             this.SetCurrentStats(new CharacterStats(this.CurrentStats, maxHealth: Utility.ApplyKingLifeBuff(this.CurrentStats.maxHealth)));
             this.currentLife = currentStats.maxHealth;
         }
+
+        foreach (CharacterAbilityStats ability in this.charClass.abilities)
+        {
+            this.abilityCooldowns.Add(ability.stringID, 0);
+            this.abilityUsesThisRound.Add(ability.stringID, 0);
+        }
             
         this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
 
         this.isDead = false;
-        this.hasUsedAbility = false;
-        this.hasUsedAllEquipments = false;
         this.ResetTurnState();
     }
 
@@ -174,7 +178,7 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    public void UseMoves(int moveDistance)
+    public void UsedMoves(int moveDistance)
     {
         if (this.RemainingMoves < moveDistance)
         {
@@ -186,23 +190,36 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    public void UseAttack()
+    public void UsedAttack()
     {
-        if (this.hasAttacked)
+        if (this.AttackCountThisTurn >= this.currentStats.attacksPerTurn)
         {
             Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate attack beforehand.", this.charClass.name);
             return;
         }
         if (this.hasMoved)
             this.remainingMoves = 0;
-        this.hasAttacked = true;
+        this.attackCountThisTurn++;
+    }
+
+    [Server]
+    public void UsedAbility(string abilityID)
+    {
+        this.abilityUsesThisRound[abilityID]++;
+        //adding one to defined cooldown duration because we tick it at end of every turn, including turn it is set
+        this.abilityCooldowns[abilityID] = this.GetAbilityWithID(abilityID).cooldownDuration + 1;
+
+        if (!this.HasAvailableAbilities())
+        {
+            MainHUD.Singleton.TargetRpcGrayOutAbilityButton(target: GameController.Singleton.GetConnectionForPlayerID(this.ownerID));
+        }
     }
 
     [Server]
     public void ResetTurnState()
     {
         this.hasMoved = false;
-        this.hasAttacked = false;
+        this.attackCountThisTurn = 0;
         this.remainingMoves = this.CurrentStats.moveSpeed;
     }
 
@@ -296,6 +313,17 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.appliedBuffs.Add(buff);
     }
+
+    [Server]
+    public void TickCooldownsForTurn()
+    {
+        foreach(KeyValuePair<string, int> cooldown in this.abilityCooldowns.ToList())
+        {
+            if(cooldown.Value > 0)
+                abilityCooldowns[cooldown.Key]--;
+        }
+    }
+
     #endregion
 
     #region Events
@@ -335,10 +363,62 @@ public class PlayerCharacter : NetworkBehaviour
     #region Utility
     public bool HasRemainingActions()
     {
-        if (this.hasMoved && this.hasAttacked && this.hasUsedAbility && this.hasUsedAllEquipments)
+        if (this.RemainingMoves <= 0 && this.attackCountThisTurn >= this.currentStats.attacksPerTurn && !this.HasAvailableAbilities() && !this.hasAvailableActivatedEquipments())
             return false;
         else
             return true;
+    }
+
+    private bool hasAvailableActivatedEquipments()
+    {
+        return false;
+    }
+
+    private bool HasAvailableAbilities()
+    {
+        foreach(CharacterAbilityStats ability in this.charClass.abilities)
+        {
+            string abilityID = ability.stringID;
+            bool isAvailable = true;
+            if (this.AbilityOnCooldown(abilityID) || this.AbilityUsesPerRoundExpended(abilityID))
+                isAvailable = false;            
+            if (isAvailable)
+                return true;
+        }
+        return false;
+    }
+
+    internal bool AbilityUsesPerRoundExpended(string abilityID)
+    {
+        CharacterAbilityStats ability = this.GetAbilityWithID(abilityID);
+        
+        //-1 = infinite uses
+        if (ability.usesPerRound == -1)
+            return false;
+
+        if (this.abilityUsesThisRound[abilityID] >= ability.usesPerRound)
+            return true;
+        else
+            return false;
+    }
+
+    internal bool AbilityOnCooldown(string abilityID)
+    {
+        CharacterAbilityStats ability = this.GetAbilityWithID(abilityID);
+
+        //0 = no cooldown, probably limited by uses per round instead
+        if (ability.cooldownDuration == 0)
+            return false;
+
+        if (this.abilityCooldowns[abilityID] > 0)
+            return true;
+        else
+            return false;
+    }
+
+    private CharacterAbilityStats GetAbilityWithID(string abilityID)
+    {
+        return this.charClass.abilities.Single(ability => ability.stringID == abilityID);
     }
     #endregion
 }

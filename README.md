@@ -45,6 +45,12 @@ Pour le workflow de contribution : https://www.atlassian.com/git/tutorials/compa
 ## Common patterns
 ### Networking
 * use Mirror SyncVars (or other Sync*) to store all gamestate (see GAMESTATE.txt file here)
-* Syncvars are modified server side only. Clients can use Mirror Commands to set those syncvars. Alternatively Server only objects (marked as such in their Network Identity component) can directly modify them. 
-* Any updates that should be made apparent to clients (UI, sprites, etc) should be done in callbacks hooked into relevant syncvars when those are modified
-* Remember to update syncvars or UI when clients join or exit
+* Syncvars are modified server side only. Clients can use \[Commands\] to set those syncvars when required.
+* To update clients after some state change, there are a few alternatives. We should probably narrow down which ones we use and when, still unsure which is best/when its best
+    * Syncvar Hook
+        * can only include state changes for single var (in easy mode)
+        * a single syncvar should always recieve updates in order, but changing multiple syncvars can lead to race condition
+        * hard mode (to avoid race conditions and allow multiple changes in order) : must always change vars in same order AND order declarations within single file
+    * ClientRpc/TargetRpc
+        * can be called after several server state changes but can lead to race conditions so all state should be included as arg
+        * order execution on clients is undetermined    

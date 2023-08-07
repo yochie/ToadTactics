@@ -28,6 +28,8 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
     [Server]
     public void ServerUse()
     {
+        this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
+
         ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
         
         //ability was used only as attack on obstacle
@@ -57,7 +59,8 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
             GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
             ITargetedAction.ValidateTarget(this) &&
-            !this.ActorCharacter.HasUsedAbility
+            !this.ActorCharacter.AbilityUsesPerRoundExpended(this.AbilityStats.stringID) &&
+            !this.ActorCharacter.AbilityOnCooldown(this.AbilityStats.stringID)
             )
             return true;
         else

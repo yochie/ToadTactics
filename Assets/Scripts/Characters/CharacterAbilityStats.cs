@@ -15,10 +15,14 @@ public readonly struct CharacterAbilityStats
     public readonly bool requiresLOS;
     public readonly List<TargetType> allowedAbilityTargets;
     public readonly bool canCrit;
+    //-1 = infinite
+    public readonly int usesPerRound;    
+    public readonly int cooldownDuration;
 
+    //Todo: remove once all characters has abilities defined
     public CharacterAbilityStats(bool fake)
     {
-        this.stringID = "";
+        this.stringID = "fake";
         this.interfaceName = "";
         this.description = "";
         this.damage = 0;
@@ -30,6 +34,8 @@ public readonly struct CharacterAbilityStats
         this.damageType = DamageType.none;
         this.allowedAbilityTargets = new();
         this.canCrit = false;
+        this.usesPerRound = -1;
+        this.cooldownDuration = 0;
 
     }
 
@@ -45,7 +51,9 @@ public readonly struct CharacterAbilityStats
                             DamageType damageType = DamageType.physical,
                             Type actionType = null,
                             List<TargetType> allowedAbilityTargets = null,
-                            bool canCrit = false)
+                            bool canCrit = false,
+                            int  usesPerRound = -1,
+                            int cooldownDuration = 0)
     {
         this.stringID = stringID;
         this.interfaceName = interfaceName;
@@ -68,5 +76,7 @@ public readonly struct CharacterAbilityStats
         }
 
         this.canCrit = canCrit;
+        this.usesPerRound = usesPerRound;
+        this.cooldownDuration = cooldownDuration;
     }
 }
