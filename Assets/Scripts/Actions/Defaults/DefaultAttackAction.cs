@@ -71,7 +71,7 @@ public class DefaultAttackAction : IAttackAction
         this.ActorCharacter.UsedAttack();
 
         //TODO Move to event listeners
-        if(this.ActorCharacter.AttackCountThisTurn >= this.AttackerStats.attacksPerTurn)
+        if(!this.ActorCharacter.HasAvailableAttacks())
             MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);
 
         if (this.ActorCharacter.RemainingMoves > 0)
@@ -99,7 +99,7 @@ public class DefaultAttackAction : IAttackAction
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
-            !(this.ActorCharacter.AttackCountThisTurn >= this.AttackerStats.attacksPerTurn) &&
+            !this.ActorCharacter.HasAvailableAttacks() &&
             this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
             GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&

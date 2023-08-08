@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using System.Runtime.Serialization;
 
 internal class BuffManager : NetworkBehaviour
 {
@@ -12,14 +11,18 @@ internal class BuffManager : NetworkBehaviour
 
     private void Awake()
     {
-        if (BuffManager.Singleton != null)
-            Destroy(BuffManager.Singleton.gameObject);
+        Debug.Log("BuffManager awoken");
         BuffManager.Singleton = this;
 
         this.persistingPermanentBuffs = new();
+    }
+
+    private void Start()
+    {
         DontDestroyOnLoad(this.gameObject);
     }
 
+    [Server]
     internal IAbilityBuffEffect CreateAbilityBuff(Type buffType, CharacterAbilityStats abilityStats, int applyingCharacterID, List<int> affectedCharacterIDs)
     {
         
@@ -52,6 +55,7 @@ internal class BuffManager : NetworkBehaviour
         return buff;
 
     }
+    [Server]
     public void ApplyNewBuff(IBuffEffect buff)
     {
         foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
@@ -72,6 +76,7 @@ internal class BuffManager : NetworkBehaviour
         this.RpcAddBuffIcons( buff.UniqueID, buff.AffectedCharacterIDs, buff.IconName);
     }
 
+    [Server]
     public void TickBuffsForTurn(int playingCharacterID)
     {        
         foreach(PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
@@ -102,6 +107,7 @@ internal class BuffManager : NetworkBehaviour
     }
 
     //TODO : call and fill
+    [Server]
     public void ApplyPersistentBuffsForNewRound()
     {
         throw new NotImplementedException();
@@ -118,5 +124,4 @@ internal class BuffManager : NetworkBehaviour
     {
         TurnOrderHUD.Singleton.RemoveBuffIcons(buffID, affectedCharacterIDs);
     }
-
 }

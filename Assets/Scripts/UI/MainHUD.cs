@@ -39,6 +39,22 @@ public class MainHUD : NetworkBehaviour
     }
 
     [TargetRpc]
+    public void TargetRpcSetupHudButtonsForNewCharacterTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons)
+    {
+        foreach(KeyValuePair<ControlMode, GameObject> buttonByMode in this.gameplayButtons)
+        {
+            if (activeButtons.Contains(buttonByMode.Key))
+            {
+                SetInteractableGameplayButton(buttonByMode.Key, true);
+            }
+            else
+            {
+                SetInteractableGameplayButton(buttonByMode.Key, false);
+            }
+        }
+    }
+
+    [TargetRpc]
     public void TargetRpcGrayOutMoveButton(NetworkConnectionToClient target)
     {
         GrayOutGameplayButton(ControlMode.move);
@@ -65,6 +81,28 @@ public class MainHUD : NetworkBehaviour
         buttonObject.GetComponent<Image>().color = Color.white;
     }
 
+    private void SetInteractableGameplayButton(ControlMode mode, bool state)
+    {
+        if(!this.gameplayButtons.ContainsKey(mode))
+        {
+            Debug.LogFormat("Could not find button for {0}", mode);
+            return;
+        }
+
+        GameObject buttonObject = this.gameplayButtons[mode];
+        if (state)
+        {
+            buttonObject.GetComponent<Button>().interactable = true;
+            buttonObject.GetComponent<Image>().color = Color.white;
+        }
+        else
+        {
+            buttonObject.GetComponent<Button>().interactable = false;
+            buttonObject.GetComponent<Image>().color = Color.white;
+
+        }
+    }
+
     [Client]
     private void SetInteractableGameplayButtons(bool state)
     {
@@ -75,16 +113,6 @@ public class MainHUD : NetworkBehaviour
             if (!state)
                 buttonObject.GetComponent<Image>().color = Color.white;
         }
-
-        //this.moveButton.GetComponent<Button>().interactable = state;
-        //this.attackButton.GetComponent<Button>().interactable = state;
-        //this.abilityButton.GetComponent<Button>().interactable = state;
-        //if (!state)
-        //{
-        //    this.moveButton.GetComponent<Image>().color = Color.white;
-        //    this.attackButton.GetComponent<Image>().color = Color.white;
-        //    this.abilityButton.GetComponent<Image>().color = Color.white;
-        //}
     }
 
     [Client]
@@ -94,14 +122,10 @@ public class MainHUD : NetworkBehaviour
         {
             buttonObject.SetActive(state);
         }
-        //this.moveButton.SetActive(state);
-        //this.attackButton.SetActive(state);
-        //this.abilityButton.SetActive(state);
     }
 
     public void HighlightGameplayButton(ControlMode mode)
     {
-
         foreach (KeyValuePair<ControlMode, GameObject> controlModeToButton in this.gameplayButtons)
         {
             Image buttonImage = controlModeToButton.Value.GetComponent<Image>();
@@ -111,24 +135,6 @@ public class MainHUD : NetworkBehaviour
             else
                 buttonImage.color = Color.white;
         }
-        //switch (mode)
-        //{
-        //    case ControlMode.move:
-        //        this.moveButton.GetComponent<Image>().color = Color.green;
-        //        this.attackButton.GetComponent<Image>().color = Color.white;
-        //        this.abilityButton.GetComponent<Image>().color = Color.white;
-        //        break;
-        //    case ControlMode.attack:
-        //        this.moveButton.GetComponent<Image>().color = Color.white;
-        //        this.attackButton.GetComponent<Image>().color = Color.green;
-        //        this.abilityButton.GetComponent<Image>().color = Color.white;
-        //        break;
-        //    case ControlMode.useAbility:
-        //        this.moveButton.GetComponent<Image>().color = Color.white;
-        //        this.attackButton.GetComponent<Image>().color = Color.white;
-        //        this.abilityButton.GetComponent<Image>().color = Color.green;
-        //        break;
-        //}
     }
 
     #region Events

@@ -192,7 +192,7 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     public void UsedAttack()
     {
-        if (this.AttackCountThisTurn >= this.currentStats.attacksPerTurn)
+        if (!this.HasAvailableAttacks())
         {
             Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate attack beforehand.", this.charClass.name);
             return;
@@ -363,18 +363,18 @@ public class PlayerCharacter : NetworkBehaviour
     #region Utility
     public bool HasRemainingActions()
     {
-        if (this.RemainingMoves <= 0 && this.attackCountThisTurn >= this.currentStats.attacksPerTurn && !this.HasAvailableAbilities() && !this.hasAvailableActivatedEquipments())
+        if (this.RemainingMoves <= 0 && this.attackCountThisTurn >= this.currentStats.attacksPerTurn && !this.HasAvailableAbilities() && !this.HasAvailableActivatedEquipments())
             return false;
         else
             return true;
     }
 
-    private bool hasAvailableActivatedEquipments()
+    public bool HasAvailableActivatedEquipments()
     {
         return false;
     }
 
-    private bool HasAvailableAbilities()
+    public bool HasAvailableAbilities()
     {
         foreach(CharacterAbilityStats ability in this.charClass.abilities)
         {
@@ -387,6 +387,15 @@ public class PlayerCharacter : NetworkBehaviour
         }
         return false;
     }
+
+    internal bool HasAvailableAttacks()
+    {
+        if (this.AttackCountThisTurn >= this.currentStats.attacksPerTurn)
+            return false;
+        else
+            return true;
+    }
+
 
     internal bool AbilityUsesPerRoundExpended(string abilityID)
     {

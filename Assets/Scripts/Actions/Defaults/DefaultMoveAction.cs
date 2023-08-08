@@ -40,7 +40,7 @@ public class DefaultMoveAction : IMoveAction
         if (this.ActorCharacter.RemainingMoves == 0)
         {
             MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
-            if (!(ActorCharacter.AttackCountThisTurn >= ActorCharacter.CurrentStats.attacksPerTurn))
+            if (this.ActorCharacter.HasAvailableAttacks())
                 MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.attack);
         }
     }

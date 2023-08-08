@@ -2593,7 +2593,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  turnOrderHud: {fileID: 1755582590}
 --- !u!4 &1373454555
 Transform:
   m_ObjectHideFlags: 0
