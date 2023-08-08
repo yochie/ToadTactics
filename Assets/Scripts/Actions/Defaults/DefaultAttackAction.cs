@@ -99,7 +99,7 @@ public class DefaultAttackAction : IAttackAction
             this.RequestingPlayerID != -1 &&
             this.ActorHex.HoldsACharacter() &&
             this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
-            !this.ActorCharacter.HasAvailableAttacks() &&
+            this.ActorCharacter.HasAvailableAttacks() &&
             this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
             GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
