@@ -113,6 +113,7 @@ public class MapInputHandler : NetworkBehaviour
         this.rangeDisplayer.HidePath();
         this.rangeDisplayer.HideMovementRange();
         this.rangeDisplayer.HideActionRange();
+        this.rangeDisplayer.HideAOE();
     }
 
     public void HoverHex(Hex hoveredHex)
@@ -145,7 +146,10 @@ public class MapInputHandler : NetworkBehaviour
                 hoveredHex.drawer.AttackHover(true);
                 break;
             case ControlMode.useAbility:
-                hoveredHex.drawer.AbilityHover(true);
+                if(currentAbilityStats.aoe > 0)
+                    this.rangeDisplayer.DisplayAOE(hoveredHex, currentAbilityStats.aoe);
+                else
+                    hoveredHex.drawer.AbilityHover(true);
                 break;
         }
     }
@@ -175,6 +179,7 @@ public class MapInputHandler : NetworkBehaviour
                 break;
             case ControlMode.useAbility:
                 unhoveredHex.drawer.AbilityHover(false);
+                this.rangeDisplayer.HideAOE();
                 break;
         }
     }

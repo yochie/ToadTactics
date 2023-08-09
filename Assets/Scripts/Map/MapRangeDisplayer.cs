@@ -10,6 +10,7 @@ public class MapRangeDisplayer : MonoBehaviour
     private HashSet<Hex> displayedMoveRange = new();
     private Dictionary<Hex, LOSTargetType> displayedActionRange = new();
     private List<Hex> displayedPath = new();
+    private List<Hex> displayedAOE = new();
 
     public void DisplayMovementRange(Hex source, int moveDistance)
     {
@@ -122,6 +123,24 @@ public class MapRangeDisplayer : MonoBehaviour
             {
                 h.drawer.DisplayOutOfActionRange(false);
             }
+        }
+    }
+
+    internal void HideAOE()
+    {
+        foreach (Hex h in this.displayedAOE)
+        {
+            h.drawer.AbilityHover(false);
+        }
+    }
+
+    internal void DisplayAOE(Hex source, int aoe)
+    {
+        this.displayedAOE = MapPathfinder.RangeIgnoringObstacles(source, aoe,this.map.hexGrid);
+
+        foreach (Hex h in this.displayedAOE)
+        {
+            h.drawer.AbilityHover(true);
         }
     }
 }
