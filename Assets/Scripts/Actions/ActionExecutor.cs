@@ -27,7 +27,7 @@ public class ActionExecutor : NetworkBehaviour
 
         bool success = ActionExecutor.Singleton.TryMove(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
         if (success)
-            this.FinishAction();
+            this.FinishAction(movingCharacter, sender, ControlMode.move);
     }
 
 
@@ -52,7 +52,7 @@ public class ActionExecutor : NetworkBehaviour
             success = ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
         }
         if (success)
-            this.FinishAction();
+            this.FinishAction(attackingCharacter, sender, ControlMode.attack);
     }
 
     [Command(requiresAuthority = false)]
@@ -63,7 +63,7 @@ public class ActionExecutor : NetworkBehaviour
 
         bool success = ActionExecutor.Singleton.TryAbility(sender, playerID, usingCharacter, abilityStats, source, target);
         if (success)
-            this.FinishAction();
+            this.FinishAction(usingCharacter, sender, ControlMode.useAbility);
     }
 
     //should only be used from abilities to handle their attack portions
@@ -193,8 +193,8 @@ public class ActionExecutor : NetworkBehaviour
     }
 
     [Server]
-    private void FinishAction()
-    {        
+    private void FinishAction(PlayerCharacter actor, NetworkConnectionToClient sender, ControlMode currentControlMode)
+    {
         foreach(PlayerCharacter playerCharacter in GameController.Singleton.PlayerCharactersByID.Values)
         {
             //not necessarily changed but always call just in case
@@ -204,9 +204,26 @@ public class ActionExecutor : NetworkBehaviour
             if (playerCharacter.IsKing && playerCharacter.IsDead)
             {
                 Debug.Log("The king is dead. Long live the king.");
+                //TODO : set flag to end round instead of calling function to avoid recursion
                 GameController.Singleton.EndRound(playerCharacter.OwnerID);
+                return;
             }
-        }        
+        }
+
+        if (!actor.HasRemainingActions())
+        {
+            //TODO : set flag to end turn instead of calling function to avoid recursion
+            GameController.Singleton.CmdNextTurn();
+            return;
+        }
+        else
+        {
+            List<ControlMode> activeControlModes = actor.GetRemainingActions();
+            if(!activeControlModes.Contains(currentControlMode))
+                MapInputHandler.Singleton.TargetRpcSetControlMode(sender, activeControlModes[0]);
+            else
+                MainHUD.Singleton.TargetRpcToggleActiveButtons(sender, activeControlModes, currentControlMode);
+        }
     }
 
     //Utility for validation of ITargetedActions and to find attack range in MapPathFinder

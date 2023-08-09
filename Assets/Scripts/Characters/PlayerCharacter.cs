@@ -379,6 +379,20 @@ public class PlayerCharacter : NetworkBehaviour
         this.onCharacterDeath.Raise(this.CharClassID);
     }
 
+    internal List<ControlMode> GetRemainingActions()
+    {
+        List<ControlMode> activeControlModes = new();
+        if (this.HasAvailableAbilities())
+            activeControlModes.Add(ControlMode.useAbility);
+        if (this.HasAvailableActivatedEquipments())
+            activeControlModes.Add(ControlMode.useEquipment);
+        if (this.RemainingMoves > 0)
+            activeControlModes.Add(ControlMode.move);
+        if (this.HasAvailableAttacks())
+            activeControlModes.Add(ControlMode.attack);
+        return activeControlModes;
+    }
+
     [ClientRpc]
     private void RpcOnCharacterResurrect()
     {

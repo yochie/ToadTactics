@@ -39,7 +39,7 @@ public class MainHUD : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcSetupHudButtonsForNewCharacterTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons)
+    public void TargetRpcToggleActiveButtons(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight)
     {
         foreach(KeyValuePair<ControlMode, GameObject> buttonByMode in this.gameplayButtons)
         {
@@ -51,7 +51,11 @@ public class MainHUD : NetworkBehaviour
             {
                 SetInteractableGameplayButton(buttonByMode.Key, false);
             }
+
         }
+
+        if (toHighlight != ControlMode.none)
+            this.HighlightGameplayButton(toHighlight);
     }
 
     [TargetRpc]

@@ -92,18 +92,10 @@ public class GameplayPhase : IGamePhase
 
         this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, ControlMode.move);
 
-        List<ControlMode> activeControlModes = new();
-        if (currentCharacter.HasAvailableAbilities())
-            activeControlModes.Add(ControlMode.useAbility);
-        if (currentCharacter.HasAvailableActivatedEquipments())
-            activeControlModes.Add(ControlMode.useEquipment);
-        if(currentCharacter.RemainingMoves > 0)
-            activeControlModes.Add(ControlMode.move);
-        if (currentCharacter.HasAvailableAttacks())
-            activeControlModes.Add(ControlMode.attack);
+        List<ControlMode> activeControlModes = currentCharacter.GetRemainingActions();
 
         NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
 
-        MainHUD.Singleton.TargetRpcSetupHudButtonsForNewCharacterTurn(target: client, activeControlModes);
+        MainHUD.Singleton.TargetRpcToggleActiveButtons(target: client, activeControlModes, ControlMode.move);
     }
 }
