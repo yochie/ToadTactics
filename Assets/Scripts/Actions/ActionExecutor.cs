@@ -224,8 +224,8 @@ public class ActionExecutor : NetworkBehaviour
         }
         bool liveTarget = targetedHex.HoldsACharacter();
         bool corpseTarget = targetedHex.HoldsACorpse();
-        bool emptyTarget = !targetedHex.HoldsACharacter() && !targetedHex.HoldsACorpse() && (targetedHex.holdsObstacle == ObstacleType.none);
-        bool obstacleTarget = targetedHex.holdsObstacle != ObstacleType.none;
+        bool emptyTarget = !targetedHex.HoldsACharacter() && !targetedHex.HoldsACorpse() && !targetedHex.HoldsAnObstacle();
+        bool obstacleTarget = targetedHex.HoldsAnObstacle();
 
         if (!allowedTargets.Contains(TargetType.ennemy_chars) && (ennemyTarget && liveTarget))
             return false;

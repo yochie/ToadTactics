@@ -134,7 +134,7 @@ public class MapGenerator : MonoBehaviour
                         Obstacle treeObstacle = tree.GetComponent<Obstacle>();
                         treeObstacle.hexPosition = h.coordinates;
                         NetworkServer.Spawn(tree);
-                        h.holdsObstacle = ObstacleType.tree;
+                        h.SetObstacle(ObstacleType.tree);
                     }
 
                 }

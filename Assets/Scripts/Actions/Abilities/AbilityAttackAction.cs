@@ -30,13 +30,13 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
     public void ServerUse()
     {
 
-        if(this.TargetHex.holdsObstacle != ObstacleType.none && this.DefenderCharacter == null)
+        if(this.TargetHex.HoldsAnObstacle() && this.DefenderCharacter == null)
         {
             //attacking obstacle
             GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
             GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
             Object.Destroy(attackedTree);
-            TargetHex.holdsObstacle = ObstacleType.none;
+            TargetHex.ClearObstacle();
             Debug.LogFormat("{0} attacked tree to destroy it", this.ActorCharacter);
         }
         else 
@@ -75,15 +75,7 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
         if (this.TargetHex.HoldsACharacter() && this.TargetHex.GetHeldCharacterObject() != this.DefenderCharacter)
             return false;
 
-        if (this.ActorCharacter != null &&
-            this.ActorHex != null &&            
-            this.TargetHex != null &&
-            this.RequestingPlayerID != -1 &&
-            this.ActorHex.HoldsACharacter() &&
-            this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
-            this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
-            GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
+        if (IAction.ValidateBasicAction(this) &&
             ITargetedAction.ValidateTarget(this)
             )
             return true;

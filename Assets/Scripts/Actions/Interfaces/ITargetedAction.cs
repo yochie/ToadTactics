@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Mirror;
+using UnityEngine;
 
 public interface ITargetedAction : IAction
 {
@@ -22,15 +23,16 @@ public interface ITargetedAction : IAction
         List<TargetType> allowedTargets = action.AllowedTargetTypes;
         int range = action.Range;
 
-        if(!ActionExecutor.IsValidTargetType(actor, targetedHex, allowedTargets))
+        if (targetedHex == null ||
+            !ActionExecutor.IsValidTargetType(actor, targetedHex, allowedTargets) ||
+            (MapPathfinder.HexDistance(actorHex, targetedHex) > range) ||
+            (action.RequiresLOS && !MapPathfinder.LOSReaches(actorHex, targetedHex, range))
+            )
+        {
+            Debug.Log("Target validation failed");
             return false;
-
-        if (MapPathfinder.HexDistance(actorHex, targetedHex) > range)
-            return false;
-
-        if (action.RequiresLOS && !MapPathfinder.LOSReaches(actorHex, targetedHex, range))
-            return false;
-        
+        }
+            
         return true;
     }
 }

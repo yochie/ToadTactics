@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public static class Utility
 {
@@ -55,5 +56,10 @@ public static class Utility
     internal static int CalculateCritDamage(int damage, float critMultiplier)
     {
         return Convert.ToInt32(damage * critMultiplier);
+    }
+
+    internal static List<T> GetAllEnumValues<T> ()
+    {
+        return Enum.GetValues(typeof(T)).Cast<T>().ToList();
     }
 }

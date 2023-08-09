@@ -309,7 +309,20 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 9,
                 range: 3,
-                damageIterations: 1)
+                damageIterations: 1),
+            abilities: new List<CharacterAbilityStats> {
+                new (
+                    stringID: "WizardFireball",
+                    interfaceName: "Fireball",
+                    description: "Target any tile and throw exploding fireball that deals magic damage in area of effect.",                    
+                    allowedAbilityTargets: Utility.GetAllEnumValues<TargetType>(),
+                    cooldownDuration: 2,
+                    range: 3,
+                    aoe: 1,
+                    damage: 5,
+                    damageType: DamageType.magic
+                ) 
+            }
             );
         classes.Add(wizard);
 
@@ -355,7 +368,7 @@ public class ClassDataSO : ScriptableObject
         abilityClassesByID.Add("CavalierStun", typeof(CavalierStunAbility));
         abilityClassesByID.Add("PaladinTeamBuff", typeof(PaladinTeamBuffAbility));
         abilityClassesByID.Add("PriestResurrect", typeof(PriestResurrectAbility));
-
+        abilityClassesByID.Add("WizardFireball", typeof(WizardFireballAbility));        
         return abilityClassesByID;
 
     }

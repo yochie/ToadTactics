@@ -29,7 +29,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     public int holdsCharacterWithClassID;
 
     [SyncVar]
-    public ObstacleType holdsObstacle;
+    private ObstacleType holdsObstacle;
 
     [SyncVar]
     public HazardType holdsHazard;
@@ -97,14 +97,22 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     #endregion
 
     #region State
+    [Server]
     internal void ClearCharacter()
     {
         this.holdsCharacterWithClassID = -1;
     }
 
+    [Server]
     internal void ClearCorpse()
     {
         this.holdsCorpseWithClassID = -1;
+    }
+
+    [Server]
+    internal void ClearObstacle()
+    {
+        this.holdsObstacle = ObstacleType.none;
     }
 
     public void Delete()
@@ -116,6 +124,13 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
 
         Destroy(this.gameObject);
     }
+
+    [Server]
+    internal void SetObstacle(ObstacleType obstacle)
+    {
+        this.holdsObstacle = obstacle;
+    }
+
 
     #endregion
 
@@ -135,6 +150,10 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         return (this.holdsCorpseWithClassID != -1);
     }
 
+    internal bool HoldsAnObstacle()
+    {
+        return this.holdsObstacle != ObstacleType.none;
+    }
 
     public PlayerCharacter GetHeldCharacterObject()
     {

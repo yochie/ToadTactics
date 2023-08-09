@@ -47,21 +47,13 @@ public class DefaultMoveAction : IMoveAction
 
     [Server]
     public bool ServerValidate()
-    {        
-        if (this.ActorCharacter != null &&
-            this.ActorHex != null &&
-            this.TargetHex != null &&
+    {
+        if (IAction.ValidateBasicAction(this) &&
             !this.TargetHex.HoldsACharacter() &&
             !this.TargetHex.HoldsACorpse() &&
-            this.TargetHex.holdsObstacle == ObstacleType.none &&
-            this.RequestingPlayerID != -1 &&
-            this.ActorHex.HoldsACharacter() &&
-            this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&                        
+            !this.TargetHex.HoldsAnObstacle() &&
             this.ActorCharacter.RemainingMoves > 0 &&
             this.ActorCharacter.CanMove &&
-            this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
-            GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
             ITargetedAction.ValidateTarget(this))
         {
             //Validate path

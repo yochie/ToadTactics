@@ -38,7 +38,7 @@ public static class MapPathfinder
         foreach (HexCoordinates neighbourCoord in h.coordinates.NeighbhouringCoordinates())
         {
             Hex neighbour = Map.GetHex(hexGrid, neighbourCoord.X, neighbourCoord.Y);
-            if (neighbour != null && neighbour.holdsObstacle == ObstacleType.none && !neighbour.HoldsACharacter())
+            if (neighbour != null && !neighbour.HoldsAnObstacle() && !neighbour.HoldsACharacter())
             {
                 toReturn.Add(neighbour);
             }
@@ -47,7 +47,7 @@ public static class MapPathfinder
         return toReturn;
     }
 
-    public static List<Hex> Range(Hex start, int distance, Dictionary<Vector2Int, Hex> hexGrid)
+    public static List<Hex> RangeIgnoringObstacles(Hex start, int distance, Dictionary<Vector2Int, Hex> hexGrid)
     {
         List<Hex> toReturn = new();
 
@@ -171,7 +171,7 @@ public static class MapPathfinder
                                                                  bool requiresLOS)
     {
         Dictionary<Hex, LOSTargetType> hexTargetableTypes = new();
-        List<Hex> allHexesInRange = MapPathfinder.Range(source, range, hexGrid);
+        List<Hex> allHexesInRange = MapPathfinder.RangeIgnoringObstacles(source, range, hexGrid);
 
         allHexesInRange.Sort(Comparer<Hex>.Create((Hex h1, Hex h2) => MapPathfinder.HexDistance(source, h1).CompareTo(MapPathfinder.HexDistance(source, h2))));
         foreach (Hex targetHex in allHexesInRange)

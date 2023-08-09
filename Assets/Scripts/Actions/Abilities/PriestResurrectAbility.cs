@@ -39,15 +39,7 @@ public class PriestResurrectAbility : IAbilityAction, ITargetedAction
 
         //TODO check for individual ability uses instead of single hasUsedAbility to allow multiple abilities
 
-        if (this.ActorCharacter != null &&
-            this.ActorHex != null &&
-            this.TargetHex != null &&
-            this.RequestingPlayerID != -1 &&
-            this.ActorHex.HoldsACharacter() &&
-            this.ActorHex.GetHeldCharacterObject() == this.ActorCharacter &&
-            this.RequestingPlayerID == this.ActorCharacter.OwnerID &&
-            GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
+        if (IAction.ValidateBasicAction(this) &&
             ITargetedAction.ValidateTarget(this) &&
             IAbilityAction.ValidateCooldowns(this)
             )

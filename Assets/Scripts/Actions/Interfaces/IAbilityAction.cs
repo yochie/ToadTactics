@@ -1,4 +1,6 @@
-﻿public interface IAbilityAction : IAction
+﻿using UnityEngine;
+
+public interface IAbilityAction : IAction
 {
     public CharacterAbilityStats AbilityStats { get; set; }
 
@@ -8,7 +10,9 @@
             !action.ActorCharacter.AbilityOnCooldown(action.AbilityStats.stringID))
             return true;
         else
+        { 
+            Debug.Log("Cooldown validation failed");
             return false;
-        
+        }        
     }
 }
