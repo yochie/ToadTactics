@@ -71,7 +71,7 @@ internal class BuffManager : NetworkBehaviour
             applyingCharacter.AddAppliedBuff(buff);
         }
 
-        buff.ApplyEffect(isReapplication: false);
+        buff.ApplyEffect(buff.AffectedCharacterIDs, isReapplication: false);
 
         this.RpcAddBuffIcons( buff.UniqueID, buff.AffectedCharacterIDs, buff.IconName);
     }
@@ -83,7 +83,7 @@ internal class BuffManager : NetworkBehaviour
         {
             if (character.CharClassID != playingCharacterID)
                 continue;
-            foreach(IBuffEffect buff in character.appliedBuffs)
+            foreach(IBuffEffect buff in character.appliedBuffs.ToArray())
             {
                 ITimedEffect timedBuff = buff as ITimedEffect;
                 if (timedBuff == null)
@@ -91,19 +91,34 @@ internal class BuffManager : NetworkBehaviour
                 timedBuff.TurnDurationRemaining--;
                 if (timedBuff.TurnDurationRemaining == 0)
                 {
-                    buff.UnApply();
-                    this.RpcRemoveBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs);
+                    this.RemoveBuff(buff, character);
                 }
             }
 
-            foreach (IBuffEffect buff in character.affectingBuffs)
+            foreach (IBuffEffect buff in character.affectingBuffs.ToArray())
             {
                 if (buff.NeedsToBeReAppliedEachTurn)
                 {
-                    buff.ApplyEffect(isReapplication: true);
+                    buff.ApplyEffect(new List<int> { character.CharClassID }, isReapplication: true);
                 }
             }
         }
+    }
+
+    [Server]
+    private void RemoveBuff(IBuffEffect buff, PlayerCharacter appliedByCharacter = null)
+    {
+        buff.UnApply(buff.AffectedCharacterIDs);
+
+        foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
+        {
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
+            affectedCharacter.RemoveAffectingBuff(buff);
+        }
+        this.RpcRemoveBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs);
+
+        if (appliedByCharacter != null)
+            appliedByCharacter.RemoveAppliedBuff(buff);
     }
 
     //TODO : call and fill
@@ -111,6 +126,23 @@ internal class BuffManager : NetworkBehaviour
     public void ApplyPersistentBuffsForNewRound()
     {
         throw new NotImplementedException();
+    }
+
+    [Server]
+    internal void RemoveRoundBuffsAppliedToCharacter(PlayerCharacter character)
+    {
+        foreach (IBuffEffect buff in character.affectingBuffs.ToArray())
+        {
+            IPermanentEffect permanentBuff = buff as IPermanentEffect;
+            if (permanentBuff != null && permanentBuff.PersistsBetweenRounds)
+            {
+                continue;
+            }
+            buff.UnApply(new List<int> { character.CharClassID });
+            buff.AffectedCharacterIDs.Remove(character.CharClassID);
+            character.RemoveAffectingBuff(buff);
+            this.RpcRemoveBuffIcons(buff.UniqueID, new List<int> { character.CharClassID });
+        }
     }
 
     [ClientRpc]
@@ -124,4 +156,6 @@ internal class BuffManager : NetworkBehaviour
     {
         TurnOrderHUD.Singleton.RemoveBuffIcons(buffID, affectedCharacterIDs);
     }
+
+
 }

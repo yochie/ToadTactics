@@ -49,7 +49,6 @@ public readonly struct CharacterAbilityStats
                             bool requiresLOS = true,
                             int damageIterations = 1,
                             DamageType damageType = DamageType.physical,
-                            Type actionType = null,
                             List<TargetType> allowedAbilityTargets = null,
                             bool canCrit = false,
                             int  usesPerRound = -1,

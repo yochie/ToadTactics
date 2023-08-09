@@ -163,4 +163,21 @@ public class Map : NetworkBehaviour
             this.hexesSpawnedOnClient = true;
         }
     }
+
+    [Server]
+    internal void SetCharacterAliveState(int charClassID, bool isDead)
+    {
+        HexCoordinates charPosition = this.characterPositions[charClassID];
+        Hex charHex = Map.GetHex(this.hexGrid, charPosition.X, charPosition.Y);
+        if (isDead)
+        {
+            charHex.ClearCharacter();
+            charHex.holdsCorpseWithClassID = charClassID;
+        }
+        else
+        {
+            charHex.ClearCorpse();
+            charHex.holdsCharacterWithClassID = charClassID;
+        }            
+    }
 }

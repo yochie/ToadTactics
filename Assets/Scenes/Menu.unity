@@ -897,7 +897,7 @@ MonoBehaviour:
   DualMode: 1
   NoDelay: 1
   Interval: 10
-  Timeout: 10000
+  Timeout: 2147483647
   RecvBufferSize: 7361536
   SendBufferSize: 7361536
   FastResend: 2
@@ -945,7 +945,7 @@ MonoBehaviour:
   onlineScene: Assets/Scenes/Lobby.unity
   transport: {fileID: 1891631877}
   networkAddress: localhost
-  maxConnections: 100
+  maxConnections: 2
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 8989470354416063670, guid: 278874bf7c43e4541a2403e236977ef6, type: 3}
   autoCreatePlayer: 1

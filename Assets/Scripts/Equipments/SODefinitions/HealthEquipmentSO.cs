@@ -32,10 +32,9 @@ public class HealthEquipmentSO : EquipmentSO, IHealthModifier, IEquipmentQuality
     public void RemoveStatModification(PlayerCharacter playerCharacter)
     {
         int currentMaxHealth = playerCharacter.CurrentStats.maxHealth;
-
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, maxHealth: currentMaxHealth - this.HealthOffset));
+        //clamps and triggers Die if previously alive
+        playerCharacter.SetCurrentLife(playerCharacter.CurrentLife);
 
-        //should just apply clamping to current health
-        playerCharacter.TakeDamage(0, DamageType.healing);
     }
 }

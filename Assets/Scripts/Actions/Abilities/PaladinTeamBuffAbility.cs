@@ -59,8 +59,7 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedActi
             GameController.Singleton.ItsThisPlayersTurn(this.RequestingPlayerID) &&
             GameController.Singleton.ItsThisCharactersTurn(this.ActorCharacter.CharClassID) &&
             ITargetedAction.ValidateTarget(this) &&
-            !this.ActorCharacter.AbilityUsesPerRoundExpended(this.AbilityStats.stringID) &&
-            !this.ActorCharacter.AbilityOnCooldown(this.AbilityStats.stringID)
+            IAbilityAction.ValidateCooldowns(this)
             )
             return true;
         else

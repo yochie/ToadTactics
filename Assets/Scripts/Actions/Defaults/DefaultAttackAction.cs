@@ -58,12 +58,7 @@ public class DefaultAttackAction : IAttackAction
                 this.AttackerStats.damageType);
 
                 if (this.DefenderCharacter.IsDead)
-                {
-                    Debug.LogFormat("{0} is dead.", this.DefenderCharacter);
-                    this.TargetHex.ClearCharacter();
-                    this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.CharClassID;
                     break;
-                }
             }
         }
 
@@ -84,10 +79,11 @@ public class DefaultAttackAction : IAttackAction
             MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.none);
         }
 
-        if (!this.ActorCharacter.HasRemainingActions())
-        {
-            GameController.Singleton.CmdNextTurn();
-        }
+        //TODO: move to action executor FinishAction code to avoid recursion
+        //if (!this.ActorCharacter.HasRemainingActions())
+        //{
+        //    GameController.Singleton.CmdNextTurn();
+        //}
     }
 
     [Server]

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
+public class PriestResurrectAbility : IAbilityAction, ITargetedAction
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -23,24 +23,14 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
 
-    public Type AppliesBuffType { get => typeof(CavalierStunEffect); }
-
     [Server]
     public void ServerUse()
     {
+        Debug.Log("Using priest resurrect!");
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
-
-        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
-        
-        //ability was used only as attack on obstacle or targeted character died
-        if (!TargetHex.HoldsACharacter() || TargetHex.GetHeldCharacterObject() == null)
-            return;
-
-        Debug.Log("Using cavalier stun debuff!");
-        List<int> affectedCharacterIDs = new List<int> { this.TargetHex.holdsCharacterWithClassID };
-        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
-        BuffManager.Singleton.ApplyNewBuff(buff);
-
+        PlayerCharacter toResurrect = this.TargetHex.GetHeldCorpseCharacterObject();
+        int lifeOnResurrection = toResurrect.CurrentStats.maxHealth / 2;
+        toResurrect.Resurrect(lifeOnResurrection);
     }
 
     [Server]

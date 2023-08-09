@@ -122,6 +122,16 @@ public class PlayerCharacter : NetworkBehaviour
         this.ResetTurnState();
     }
 
+    internal void SetCurrentLife(int value)
+    {
+        int previousHealth = this.CurrentLife;
+        this.currentLife = Mathf.Clamp(value, 0, this.currentStats.maxHealth);
+        if (previousHealth > 0 && this.CurrentLife <= 0 && !this.isDead)
+        {
+            this.Die();
+        }
+    }
+
     #endregion
 
     #region Callbacks
@@ -258,14 +268,50 @@ public class PlayerCharacter : NetworkBehaviour
     public void Die()
     {
         this.isDead = true;
+        this.currentLife = 0;
+        this.ResetCooldownsAndUses();
+        this.RemoveRoundBuffs();
         this.RpcOnCharacterDeath();
+        Debug.LogFormat("{0} is dead.", this);
+        Map.Singleton.SetCharacterAliveState(this.charClassID, isDead: true);
     }
 
     [Server]
-    public void Resurrect()
+    private void RemoveRoundBuffs()
+    {
+        BuffManager.Singleton.RemoveRoundBuffsAppliedToCharacter(this);
+    }
+
+    [Server]
+    internal void RemoveAppliedBuff(IBuffEffect buff)
+    {
+        this.appliedBuffs.Remove(buff);
+    }
+
+    [Server]
+    internal void RemoveAffectingBuff(IBuffEffect buff)
+    {
+        this.affectingBuffs.Remove(buff);
+    }
+
+    [Server]
+    private void ResetCooldownsAndUses()
+    {
+        foreach (CharacterAbilityStats ability in this.charClass.abilities)
+        {
+            string abilityID = ability.stringID;
+            this.abilityCooldowns[abilityID] = 0;
+            this.abilityUsesThisRound[abilityID] = 0;
+        }
+    }
+
+    [Server]
+    public void Resurrect(int lifeOnResurrection)
     {
         this.isDead = false;
-        this.RpcOnCharacterResurrect();        
+        this.currentLife = Mathf.Clamp(lifeOnResurrection, 0, this.currentStats.maxHealth);
+        Map.Singleton.SetCharacterAliveState(this.charClassID, isDead: false);
+        this.RpcOnCharacterResurrect();
     }
 
     //update position on all clients

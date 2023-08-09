@@ -330,7 +330,18 @@ public class ClassDataSO : ScriptableObject
                 initiative: 10,
                 range: 3,
                 damageIterations: 1,
-                allowedAttackTargets: new List<TargetType> { TargetType.other_friendly_chars, TargetType.self })
+                allowedAttackTargets: new List<TargetType> { TargetType.other_friendly_chars, TargetType.self }),
+            abilities: new List<CharacterAbilityStats> {
+                new (
+                    stringID: "PriestResurrect",
+                    interfaceName: "Resurrect",
+                    description: "Resurrect ally with half of maximum health.",                    
+                    allowedAbilityTargets: new List<TargetType>(){ TargetType.friendly_corpse },
+                    usesPerRound: 1,
+                    requiresLOS: false,
+                    range: 50
+                )
+            }
             );
         classes.Add(priest);
 
@@ -343,6 +354,7 @@ public class ClassDataSO : ScriptableObject
 
         abilityClassesByID.Add("CavalierStun", typeof(CavalierStunAbility));
         abilityClassesByID.Add("PaladinTeamBuff", typeof(PaladinTeamBuffAbility));
+        abilityClassesByID.Add("PriestResurrect", typeof(PriestResurrectAbility));
 
         return abilityClassesByID;
 

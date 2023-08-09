@@ -20,8 +20,8 @@ public interface IBuffEffect
 
     public List<int> AffectedCharacterIDs { get; set; }
 
-    public bool ApplyEffect(bool isReapplication);
+    public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication);
 
-    public void UnApply();
+    public void UnApply(List<int> unApplyToCharacterIDs);
 
 }

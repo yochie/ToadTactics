@@ -121,11 +121,11 @@ public class TurnOrderHUD : MonoBehaviour
         }
     }
 
-    internal void RemoveBuffIcons(int buffID, List<int> affectedCharacterIDs)
+    internal void RemoveBuffIcons(int buffID, List<int> removeFromCharacters)
     {
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
         {
-            if (affectedCharacterIDs.Contains(slot.holdsCharacterWithClassID))
+            if (removeFromCharacters.Contains(slot.holdsCharacterWithClassID))
             {
                 slot.RemoveBuffIcon(buffID);
             }

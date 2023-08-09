@@ -40,9 +40,9 @@ public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmor
     #endregion
 
     #region IBuffEffect functions
-    public bool ApplyEffect(bool isReapplication)
+    public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication)
     {
-        foreach(int affectedCharacterID in this.AffectedCharacterIDs)
+        foreach(int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             this.ApplyStatModification(affectedCharacter);
@@ -50,9 +50,9 @@ public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmor
         return true;
     }
 
-    public void UnApply()
+    public void UnApply(List<int> applyToCharacterIDs)
     {
-        foreach (int affectedCharacterID in this.AffectedCharacterIDs)
+        foreach (int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             this.RemoveStatModification(affectedCharacter);
@@ -82,12 +82,14 @@ public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmor
 
     public void RemoveStatModification(PlayerCharacter playerCharacter)
     {
-        int currentMaxHealth = playerCharacter.CurrentStats.maxHealth;
-
-        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, maxHealth: currentMaxHealth - this.HealthOffset));
-
-        //should just apply clamping to current health
-        playerCharacter.TakeDamage(0, DamageType.healing);
+        int previousMaxHealth = playerCharacter.CurrentStats.maxHealth;
+        int previousHealth = playerCharacter.CurrentLife;
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, maxHealth: previousMaxHealth - this.HealthOffset));
+        playerCharacter.SetCurrentLife(Mathf.Clamp(playerCharacter.CurrentLife, 0, playerCharacter.CurrentStats.maxHealth));
+        if (previousHealth > 0 && playerCharacter.CurrentLife <= 0)
+        {
+            playerCharacter.Die();
+        }
 
         int currentArmor = playerCharacter.CurrentStats.armor;
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, armor: currentArmor - this.ArmorOffset));

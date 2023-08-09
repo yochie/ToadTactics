@@ -62,9 +62,6 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
 
                 if (this.DefenderCharacter.IsDead)
                 {
-                    Debug.LogFormat("{0} is dead.", this.DefenderCharacter);
-                    this.TargetHex.ClearCharacter();
-                    this.TargetHex.holdsCorpseWithClassID = DefenderCharacter.CharClassID;
                     break;
                 }
             }

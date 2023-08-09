@@ -16,9 +16,9 @@ public abstract class StunEffectBase : IBuffEffect, ITimedEffect
     public List<int> AffectedCharacterIDs { get; set; }
     public int TurnDurationRemaining { get; set; }
 
-    public bool ApplyEffect(bool isReapplication = false)
+    public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication = false)
     {
-        foreach(int affectedCharacterID in this.AffectedCharacterIDs)
+        foreach(int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.SetCanTakeTurns(false);
@@ -27,9 +27,9 @@ public abstract class StunEffectBase : IBuffEffect, ITimedEffect
         return true;
     }
 
-    public void UnApply()
+    public void UnApply(List<int> applyToCharacterIDs)
     {
-        foreach (int affectedCharacterID in this.AffectedCharacterIDs)
+        foreach (int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.SetCanTakeTurns(true);
