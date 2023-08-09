@@ -223,7 +223,18 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 3,
                 initiative: 5,
                 range: 1,
-                damageIterations: 1)
+                damageIterations: 1),
+            abilities: new List<CharacterAbilityStats> {
+                new (
+                    stringID: "WarriorRoot",
+                    interfaceName: "Intimidating Shout",
+                    description: "Shouts and scares close enemies, making them cower in fear for a turn.",
+                    turnDuration: 1,
+                    allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
+                    aoe : 1,
+                    cooldownDuration: 5
+                )
+            }
             );
         classes.Add(warrior);
 
@@ -368,7 +379,8 @@ public class ClassDataSO : ScriptableObject
         abilityClassesByID.Add("CavalierStun", typeof(CavalierStunAbility));
         abilityClassesByID.Add("PaladinTeamBuff", typeof(PaladinTeamBuffAbility));
         abilityClassesByID.Add("PriestResurrect", typeof(PriestResurrectAbility));
-        abilityClassesByID.Add("WizardFireball", typeof(WizardFireballAbility));        
+        abilityClassesByID.Add("WizardFireball", typeof(WizardFireballAbility));      
+        abilityClassesByID.Add("WarriorRoot", typeof(WarriorRootAbility));              
         return abilityClassesByID;
 
     }

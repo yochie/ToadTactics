@@ -35,14 +35,6 @@ public class DefaultMoveAction : IMoveAction
         Map.Singleton.characterPositions[this.ActorCharacter.CharClassID] = this.TargetHex.coordinates;
         MapInputHandler.Singleton.TargetRpcSelectHex(this.RequestingClient, this.TargetHex);
         this.ActorHex.ClearCharacter();
-
-        //Update UI/Gamecontroller
-        if (this.ActorCharacter.RemainingMoves == 0)
-        {
-            MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
-            if (this.ActorCharacter.HasAvailableAttacks())
-                MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.attack);
-        }
     }
 
     [Server]
@@ -52,7 +44,7 @@ public class DefaultMoveAction : IMoveAction
             !this.TargetHex.HoldsACharacter() &&
             !this.TargetHex.HoldsACorpse() &&
             !this.TargetHex.HoldsAnObstacle() &&
-            this.ActorCharacter.RemainingMoves > 0 &&
+            this.ActorCharacter.HasAvailableMoves() &&
             this.ActorCharacter.CanMove &&
             ITargetedAction.ValidateTarget(this))
         {

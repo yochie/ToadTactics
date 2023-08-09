@@ -81,7 +81,7 @@ public class MapInputHandler : NetworkBehaviour
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
-                Debug.Log("Trying to select hex while control mode is none.");
+                //Debug.Log("Trying to select hex while control mode is none.");
                 break;
             case ControlMode.characterPlacement:
                 Debug.Log("Trying to select hex while control mode is characterPlacement.");
@@ -230,7 +230,8 @@ public class MapInputHandler : NetworkBehaviour
             (mode == ControlMode.move
             || mode == ControlMode.attack
             || mode == ControlMode.useAbility
-            || mode == ControlMode.useEquipment))
+            || mode == ControlMode.useEquipment
+            || mode == ControlMode.none))
         {
             this.SelectHexForPlayingCharacter();
         }

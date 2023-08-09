@@ -90,12 +90,14 @@ public class GameplayPhase : IGamePhase
             this.Controller.SwapPlayerTurn();
         }
 
-        this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, ControlMode.move);
-
         List<ControlMode> activeControlModes = currentCharacter.GetRemainingActions();
+
+        ControlMode startingMode = activeControlModes.Contains(ControlMode.move) ? ControlMode.move : ControlMode.none;
+
+        this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, startingMode);
 
         NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
 
-        MainHUD.Singleton.TargetRpcToggleActiveButtons(target: client, activeControlModes, ControlMode.move);
+        MainHUD.Singleton.TargetRpcToggleActiveButtons(target: client, activeControlModes, startingMode);
     }
 }

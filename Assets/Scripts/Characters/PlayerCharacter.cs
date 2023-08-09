@@ -190,7 +190,7 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     public void UsedMoves(int moveDistance)
     {
-        if (this.RemainingMoves < moveDistance)
+        if (this.RemainingMoves < moveDistance || !this.canMove)
         {
             Debug.LogFormat("Attempting to move {0} by {1} while it only has {2} moves left. You should validate move beforehand.", this.charClass.name, moveDistance, this.RemainingMoves);
             return;
@@ -386,11 +386,19 @@ public class PlayerCharacter : NetworkBehaviour
             activeControlModes.Add(ControlMode.useAbility);
         if (this.HasAvailableActivatedEquipments())
             activeControlModes.Add(ControlMode.useEquipment);
-        if (this.RemainingMoves > 0)
+        if (this.HasAvailableMoves())
             activeControlModes.Add(ControlMode.move);
         if (this.HasAvailableAttacks())
             activeControlModes.Add(ControlMode.attack);
         return activeControlModes;
+    }
+
+    public bool HasAvailableMoves()
+    {
+        if (this.RemainingMoves > 0 && this.canMove)
+            return true;
+        else
+            return false;
     }
 
     [ClientRpc]
@@ -423,10 +431,10 @@ public class PlayerCharacter : NetworkBehaviour
     #region Utility
     public bool HasRemainingActions()
     {
-        if (this.RemainingMoves <= 0 && this.attackCountThisTurn >= this.currentStats.attacksPerTurn && !this.HasAvailableAbilities() && !this.HasAvailableActivatedEquipments())
-            return false;
-        else
+        if (this.HasAvailableMoves() || this.HasAvailableAttacks() || this.HasAvailableAbilities() || this.HasAvailableActivatedEquipments())
             return true;
+        else
+            return false;
     }
 
     public bool HasAvailableActivatedEquipments()

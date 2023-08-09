@@ -69,7 +69,7 @@ public class DefaultAttackAction : IAttackAction
         if(!this.ActorCharacter.HasAvailableAttacks())
             MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);
 
-        if (this.ActorCharacter.RemainingMoves > 0)
+        if (this.ActorCharacter.HasAvailableMoves())
         {
             MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.move);
         }
