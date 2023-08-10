@@ -318,7 +318,20 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 3,
                 initiative: 8,
                 range: 20,
-                damageIterations: 1)
+                damageIterations: 1),
+            abilities: new List<CharacterAbilityStats> {
+                new (
+                    stringID: "NecroDOT",
+                    interfaceName: "Rotting Corpse",
+                    description: "Targets an enemy and inflitcts a curse that deals stackable damage over time.",
+                    allowedAbilityTargets: new List<TargetType>(){ TargetType.ennemy_chars },
+                    cooldownDuration: 1,
+                    range: 50,
+                    requiresLOS: false,
+                    damage: 10,
+                    damageType: DamageType.magic
+                )
+            }
             );
         classes.Add(necromancer);
 
@@ -397,7 +410,9 @@ public class ClassDataSO : ScriptableObject
         actionsByAbilityID.Add("PaladinTeamBuff", typeof(PaladinTeamBuffAbility));
         actionsByAbilityID.Add("PriestResurrect", typeof(PriestResurrectAbility));
         actionsByAbilityID.Add("WizardFireball", typeof(WizardFireballAbility));      
-        actionsByAbilityID.Add("WarriorRoot", typeof(WarriorRootAbility));              
+        actionsByAbilityID.Add("WarriorRoot", typeof(WarriorRootAbility));
+        actionsByAbilityID.Add("NecroDOT", typeof(NecroDOTAbility));
+
         return actionsByAbilityID;
 
     }

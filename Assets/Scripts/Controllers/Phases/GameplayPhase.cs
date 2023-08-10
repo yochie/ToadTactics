@@ -99,5 +99,8 @@ public class GameplayPhase : IGamePhase
         NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
 
         MainHUD.Singleton.TargetRpcToggleActiveButtons(target: client, activeControlModes, startingMode);
+
+        //update life because it might have been changed by buff applications...
+        currentCharacter.RpcOnCharacterLifeChanged(currentCharacter.CurrentLife, currentCharacter.CurrentStats.maxHealth);
     }
 }
