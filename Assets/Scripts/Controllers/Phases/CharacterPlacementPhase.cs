@@ -44,6 +44,12 @@ public class CharacterPlacementPhase : IGamePhase
 
     private void FinishInit()
     {
+        //apply passives to characters
+        foreach(PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
+        {
+            character.ApplyPassiveAbilityBuffs();
+        }
+
         //setup turn order list
         foreach (int classID in this.Controller.DraftedCharacterOwners.Keys)
         {

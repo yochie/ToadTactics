@@ -7,14 +7,10 @@ internal class BuffManager : NetworkBehaviour
 {
     public static BuffManager Singleton { get; private set; }
 
-    private Dictionary<IBuffEffect, List<int>> persistingPermanentBuffs;
-
     private void Awake()
     {
         Debug.Log("BuffManager awoken");
         BuffManager.Singleton = this;
-
-        this.persistingPermanentBuffs = new();
     }
 
     private void Start()
@@ -24,8 +20,7 @@ internal class BuffManager : NetworkBehaviour
 
     [Server]
     internal IAbilityBuffEffect CreateAbilityBuff(Type buffType, CharacterAbilityStats abilityStats, int applyingCharacterID, List<int> affectedCharacterIDs)
-    {
-        
+    {        
         //IAbilityBuffEffect
         IAbilityBuffEffect buff = (IAbilityBuffEffect)Activator.CreateInstance(buffType);
         buff.AppliedByAbility = abilityStats;
@@ -42,19 +37,21 @@ internal class BuffManager : NetworkBehaviour
             timedBuff.TurnDurationRemaining = abilityStats.buffTurnDuration + 1;
         }
 
-        //IPermanentEffect
-        IPermanentEffect permanentBuff = buff as IPermanentEffect;
-        if(permanentBuff != null)
-        {
-            if (permanentBuff.PersistsBetweenRounds && !this.persistingPermanentBuffs.ContainsKey(buff))
-                this.persistingPermanentBuffs.Add(buff, affectedCharacterIDs);
-        }
+        //Moved to character creation
+        ////IPassiveEffect
+        //IPassiveEffect passiveBuff = buff as IPassiveEffect;
+        //if(passiveBuff != null)
+        //{
+        //    if (!this.persistingPermanentBuffs.ContainsKey(buff))
+        //        this.persistingPermanentBuffs.Add(buff, affectedCharacterIDs);
+        //}
 
         //TODO : IConditionalEffect
+        //TODO : IPermanentEffect => nothing to do for now...
 
         return buff;
-
     }
+
     [Server]
     public void ApplyNewBuff(IBuffEffect buff)
     {
@@ -133,8 +130,8 @@ internal class BuffManager : NetworkBehaviour
     {
         foreach (IBuffEffect buff in character.affectingBuffs.ToArray())
         {
-            IPermanentEffect permanentBuff = buff as IPermanentEffect;
-            if (permanentBuff != null && permanentBuff.PersistsBetweenRounds)
+            IPassiveEffect passiveBuff = buff as IPassiveEffect;
+            if (passiveBuff != null)
             {
                 continue;
             }

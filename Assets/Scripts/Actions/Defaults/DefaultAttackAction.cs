@@ -45,13 +45,14 @@ public class DefaultAttackAction : IAttackAction
             {
                 int prevLife = this.DefenderCharacter.CurrentLife;
                 bool isCrit = Utility.RollCrit(critChance);
-                int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AttackerStats.damage, this.AttackerStats.critMultiplier) : this.AttackerStats.damage;
-                this.DefenderCharacter.TakeDamage(rolledDamage, this.AttackerStats.damageType);
+                int damageStatToUse = this.DefenderCharacter.IsKing ? this.AttackerStats.kingDamage : this.AttackerStats.damage;
+                int critRolledDamage = isCrit ? Utility.CalculateCritDamage(damageStatToUse, this.AttackerStats.critMultiplier) : damageStatToUse;
+                this.DefenderCharacter.TakeDamage(critRolledDamage, this.AttackerStats.damageType);
 
                 Debug.LogFormat("{0} hit {1} for {2} ({6} {5}) leaving him with {3} => {4} life.",
                 this.ActorCharacter,
                 this.DefenderCharacter,
-                rolledDamage,
+                critRolledDamage,
                 prevLife,
                 this.DefenderCharacter.CurrentLife,
                 isCrit ? "crit" : "normal",

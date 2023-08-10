@@ -14,6 +14,7 @@ public class ClassDataSO : ScriptableObject
     //keys are classID
     private Dictionary<int, CharacterClass> characterClasses;
     private Dictionary<string, Type> abilityActionTypes;
+    private Dictionary<string, Type> passiveAbilitiesBuffTypes;
 
     //singleton loaded from resources
     private const string resourcePath = "ClassData";
@@ -30,6 +31,8 @@ public class ClassDataSO : ScriptableObject
     {
         ClassDataSO.Singleton.characterClasses = this.DefineClasses().ToDictionary(charClass => charClass.classID);
         ClassDataSO.Singleton.abilityActionTypes = this.LinkAbilitiesToTheirActionTypes();
+        ClassDataSO.Singleton.passiveAbilitiesBuffTypes = this.LinkPassiveAbilitiesToTheirBuffTypes();
+
     }
 
     public Sprite GetSpriteByClassID(int classID)
@@ -77,9 +80,15 @@ public class ClassDataSO : ScriptableObject
     }
 
     public Type GetActionTypeByID(string abilityID)
-    {
+    {        
         return this.abilityActionTypes[abilityID];
     }
+
+    public Type GetBuffTypesByPassiveAbilityID(string abilityID)
+    {
+        return this.passiveAbilitiesBuffTypes[abilityID];
+    }
+
 
 
     #region Static definitions
@@ -138,7 +147,15 @@ public class ClassDataSO : ScriptableObject
             classID: 0,
             name: "Barbarian",
             description: "A barbarian is a primal warrior, embodying raw power and untamed fury on the battlefield. They eschew finesse and tactical subtlety in favor of sheer physical might. Wielding massive weapons in each hand, barbarians charge into combat with a relentless assault.",
-            stats: barbStats
+            stats: barbStats,
+            abilities: new List<CharacterAbilityStats> { 
+                new (
+                    stringID: "BarbarianKingDamage",
+                    interfaceName: "KingSlayer",
+                    description: "Grants a bonus to damage when attacking the king.",
+                    isPassive: true
+                )
+            }
         );
         classes.Add(barbarian);
 
@@ -374,14 +391,23 @@ public class ClassDataSO : ScriptableObject
 
     private Dictionary<string, Type> LinkAbilitiesToTheirActionTypes()
     {
-        Dictionary<string, Type> abilityClassesByID = new();
+        Dictionary<string, Type> actionsByAbilityID = new();
 
-        abilityClassesByID.Add("CavalierStun", typeof(CavalierStunAbility));
-        abilityClassesByID.Add("PaladinTeamBuff", typeof(PaladinTeamBuffAbility));
-        abilityClassesByID.Add("PriestResurrect", typeof(PriestResurrectAbility));
-        abilityClassesByID.Add("WizardFireball", typeof(WizardFireballAbility));      
-        abilityClassesByID.Add("WarriorRoot", typeof(WarriorRootAbility));              
-        return abilityClassesByID;
+        actionsByAbilityID.Add("CavalierStun", typeof(CavalierStunAbility));
+        actionsByAbilityID.Add("PaladinTeamBuff", typeof(PaladinTeamBuffAbility));
+        actionsByAbilityID.Add("PriestResurrect", typeof(PriestResurrectAbility));
+        actionsByAbilityID.Add("WizardFireball", typeof(WizardFireballAbility));      
+        actionsByAbilityID.Add("WarriorRoot", typeof(WarriorRootAbility));              
+        return actionsByAbilityID;
+
+    }
+
+    private Dictionary<string, Type> LinkPassiveAbilitiesToTheirBuffTypes()
+    {
+        Dictionary<string, Type> buffsByPassiveAbilityID = new();
+
+        buffsByPassiveAbilityID.Add("BarbarianKingDamage", typeof(BarbarianKingDamageEffect));
+        return buffsByPassiveAbilityID;
 
     }
     #endregion

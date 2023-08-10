@@ -84,7 +84,6 @@ public class GameController : NetworkBehaviour
     private readonly SyncDictionary<int, uint> playerCharactersNetIDs = new();
     public SyncDictionary<int, uint> PlayerCharactersNetIDs => this.playerCharactersNetIDs;
 
-
     private readonly Dictionary<int, PlayerCharacter> playerCharactersByID = new();
     public Dictionary<int, PlayerCharacter> PlayerCharactersByID => this.playerCharactersByID;
 

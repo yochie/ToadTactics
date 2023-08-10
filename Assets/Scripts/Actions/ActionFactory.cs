@@ -97,6 +97,10 @@ public class ActionFactory : MonoBehaviour
 
     public static IAbilityAction CreateAbilityAction(NetworkConnectionToClient sender, int requestingPlayerID, PlayerCharacter actingCharacter, CharacterAbilityStats ability, Hex userHex, Hex targetHex)
     {
+        if(ability.isPassive)
+        {
+            throw new Exception("Attempting to create action for passive ability. No can do.");
+        }
         Type actionType = ClassDataSO.Singleton.GetActionTypeByID(ability.stringID);
         IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(actionType);
 

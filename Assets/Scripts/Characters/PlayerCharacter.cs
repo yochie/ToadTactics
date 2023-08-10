@@ -50,6 +50,7 @@ public class PlayerCharacter : NetworkBehaviour
     public int OwnerID => this.ownerID;
     [SyncVar]
     private bool isKing;
+
     public bool IsKing { get => this.isKing;}
     [SyncVar]
     private bool isDead;
@@ -62,8 +63,6 @@ public class PlayerCharacter : NetworkBehaviour
     [SyncVar]
     private bool canTakeTurns;
     public bool CanTakeTurns { get => this.canTakeTurns; }
-
-
 
     #endregion
 
@@ -95,6 +94,7 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.canTakeTurns = true;
         this.canMove = true;
+        this.isDead = false;
         this.SetCurrentStats(this.charClass.stats);
 
         this.currentLife = this.CurrentStats.maxHealth;
@@ -112,13 +112,14 @@ public class PlayerCharacter : NetworkBehaviour
 
         foreach (CharacterAbilityStats ability in this.charClass.abilities)
         {
+            //passive abilities are applied in phase init
+            if (ability.isPassive)
+                continue;
             this.abilityCooldowns.Add(ability.stringID, 0);
-            this.abilityUsesThisRound.Add(ability.stringID, 0);
+            this.abilityUsesThisRound.Add(ability.stringID, 0);            
         }
             
         this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
-
-        this.isDead = false;
         this.ResetTurnState();
     }
 
@@ -370,6 +371,21 @@ public class PlayerCharacter : NetworkBehaviour
         }
     }
 
+    [Server]
+    internal void ApplyPassiveAbilityBuffs()
+    {
+        foreach (CharacterAbilityStats ability in this.charClass.abilities)
+        {
+            if (!ability.isPassive)
+                continue;
+
+            Type passiveBuffType = ClassDataSO.Singleton.GetBuffTypesByPassiveAbilityID(ability.stringID);
+            List<int> applyTo = new List<int> { this.CharClassID };
+            IBuffEffect passiveBuff = BuffManager.Singleton.CreateAbilityBuff(passiveBuffType, ability, this.CharClassID, applyTo);
+            BuffManager.Singleton.ApplyNewBuff(passiveBuff);
+        }
+    }
+
     #endregion
 
     #region Events
@@ -446,6 +462,8 @@ public class PlayerCharacter : NetworkBehaviour
     {
         foreach(CharacterAbilityStats ability in this.charClass.abilities)
         {
+            if (ability.isPassive)
+                continue;
             string abilityID = ability.stringID;
             bool isAvailable = true;
             if (this.AbilityOnCooldown(abilityID) || this.AbilityUsesPerRoundExpended(abilityID))

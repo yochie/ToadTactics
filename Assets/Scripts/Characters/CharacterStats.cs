@@ -31,6 +31,9 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
 
     public readonly bool attacksRequireLOS;
 
+    public readonly int kingDamage;
+
+
     public CharacterStats(int maxHealth,
                           int armor,
                           int damage,
@@ -43,7 +46,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                           int range = 1,
                           int damageIterations = 1,
                           DamageType damageType = DamageType.physical,
-                          List<TargetType> allowedAttackTargets = null)
+                          List<TargetType> allowedAttackTargets = null,
+                          int? kingDamage = null)
     {
         this.maxHealth = maxHealth;
         this.armor = armor;
@@ -64,6 +68,11 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         {
             this.allowedAttackTargets = new List<TargetType>(allowedAttackTargets);
         }
+        if (kingDamage == null)
+            this.kingDamage = damage;
+        else
+            this.kingDamage = kingDamage.GetValueOrDefault();
+
     }
 
     public CharacterStats(CharacterStats toCopy,
@@ -80,7 +89,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                       int damageIterations = -1,
                       bool? attacksRequireLOS = null,
                       DamageType damageType = DamageType.none,
-                      List<TargetType> allowedAttackTargets = null)
+                      List<TargetType> allowedAttackTargets = null,
+                      int? kingDamage = null)
     {
         this.maxHealth = maxHealth == -1 ? toCopy.maxHealth : maxHealth;
         this.armor = armor == -1 ? toCopy.armor : armor;
@@ -96,11 +106,12 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : allowedAttackTargets;
         //nullable bool requires conversion
         this.attacksRequireLOS = attacksRequireLOS == null ? toCopy.attacksRequireLOS : attacksRequireLOS.GetValueOrDefault();
+        this.kingDamage = kingDamage == null ? toCopy.kingDamage : kingDamage.GetValueOrDefault();
     }
 
     public bool Equals(CharacterStats other)
     {
-       
+
         if (this.maxHealth == other.maxHealth &&
             this.armor == other.armor &&
             this.damage == other.damage &&
@@ -110,7 +121,9 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.critMultiplier == other.critMultiplier &&
             this.moveSpeed == other.moveSpeed &&
             this.initiative == other.initiative &&
-            this.range == other.range)
+            this.range == other.range &&
+            this.attacksRequireLOS == other.attacksRequireLOS &&
+            this.kingDamage == other.kingDamage)
         {
             foreach (TargetType t in this.allowedAttackTargets)
             {
