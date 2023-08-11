@@ -33,6 +33,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
 
     public readonly int kingDamage;
 
+    public readonly bool penetratingDamage;
 
     public CharacterStats(int maxHealth,
                           int armor,
@@ -47,7 +48,9 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                           int damageIterations = 1,
                           DamageType damageType = DamageType.physical,
                           List<TargetType> allowedAttackTargets = null,
-                          int? kingDamage = null)
+                          int? kingDamage = null,
+                          bool penetratingDamage = false
+                          )
     {
         this.maxHealth = maxHealth;
         this.armor = armor;
@@ -72,41 +75,45 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.kingDamage = damage;
         else
             this.kingDamage = kingDamage.GetValueOrDefault();
+        this.penetratingDamage = penetratingDamage;
 
     }
 
     public CharacterStats(CharacterStats toCopy,
-                      int maxHealth = -1,
-                      int armor = -1,
-                      int damage = -1,
-                      int attacksPerTurn = -1,
-                      int abilitiesPerTurn = -1,
-                      int moveSpeed = -1,
-                      int initiative = -1,
-                      float critChance = -1f,
-                      float critMultiplier = -1f,
-                      int range = -1,
-                      int damageIterations = -1,
+                      int? maxHealth = null,
+                      int? armor = null,
+                      int? damage = null,
+                      int? attacksPerTurn = null,
+                      int? moveSpeed = null,
+                      int? initiative = null,
+                      float? critChance = null,
+                      float? critMultiplier = null,
+                      int? range = null,
+                      int? damageIterations = null,
                       bool? attacksRequireLOS = null,
-                      DamageType damageType = DamageType.none,
-                      List<TargetType> allowedAttackTargets = null,
-                      int? kingDamage = null)
+                      DamageType? damageType = null,
+                      int? kingDamage = null,
+                      bool? penetratingDamage = null,
+                      List<TargetType> allowedAttackTargets = null
+                      )
     {
-        this.maxHealth = maxHealth == -1 ? toCopy.maxHealth : maxHealth;
-        this.armor = armor == -1 ? toCopy.armor : armor;
-        this.damage = damage == -1 ? toCopy.damage : damage;
-        this.attacksPerTurn = attacksPerTurn == -1 ? toCopy.attacksPerTurn : attacksPerTurn;
-        this.damageType = damageType == DamageType.none ? toCopy.damageType : damageType;
-        this.damageIterations = damageIterations == -1 ? toCopy.damageIterations : damageIterations;
-        this.critChance = critChance == -1f ? toCopy.critChance : critChance;
-        this.critMultiplier = critMultiplier == -1f ? toCopy.critMultiplier : critMultiplier;
-        this.moveSpeed = moveSpeed == -1 ? toCopy.moveSpeed : moveSpeed;
-        this.initiative = initiative == -1 ? toCopy.initiative : initiative;
-        this.range = range == -1 ? toCopy.range : range;
-        this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : allowedAttackTargets;
-        //nullable bool requires conversion
+        this.maxHealth = maxHealth == null ? toCopy.maxHealth : maxHealth.GetValueOrDefault();
+        this.armor = armor == null ? toCopy.armor : armor.GetValueOrDefault();
+        this.damage = damage == null ? toCopy.damage : damage.GetValueOrDefault();
+        this.attacksPerTurn = attacksPerTurn == null ? toCopy.attacksPerTurn : attacksPerTurn.GetValueOrDefault();
+        this.moveSpeed = moveSpeed == null ? toCopy.moveSpeed : moveSpeed.GetValueOrDefault();
+        this.initiative = initiative == null ? toCopy.initiative : initiative.GetValueOrDefault();
+        this.critChance = critChance == null ? toCopy.critChance : critChance.GetValueOrDefault();
+        this.critMultiplier = critMultiplier == null ? toCopy.critMultiplier : critMultiplier.GetValueOrDefault();
+        this.range = range == null ? toCopy.range : range.GetValueOrDefault();
+        this.damageIterations = damageIterations == null ? toCopy.damageIterations : damageIterations.GetValueOrDefault();
         this.attacksRequireLOS = attacksRequireLOS == null ? toCopy.attacksRequireLOS : attacksRequireLOS.GetValueOrDefault();
+        this.damageType = damageType == null ? toCopy.damageType : damageType.GetValueOrDefault();
         this.kingDamage = kingDamage == null ? toCopy.kingDamage : kingDamage.GetValueOrDefault();
+        this.penetratingDamage = penetratingDamage == null ? toCopy.penetratingDamage : penetratingDamage.GetValueOrDefault();
+
+        this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : allowedAttackTargets;
+
     }
 
     public bool Equals(CharacterStats other)
@@ -123,7 +130,9 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.initiative == other.initiative &&
             this.range == other.range &&
             this.attacksRequireLOS == other.attacksRequireLOS &&
-            this.kingDamage == other.kingDamage)
+            this.kingDamage == other.kingDamage &&
+            this.penetratingDamage == other.penetratingDamage
+            )
         {
             foreach (TargetType t in this.allowedAttackTargets)
             {

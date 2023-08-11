@@ -15,10 +15,15 @@ public readonly struct CharacterAbilityStats
     public readonly bool requiresLOS;
     public readonly List<TargetType> allowedAbilityTargets;
     public readonly bool canCrit;
+    //-1 = use character stat
+    public readonly float critChance;
+    //-1 = use character stat
+    public readonly float critMultiplier;
     //-1 = infinite
     public readonly int usesPerRound;
     public readonly int cooldownDuration;
     public readonly bool isPassive;
+    public readonly bool penetratingDamage;
 
     //Todo: remove once all characters has abilities defined
     public CharacterAbilityStats(bool fake)
@@ -35,9 +40,13 @@ public readonly struct CharacterAbilityStats
         this.damageType = DamageType.none;
         this.allowedAbilityTargets = new();
         this.canCrit = false;
+        this.critChance = -1f;
+        this.critMultiplier = -1f;
         this.usesPerRound = -1;
         this.cooldownDuration = 0;
         this.isPassive = false;
+        this.penetratingDamage = false;
+
 
     }
 
@@ -53,9 +62,12 @@ public readonly struct CharacterAbilityStats
                             DamageType damageType = DamageType.physical,
                             List<TargetType> allowedAbilityTargets = null,
                             bool canCrit = false,
+                            float critChance = -1f,
+                            float critMultiplier = -1f,
                             int usesPerRound = -1,
                             int cooldownDuration = 0,
-                            bool isPassive = false
+                            bool isPassive = false,
+                            bool penetratingDamage = false
                             )
     {
         this.stringID = stringID;
@@ -79,8 +91,11 @@ public readonly struct CharacterAbilityStats
         }
 
         this.canCrit = canCrit;
+        this.critChance = critChance;
+        this.critMultiplier = critMultiplier;
         this.usesPerRound = usesPerRound;
         this.cooldownDuration = cooldownDuration;
         this.isPassive = isPassive;
+        this.penetratingDamage = penetratingDamage;
     }
 }

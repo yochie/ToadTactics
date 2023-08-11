@@ -39,7 +39,8 @@ public class DefaultAttackAction : IAttackAction
         else 
         {
             //attacking character
-            float critChance = this.AttackerStats.critChance;           
+            float critChance = this.AttackerStats.critChance;
+            bool penetrates = this.AttackerStats.penetratingDamage;
 
             for (int i = 0; i < this.AttackerStats.damageIterations; i++)
             {
@@ -47,16 +48,17 @@ public class DefaultAttackAction : IAttackAction
                 bool isCrit = Utility.RollCrit(critChance);
                 int damageStatToUse = this.DefenderCharacter.IsKing ? this.AttackerStats.kingDamage : this.AttackerStats.damage;
                 int critRolledDamage = isCrit ? Utility.CalculateCritDamage(damageStatToUse, this.AttackerStats.critMultiplier) : damageStatToUse;
-                this.DefenderCharacter.TakeDamage(critRolledDamage, this.AttackerStats.damageType);
+                this.DefenderCharacter.TakeDamage(critRolledDamage, this.AttackerStats.damageType, penetrates);
 
-                Debug.LogFormat("{0} hit {1} for {2} ({6} {5}) leaving him with {3} => {4} life.",
+                Debug.LogFormat("{0} hit {1} for {2} ({6} {5}{7}) leaving him with {3} => {4} life.",
                 this.ActorCharacter,
                 this.DefenderCharacter,
                 critRolledDamage,
                 prevLife,
                 this.DefenderCharacter.CurrentLife,
                 isCrit ? "crit" : "normal",
-                this.AttackerStats.damageType);
+                this.AttackerStats.damageType,
+                penetrates ? " penetrating" : "");
 
                 if (this.DefenderCharacter.IsDead)
                     break;

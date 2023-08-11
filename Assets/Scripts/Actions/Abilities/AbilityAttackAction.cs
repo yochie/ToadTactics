@@ -42,23 +42,26 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
         else 
         {
             //attacking character
-            float critChance = this.AttackerStats.critChance;           
+            float critChance = this.AbilityStats.critChance == -1 ? this.AttackerStats.critChance : this.AbilityStats.critChance;
+            float critMulti = this.AbilityStats.critMultiplier == -1 ? this.AttackerStats.critMultiplier : this.AbilityStats.critChance;
+            bool penetrates = this.AbilityStats.penetratingDamage;
 
             for (int i = 0; i < this.AbilityStats.damageIterations; i++)
             {
                 int prevLife = this.DefenderCharacter.CurrentLife;
                 bool isCrit = this.AbilityStats.canCrit ? Utility.RollCrit(critChance) : false;
-                int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AbilityStats.damage, this.AbilityStats.damageIterations) : this.AbilityStats.damage;
-                this.DefenderCharacter.TakeDamage(rolledDamage, this.AbilityStats.damageType);
+                int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AbilityStats.damage, critMulti) : this.AbilityStats.damage;
+                this.DefenderCharacter.TakeDamage(rolledDamage, this.AbilityStats.damageType, penetrates);
 
-                Debug.LogFormat("{0} hit {1} for {2} ({6} {5}) leaving him with {3} => {4} life.",
+                Debug.LogFormat("{0} hit {1} for {2} ({6} {5} {7}) leaving him with {3} => {4} life.",
                 this.ActorCharacter,
                 this.DefenderCharacter,
                 rolledDamage,
                 prevLife,
                 this.DefenderCharacter.CurrentLife,
                 isCrit ? "crit" : "normal",
-                this.AbilityStats.damageType);
+                this.AbilityStats.damageType,
+                penetrates ? " penetrating" : "");
 
                 if (this.DefenderCharacter.IsDead)
                 {

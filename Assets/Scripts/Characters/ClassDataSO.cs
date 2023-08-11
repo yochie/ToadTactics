@@ -222,7 +222,23 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 3,
                 initiative: 4,
                 range: 1,
-                damageIterations: 2)
+                damageIterations: 2),
+            abilities: new List<CharacterAbilityStats> {
+                new (
+                    stringID: "RogueCrit",
+                    interfaceName: "Fatal Strike",
+                    description: "Targets an enemy and deals the Rogue's base damage (once) with a guaranteed critical strike that also ignore armor.",
+                    damage: 15,
+                    damageIterations: 1,
+                    range: 1,                  
+                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
+                    cooldownDuration: 3,
+                    canCrit: true,
+                    critChance: 1f,
+                    critMultiplier: -1f,
+                    penetratingDamage: true
+                )
+            }
             );
         classes.Add(rogue);
 
@@ -412,9 +428,9 @@ public class ClassDataSO : ScriptableObject
         actionsByAbilityID.Add("WizardFireball", typeof(WizardFireballAbility));      
         actionsByAbilityID.Add("WarriorRoot", typeof(WarriorRootAbility));
         actionsByAbilityID.Add("NecroDOT", typeof(NecroDOTAbility));
+        actionsByAbilityID.Add("RogueCrit", typeof(RogueCritAbility));
 
         return actionsByAbilityID;
-
     }
 
     private Dictionary<string, Type> LinkPassiveAbilitiesToTheirBuffTypes()
