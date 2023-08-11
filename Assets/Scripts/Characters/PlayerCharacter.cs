@@ -398,14 +398,15 @@ public class PlayerCharacter : NetworkBehaviour
     internal List<ControlMode> GetRemainingActions()
     {
         List<ControlMode> activeControlModes = new();
-        if (this.HasAvailableAbilities())
-            activeControlModes.Add(ControlMode.useAbility);
-        if (this.HasAvailableActivatedEquipments())
-            activeControlModes.Add(ControlMode.useEquipment);
         if (this.HasAvailableMoves())
             activeControlModes.Add(ControlMode.move);
         if (this.HasAvailableAttacks())
             activeControlModes.Add(ControlMode.attack);
+        if (this.HasAvailableAbilities())
+            activeControlModes.Add(ControlMode.useAbility);
+        if (this.HasAvailableActivatedEquipments())
+            activeControlModes.Add(ControlMode.useEquipment);
+
         return activeControlModes;
     }
 

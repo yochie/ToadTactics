@@ -69,18 +69,18 @@ public class DefaultAttackAction : IAttackAction
         this.ActorCharacter.UsedAttack();
 
         //TODO Move to event listeners
-        if(!this.ActorCharacter.HasAvailableAttacks())
-            MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);
+        //if(!this.ActorCharacter.HasAvailableAttacks())
+        //    MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);
 
-        if (this.ActorCharacter.HasAvailableMoves())
-        {
-            MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.move);
-        }
-        else
-        {
-            MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
-            MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.none);
-        }
+        //if (this.ActorCharacter.HasAvailableMoves())
+        //{
+        //    MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.move);
+        //}
+        //else
+        //{
+        //    MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
+        //    MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.none);
+        //}
 
         //TODO: move to action executor FinishAction code to avoid recursion
         //if (!this.ActorCharacter.HasRemainingActions())

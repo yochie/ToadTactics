@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
+using System;
 
 public class MainHUD : NetworkBehaviour
 {
@@ -41,21 +42,7 @@ public class MainHUD : NetworkBehaviour
     [TargetRpc]
     public void TargetRpcToggleActiveButtons(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight)
     {
-        foreach(KeyValuePair<ControlMode, GameObject> buttonByMode in this.gameplayButtons)
-        {
-            if (activeButtons.Contains(buttonByMode.Key))
-            {
-                SetInteractableGameplayButton(buttonByMode.Key, true);
-            }
-            else
-            {
-                SetInteractableGameplayButton(buttonByMode.Key, false);
-            }
-
-        }
-
-        if (toHighlight != ControlMode.none)
-            this.HighlightGameplayButton(toHighlight);
+        this.ToggleActiveButtons(activeButtons, toHighlight);
     }
 
     [TargetRpc]
@@ -106,6 +93,26 @@ public class MainHUD : NetworkBehaviour
 
         }
     }
+
+    public void ToggleActiveButtons(List<ControlMode> activeButtons, ControlMode toHighlight)
+    {
+        foreach (KeyValuePair<ControlMode, GameObject> buttonByMode in this.gameplayButtons)
+        {
+            if (activeButtons.Contains(buttonByMode.Key))
+            {
+                SetInteractableGameplayButton(buttonByMode.Key, true);
+            }
+            else
+            {
+                SetInteractableGameplayButton(buttonByMode.Key, false);
+            }
+
+        }
+
+        if (toHighlight != ControlMode.none)
+            this.HighlightGameplayButton(toHighlight);
+    }
+
 
     [Client]
     private void SetInteractableGameplayButtons(bool state)

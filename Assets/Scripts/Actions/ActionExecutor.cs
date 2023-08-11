@@ -219,8 +219,11 @@ public class ActionExecutor : NetworkBehaviour
         else
         {
             List<ControlMode> activeControlModes = actor.GetRemainingActions();
-            if(!activeControlModes.Contains(currentControlMode))
+            if (!activeControlModes.Contains(currentControlMode))
+            {
+                MainHUD.Singleton.TargetRpcToggleActiveButtons(sender, activeControlModes, activeControlModes[0]);
                 MapInputHandler.Singleton.TargetRpcSetControlMode(sender, activeControlModes[0]);
+            }
             else
                 MainHUD.Singleton.TargetRpcToggleActiveButtons(sender, activeControlModes, currentControlMode);
         }

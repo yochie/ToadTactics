@@ -207,11 +207,15 @@ public class MapInputHandler : NetworkBehaviour
         MainHUD.Singleton.HighlightGameplayButton(mode);
         this.UnselectHex();
         this.CurrentControlMode = mode;
-        
-        if(mode == ControlMode.useAbility)
+
+        if (mode == ControlMode.characterPlacement)
+            return;
+
+        if (mode == ControlMode.useAbility)
         {
             int classID = GameController.Singleton.GetCharacterIDForTurn();
             PlayerCharacter currentlyPlayingCharacter = GameController.Singleton.PlayerCharactersByID[classID];
+
             //TODO: fetch correct ability here instead of juste getting first one
             if (currentlyPlayingCharacter.charClass.abilities == null ||
                 currentlyPlayingCharacter.charClass.abilities.Count < 1 ||
