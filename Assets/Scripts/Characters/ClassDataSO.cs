@@ -326,7 +326,21 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 7,
                 range: 3,
-                damageIterations: 1)
+                damageIterations: 1),
+            abilities: new List<CharacterAbilityStats> {
+                new (
+                    stringID: "DruidLava",
+                    interfaceName: "Fissure",
+                    description: "Targets a tile and fissures the ground causing lava to erupt onto the battlefield.",
+                    allowedAbilityTargets: Utility.GetAllEnumValues<TargetType>(),
+                    cooldownDuration: 3,
+                    range : 3,
+                    aoe: 1,
+                    requiresLOS: false,
+                    damage: HazardDataSO.Singleton.GetHazardDamage(HazardType.fire),
+                    damageType: HazardDataSO.Singleton.GetHazardDamageType(HazardType.fire)
+                )
+            }
             ); ;
         classes.Add(druid);
 
@@ -442,6 +456,7 @@ public class ClassDataSO : ScriptableObject
         actionsByAbilityID.Add("NecroDOT", typeof(NecroDOTAbility));
         actionsByAbilityID.Add("RogueCrit", typeof(RogueCritAbility));
         actionsByAbilityID.Add("ArcherSnipe", typeof(ArcherSnipeAbility));
+        actionsByAbilityID.Add("DruidLava", typeof(DruidLavaAbility));
 
         return actionsByAbilityID;
     }

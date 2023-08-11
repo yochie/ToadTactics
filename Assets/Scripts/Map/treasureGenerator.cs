@@ -12,6 +12,8 @@ public class treasureGenerator : NetworkBehaviour
     [SerializeField]
     private GameObject treasurePrefab;
 
+
+    //TODO : convert hazard prefab ref to use HazardData SO
     [Server]
     public void GenerateTreasure(Dictionary<Vector2Int, Hex> grid)
     {

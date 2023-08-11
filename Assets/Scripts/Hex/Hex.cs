@@ -153,25 +153,13 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
 
     internal int DealsDamageWhenMovedInto()
     {
-        switch (this.holdsHazard)
-        {
-            case HazardType.fire:
-                return Map.Singleton.FIRE_HAZARD_DAMAGE;
-            default:
-                return 0;
-        }
+        return HazardDataSO.Singleton.GetHazardDamage(this.holdsHazard);
     }
 
 
     internal DamageType DealsDamageTypeWhenMovedInto()
     {
-        switch (this.holdsHazard)
-        {
-            case HazardType.fire:
-                return DamageType.magic;
-            default:
-                return DamageType.physical;
-        }
+        return HazardDataSO.Singleton.GetHazardDamageType(this.holdsHazard);
     }
 
     internal bool HoldsAnObstacle()
@@ -210,13 +198,8 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
 
     public int MoveCost()
     {
-        switch (this.holdsHazard)
-        {
-            case HazardType.cold:
-                return 2;
-            default:
-                return 1;
-        }
+        int movementPenalty = HazardDataSO.Singleton.GetHazardMovementPenalty(this.holdsHazard);
+        return 1 + movementPenalty;
     }
 
     #endregion

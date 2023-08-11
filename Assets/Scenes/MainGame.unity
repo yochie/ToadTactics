@@ -3810,7 +3810,7 @@ MonoBehaviour:
   syncInterval: 0
   mapGenerator: {fileID: 1982683011}
   inputHandler: {fileID: 1982683013}
-  <FIRE_HAZARD_DAMAGE>k__BackingField: 10
+  <FIRE_HAZARD_DAMAGE>k__BackingField: 30
   hexesSpawnedOnClient: 0
 --- !u!4 &1982683009
 Transform:

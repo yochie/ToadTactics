@@ -21,9 +21,6 @@ public class Map : NetworkBehaviour
     [SerializeField]
     public MapInputHandler inputHandler;
 
-    [field: SerializeField]
-    public int FIRE_HAZARD_DAMAGE { get; private set; }
-
     #endregion
 
     #region Synced vars
