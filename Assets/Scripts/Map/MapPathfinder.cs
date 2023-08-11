@@ -151,6 +151,7 @@ public static class MapPathfinder
         return visited;
     }
 
+    //Returns null if destination is not in path
     public static List<Hex> FindMovementPath(Hex start, Hex dest, Dictionary<Vector2Int, Hex> hexGrid)
     {
         PriorityQueue<Hex, int> frontier = new();
@@ -295,6 +296,7 @@ public static class MapPathfinder
         return pathCost;
     }
 
+    //Returns null if destination is not in path
     public static List<Hex> FlattenPath(Dictionary<Hex, Hex> path, Hex dest)
     {
         //no path to destination was found

@@ -21,6 +21,7 @@ public class DefaultMoveAction : IMoveAction
     public CharacterStats MoverStats { get; set; }
 
     private int moveCost;
+    private List<Hex> movePath;
 
     [Server]
     public void ServerUse()
@@ -30,6 +31,13 @@ public class DefaultMoveAction : IMoveAction
         this.ActorCharacter.RpcPlaceChar(this.TargetHex.transform.position);
 
         //update state
+
+        foreach(Hex hex in this.movePath)
+        {
+            if (hex.DealsDamageWhenMovedInto() > 0)
+                this.ActorCharacter.TakeDamage(hex.DealsDamageWhenMovedInto(), hex.DealsDamageTypeWhenMovedInto());
+        }
+
         ActorCharacter.UsedMoves(this.moveCost);
         this.TargetHex.holdsCharacterWithClassID = this.ActorHex.holdsCharacterWithClassID;
         Map.Singleton.characterPositions[this.ActorCharacter.CharClassID] = this.TargetHex.coordinates;
@@ -49,13 +57,14 @@ public class DefaultMoveAction : IMoveAction
             ITargetedAction.ValidateTarget(this))
         {
             //Validate path
-            List<Hex> path = MapPathfinder.FindMovementPath(this.ActorHex, this.TargetHex, Map.Singleton.hexGrid);
-            if (path == null)
+            //this.movePath = MapPathfinder.FindMovementPath(this.ActorHex, this.TargetHex, Map.Singleton.hexGrid);
+            if (this.movePath == null)
             {
+                Debug.Log("Client requested move without path to destination");
                 return false;
             }
 
-            this.moveCost = MapPathfinder.PathCost(path);
+            //this.moveCost = MapPathfinder.PathCost(path);
             if (this.moveCost > this.ActorCharacter.RemainingMoves)
             {
                 Debug.Log("Client requested move outside his current range");
@@ -66,5 +75,12 @@ public class DefaultMoveAction : IMoveAction
         }            
         else
             return false;
+    }
+
+    [Server]
+    public void SetupPath()
+    {
+        this.movePath = MapPathfinder.FindMovementPath(this.ActorHex, this.TargetHex, Map.Singleton.hexGrid);
+        this.moveCost = MapPathfinder.PathCost(this.movePath);
     }
 }

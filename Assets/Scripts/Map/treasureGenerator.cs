@@ -32,7 +32,7 @@ public class treasureGenerator : NetworkBehaviour
             Hex hazardHex = Map.GetHex(grid, hazardCoordinate.x, hazardCoordinate.y);
             GameObject hazardObject = Instantiate(randomHazardPrefab, hazardHex.transform.position, Quaternion.identity);
             NetworkServer.Spawn(hazardObject);
-            hazardHex.holdsHazard = randomHazard.type;
+            hazardHex.holdsHazard = randomHazard.Type;
         }
     }
 }

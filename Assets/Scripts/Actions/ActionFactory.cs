@@ -7,14 +7,14 @@ using System.Linq;
 
 public class ActionFactory : MonoBehaviour
 {
-    public static IMoveAction CreateMoveAction(NetworkConnectionToClient sender,
+    public static DefaultMoveAction CreateDefaultMoveAction(NetworkConnectionToClient sender,
                                            int requestingPlayerID,
                                            PlayerCharacter moverCharacter,
                                            CharacterStats moverStats,
                                            Hex moverHex,
                                            Hex targetHex)
     {
-        IMoveAction moveAction = new DefaultMoveAction();
+        DefaultMoveAction moveAction = new DefaultMoveAction();
 
         //IAction
         moveAction.RequestingPlayerID = requestingPlayerID;

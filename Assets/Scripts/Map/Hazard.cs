@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class Hazard : NetworkBehaviour
+public class Hazard : MonoBehaviour
 {
-    [SyncVar]
-    public HazardType type;
+    [SerializeField]
+    private HazardType type;
+
+    public HazardType Type { get => this.type; }
 }

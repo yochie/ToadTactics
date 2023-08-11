@@ -74,6 +74,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.transform.rotation = rotation;
     }
 
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -148,6 +149,29 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     public bool HoldsACorpse()
     {
         return (this.holdsCorpseWithClassID != -1);
+    }
+
+    internal int DealsDamageWhenMovedInto()
+    {
+        switch (this.holdsHazard)
+        {
+            case HazardType.fire:
+                return Map.Singleton.FIRE_HAZARD_DAMAGE;
+            default:
+                return 0;
+        }
+    }
+
+
+    internal DamageType DealsDamageTypeWhenMovedInto()
+    {
+        switch (this.holdsHazard)
+        {
+            case HazardType.fire:
+                return DamageType.magic;
+            default:
+                return DamageType.physical;
+        }
     }
 
     internal bool HoldsAnObstacle()

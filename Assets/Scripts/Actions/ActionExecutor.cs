@@ -98,8 +98,9 @@ public class ActionExecutor : NetworkBehaviour
                                    Hex moverHex,
                                    Hex targetHex)
     {
-        IAction toTry = ActionFactory.CreateMoveAction(sender, actingPlayerID, moverCharacter, moverStats, moverHex, targetHex);
-        return this.TryAction(toTry);
+        DefaultMoveAction moveAction = ActionFactory.CreateDefaultMoveAction(sender, actingPlayerID, moverCharacter, moverStats, moverHex, targetHex);
+        moveAction.SetupPath();
+        return this.TryAction(moveAction);
     }
 
     [Server]
