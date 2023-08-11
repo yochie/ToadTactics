@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06c08df974c329d4f8dd3b4fddf4b647, type: 3}
+  m_Name: Movement2
+  m_EditorClassIdentifier: 
+  <EquipmentID>k__BackingField: Movement2
+  <NameUI>k__BackingField: Movement II
+  <Sprite>k__BackingField: {fileID: 21300000, guid: 18362d0b49b2cbf46a4d9fc88d7a707f, type: 3}
+  <Description>k__BackingField: 
+  <MovementOffset>k__BackingField: 2
+  <Quality>k__BackingField: 1

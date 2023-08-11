@@ -59,18 +59,16 @@ public class GameController : NetworkBehaviour
     //Only filled on server
     public IGamePhase currentPhaseObject;
     private int lastRoundLoserID;
-    private readonly List<string> equipmentsToDraft = new();
-    private readonly List<string> equipmentsToAssign = new();
-
     public List<PlayerController> playerControllers = new();
+    List<int> charactersInstantiantedOnRemote;
+    private int treasureOpenedByPlayerID;
+    private List<string> alreadyDraftedEquipmentIDs = new();
 
     //Only exist in some scenes, so they need to plug themselves here in their own Awake()
     //dont try to set them here, too tricky to wait for them before handling scene initialization
     public MapInputHandler mapInputHandler;
     public DraftUI draftUI;
     public EquipmentDraftUI equipmentDraftUI;
-    List<int> charactersInstantiantedOnRemote;
-
     #endregion
 
     #region Synced vars
@@ -129,7 +127,7 @@ public class GameController : NetworkBehaviour
     //Needs to be at bottom of syncvars since it updates UI based on state (order of syncvars determines execution order)
     //currently playing playerID
     [SyncVar(hook = nameof(OnPlayerTurnChanged))]
-    private int playerTurn;    
+    private int playerTurn;
 
     public int PlayerTurn { get => this.playerTurn;}
     [Server]
@@ -180,6 +178,7 @@ public class GameController : NetworkBehaviour
         this.playerTurn = -1;
         this.currentRound = -1;
         this.charactersInstantiantedOnRemote = new();
+        this.treasureOpenedByPlayerID = -1;
     }
 
     #endregion
@@ -442,45 +441,50 @@ public class GameController : NetworkBehaviour
         return gameEnded;
     }
 
+ 
     [Server]
-    internal void SetEquipmentsToDraft(List<string> equipmentIDs)
-    {
-        this.equipmentsToDraft.Clear();
-        foreach(string equipmentToAdd in equipmentIDs)
-        {
-            this.equipmentsToDraft.Add(equipmentToAdd);
-        }
-    }
-
-    [Server]
-    internal List<string> GetEquipmentsToDraft()
-    {
-        List<string> toReturn = new();
-        this.equipmentsToDraft.CopyTo(toReturn);
-        return toReturn;
-    }
-
-    [Server]
-    internal void SetEquipmentsToAssign(List<string> equipmentIDs)
-    {
-        this.equipmentsToAssign.Clear();
-        foreach (string equipmentToAdd in equipmentIDs)
-        {
-            this.equipmentsToAssign.Add(equipmentToAdd);
-        }
-    }
-
     internal void ClearTurnOrder()
     {
         this.sortedTurnOrder.Clear();
     }
 
+    [Server]
     internal void ClearPlayerCharacters()
     {
         this.playerCharactersNetIDs.Clear();
         this.PlayerCharactersByID.Clear();
     }
 
+    [Server]
+    internal void SetTreasureOpenedByPlayerID(int playerID)
+    {
+        this.treasureOpenedByPlayerID = playerID;
+    }
+
+    //-1 if unopened
+    [Server]
+    internal int GetTreasureOpenedByPlayerID()
+    {
+        return this.treasureOpenedByPlayerID;
+    }
+
+    [Server]
+    internal void AddAlreadyDraftedEquipmentID(string equipmentID)
+    {
+        this.alreadyDraftedEquipmentIDs.Add(equipmentID);
+    }
+
+    [Server]
+    internal bool AlreadyDraftedEquipmentID(string equipmentID)
+    {
+        return this.alreadyDraftedEquipmentIDs.Contains(equipmentID);
+    }
+
+    [Server]
+    internal int AlreadyDraftedEquipmentCount()
+    {
+        return this.alreadyDraftedEquipmentIDs.Count;
+    }
     #endregion
 
     #region Callbacks
@@ -753,55 +757,6 @@ public class GameController : NetworkBehaviour
     internal int GetScore(int playerID)
     {
         return this.playerScores[playerID];
-    }
-
-    public bool AllEquipmentsDrafted()
-    {
-        foreach (string equipmentIDToDraft in this.equipmentsToDraft)
-        {
-            bool hasBeenDraftedByAPlayer = false;
-            foreach (PlayerController player in this.playerControllers)
-            {
-                if (player.HasDraftedEquipment(equipmentIDToDraft))
-                    hasBeenDraftedByAPlayer = true;
-            }
-            if (!hasBeenDraftedByAPlayer)
-                return false;
-        }
-
-        return true;
-    }
-
-    [Server]
-    public bool EquipmentHasBeenDrafted(string equipmentID)
-    {
-        foreach (PlayerController player in this.playerControllers)
-        {
-            if (player.HasDraftedEquipment(equipmentID))
-                return true;
-        }
-        return false;
-    }
-
-    [Server]
-    public bool AllEquipmentsAssigned()
-    {
-        foreach (PlayerController player in this.playerControllers)
-        {
-            if (!player.HasAssignedAllEquipments())
-                return false;
-        }
-        return true;
-    }
-
-    public bool EquipmentHasBeenAssigned(string equipmentID)
-    {
-        foreach (PlayerController player in this.playerControllers)
-        {
-            if (player.HasAssignedEquipment(equipmentID))
-                return true;
-        }
-        return false;
     }
 
     [Server]

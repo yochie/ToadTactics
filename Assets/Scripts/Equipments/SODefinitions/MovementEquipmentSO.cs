@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Range", menuName = "Equipments/MovementEquipment")]
+[CreateAssetMenu(fileName = "Movement", menuName = "Equipments/MovementEquipment")]
 public class MovementEquipmentSO : EquipmentSO, IEquipmentQuality, IMovementModifier
 {
     [field: SerializeField]

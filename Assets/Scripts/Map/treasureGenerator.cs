@@ -36,5 +36,7 @@ public class treasureGenerator : NetworkBehaviour
             NetworkServer.Spawn(hazardObject);
             hazardHex.holdsHazard = randomHazard.Type;
         }
+
+        Map.Singleton.Treasure = treasureObject;
     }
 }

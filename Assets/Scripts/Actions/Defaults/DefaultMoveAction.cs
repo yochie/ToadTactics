@@ -36,6 +36,12 @@ public class DefaultMoveAction : IMoveAction
         {
             if (hex.DealsDamageWhenMovedInto() > 0)
                 this.ActorCharacter.TakeDamage(hex.DealsDamageWhenMovedInto(), hex.DealsDamageTypeWhenMovedInto());
+            if (hex.holdsTreasure)
+            {
+                Debug.Log("{0} has moved on treasure. He will be assigned extra treasure.");
+                Object.Destroy(Map.Singleton.Treasure);
+                GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);
+            }
         }
 
         ActorCharacter.UsedMoves(this.moveCost);

@@ -38,6 +38,9 @@ public class Map : NetworkBehaviour
     [HideInInspector]
     public bool hexesSpawnedOnClient;
 
+    //Server only, used for destroying on pickup
+    public GameObject Treasure { get; set; }
+
     #endregion
 
     #region Startup

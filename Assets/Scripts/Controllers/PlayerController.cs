@@ -16,7 +16,7 @@ public class PlayerController : NetworkBehaviour
     [SyncVar]
     public int kingClassID;
     
-    private readonly SyncList<string> draftedEquipmentIDs = new();
+    private readonly SyncList<string> equipmentIDsToAssign = new();
 
     //equipmentID -> classID
     private readonly SyncDictionary<string, int> assignedEquipments = new();
@@ -61,9 +61,9 @@ public class PlayerController : NetworkBehaviour
 
         GameController.Singleton.playerControllers.Add(this);
 
-        this.draftedEquipmentIDs.Callback += OnDraftedEquipementIDsChanged;
-        for (int index = 0; index < draftedEquipmentIDs.Count; index++)
-            OnDraftedEquipementIDsChanged(SyncList<string>.Operation.OP_ADD, index, "", draftedEquipmentIDs[index]);
+        this.equipmentIDsToAssign.Callback += OnDraftedEquipementIDsChanged;
+        for (int index = 0; index < equipmentIDsToAssign.Count; index++)
+            OnDraftedEquipementIDsChanged(SyncList<string>.Operation.OP_ADD, index, "", equipmentIDsToAssign[index]);
     }
 
     void OnDraftedEquipementIDsChanged(SyncList<string>.Operation op, int index, string oldItem, string newItem)
@@ -174,47 +174,36 @@ public class PlayerController : NetworkBehaviour
        
         this.TargetRpcOnEquipmentAssigned(sender, equipmentID, this.playerID, classID);
 
-        string nextToAssign = null;
-        foreach(string draftedEquipmentID in this.draftedEquipmentIDs)
-        {
-            if (!this.assignedEquipments.ContainsKey(draftedEquipmentID))
-            {
-                nextToAssign = draftedEquipmentID;
-                break;
-            }
-        }
+        string nextToAssign = this.GetUnassignedEquipmentID();
 
         //tick phase to indicate that this player has finished all assignments
         //if both players have ticked phase while all characters are drafted, it will trigger next phase
-        if(nextToAssign == null) 
+        if (nextToAssign == null) 
         {
             Debug.LogFormat("No more equipments to assign, ticking phase.");
-
-            GameController.Singleton.CmdNextTurn();
             this.TargetRpcOnLocalPlayerAssignedAllEquipments(sender);
+            GameController.Singleton.CmdNextTurn();
         } else
         {
             //Debug.LogFormat("Displaying next equipment.");
-
             GameController.Singleton.equipmentDraftUI.TargetRpcUpdateEquipmentAssignment(target: sender, nextEquipmentID: nextToAssign);
         }        
-    }
-
-    [TargetRpc]
-    private void TargetRpcOnLocalPlayerAssignedAllEquipments(NetworkConnectionToClient sender)
-    {
-        this.onLocalPlayerAssignedAllEquipments.Raise();
     }
 
     [Command]
     public void CmdDraftEquipment(string equipmentID)
     {
         Debug.LogFormat("Player {0} drafted equipment {1}", this.playerID, EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).name);
-        this.draftedEquipmentIDs.Add(equipmentID);
-        GameController.Singleton.CmdNextTurn();
-
+        this.AddEquipmentIDToAssign(equipmentID);
         //throw event that updates UI elements
         this.RpcOnEquipmentDrafted(equipmentID, this.playerID);
+        GameController.Singleton.CmdNextTurn();
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnLocalPlayerAssignedAllEquipments(NetworkConnectionToClient sender)
+    {
+        this.onLocalPlayerAssignedAllEquipments.Raise();
     }
 
     [Command(requiresAuthority = false)]
@@ -271,6 +260,12 @@ public class PlayerController : NetworkBehaviour
         GameController.Singleton.PlayerCharactersNetIDs.Add(charIDToCreate, newCharObject.GetComponent<NetworkIdentity>().netId);
 
     }
+
+    [Server]
+    public void AddEquipmentIDToAssign(string equipmentID)
+    {
+        this.equipmentIDsToAssign.Add(equipmentID);
+    }
     #endregion
 
     #region Rpcs    
@@ -310,7 +305,7 @@ public class PlayerController : NetworkBehaviour
     #region Utility
     internal bool HasDraftedEquipment(string equipmentID)
     {
-        if (this.draftedEquipmentIDs.Contains(equipmentID))
+        if (this.equipmentIDsToAssign.Contains(equipmentID))
             return true;
         else
             return false;
@@ -326,7 +321,7 @@ public class PlayerController : NetworkBehaviour
 
     internal bool HasAssignedAllEquipments()
     {
-        foreach(string equipmentID in this.draftedEquipmentIDs)
+        foreach(string equipmentID in this.equipmentIDsToAssign)
         {
             if (!this.assignedEquipments.ContainsKey(equipmentID))
                 return false;
@@ -336,24 +331,22 @@ public class PlayerController : NetworkBehaviour
 
     internal List<string> GetDraftedEquipmentIDs()
     {
-        List<string> copy = new(this.draftedEquipmentIDs);
+        List<string> copy = new(this.equipmentIDsToAssign);
         return copy;
     }
 
     internal string GetUnassignedEquipmentID()
     {
         string nextToAssign = null;
-        foreach (string draftedEquipmentID in this.draftedEquipmentIDs)
+        foreach (string equipmentToAssign in this.equipmentIDsToAssign)
         {
-            if (!this.assignedEquipments.ContainsKey(draftedEquipmentID))
+            if (!this.assignedEquipments.ContainsKey(equipmentToAssign))
             {
-                nextToAssign = draftedEquipmentID;
+                nextToAssign = equipmentToAssign;
                 break;
             }
         }
-
         return nextToAssign;
-
     }
     #endregion
 }
