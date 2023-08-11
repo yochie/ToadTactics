@@ -30,7 +30,31 @@ public static class MapPathfinder
 
         return toReturn;
     }
-    
+
+    internal static List<Hex> HexesOnLine(Hex startHex, Hex endHex)
+    {
+        LayerMask hexMask = LayerMask.GetMask("MapHex");
+
+        RaycastHit2D[] hits;
+        Vector2 sourcePos = startHex.transform.position;
+        Vector2 destPos = endHex.transform.position;
+        Vector2 direction = destPos - sourcePos;
+        List<Hex> hexesOnLine = new();
+
+        hits = Physics2D.RaycastAll(sourcePos, direction, direction.magnitude, hexMask);
+        foreach (RaycastHit2D hit in hits)
+        {
+            GameObject hitObject = hit.collider.gameObject;
+            Hex hitHex = hitObject.GetComponent<Hex>();
+            if (hitHex != null && hitHex != startHex)
+            {
+                //hitHex.DisplayLOSObstruction(true);
+                hexesOnLine.Add(hitHex);
+            }
+        }
+        return hexesOnLine;
+    }
+
     //returns hexes without hazards, obstacles or players
     public static List<Hex> HexUnobstructedNeighbours(Hex h, Dictionary<Vector2Int, Hex> hexGrid)
     {
@@ -179,7 +203,7 @@ public static class MapPathfinder
 
             bool unobstructed;
             if (requiresLOS)
-                unobstructed = MapPathfinder.IsHexReachableByLOS(source, targetHex);
+                unobstructed = MapPathfinder.LOSReaches(source, targetHex);
             else
                 unobstructed = true;
 
@@ -200,43 +224,44 @@ public static class MapPathfinder
         return hexTargetableTypes;
     }
 
-    private static bool IsHexReachableByLOS(Hex source, Hex target)
+    //TODO : remove if no issues with using LOSReaches instead
+    //private static bool IsHexReachableByLOS(Hex source, Hex target)
+    //{
+    //    LayerMask hexMask = LayerMask.GetMask("MapHex");
+    //    RaycastHit2D[] hits;
+    //    Vector2 sourcePos = source.transform.position;
+    //    Vector2 targetPos = target.transform.position;
+    //    Vector2 direction = targetPos - sourcePos;
+
+    //    hits = Physics2D.RaycastAll(sourcePos, direction, direction.magnitude, hexMask);
+    //    Array.Sort(hits, Comparer<RaycastHit2D>.Create((RaycastHit2D x, RaycastHit2D y) => x.distance.CompareTo(y.distance)));
+
+    //    bool firstHit = true;
+    //    foreach (RaycastHit2D raycastHit in hits)
+    //    {
+    //        //skip first hit, its always source hex
+    //        if (firstHit)
+    //        {
+    //            firstHit = false;
+    //            continue;
+    //        }
+
+    //        Hex hitHex = raycastHit.collider.GetComponent<Hex>();
+    //        if (hitHex != null && hitHex.BreaksLOSToTarget(target))
+    //        {
+    //            return false;
+    //        }
+    //    }
+
+    //    return true;
+    //}
+
+    public static bool LOSReaches(Hex source, Hex target, int? range = null)
     {
-        LayerMask hexMask = LayerMask.GetMask("MapHex");
-        RaycastHit2D[] hits;
-        Vector2 sourcePos = source.transform.position;
-        Vector2 targetPos = target.transform.position;
-        Vector2 direction = targetPos - sourcePos;
-
-        hits = Physics2D.RaycastAll(sourcePos, direction, direction.magnitude, hexMask);
-        Array.Sort(hits, Comparer<RaycastHit2D>.Create((RaycastHit2D x, RaycastHit2D y) => x.distance.CompareTo(y.distance)));
-
-        bool firstHit = true;
-        foreach (RaycastHit2D raycastHit in hits)
-        {
-            //skip first hit, its always source hex
-            if (firstHit)
-            {
-                firstHit = false;
-                continue;
-            }
-
-            Hex hitHex = raycastHit.collider.GetComponent<Hex>();
-            if (hitHex != null && hitHex.BreaksLOSToTarget(target))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static bool LOSReaches(Hex source, Hex target, int range)
-    {
 
         LayerMask hexMask = LayerMask.GetMask("MapHex");
 
-        if (MapPathfinder.HexDistance(source, target) > range)
+        if (range != null && MapPathfinder.HexDistance(source, target) > range.GetValueOrDefault())
             return false;
 
         bool unobstructed = true;

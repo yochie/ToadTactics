@@ -204,7 +204,19 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 3,
                 range: 3,
-                damageIterations: 1)
+                damageIterations: 1),
+            abilities: new List<CharacterAbilityStats> {
+                new (
+                    stringID: "ArcherSnipe",
+                    interfaceName: "Snipe",
+                    description: "Targets an enemy with a shot that has infinite range that pierces all targets and destroys trees between the target and the Archer. The attack does not require LOS.",
+                    damage: 30,
+                    range: Utility.MAX_DISTANCE_ON_MAP,
+                    requiresLOS: false,
+                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars},
+                    cooldownDuration: 3
+                ) 
+            }
             );
         classes.Add(archer);
 
@@ -333,7 +345,7 @@ public class ClassDataSO : ScriptableObject
                 critMultiplier: 1.5f,
                 moveSpeed: 3,
                 initiative: 8,
-                range: 20,
+                range: Utility.MAX_DISTANCE_ON_MAP,
                 damageIterations: 1),
             abilities: new List<CharacterAbilityStats> {
                 new (
@@ -342,7 +354,7 @@ public class ClassDataSO : ScriptableObject
                     description: "Targets an enemy and inflitcts a curse that deals stackable damage over time.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.ennemy_chars },
                     cooldownDuration: 1,
-                    range: 50,
+                    range: Utility.MAX_DISTANCE_ON_MAP,
                     requiresLOS: false,
                     damage: 10,
                     damageType: DamageType.magic
@@ -409,7 +421,7 @@ public class ClassDataSO : ScriptableObject
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.friendly_corpse },
                     usesPerRound: 1,
                     requiresLOS: false,
-                    range: 50
+                    range: Utility.MAX_DISTANCE_ON_MAP
                 )
             }
             );
@@ -429,6 +441,7 @@ public class ClassDataSO : ScriptableObject
         actionsByAbilityID.Add("WarriorRoot", typeof(WarriorRootAbility));
         actionsByAbilityID.Add("NecroDOT", typeof(NecroDOTAbility));
         actionsByAbilityID.Add("RogueCrit", typeof(RogueCritAbility));
+        actionsByAbilityID.Add("ArcherSnipe", typeof(ArcherSnipeAbility));
 
         return actionsByAbilityID;
     }
@@ -439,7 +452,6 @@ public class ClassDataSO : ScriptableObject
 
         buffsByPassiveAbilityID.Add("BarbarianKingDamage", typeof(BarbarianKingDamageEffect));
         return buffsByPassiveAbilityID;
-
     }
     #endregion
 }

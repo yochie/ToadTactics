@@ -8,6 +8,9 @@ using System.Linq;
 
 public static class Utility
 {
+
+    public static readonly int MAX_DISTANCE_ON_MAP = 50;
+
     internal static bool DictContainsValue(SyncIDictionary<float, int> dict, int item)
     {
         foreach (float key in dict.Keys)
