@@ -392,7 +392,7 @@ public class GameController : NetworkBehaviour
     [Server]
     public void AddCharToTurnOrder(int classID)
     {
-        float initiative = ClassDataSO.Singleton.GetClassByID(classID).stats.initiative;
+        float initiative = this.playerCharactersByID[classID].CurrentStats.initiative;
         if (Utility.DictContainsValue(this.SortedTurnOrder, classID))
         {
             Debug.Log("Error : Character is already in turnOrder.");
