@@ -19,7 +19,10 @@ public class EquipmentDraftUI : NetworkBehaviour
     private GameObject assignmentCharacterSheetPrefab;
 
     [field: SerializeField]
-    public GameObject DraftEquipmentSheetsList { get; private set; }
+    public GameObject DraftEquipmentPanelsFirstRow { get; private set; }
+
+    [field: SerializeField]
+    public GameObject DraftEquipmentPanelsSecondRow { get; private set; }
 
     [field: SerializeField]
     public  GameObject AssignmentEquipmentSheetContainer { get; private set; }
@@ -57,12 +60,12 @@ public class EquipmentDraftUI : NetworkBehaviour
         int i = 0;
         foreach (string equipmentID in equipmentIDsToDraft)
         {
-            GameObject slotObject = Instantiate(this.draftableEquipmentSlotPrefab, this.DraftEquipmentSheetsList.transform);
+            GameObject slotObject = Instantiate(this.draftableEquipmentSlotPrefab, this.DraftEquipmentPanelsFirstRow.transform);
             DraftableEquipmentSlotUI slot = slotObject.GetComponent<DraftableEquipmentSlotUI>();
             NetworkServer.Spawn(slot.gameObject);
             //Debug.Log("Spawned DraftableEquipmentSlot");
-            slot.TargetRpcInitForDraft(target: currentPlayerClient, equipmentID: equipmentIDsToDraft[i], itsYourTurn: true);
-            slot.TargetRpcInitForDraft(target: waitingPlayerClient, equipmentID: equipmentIDsToDraft[i], itsYourTurn: false);
+            slot.TargetRpcInitForDraft(target: currentPlayerClient, equipmentID: equipmentIDsToDraft[i], itsYourTurn: true, index: i);
+            slot.TargetRpcInitForDraft(target: waitingPlayerClient, equipmentID: equipmentIDsToDraft[i], itsYourTurn: false, index: i);
             i++;
         }
     }
@@ -90,7 +93,7 @@ public class EquipmentDraftUI : NetworkBehaviour
     [TargetRpc]
     public void TargetRpcSetupEquipmentAssignment(NetworkConnectionToClient target, string firstEquipmentID, List<int> charactersToAssignTo)
     {
-        Destroy(this.DraftEquipmentSheetsList);
+        Destroy(this.DraftEquipmentPanelsFirstRow);
         this.AssignmentCharacterSheetsList.SetActive(true);
         this.AssignmentEquipmentSheetContainer.SetActive(true);
         this.ClearDraftableSlots();

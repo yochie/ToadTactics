@@ -302,6 +302,30 @@ PrefabInstance:
       propertyPath: m_fontColor32.rgba
       value: 4278190080
       objectReference: {fileID: 0}
+    - target: {fileID: 5527509645280791228, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5527509645280791228, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5527509645280791228, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5527509645280791228, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5527509645280791228, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5527509645280791228, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6069058308417856732, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
       propertyPath: m_SizeDelta.x
       value: 100

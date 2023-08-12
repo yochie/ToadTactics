@@ -33,16 +33,22 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcInitForDraft(NetworkConnectionToClient target, string equipmentID, bool itsYourTurn)
+    public void TargetRpcInitForDraft(NetworkConnectionToClient target, string equipmentID, bool itsYourTurn, int index)
     {
-        this.Init(equipmentID, itsYourTurn);
+        this.Init(equipmentID, itsYourTurn, index);
     }
 
-    public void Init(string equipmentID, bool itsYourTurn)
+    public void Init(string equipmentID, bool itsYourTurn, int index)
     {
         //register to Equipment Draft UI on each client
         GameController.Singleton.equipmentDraftUI.RegisterSpawnedSlot(this);
-        this.transform.SetParent(GameController.Singleton.equipmentDraftUI.DraftEquipmentSheetsList.transform, false);
+        GameObject addingToList = null;
+        if (index < GameController.Singleton.numEquipmentsDraftedBetweenRounds / 2)
+            addingToList = GameController.Singleton.equipmentDraftUI.DraftEquipmentPanelsFirstRow;
+        else
+            addingToList = GameController.Singleton.equipmentDraftUI.DraftEquipmentPanelsSecondRow;
+
+        this.transform.SetParent(addingToList.transform, false);
         this.holdsEquipmentID = equipmentID;
 
         EquipmentSO equipmentData = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID);

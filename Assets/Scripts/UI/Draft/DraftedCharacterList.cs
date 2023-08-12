@@ -26,13 +26,13 @@ public class DraftedCharacterList : MonoBehaviour
     }
 
     //Called by unity event configured in inspector
-    public void OnCharacterDrafted(int playerId, int classID)
+    public void OnCharacterDrafted(int draftedByPlayerID, int draftedClassID)
     {
         bool addToThisList = false;
         
-        if (this.isForSelf && playerId == GameController.Singleton.LocalPlayer.playerID)
+        if (this.isForSelf && draftedByPlayerID == GameController.Singleton.LocalPlayer.playerID)
             addToThisList = true;
-        else if (!this.isForSelf && playerId != GameController.Singleton.LocalPlayer.playerID)
+        else if (!this.isForSelf && draftedByPlayerID != GameController.Singleton.LocalPlayer.playerID)
             addToThisList = true;
 
         if (!addToThisList)
@@ -40,7 +40,7 @@ public class DraftedCharacterList : MonoBehaviour
 
         GameObject slotObject = Instantiate(this.slotPrefab, this.transform);
         DraftedCharacterSlotUI slot = slotObject.GetComponent<DraftedCharacterSlotUI>();
-        slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
-        slot.SetClassID(classID);
+        slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(draftedClassID));
+        slot.SetClassID(draftedClassID);
     }
 }
