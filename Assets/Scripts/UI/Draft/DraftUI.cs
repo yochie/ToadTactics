@@ -11,7 +11,10 @@ public class DraftUI : MonoBehaviour
     private GameObject slotPrefab;
 
     [SerializeField]
-    private GameObject characterSheetsList;
+    private GameObject characterSheetsListFirstRow;
+    [SerializeField]
+    private GameObject characterSheetsListSecondRow;
+
 
     [SerializeField]
     private List<DraftableCharacterSlotUI> draftableSlots;
@@ -54,7 +57,7 @@ public class DraftUI : MonoBehaviour
     {
         foreach (int classID in classIDs)
         {
-            GameObject kingCandidateSlotObject = Instantiate(this.slotPrefab, this.characterSheetsList.transform);
+            GameObject kingCandidateSlotObject = Instantiate(this.slotPrefab, this.characterSheetsListFirstRow.transform);
             DraftableCharacterSlotUI kingCandidateSlot = kingCandidateSlotObject.GetComponent<DraftableCharacterSlotUI>();
             kingCandidateSlot.Init(classID, true, true);
         }
