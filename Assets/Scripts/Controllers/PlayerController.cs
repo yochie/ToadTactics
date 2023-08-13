@@ -15,11 +15,17 @@ public class PlayerController : NetworkBehaviour
 
     [SyncVar]
     public int kingClassID;
-    
+
     private readonly SyncList<string> equipmentIDsToAssign = new();
 
     //equipmentID -> classID
     private readonly SyncDictionary<string, int> assignedEquipments = new();
+    public Dictionary<string, int> AssignedEquipmentsCopy  {
+        get {
+            Dictionary<string, int> copyToReturn = new(this.assignedEquipments);
+            return copyToReturn;
+        }            
+    }
 
     [SerializeField]
     private IntGameEventSO onCharacterPlaced;

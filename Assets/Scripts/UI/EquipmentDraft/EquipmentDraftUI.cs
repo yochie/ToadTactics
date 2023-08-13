@@ -116,12 +116,16 @@ public class EquipmentDraftUI : NetworkBehaviour
     private void GenerateAssignmentCharacterSheets(List<int> classIDs)
     {
         this.assignmentCharacterSheets = new();
-        foreach (int classID in classIDs)
+        Dictionary<string, int> localPlayerAssignedEquipments = GameController.Singleton.LocalPlayer.AssignedEquipmentsCopy;
+        foreach (int sheetForClassID in classIDs)
         {
             GameObject slotObject = Instantiate(this.assignmentCharacterSheetPrefab, this.AssignmentCharacterSheetsList.transform);
             AssignmentCharacterSheetUI assignmentCharacterSheet = slotObject.GetComponent<AssignmentCharacterSheetUI>();
             this.assignmentCharacterSheets.Add(assignmentCharacterSheet);
-            assignmentCharacterSheet.Init(classID, GameController.Singleton.IsAKing(classID));
+            List<string> previouslyAssignedEquipments = localPlayerAssignedEquipments
+                .Where(assignedEquipment => assignedEquipment.Value == sheetForClassID)
+                .Select(assignedEquipment => assignedEquipment.Key).ToList<string>();
+            assignmentCharacterSheet.Init(sheetForClassID, previouslyAssignedEquipments, GameController.Singleton.IsAKing(sheetForClassID));
         }
     }
 

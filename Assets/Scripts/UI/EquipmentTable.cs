@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 public class EquipmentTable : MonoBehaviour
 {
@@ -9,18 +10,22 @@ public class EquipmentTable : MonoBehaviour
     [SerializeField]
     private Image blankIconPrefab;
 
-    public void RenderWithEquipments(List<string> equipmentIDs)
+    public void SetupWithEquipments(List<string> equipmentIDs)
     {
 
         this.Clear();
 
         foreach (string equipmentID in equipmentIDs)
         {
-            Image equipmentICon = Instantiate(this.blankIconPrefab, this.transform);
-            this.displayedIcons.Add(equipmentICon);
-            equipmentICon.sprite = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).Sprite;
-            equipmentICon.color = Color.black;
+            this.AddEquipment(equipmentID);
         }
+    }
+    public void AddEquipment(string equipmentID)
+    {
+        Image equipmentICon = Instantiate(this.blankIconPrefab, this.transform);
+        this.displayedIcons.Add(equipmentICon);
+        equipmentICon.sprite = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).Sprite;
+        equipmentICon.color = Color.black;
     }
 
     private void Clear()

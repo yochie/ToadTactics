@@ -64,7 +64,7 @@ public class CharacterSheetUI : MonoBehaviour
         this.statsTable.RenderForCurrentStats(currentStats, isAKing);
         GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
         equipmentRow.SetActive(equipmentIDs.Count > 0);
-        this.equipmentTable.RenderWithEquipments(equipmentIDs);
+        this.equipmentTable.SetupWithEquipments(equipmentIDs);
     }
 
     #endregion

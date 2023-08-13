@@ -27,23 +27,27 @@ public class AssignmentCharacterSheetUI : MonoBehaviour
 
     [SerializeField]
     private GameObject assignEquipmentButton;
+    
+    [SerializeField]
+    private EquipmentTable equipmentTable;
 
     #region Startup
 
-    public void Init(int classID, bool asKing = false)
+    public void Init(int classID, List<string> previouslyAssignedEquipmentIDs, bool asKing = false)
     {
         this.holdsClassID = classID;
 
         CharacterClass classData = ClassDataSO.Singleton.GetClassByID(classID);
         Sprite sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
 
-
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderForClass(classData);
         this.statsTable.RenderForBaseStats(classData.stats, asKing);
-
+        GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
+        equipmentRow.SetActive(previouslyAssignedEquipmentIDs.Count > 0);
+        this.equipmentTable.SetupWithEquipments(previouslyAssignedEquipmentIDs);
         this.SetButtonActiveState(state: true);
 
     }
@@ -64,7 +68,9 @@ public class AssignmentCharacterSheetUI : MonoBehaviour
             && playerID == GameController.Singleton.LocalPlayer.playerID
             && equipmentID == GameController.Singleton.equipmentDraftUI.currentlyAssigningEquipmentID)
         {
-            //TODO : add stats and equipment icon
+            GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
+            equipmentRow.SetActive(true);
+            this.equipmentTable.AddEquipment(equipmentID);
         }
     }
 
