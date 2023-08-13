@@ -288,6 +288,8 @@ public static class MapPathfinder
     public static int PathCost(List<Hex> path)
     {
         int pathCost = 0;
+        if (path == null)
+            return pathCost;
         foreach (Hex h in path)
         {
             pathCost += h.MoveCost();
