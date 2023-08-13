@@ -120,6 +120,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameWonScreen
       objectReference: {fileID: 0}
+    - target: {fileID: 7782668254872057362, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_text
+      value: Main menu
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

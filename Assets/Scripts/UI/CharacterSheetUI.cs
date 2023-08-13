@@ -62,7 +62,8 @@ public class CharacterSheetUI : MonoBehaviour
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderForClass(classData);
         this.statsTable.RenderForCurrentStats(currentStats, isAKing);
-        this.equipmentTable.gameObject.SetActive(equipmentIDs.Count > 0);
+        GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
+        equipmentRow.SetActive(equipmentIDs.Count > 0);
         this.equipmentTable.RenderWithEquipments(equipmentIDs);
     }
 
