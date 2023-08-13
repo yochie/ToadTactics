@@ -23,6 +23,7 @@ public class PlayerCharacter : NetworkBehaviour
 
     #region Sync vars
     private readonly SyncList<string> equipmentIDs = new();
+    public List<string> EquipmentIDsCopy => this.equipmentIDs.ToList();
     //TODO: serialized charClassID might be an issue according to best practices documented here : https://unitystation.github.io/unitystation/development/SyncVar-Best-Practices-for-Easy-Networking/
     //TODO : consider changing to seperate field used for init...
     [SyncVar(hook = nameof(OnCharClassIDChanged))]

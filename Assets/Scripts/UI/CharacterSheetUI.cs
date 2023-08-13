@@ -29,6 +29,9 @@ public class CharacterSheetUI : MonoBehaviour
     private StatsTable statsTable;
 
     [SerializeField]
+    private EquipmentTable equipmentTable;
+
+    [SerializeField]
     private GameObject closeButton;
 
     #region Startup
@@ -47,7 +50,7 @@ public class CharacterSheetUI : MonoBehaviour
         this.statsTable.RenderForBaseStats(classData.stats, isAKing);
     }
 
-    public void FillWithActiveCharacterData(int classID, CharacterStats currentStats, bool isAKing)
+    public void FillWithActiveCharacterData(int classID, CharacterStats currentStats, bool isAKing, List<string> equipmentIDs)
     {
         this.holdsClassID = classID;
 
@@ -59,6 +62,8 @@ public class CharacterSheetUI : MonoBehaviour
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderForClass(classData);
         this.statsTable.RenderForCurrentStats(currentStats, isAKing);
+        this.equipmentTable.gameObject.SetActive(equipmentIDs.Count > 0);
+        this.equipmentTable.RenderWithEquipments(equipmentIDs);
     }
 
     #endregion
@@ -76,7 +81,10 @@ public class CharacterSheetUI : MonoBehaviour
         if (!GameController.Singleton.PlayerCharactersByID.ContainsKey(classID) || GameController.Singleton.PlayerCharactersByID[classID] == null)
             this.FillWithClassData(classID, GameController.Singleton.IsAKing(classID));
         else
-            this.FillWithActiveCharacterData(classID, GameController.Singleton.PlayerCharactersByID[classID].CurrentStats, GameController.Singleton.IsAKing(classID));
+        {
+            PlayerCharacter activeCharacter = GameController.Singleton.PlayerCharactersByID[classID];
+            this.FillWithActiveCharacterData(classID, activeCharacter.CurrentStats, GameController.Singleton.IsAKing(classID), activeCharacter.EquipmentIDsCopy);
+        }
         this.content.SetActive(true);
     }
     #endregion
