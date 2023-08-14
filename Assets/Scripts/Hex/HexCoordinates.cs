@@ -35,6 +35,10 @@ public readonly struct HexCoordinates : IEquatable<HexCoordinates>
 	public int X { get { return this.isFlatTop ? this.Q : this.Q + (this.R - Math.Abs(this.R % 2)) / 2; } }
 	public int Y { get { return this.isFlatTop ? this.R  + (this.Q - Math.Abs(this.Q%2)) / 2 : this.R; } }
 
+	public Vector2Int OffsetCoordinatesAsVector()
+    {
+		return new Vector2Int(this.X, this.Y);
+    }
 
 	public HexCoordinates (int q, int r, bool isFlatTop) {
 		this.q = q;

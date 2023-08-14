@@ -30,7 +30,6 @@ public class DruidLavaAbility : IAbilityAction, ITargetedAction
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
         List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.aoe, Map.Singleton.hexGrid);
-        GameObject fireHazardPrefab = HazardDataSO.Singleton.GetHazardPrefab(HazardType.fire);
 
         foreach (Hex hex in hexesInAOE)
         {
@@ -39,9 +38,20 @@ public class DruidLavaAbility : IAbilityAction, ITargetedAction
             if (hex.HoldsACharacter() || hex.HoldsAnObstacle())
                 ActionExecutor.Singleton.AbilityAttack(this.ActorHex, hex, this.AbilityStats, this.RequestingClient);
 
-            GameObject hazardObject = UnityEngine.Object.Instantiate(fireHazardPrefab, hex.transform.position, Quaternion.identity);
-            NetworkServer.Spawn(hazardObject);
-            hex.holdsHazard = HazardType.fire;
+            if (hex.holdsHazard == HazardType.fire)
+            {
+                Debug.Log("hex already contains fire, skipping spawn");
+                continue;
+            }
+                
+
+            MapHazardManager hazardManager = Map.Singleton.hazardManager;
+            if (hex.holdsHazard == HazardType.cold)
+            {
+                hazardManager.DestroyHazardAtPosition(Map.Singleton.hexGrid, hex.coordinates.OffsetCoordinatesAsVector());
+            }
+
+            hazardManager.SpawnHazardOnMap(Map.Singleton.hexGrid, hex.coordinates.OffsetCoordinatesAsVector(), HazardType.fire);
         }
     }
 

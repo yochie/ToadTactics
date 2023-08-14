@@ -21,6 +21,9 @@ public class Map : NetworkBehaviour
     [SerializeField]
     public MapInputHandler inputHandler;
 
+    [SerializeField]
+    public MapHazardManager hazardManager;
+
     #endregion
 
     #region Synced vars

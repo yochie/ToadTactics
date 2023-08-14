@@ -1883,10 +1883,9 @@ MonoBehaviour:
   spawnLocations:
   - {fileID: 1473774573}
   - {fileID: 288615335}
-  hazardPrefabs:
-  - {fileID: 4066588543361744108, guid: 01536a0e1528faa4d89ccdf907dc8658, type: 3}
-  - {fileID: 1425512457202989034, guid: a472cd4c2cb296f4fb179cd4515a1506, type: 3}
+  spawnedHazardTypes: 0000000001000000
   treasurePrefab: {fileID: 8248381651605195454, guid: 7c03064db92ff5646b6e531a6ffc31ea, type: 3}
+  hazardManager: {fileID: 1982683014}
 --- !u!114 &916223307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3796,11 +3795,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1982683009}
-  - component: {fileID: 1982683008}
   - component: {fileID: 1982683010}
+  - component: {fileID: 1982683008}
   - component: {fileID: 1982683011}
   - component: {fileID: 1982683012}
   - component: {fileID: 1982683013}
+  - component: {fileID: 1982683014}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -3825,6 +3825,7 @@ MonoBehaviour:
   syncInterval: 0
   mapGenerator: {fileID: 1982683011}
   inputHandler: {fileID: 1982683013}
+  hazardManager: {fileID: 1982683014}
   hexesSpawnedOnClient: 0
 --- !u!4 &1982683009
 Transform:
@@ -3914,6 +3915,21 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   rangeDisplayer: {fileID: 1982683012}
+--- !u!114 &1982683014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982683007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec5f1e4abd83bf64cb7a735b903135c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hazardPrefabs:
+  - {fileID: 2522600871599017371, guid: 01536a0e1528faa4d89ccdf907dc8658, type: 3}
+  - {fileID: 3643175505617675985, guid: a472cd4c2cb296f4fb179cd4515a1506, type: 3}
 --- !u!1001 &2115037215
 PrefabInstance:
   m_ObjectHideFlags: 0
