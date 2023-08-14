@@ -303,7 +303,7 @@ public class ClassDataSO : ScriptableObject
                     stringID: "PaladinTeamBuff",
                     interfaceName: "Blessing of Kings",
                     description: "Grants a bonus to health, armor and movement to all allies.",
-                    turnDuration: 3,
+                    turnDuration: 2,
                     allowedAbilityTargets: new List<TargetType>(){TargetType.self },
                     cooldownDuration: 4
                 )
@@ -402,7 +402,7 @@ public class ClassDataSO : ScriptableObject
                     cooldownDuration: 2,
                     range: 3,
                     aoe: 1,
-                    damage: 5,
+                    damage: 30,
                     damageType: DamageType.magic
                 ) 
             }

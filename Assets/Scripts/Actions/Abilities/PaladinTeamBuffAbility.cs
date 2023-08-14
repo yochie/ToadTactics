@@ -33,7 +33,7 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedActi
 
         foreach(PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
         {
-            if(GameController.Singleton.HeOwnsThisCharacter(ActorCharacter.OwnerID, character.CharClassID) && character.CharClassID != ActorCharacter.CharClassID)
+            if(GameController.Singleton.HeOwnsThisCharacter(ActorCharacter.OwnerID, character.CharClassID))
             {
                 affectedCharacterIDs.Add(character.CharClassID);
             }
