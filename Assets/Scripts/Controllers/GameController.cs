@@ -149,7 +149,11 @@ public class GameController : NetworkBehaviour
     {
         Debug.Log("Gamecontroller awoken");
         if (GameController.Singleton != null)
+        {
+            Debug.Log("Destroying new Gamecontroller to avoid duplicate");
             Destroy(GameController.Singleton.gameObject);
+            return;
+        }
         GameController.Singleton = this;
         SceneManager.sceneLoaded += this.OnSceneLoaded;
     }

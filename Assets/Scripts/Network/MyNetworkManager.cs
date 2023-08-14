@@ -221,7 +221,7 @@ public class MyNetworkManager : NetworkManager
     /// <para>This is called on the client when it disconnects from the server. Override this function to decide what happens when the client disconnects.</para>
     /// </summary>
     public override void OnClientDisconnect() {
-        Debug.Log("Client disconnected. Attempting to destroy GameController.");
+        Debug.Log("Client disconnected. Destroying GameController.");
         Destroy(GameController.Singleton.gameObject);
     }
 

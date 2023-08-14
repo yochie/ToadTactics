@@ -10,12 +10,18 @@ internal class BuffManager : NetworkBehaviour
     private void Awake()
     {
         Debug.Log("BuffManager awoken");
+        if (BuffManager.Singleton != null)
+        {
+            Debug.Log("Destroying new buffmanager to avoid duplicate");
+            Destroy(BuffManager.Singleton.gameObject);
+            return;
+        }            
         BuffManager.Singleton = this;
     }
 
     private void Start()
     {
-        DontDestroyOnLoad(this.gameObject);
+        //DontDestroyOnLoad(this.gameObject);
     }
 
     [Server]
@@ -37,17 +43,9 @@ internal class BuffManager : NetworkBehaviour
             timedBuff.TurnDurationRemaining = abilityStats.buffTurnDuration + 1;
         }
 
-        //Moved to character creation
-        ////IPassiveEffect
-        //IPassiveEffect passiveBuff = buff as IPassiveEffect;
-        //if(passiveBuff != null)
-        //{
-        //    if (!this.persistingPermanentBuffs.ContainsKey(buff))
-        //        this.persistingPermanentBuffs.Add(buff, affectedCharacterIDs);
-        //}
-
-        //TODO : IConditionalEffect
-        //TODO : IPermanentEffect => nothing to do for now...
+        //IPermanentEffect => nothing to do for now...
+        //IPassiveEffect => nothing to do for now...
+        //TODO : IConditionalEffect setup some stuff here eventually
 
         return buff;
     }
