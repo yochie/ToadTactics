@@ -38,7 +38,7 @@ public class TurnOrderHUD : MonoBehaviour
 
     public void OnCharacterAddedToTurnOrder(int classID)
     {
-        //Debug.Log("Adding character to turn order.");
+        Debug.Log("Adding character to turn order.");
         GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.transform);
         turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
         this.ResetTurnOrderSlots();
@@ -69,7 +69,7 @@ public class TurnOrderHUD : MonoBehaviour
 
     #region Utility
     //fills all slots with appopriate sprite and classID from sortedTurnOrder
-    //should only be called to init characters lives, otherwise it we be reset
+    //should only be called to init characters lives, otherwise it we be reset to max
     private void ResetTurnOrderSlots()
     {
         //Debug.Log("Updating turnOrderSlots");
@@ -77,8 +77,7 @@ public class TurnOrderHUD : MonoBehaviour
         foreach (int classID in GameController.Singleton.SortedTurnOrder.Values)
         {
             //stops joining clients from trying to fill slots that weren't created yet
-            //happens because this function is sometimes called out of order on clients
-            //todo change turn order to non synced var and maintain in parrallel
+            //happens because this function is sometimes called out of order by RPCs
             if (i >= this.turnOrderSlots.Count) return;
 
             TurnOrderSlotUI slot = this.turnOrderSlots[i];
@@ -94,16 +93,9 @@ public class TurnOrderHUD : MonoBehaviour
                 slot.ShowCrown();
             else
                 slot.HideCrown();
-
-
-            CharacterClass currentClass = ClassDataSO.Singleton.GetClassByID(classID);
-            if (GameController.Singleton.IsAKing(classID))
-            {
-                int buffedLife = Utility.ApplyKingLifeBuff(currentClass.stats.maxHealth);
-                slot.SetLifeLabel(buffedLife, buffedLife);
-            }
-            else
-                slot.SetLifeLabel(currentClass.stats.maxHealth, currentClass.stats.maxHealth);
+            
+            CharacterStats currentStats = GameController.Singleton.PlayerCharactersByID[classID].CurrentStats;
+            slot.SetLifeLabel(currentStats.maxHealth, currentStats.maxHealth);
 
             i++;
         }

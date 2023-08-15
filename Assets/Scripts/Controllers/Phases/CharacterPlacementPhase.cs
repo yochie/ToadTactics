@@ -57,6 +57,10 @@ public class CharacterPlacementPhase : IGamePhase
             this.Controller.AddCharToTurnOrder(classID);
         }
 
+        //DOESN't work because previous lines trigger RPC that resets life labels AFTER following lines
+        //Debug.Log("Updating life labels");
+        //TurnOrderHUD.Singleton.UpdateLifeLabels();
+
         //do a false setting to trigger new player turn event even if he was last to play during draft
         //todo : avoid need for this somehow when i have more brainpower left
         this.Controller.SetPlayerTurn(-1);
