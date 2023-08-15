@@ -26,29 +26,44 @@ public class DefaultMoveAction : IMoveAction
     [Server]
     public void ServerUse()
     {
-
-        //actually moves character
-        this.ActorCharacter.RpcPlaceChar(this.TargetHex.transform.position);
-
-        //update state
-
-        foreach(Hex hex in this.movePath)
+        //move one hex at a time to ensure we die on correct tile
+        //still need to call rpcs after loop to avoid race conditions
+        Hex previousHex = this.ActorHex;
+        Hex diedOnHex = null;
+        foreach(Hex nextHex in this.movePath)
         {
-            if (hex.DealsDamageWhenMovedInto() > 0)
-                this.ActorCharacter.TakeDamage(hex.DealsDamageWhenMovedInto(), hex.DealsDamageTypeWhenMovedInto());
-            if (hex.holdsTreasure)
+            ActorCharacter.UsedMoves(1);
+            Map.Singleton.MoveCharacter(this.ActorCharacter.CharClassID, previousHex, nextHex);
+
+            if (nextHex.holdsTreasure)
             {
                 Debug.Log("{0} has moved on treasure. He will be assigned extra treasure.");
                 Object.Destroy(Map.Singleton.Treasure);
                 GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);
             }
+
+            if (nextHex.DealsDamageWhenMovedInto() > 0)
+            {
+                this.ActorCharacter.TakeDamage(nextHex.DealsDamageWhenMovedInto(), nextHex.DealsDamageTypeWhenMovedInto());
+                if (this.ActorCharacter.IsDead)
+                {
+                    diedOnHex = nextHex;
+                    break;
+                }
+            }
+
+            previousHex = nextHex;
         }
 
-        ActorCharacter.UsedMoves(this.moveCost);
-        this.TargetHex.holdsCharacterWithClassID = this.ActorHex.holdsCharacterWithClassID;
-        Map.Singleton.characterPositions[this.ActorCharacter.CharClassID] = this.TargetHex.coordinates;
-        MapInputHandler.Singleton.TargetRpcSelectHex(this.RequestingClient, this.TargetHex);
-        this.ActorHex.ClearCharacter();
+        if (diedOnHex != null)
+        {
+            this.ActorCharacter.RpcPlaceCharSprite(diedOnHex.transform.position);
+        }
+        else
+        {
+            this.ActorCharacter.RpcPlaceCharSprite(this.TargetHex.transform.position);
+            MapInputHandler.Singleton.TargetRpcSelectHex(this.RequestingClient, this.TargetHex);
+        }      
     }
 
     [Server]

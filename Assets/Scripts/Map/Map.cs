@@ -44,6 +44,13 @@ public class Map : NetworkBehaviour
     //Server only, used for destroying on pickup
     public GameObject Treasure { get; set; }
 
+    internal void MoveCharacter(int classID, Hex fromHex, Hex toHex)
+    {
+        fromHex.ClearCharacter();
+        toHex.holdsCharacterWithClassID = classID;
+        this.characterPositions[classID] = toHex.coordinates;
+    }
+
     #endregion
 
     #region Startup

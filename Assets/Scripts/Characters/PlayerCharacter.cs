@@ -318,7 +318,7 @@ public class PlayerCharacter : NetworkBehaviour
 
     //update position on all clients
     [ClientRpc]
-    public void RpcPlaceChar(Vector3 position)
+    public void RpcPlaceCharSprite(Vector3 position)
     {
         this.transform.position = position;
     }
