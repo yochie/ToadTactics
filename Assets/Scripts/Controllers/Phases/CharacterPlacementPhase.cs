@@ -43,6 +43,11 @@ public class CharacterPlacementPhase : IGamePhase
         this.Controller.StartCoroutine(WaitForCharacterInstantiationThenFinishInit());
     }
 
+
+    //character init SEEMS to have properly been executed and synced to clients at this point... not sure why
+    //Best guess is that OnclientStart always runs on server before client, which results in spawning on client with all setup syncvars
+    //syncvars are then all filled in before object is registered as spawned on client
+    //TODO : I should probably move some stuff around so that charclass and Init are more clearly setup on server before server spawning
     private void FinishInit()
     {
         //apply passives to characters
@@ -61,7 +66,7 @@ public class CharacterPlacementPhase : IGamePhase
         //Debug.Log("Updating life labels");
         //TurnOrderHUD.Singleton.UpdateLifeLabels();
 
-        //do a false setting to trigger new player turn event even if he was last to play during draft
+        //do an artificial setting to trigger new player turn event even if he was last to play during draft
         //todo : avoid need for this somehow when i have more brainpower left
         this.Controller.SetPlayerTurn(-1);
         this.Controller.SetPlayerTurn(0);
