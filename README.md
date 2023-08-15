@@ -54,3 +54,4 @@ Pour le workflow de contribution : https://www.atlassian.com/git/tutorials/compa
     * ClientRpc/TargetRpc
         * can be called after several server state changes but can lead to race conditions so all state should be included as arg
         * order execution on clients is undetermined    
+* Note : when sending structs over network, only public fields are actually sent... watch out for that.
