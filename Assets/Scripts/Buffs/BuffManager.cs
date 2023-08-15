@@ -116,13 +116,6 @@ internal class BuffManager : NetworkBehaviour
             appliedByCharacter.RemoveAppliedBuff(buff);
     }
 
-    //TODO : call and fill
-    [Server]
-    public void ApplyPersistentBuffsForNewRound()
-    {
-        throw new NotImplementedException();
-    }
-
     [Server]
     internal void RemoveRoundBuffsAppliedToCharacter(PlayerCharacter character)
     {
@@ -151,6 +144,4 @@ internal class BuffManager : NetworkBehaviour
     {
         TurnOrderHUD.Singleton.RemoveBuffIcons(buffID, affectedCharacterIDs);
     }
-
-
 }

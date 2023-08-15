@@ -48,10 +48,10 @@ public class CharacterPlacementPhase : IGamePhase
     //Best guess is that OnclientStart always runs on server before client, which results in spawning on client with all setup syncvars
     //syncvars are then all filled in before object is registered as spawned on client
     //TODO : I should probably move some stuff around so that charclass and Init are more clearly setup on server before server spawning
-    private void FinishInit()
+    private void InitPostCharacterCreation()
     {
-        //apply passives to characters
-        foreach(PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
+        //apply passives to characters, needs to be called here instead of character init because relies on list of playerCharacters on controller
+        foreach (PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
         {
             character.ApplyPassiveAbilityBuffs();
         }
@@ -96,6 +96,6 @@ public class CharacterPlacementPhase : IGamePhase
             yield return null;
         }
 
-        this.FinishInit();
+        this.InitPostCharacterCreation();
     }
 }
