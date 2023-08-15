@@ -211,7 +211,7 @@ public class ActionExecutor : NetworkBehaviour
             }
         }
 
-        if (!actor.HasRemainingActions())
+        if (!actor.HasRemainingActions() || actor.IsDead)
         {
             //TODO : set flag to end turn instead of calling function to avoid recursion
             GameController.Singleton.CmdNextTurn();
