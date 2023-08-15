@@ -408,10 +408,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4825618026556420597}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5ad313b1876129469aa953f714a401f, type: 3}
+  m_Script: {fileID: 11500000, guid: f427f64cc09a1f7459c8a14728ec5d87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  holdsClassID: 0
   spriteImage: {fileID: 8939878389376518727}
   nameLabel: {fileID: 6987432423268352375}
   descriptionLabel: {fileID: 6140015155647779879}

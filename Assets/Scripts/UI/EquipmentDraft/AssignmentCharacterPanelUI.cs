@@ -6,9 +6,9 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class AssignmentCharacterSheetUI : MonoBehaviour
+public class AssignmentCharacterPanelUI : MonoBehaviour
 {
-    public int holdsClassID;
+    private int holdsClassID;
 
     [SerializeField]
     private Image spriteImage;

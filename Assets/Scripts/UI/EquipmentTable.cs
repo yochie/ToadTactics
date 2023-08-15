@@ -8,7 +8,7 @@ public class EquipmentTable : MonoBehaviour
     private List<Image> displayedIcons = new();
 
     [SerializeField]
-    private Image blankIconPrefab;
+    private GameObject blankIconContainerPrefab;
 
     public void SetupWithEquipments(List<string> equipmentIDs)
     {
@@ -22,10 +22,11 @@ public class EquipmentTable : MonoBehaviour
     }
     public void AddEquipment(string equipmentID)
     {
-        Image equipmentICon = Instantiate(this.blankIconPrefab, this.transform);
-        this.displayedIcons.Add(equipmentICon);
-        equipmentICon.sprite = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).Sprite;
-        equipmentICon.color = Color.black;
+        GameObject equipmentIConContainer = Instantiate(this.blankIconContainerPrefab, this.transform);
+        Image equipmentIcon = equipmentIConContainer.GetComponentInChildren<Image>();
+        this.displayedIcons.Add(equipmentIcon);
+        equipmentIcon.sprite = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).Sprite;
+        equipmentIcon.color = Color.black;
     }
 
     private void Clear()

@@ -6,9 +6,9 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class AssignmentEquipmentSheetUI : MonoBehaviour
+public class AssignmentEquipmentPanelUI : MonoBehaviour
 {
-    public string holdsEquipmentID;
+    private string holdsEquipmentID;
 
     [SerializeField]
     private Image spriteImage;

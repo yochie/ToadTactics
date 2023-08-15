@@ -114,7 +114,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8985283462048296948, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 620.8828
+      value: 650
       objectReference: {fileID: 0}
     - target: {fileID: 8985283462048296948, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
       propertyPath: m_SizeDelta.y
@@ -190,10 +190,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4746781740024191725}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4cb181a21bd9c6c4db9603dc54e32570, type: 3}
+  m_Script: {fileID: 11500000, guid: 285c55e462bef8f4ba8c857af0733958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  holdsEquipmentID: 
   spriteImage: {fileID: 9166842671104565599}
   nameLabel: {fileID: 7196653336238172783}
   descriptionLabel: {fileID: 4994869639449656318}
