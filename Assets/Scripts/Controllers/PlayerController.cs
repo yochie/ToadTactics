@@ -100,6 +100,12 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [TargetRpc]
+    internal void TargetRpcInitCharacterSlotsHUD(List<int> classIDs)
+    {
+        CharacterSlotsHUD.Singleton.InitSlots(classIDs);
+    }
+
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();

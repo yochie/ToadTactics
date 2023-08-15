@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
+using System.Linq;
 
 public class CharacterPlacementPhase : IGamePhase
 {
@@ -57,24 +58,30 @@ public class CharacterPlacementPhase : IGamePhase
         }
 
         //setup turn order list
-        foreach (int classID in this.Controller.DraftedCharacterOwners.Keys)
+        foreach (PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
         {
-            this.Controller.AddCharToTurnOrder(classID);
+            this.Controller.AddCharToTurnOrder(character.CharClassID);
         }
 
         List<TurnOrderSlotInitData> slotDataList = new();
         foreach (PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
         {
+            bool isAKing = GameController.Singleton.IsAKing(character.CharClassID);
+            bool itsHisTurn = GameController.Singleton.ItsThisCharactersTurn(character.CharClassID);
+            int maxHealth = character.CurrentStats.maxHealth;
             Dictionary<int, string> characterBuffIcons = character.GetAffectingBuffIcons();
-            TurnOrderSlotInitData slotData = new(character.CharClassID, characterBuffIcons);
+            TurnOrderSlotInitData slotData = new(character.CharClassID, isAKing, itsHisTurn, maxHealth, characterBuffIcons);
             slotDataList.Add(slotData);
         }
 
-        this.Controller.RpcInitTurnOrderHud(slotDataList);
+        this.Controller.RpcInitTurnOrderHud(slotDataList, this.Controller.SortedTurnOrder.Values.ToList());
 
-        //DOESN't work because previous lines trigger RPC that resets life labels AFTER following lines
-        //Debug.Log("Updating life labels");
-        //TurnOrderHUD.Singleton.UpdateLifeLabels();
+        foreach(PlayerController player in Controller.playerControllers)
+        {
+            List<int> ownedCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(player.playerID)
+                .Select(character => character.CharClassID).ToList();
+            player.TargetRpcInitCharacterSlotsHUD(ownedCharacterIDs);
+        }
 
         //do an artificial setting to trigger new player turn event even if he was last to play during draft
         //todo : avoid need for this somehow when i have more brainpower left

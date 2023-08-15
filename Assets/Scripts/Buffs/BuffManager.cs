@@ -136,7 +136,7 @@ internal class BuffManager : NetworkBehaviour
     [ClientRpc]
     private void RpcAddBuffIcons(int buffID, List<int> affectedCharacterIDs, string iconName)
     {
-        TurnOrderHUD.Singleton.AddBuffIcons(buffID, affectedCharacterIDs, BuffIconsDataSO.Singleton.GetBuffIcon(iconName));
+        TurnOrderHUD.Singleton.AddBuffIcons(buffID, affectedCharacterIDs, iconName);
     }
 
     [ClientRpc]

@@ -1674,7 +1674,6 @@ GameObject:
   - component: {fileID: 866484636}
   - component: {fileID: 866484637}
   - component: {fileID: 866484639}
-  - component: {fileID: 866484640}
   m_Layer: 5
   m_Name: CharacterSlotsHud
   m_TagString: Untagged
@@ -1810,34 +1809,6 @@ MonoBehaviour:
       - m_Target: {fileID: 866484637}
         m_TargetAssemblyTypeName: CharacterSlotsHUD, Assembly-CSharp
         m_MethodName: OnCharacterPlaced
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &866484640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 866484631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca3c739417bcc0a4ab5e6853da8f87e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: 8953317fb65d86347a5a2990de93360c, type: 2}
-  Response:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 866484637}
-        m_TargetAssemblyTypeName: CharacterSlotsHUD, Assembly-CSharp
-        m_MethodName: OnCharAddedToTurnOrder
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -551,9 +551,9 @@ public class GameController : NetworkBehaviour
 
     #region Events
     [ClientRpc]
-    public void RpcInitTurnOrderHud(List<TurnOrderSlotInitData> slotData)
+    public void RpcInitTurnOrderHud(List<TurnOrderSlotInitData> slotData, List<int> sortedTurnOrder)
     {
-        TurnOrderHUD.Singleton.InitSlots(slotData);
+        TurnOrderHUD.Singleton.InitSlots(slotData, sortedTurnOrder);
     }
 
     //TODO: ensure all handlers for these events avoid checking syncvars to ensure no race condition between syncvar propagation and RPC execution
@@ -773,6 +773,17 @@ public class GameController : NetworkBehaviour
                 return false;
         }
         return true;
+    }
+
+    public List<PlayerCharacter> GetCharactersOwnedByPlayer(int playerID)
+    {
+        List<PlayerCharacter> ownedCharacters = new();
+        foreach(PlayerCharacter character in this.PlayerCharactersByID.Values)
+        {
+            if (character.OwnerID == playerID)
+                ownedCharacters.Add(character);
+        }
+        return ownedCharacters;
     }
 
     #endregion

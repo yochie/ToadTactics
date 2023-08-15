@@ -34,20 +34,10 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     //unique buffID => image
     private Dictionary<int, Image> displayedBuffs;
 
-    private void SetHighlight(bool state)
+    public void DisplayHighlight(bool state)
     {
         Color oldColor = this.highlightImage.color;
         this.highlightImage.color = Utility.SetHighlight(oldColor, state);
-    }
-
-    internal void Highlight()
-    {
-        this.SetHighlight(true);
-    }
-
-    internal void Unhighlight()
-    {
-        this.SetHighlight(false);
     }
 
     internal void SetLifeLabel(int currentLife, int maxHealth)
@@ -61,14 +51,6 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     {
         this.characterImage.sprite = sprite;
     }
-    internal void ShowCrown()
-    {
-        this.crownSpriteImage.gameObject.SetActive(true);
-    }
-    internal void HideCrown()
-    {
-        this.crownSpriteImage.gameObject.SetActive(false);
-    }
 
     public void OnCharacterDeath(int classID)
     {
@@ -77,6 +59,11 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
             this.characterImage.color = Utility.GrayOutColor(this.characterImage.color, true);
             this.crownSpriteImage.color = Utility.GrayOutColor(this.characterImage.color, true);
         }
+    }
+
+    internal void DisplayCrown(bool state)
+    {
+        this.crownSpriteImage.gameObject.SetActive(state);
     }
 
     public void OnCharacterResurrect(int classID)
@@ -93,11 +80,11 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
         this.onCharacterSheetDisplayed.Raise(this.holdsCharacterWithClassID);
     }
 
-    public void AddBuffIcon(int buffID, Sprite sprite)
+    public void AddBuffIcon(int buffID, string iconName)
     {
         this.buffList.SetActive(true);        
         Image buffImage = Instantiate(this.blankImagePrefab, this.buffList.transform);
-        buffImage.sprite = sprite;
+        buffImage.sprite = BuffIconsDataSO.Singleton.GetBuffIcon(iconName);
         if (this.displayedBuffs == null)
             this.displayedBuffs = new();
         this.displayedBuffs.Add(buffID, buffImage);

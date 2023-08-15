@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class TurnOrderHUD : MonoBehaviour
 {
@@ -36,18 +37,36 @@ public class TurnOrderHUD : MonoBehaviour
         this.HighlightSlot(newTurnCharacterId);
     }
 
-    public void InitSlots(List<TurnOrderSlotInitData> slotDataList)
+    public void InitSlots(List<TurnOrderSlotInitData> slotDataList, List<int> sortedTurnOrder)
     {
-        Debug.Log("Adding character to turn order.");
-        foreach(TurnOrderSlotInitData slotData in slotDataList)
+        Debug.Log("Initializing turn order slots.");
+
+        foreach (int orderClass in sortedTurnOrder)
         {
-            GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.transform);
+            TurnOrderSlotInitData slotData = slotDataList.First(slotData => slotData.classID == orderClass);
+            GameObject slotObject = Instantiate(this.turnOrderSlotPrefab, this.transform);            
+            TurnOrderSlotUI slot = slotObject.GetComponent<TurnOrderSlotUI>();
             turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
+
+            int classID = slotData.classID;
+            slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
+            slot.holdsCharacterWithClassID = classID;
+
+            slot.DisplayHighlight(slotData.itsHisTurn);
+            slot.DisplayCrown(slotData.isAKing);
+
+            slot.SetLifeLabel(slotData.maxHealth, slotData.maxHealth);
+
+            int i = 0;
+            foreach(int buffID in slotData.orderedBuffIDs)
+            {
+                slot.AddBuffIcon(buffID, slotData.orderedBuffIcons[i]);
+                i++;
+            }
         }
-        this.ResetTurnOrderSlots();
     }
 
-    //TODO : hookup with event once we have this happening (ie clones)
+    //TODO : hookup with event once we have this happening (ie clones?)
     public void OnCharacterRemovedFromTurnOrder(int classID)
     {
         foreach (TurnOrderSlotUI currentSlot in turnOrderSlots)
@@ -60,7 +79,6 @@ public class TurnOrderHUD : MonoBehaviour
                 break;
             }
         }
-        this.ResetTurnOrderSlots();
     }
 
     public void OnCharacterLifeChanged(int classID, int currentLife, int maxHealth)
@@ -71,47 +89,15 @@ public class TurnOrderHUD : MonoBehaviour
     #endregion
 
     #region Utility
-    //fills all slots with appopriate sprite and classID from sortedTurnOrder
-    //should only be called to init characters lives, otherwise it we be reset to max
-    private void ResetTurnOrderSlots()
-    {
-        //Debug.Log("Updating turnOrderSlots");
-        int i = 0;
-        foreach (int classID in GameController.Singleton.SortedTurnOrder.Values)
-        {
-            //stops joining clients from trying to fill slots that weren't created yet
-            //happens because this function is sometimes called out of order by RPCs
-            if (i >= this.turnOrderSlots.Count) return;
 
-            TurnOrderSlotUI slot = this.turnOrderSlots[i];
-            slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
-            slot.holdsCharacterWithClassID = classID;
-
-            if (GameController.Singleton.TurnOrderIndex == i)
-                slot.Highlight();
-            else
-                slot.Unhighlight();
-
-            if (GameController.Singleton.IsAKing(classID))
-                slot.ShowCrown();
-            else
-                slot.HideCrown();
-            
-            CharacterStats currentStats = GameController.Singleton.PlayerCharactersByID[classID].CurrentStats;
-            slot.SetLifeLabel(currentStats.maxHealth, currentStats.maxHealth);
-
-            i++;
-        }
-
-    }    
-    internal void AddBuffIcons(int buffID, List<int> affectedCharacterIDs, Sprite sprite)
+    internal void AddBuffIcons(int buffID, List<int> affectedCharacterIDs, string iconName)
     {
 
         foreach(TurnOrderSlotUI slot in this.turnOrderSlots)
         {
             if (affectedCharacterIDs.Contains(slot.holdsCharacterWithClassID))
             {
-                slot.AddBuffIcon(buffID, sprite);
+                slot.AddBuffIcon(buffID, iconName);
             }
         }
     }
@@ -152,21 +138,10 @@ public class TurnOrderHUD : MonoBehaviour
     }
 
     private void HighlightSlot(int classID)
-    {
-        int i = 0;
+    {        
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
-        {
-            i++;
-            if (slot.holdsCharacterWithClassID == classID)
-            {
-                //Debug.Log("Highlighting slot");
-                slot.Highlight();
-            }
-            else
-            {
-                slot.Unhighlight();
-
-            }
+        {     
+            slot.DisplayHighlight(slot.holdsCharacterWithClassID == classID);
         }
     }
     #endregion

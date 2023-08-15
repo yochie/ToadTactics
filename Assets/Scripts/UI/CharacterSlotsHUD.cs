@@ -36,23 +36,25 @@ public class CharacterSlotsHUD : MonoBehaviour
         }
     }
 
-    public void OnCharAddedToTurnOrder(int classID)
+    public void InitSlots(List<int> classIDs)
     {
-        if (!GameController.Singleton.HeOwnsThisCharacter(GameController.Singleton.LocalPlayer.playerID, classID))
-            return;
+        foreach(int classID in classIDs)
+        {
+            if (!GameController.Singleton.HeOwnsThisCharacter(GameController.Singleton.LocalPlayer.playerID, classID))
+                return;
         
-
-        GameObject characterSlotObject = Instantiate(this.characterSlotPrefab, this.transform);        
-        CharacterSlotUI characterSlot = characterSlotObject.GetComponent<CharacterSlotUI>();
-        characterSlot.SetInputHandler(this.inputHandler);
+            GameObject characterSlotObject = Instantiate(this.characterSlotPrefab, this.transform);        
+            CharacterSlotUI characterSlot = characterSlotObject.GetComponent<CharacterSlotUI>();
+            characterSlot.SetInputHandler(this.inputHandler);
         
-        characterSlots.Add(characterSlot);
+            characterSlots.Add(characterSlot);
 
-        characterSlot.GetComponent<Image>().sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
+            characterSlot.GetComponent<Image>().sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
 
-        characterSlot.holdsCharacterWithClassID = classID;
+            characterSlot.holdsCharacterWithClassID = classID;
 
-        if (GameController.Singleton.IsAKing(classID))
-            characterSlot.DisplayCrown();
+            if (GameController.Singleton.IsAKing(classID))
+                characterSlot.DisplayCrown();
+        }
     }
 }
