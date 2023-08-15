@@ -36,11 +36,14 @@ public class TurnOrderHUD : MonoBehaviour
         this.HighlightSlot(newTurnCharacterId);
     }
 
-    public void OnCharacterAddedToTurnOrder(int classID)
+    public void InitSlots(List<TurnOrderSlotInitData> slotDataList)
     {
         Debug.Log("Adding character to turn order.");
-        GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.transform);
-        turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
+        foreach(TurnOrderSlotInitData slotData in slotDataList)
+        {
+            GameObject slot = Instantiate(this.turnOrderSlotPrefab, this.transform);
+            turnOrderSlots.Add(slot.GetComponent<TurnOrderSlotUI>());
+        }
         this.ResetTurnOrderSlots();
     }
 

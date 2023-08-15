@@ -20,9 +20,6 @@ public class GameController : NetworkBehaviour
 
     #region Event vars
     [SerializeField]
-    private IntGameEventSO onCharAddedToTurnOrder;
-
-    [SerializeField]
     private IntGameEventSO onTurnOrderIndexChanged;
 
     [SerializeField]
@@ -403,7 +400,6 @@ public class GameController : NetworkBehaviour
             return;
         }
         this.SortedTurnOrder.Add(initiative, classID);
-        this.RpcOnCharAddedToTurnOrder(classID);
     }
 
     [Server]
@@ -555,9 +551,9 @@ public class GameController : NetworkBehaviour
 
     #region Events
     [ClientRpc]
-    private void RpcOnCharAddedToTurnOrder(int classID)
+    public void RpcInitTurnOrderHud(List<TurnOrderSlotInitData> slotData)
     {
-        this.onCharAddedToTurnOrder.Raise(classID);
+        TurnOrderHUD.Singleton.InitSlots(slotData);
     }
 
     //TODO: ensure all handlers for these events avoid checking syncvars to ensure no race condition between syncvar propagation and RPC execution

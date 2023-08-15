@@ -62,6 +62,16 @@ public class CharacterPlacementPhase : IGamePhase
             this.Controller.AddCharToTurnOrder(classID);
         }
 
+        List<TurnOrderSlotInitData> slotDataList = new();
+        foreach (PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
+        {
+            Dictionary<int, string> characterBuffIcons = character.GetAffectingBuffIcons();
+            TurnOrderSlotInitData slotData = new(character.CharClassID, characterBuffIcons);
+            slotDataList.Add(slotData);
+        }
+
+        this.Controller.RpcInitTurnOrderHud(slotDataList);
+
         //DOESN't work because previous lines trigger RPC that resets life labels AFTER following lines
         //Debug.Log("Updating life labels");
         //TurnOrderHUD.Singleton.UpdateLifeLabels();

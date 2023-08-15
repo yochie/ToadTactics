@@ -124,6 +124,16 @@ public class PlayerCharacter : NetworkBehaviour
         this.ResetTurnState();
     }
 
+    internal Dictionary<int, string> GetAffectingBuffIcons()
+    {
+        Dictionary<int, string> buffIcons = new();
+        foreach(IBuffEffect buff in this.affectingBuffs)
+        {
+            buffIcons[buff.UniqueID] = buff.IconName;
+        }
+        return buffIcons;
+    }
+
     internal void SetCurrentLife(int value)
     {
         int previousHealth = this.CurrentLife;
