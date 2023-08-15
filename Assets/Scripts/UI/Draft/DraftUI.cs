@@ -15,7 +15,6 @@ public class DraftUI : MonoBehaviour
     [SerializeField]
     private GameObject characterSheetsListSecondRow;
 
-
     [SerializeField]
     private List<DraftableCharacterSlotUI> draftableSlots;
 
@@ -50,6 +49,7 @@ public class DraftUI : MonoBehaviour
     {
         this.ClearDraftableSlots();
         this.GenerateKingCandidates(classIDs);
+        this.characterSheetsListSecondRow.SetActive(false);
         this.instructionLabel.text = "Crown your king";
     }
 
