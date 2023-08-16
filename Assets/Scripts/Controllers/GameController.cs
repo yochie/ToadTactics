@@ -676,14 +676,14 @@ public class GameController : NetworkBehaviour
     }
     
     //return -1 if no character matches turn order index
-    public int GetCharacterIDForTurn(int turnOrderIndex = -1)
+    public int GetCharacterIDForTurn(int turnOrderIndexArg = -1)
     {
         //finds prefab ID for character whose turn it is
-        int currentTurnOrderIndex = (turnOrderIndex == -1 ? this.TurnOrderIndex : turnOrderIndex);
+        int turnOrderIndexToGet = (turnOrderIndexArg == -1 ? this.TurnOrderIndex : turnOrderIndexArg);
         int sortedTurnOrderIndex = 0;
         foreach (int classID in this.SortedTurnOrder.Values)
         {
-            if (sortedTurnOrderIndex == currentTurnOrderIndex)
+            if (sortedTurnOrderIndex == turnOrderIndexToGet)
             {
                 return classID;
             }
