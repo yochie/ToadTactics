@@ -24,6 +24,9 @@ public class MainHUD : NetworkBehaviour
     private GameObject abilityButton;
 
     [SerializeField]
+    private TextMeshProUGUI abilityButtonText;
+
+    [SerializeField]
     private GameObject actionButtonsGrid;
 
     private Dictionary<ControlMode, GameObject> gameplayButtons;
@@ -39,10 +42,21 @@ public class MainHUD : NetworkBehaviour
         this.gameplayButtons.Add(ControlMode.useAbility, this.abilityButton);
     }
 
+
+    //Call with empty ability name to only toggle buttons
     [TargetRpc]
     public void TargetRpcToggleActiveButtons(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight)
     {
         this.ToggleActiveButtons(activeButtons, toHighlight);
+    }
+
+    [TargetRpc]
+    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight, string abilityName, int abilityCooldown)
+    {
+        this.ToggleActiveButtons(activeButtons, toHighlight);
+
+        string abilityButtonText = String.Format("{0} : {1}", abilityName, abilityCooldown);
+        this.abilityButtonText.text = abilityButtonText;
     }
 
     [TargetRpc]

@@ -32,15 +32,7 @@ public class GameplayPhase : IGamePhase
             Controller.SwapPlayerTurn();
         }
 
-        List <ControlMode> activeControlModes = currentCharacter.GetRemainingActions();
-
-        ControlMode startingMode = activeControlModes.Contains(ControlMode.move) ? ControlMode.move : ControlMode.none;
-
-        this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, startingMode);
-
-        NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
-
-        MainHUD.Singleton.TargetRpcToggleActiveButtons(target: client, activeControlModes, startingMode);
+        this.SetupActionButtonsOnPlayingClient(currentCharacter);
 
         Controller.RpcOnInitGameplayMode();
     }
@@ -87,6 +79,14 @@ public class GameplayPhase : IGamePhase
             this.Controller.SwapPlayerTurn();
         }
 
+        this.SetupActionButtonsOnPlayingClient(currentCharacter);
+
+        //update life because it might have been changed by buff applications...
+        currentCharacter.RpcOnCharacterLifeChanged(currentCharacter.CurrentLife, currentCharacter.CurrentStats.maxHealth);
+    }
+
+    private void SetupActionButtonsOnPlayingClient(PlayerCharacter currentCharacter)
+    {
         List<ControlMode> activeControlModes = currentCharacter.GetRemainingActions();
 
         ControlMode startingMode = activeControlModes.Contains(ControlMode.move) ? ControlMode.move : ControlMode.none;
@@ -94,10 +94,9 @@ public class GameplayPhase : IGamePhase
         this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, startingMode);
 
         NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
+        string abilityName = currentCharacter.charClass.abilities[0].interfaceName;
+        int abilityCooldown = 0;
 
-        MainHUD.Singleton.TargetRpcToggleActiveButtons(target: client, activeControlModes, startingMode);
-
-        //update life because it might have been changed by buff applications...
-        currentCharacter.RpcOnCharacterLifeChanged(currentCharacter.CurrentLife, currentCharacter.CurrentStats.maxHealth);
+        MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown);
     }
 }

@@ -882,6 +882,7 @@ MonoBehaviour:
   moveButton: {fileID: 1047991522}
   attackButton: {fileID: 445087650}
   abilityButton: {fileID: 1656368876}
+  abilityButtonText: {fileID: 1830034967}
   actionButtonsGrid: {fileID: 156891758}
 --- !u!114 &297310966
 MonoBehaviour:
