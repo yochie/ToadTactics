@@ -50,12 +50,12 @@ public class TurnOrderHUD : MonoBehaviour
 
             int classID = slotData.classID;
             slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
-            slot.holdsCharacterWithClassID = classID;
+            slot.HoldsCharacterWithClassID = classID;
 
             slot.DisplayHighlight(slotData.itsHisTurn);
             slot.DisplayCrown(slotData.isAKing);
 
-            slot.SetLifeLabel(slotData.maxHealth, slotData.maxHealth);
+            slot.SetLifeDisplay(slotData.maxHealth, slotData.maxHealth);
 
             int i = 0;
             foreach(int buffID in slotData.orderedBuffIDs)
@@ -71,7 +71,7 @@ public class TurnOrderHUD : MonoBehaviour
     {
         foreach (TurnOrderSlotUI currentSlot in turnOrderSlots)
         {
-            if (currentSlot.holdsCharacterWithClassID == classID)
+            if (currentSlot.HoldsCharacterWithClassID == classID)
             {
                 //Debug.LogFormat("Destroying slot with {0}", AllPlayerCharPrefabs[value].name);
                 this.turnOrderSlots.Remove(currentSlot);
@@ -95,7 +95,7 @@ public class TurnOrderHUD : MonoBehaviour
 
         foreach(TurnOrderSlotUI slot in this.turnOrderSlots)
         {
-            if (affectedCharacterIDs.Contains(slot.holdsCharacterWithClassID))
+            if (affectedCharacterIDs.Contains(slot.HoldsCharacterWithClassID))
             {
                 slot.AddBuffIcon(buffID, iconName);
             }
@@ -106,7 +106,7 @@ public class TurnOrderHUD : MonoBehaviour
     {
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
         {
-            if (removeFromCharacters.Contains(slot.holdsCharacterWithClassID))
+            if (removeFromCharacters.Contains(slot.HoldsCharacterWithClassID))
             {
                 slot.RemoveBuffIcon(buffID);
             }
@@ -118,7 +118,7 @@ public class TurnOrderHUD : MonoBehaviour
         //Debug.Log("Resetting life labels");
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
         {
-            int classID = slot.holdsCharacterWithClassID;
+            int classID = slot.HoldsCharacterWithClassID;
 
             int currentHealth; 
             int maxHealth;
@@ -133,7 +133,7 @@ public class TurnOrderHUD : MonoBehaviour
                 currentHealth = currentCharacter.CurrentLife;
                 maxHealth = currentCharacter.CurrentStats.maxHealth;
             }
-            slot.SetLifeLabel(currentHealth, maxHealth);
+            slot.SetLifeDisplay(currentHealth, maxHealth);
         }
     }
 
@@ -141,7 +141,7 @@ public class TurnOrderHUD : MonoBehaviour
     {        
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
         {     
-            slot.DisplayHighlight(slot.holdsCharacterWithClassID == classID);
+            slot.DisplayHighlight(slot.HoldsCharacterWithClassID == classID);
         }
     }
     #endregion

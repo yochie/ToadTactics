@@ -26,10 +26,14 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     [SerializeField]
     private IntGameEventSO onCharacterSheetDisplayed;
 
-    public int holdsCharacterWithClassID = -1;
-
     [SerializeField]
     private Image blankImagePrefab;
+
+    [SerializeField]
+    private Image lifebar;
+
+    private int holdsCharacterWithClassID = -1;
+    public int HoldsCharacterWithClassID { get => this.holdsCharacterWithClassID; set { this.holdsCharacterWithClassID = value; } }
 
     //unique buffID => image
     private Dictionary<int, Image> displayedBuffs;
@@ -40,10 +44,11 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
         this.highlightImage.color = Utility.SetHighlight(oldColor, state);
     }
 
-    internal void SetLifeLabel(int currentLife, int maxHealth)
+    internal void SetLifeDisplay(int currentLife, int maxHealth)
     {
         //Debug.Log(currentLife);
         //Debug.Log(maxHealth);
+        this.lifebar.transform.localScale = new Vector3((float)currentLife/(float)maxHealth,1f,1f);
         this.lifeLabel.text = String.Format("{0}/{1}", currentLife, maxHealth);
     }
 
@@ -54,7 +59,7 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
 
     public void OnCharacterDeath(int classID)
     {
-        if (this.holdsCharacterWithClassID == classID)
+        if (this.HoldsCharacterWithClassID == classID)
         {
             this.characterImage.color = Utility.GrayOutColor(this.characterImage.color, true);
             this.crownSpriteImage.color = Utility.GrayOutColor(this.characterImage.color, true);
@@ -68,7 +73,7 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
 
     public void OnCharacterResurrect(int classID)
     {
-        if (this.holdsCharacterWithClassID == classID)
+        if (this.HoldsCharacterWithClassID == classID)
         {
             this.characterImage.color = Utility.GrayOutColor(this.characterImage.color, false);
             this.crownSpriteImage.color = Utility.GrayOutColor(this.characterImage.color, false);
@@ -77,7 +82,7 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        this.onCharacterSheetDisplayed.Raise(this.holdsCharacterWithClassID);
+        this.onCharacterSheetDisplayed.Raise(this.HoldsCharacterWithClassID);
     }
 
     public void AddBuffIcon(int buffID, string iconName)
