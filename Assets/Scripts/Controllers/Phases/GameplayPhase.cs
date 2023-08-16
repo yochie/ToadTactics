@@ -23,28 +23,25 @@ public class GameplayPhase : IGamePhase
         Controller.SetPlayerTurn(0);
 
         //finds character class id for the next turn so that we can check who owns it
-        int currentCharacterClassID = -1;
-        int i = 0;
-        foreach (int classID in Controller.SortedTurnOrder.Values)
-        {
-            if (i == Controller.TurnOrderIndex)
-            {
-                currentCharacterClassID = classID;
-            }
-            i++;
-        }
-        if (currentCharacterClassID == -1)
-        {
-            Debug.Log("Error : Bad code for iterating turn order");
-        }
+        int currentCharacterClassID = this.Controller.GetCharacterIDForTurn();
+        PlayerCharacter currentCharacter = this.Controller.PlayerCharactersByID[currentCharacterClassID];
 
         //if we don't own that char, swap player turn
-        if (Controller.PlayerTurn != Controller.DraftedCharacterOwners[currentCharacterClassID])
+        if (Controller.PlayerTurn != currentCharacter.OwnerID)
         {
             Controller.SwapPlayerTurn();
         }
 
-        Controller.AssignControlModesForNewTurn(Controller.PlayerTurn, ControlMode.move);
+        List <ControlMode> activeControlModes = currentCharacter.GetRemainingActions();
+
+        ControlMode startingMode = activeControlModes.Contains(ControlMode.move) ? ControlMode.move : ControlMode.none;
+
+        this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, startingMode);
+
+        NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
+
+        MainHUD.Singleton.TargetRpcToggleActiveButtons(target: client, activeControlModes, startingMode);
+
         Controller.RpcOnInitGameplayMode();
     }
 
