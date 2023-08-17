@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &3770158336526490071
+--- !u!1001 &7012941499031174071
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 244445586992110368, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: m_text
-      value: Return to main menu
+      value: Next
       objectReference: {fileID: 0}
     - target: {fileID: 542346214106357302, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: m_Pivot.x
@@ -95,14 +95,22 @@ PrefabInstance:
     - target: {fileID: 4360350788125558364, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: Event
       value: 
-      objectReference: {fileID: 11400000, guid: 7e989a42b66b88045a36328cf5faa61b, type: 2}
+      objectReference: {fileID: 11400000, guid: 4bcefb8653ee0f243b5b327e56b80ea4, type: 2}
+    - target: {fileID: 4751895873853406966, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6224284464216959710, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_text
+      value: I'm a clown!
+      objectReference: {fileID: 0}
     - target: {fileID: 6344276150339610548, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 5813974079714329987}
+      objectReference: {fileID: 409775563185137635}
     - target: {fileID: 6344276150339610548, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ReturnToMainMenu
+      value: NextRound
       objectReference: {fileID: 0}
     - target: {fileID: 6344276150339610548, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -114,25 +122,57 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6583382310264696861, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: m_text
-      value: You won the game! :)
+      value: Round lost!
       objectReference: {fileID: 0}
     - target: {fileID: 6643355413710924072, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: m_Name
-      value: GameWonScreen
+      value: RoundLostScreen
       objectReference: {fileID: 0}
     - target: {fileID: 7782668254872057362, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
       propertyPath: m_text
-      value: Main menu
+      value: Next round
+      objectReference: {fileID: 0}
+    - target: {fileID: 8690008400960832233, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 372.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 8690008400960832233, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 93.630005
+      objectReference: {fileID: 0}
+    - target: {fileID: 9172172610053319410, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9172172610053319410, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9172172610053319410, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 292.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 9172172610053319410, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 53.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 9172172610053319410, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 186.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 9172172610053319410, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -46.815002
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
---- !u!114 &5813974079714329987 stripped
+--- !u!114 &409775563185137635 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7277018301435223124, guid: 00e7590f79c2dbd4ab49fe909ed1bfca, type: 3}
-  m_PrefabInstance: {fileID: 3770158336526490071}
+  m_PrefabInstance: {fileID: 7012941499031174071}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1

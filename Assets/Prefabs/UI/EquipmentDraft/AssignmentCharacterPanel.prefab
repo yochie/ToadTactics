@@ -300,6 +300,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7179346835215900506, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
+      propertyPath: m_text
+      value: Equip
+      objectReference: {fileID: 0}
     - target: {fileID: 7220752795125100373, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

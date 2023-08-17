@@ -73,7 +73,7 @@ public class MapRangeDisplayer : MonoBehaviour
                 if (attackRange[h] == LOSTargetType.inRange)
                     h.drawer.DisplayInActionRange(true);
                 else if (attackRange[h] == LOSTargetType.targetable)
-                    h.drawer.DisplayTargetable(true);
+                    h.drawer.DisplayAttackTargetable(true);
                 else if (attackRange[h] == LOSTargetType.outOfRange)
                 {
                     h.drawer.DisplayOutOfActionRange(true);
@@ -102,7 +102,7 @@ public class MapRangeDisplayer : MonoBehaviour
                 if (abilityRange[h] == LOSTargetType.inRange)
                     h.drawer.DisplayInActionRange(true);
                 else if (abilityRange[h] == LOSTargetType.targetable)
-                    h.drawer.DisplayTargetable(true);
+                    h.drawer.DisplayAbilityTargetable(true);
                 else if (abilityRange[h] == LOSTargetType.outOfRange)
                 {
                     h.drawer.DisplayOutOfActionRange(true);
@@ -118,7 +118,10 @@ public class MapRangeDisplayer : MonoBehaviour
             if (this.displayedActionRange[h] == LOSTargetType.inRange)
                 h.drawer.DisplayInActionRange(false);
             else if (this.displayedActionRange[h] == LOSTargetType.targetable)
-                h.drawer.DisplayTargetable(false);
+            {
+                h.drawer.DisplayAbilityTargetable(false);
+                h.drawer.DisplayAttackTargetable(false);
+            }                
             else if (this.displayedActionRange[h] == LOSTargetType.outOfRange)
             {
                 h.drawer.DisplayOutOfActionRange(false);

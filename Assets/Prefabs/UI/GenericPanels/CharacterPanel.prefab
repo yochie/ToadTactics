@@ -407,6 +407,10 @@ PrefabInstance:
       propertyPath: m_enableWordWrapping
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1280258433729116416, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2511001733078807433, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1

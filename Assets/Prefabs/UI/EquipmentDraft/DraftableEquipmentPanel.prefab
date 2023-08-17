@@ -80,6 +80,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DraftableEquipmentPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 5024101681894980109, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_text
+      value: Draft
+      objectReference: {fileID: 0}
     - target: {fileID: 5554390476072518072, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
       propertyPath: m_text
       value: Draft

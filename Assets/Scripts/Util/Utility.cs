@@ -10,6 +10,7 @@ public static class Utility
 {
 
     public static readonly int MAX_DISTANCE_ON_MAP = 50;
+    internal static Color DEFAULT_BUTTON_COLOR = new(149/255f, 140/255f, 61/255f);
 
     internal static bool DictContainsValue(SyncIDictionary<float, int> dict, int item)
     {

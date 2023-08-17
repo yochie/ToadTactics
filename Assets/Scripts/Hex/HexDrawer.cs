@@ -4,25 +4,24 @@ using System;
 
 public class HexDrawer : MonoBehaviour
 {
+    #region Constants
+    public static readonly Color HEX_DEFAULT_COLOR = Color.white;
+    public static readonly Color HEX_START_COLOR = Color.blue;
+    public static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
+    public static readonly Color HEX_HOVER_COLOR = Color.cyan;
+    public static readonly Color HEX_SELECT_COLOR = Color.green;
+    public static readonly Color HEX_IN_MOVE_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+    public static readonly Color HEX_TARGETABLE_COLOR = Color.red;
+    public static readonly Color HEX_ABILITY_TARGETABLE_COLOR = new(148f / 255f, 0f, 211f / 255f);
+    public static readonly Color HEX_ATTACK_HOVER_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
+    public static readonly Color HEX_IN_ACTION_RANGE_COLOR = new(176f/255f, 98f/255f, 100f/255f);
+    public static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.gray;
+    public static readonly Color HEX_ABILITY_HOVER_COLOR = new(148f / 255f, 0f, 211f / 255f);
+    #endregion
+
     #region Editor vars
     [SerializeField]
     private TextMeshProUGUI labelPrefab;
-    #endregion
-
-    #region Constants
-
-    private static readonly Color HEX_DEFAULT_COLOR = Color.white;
-    private static readonly Color HEX_START_COLOR = Color.blue;
-    private static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
-    private static readonly Color HEX_HOVER_COLOR = Color.cyan;
-    private static readonly Color HEX_SELECT_COLOR = Color.green;
-    private static readonly Color HEX_IN_MOVE_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
-    private static readonly Color HEX_TARGETABLE_COLOR = Color.yellow;
-    private static readonly Color HEX_ATTACK_HOVER_COLOR = new(1f, 0.45f, 0f);
-    private static readonly Color HEX_IN_ACTION_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
-    private static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.red;
-    private static readonly Color HEX_ABILITY_HOVER_COLOR = new Color32(143, 0, 254, 1);
-
     #endregion
 
     #region State vars
@@ -133,10 +132,16 @@ public class HexDrawer : MonoBehaviour
         this.currentColor = mode ? HexDrawer.HEX_IN_ACTION_RANGE_COLOR : this.baseColor;
     }
 
-    public void DisplayTargetable(bool mode)
+    public void DisplayAttackTargetable(bool mode)
     {
         this.unHoveredColor = mode ? HexDrawer.HEX_TARGETABLE_COLOR : this.baseColor;
         this.currentColor = mode ? HexDrawer.HEX_TARGETABLE_COLOR : this.baseColor;
+    }
+
+    public void DisplayAbilityTargetable(bool mode)
+    {
+        this.unHoveredColor = mode ? HexDrawer.HEX_ABILITY_TARGETABLE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_ABILITY_TARGETABLE_COLOR : this.baseColor;
     }
 
     internal void DisplayOutOfActionRange(bool mode)

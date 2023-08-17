@@ -79,11 +79,12 @@ public class MainHUD : NetworkBehaviour
         this.GrayOutGameplayButton(ControlMode.useAbility);
     }
 
-    private void GrayOutGameplayButton(ControlMode mode)
+    private void GrayOutGameplayButton(ControlMode controlMode)
     {
-        GameObject buttonObject = this.gameplayButtons[mode];
+        GameObject buttonObject = this.gameplayButtons[controlMode];
         buttonObject.GetComponent<Button>().interactable = false;
-        buttonObject.GetComponent<Image>().color = Color.white;
+
+        buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
     }
 
     private void SetInteractableGameplayButton(ControlMode mode, bool state)
@@ -98,12 +99,12 @@ public class MainHUD : NetworkBehaviour
         if (state)
         {
             buttonObject.GetComponent<Button>().interactable = true;
-            buttonObject.GetComponent<Image>().color = Color.white;
+            buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
         }
         else
         {
             buttonObject.GetComponent<Button>().interactable = false;
-            buttonObject.GetComponent<Image>().color = Color.white;
+            buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
 
         }
     }
@@ -136,7 +137,7 @@ public class MainHUD : NetworkBehaviour
             Button button = buttonObject.GetComponent<Button>();
             button.interactable = state;
             if (!state)
-                buttonObject.GetComponent<Image>().color = Color.white;
+                buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
         }
     }
 
@@ -156,9 +157,9 @@ public class MainHUD : NetworkBehaviour
             Image buttonImage = controlModeToButton.Value.GetComponent<Image>();
             if (controlModeToButton.Key == mode)
 
-                buttonImage.color = Color.green;
+                buttonImage.color = this.GetSelectedColor(mode);
             else
-                buttonImage.color = Color.white;
+                buttonImage.color = this.GetUnselectedColor();
         }
     }
 
@@ -247,5 +248,29 @@ public class MainHUD : NetworkBehaviour
     //    if (!canMove)
     //        this.GrayOutGameplayButton(ControlMode.move);            
     //}
+
+    private Color GetSelectedColor(ControlMode controlMode)
+    {
+        Color activeColor = HexDrawer.HEX_IN_MOVE_RANGE_COLOR;
+        switch (controlMode)
+        {
+            case ControlMode.move:
+                activeColor = HexDrawer.HEX_IN_MOVE_RANGE_COLOR;
+                break;
+            case ControlMode.attack:
+                activeColor = HexDrawer.HEX_TARGETABLE_COLOR;
+                break;
+            case ControlMode.useAbility:
+                activeColor = HexDrawer.HEX_ABILITY_HOVER_COLOR;
+                break;
+        }
+
+        return activeColor;
+    }
+
+    private Color GetUnselectedColor()
+    {
+        return Utility.DEFAULT_BUTTON_COLOR;
+    }
 
 }

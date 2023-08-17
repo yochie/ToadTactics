@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3982768867530893486, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
       propertyPath: m_Name
-      value: _panelTextMainMenu
+      value: panelTextMainMenu
       objectReference: {fileID: 0}
     - target: {fileID: 4876900448368196232, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
       propertyPath: m_Pivot.x
@@ -95,6 +95,10 @@ PrefabInstance:
     - target: {fileID: 7675603558607370916, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
       propertyPath: m_fontSize
       value: 48
+      objectReference: {fileID: 0}
+    - target: {fileID: 7675603558607370916, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
