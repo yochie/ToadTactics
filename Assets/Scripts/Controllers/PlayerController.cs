@@ -312,6 +312,15 @@ public class PlayerController : NetworkBehaviour
         this.onEquipmentAssigned.Raise(equipmentID, playerID, classID);
     }
 
+    [ClientRpc]
+    internal void RpcClearStartZones()
+    {
+        foreach (Hex hex in Map.Singleton.hexGrid.Values)
+        {
+            if(hex.isStartingZone)
+                hex.drawer.ClearStartZone();
+        }
+    }
     #endregion
 
     #region Utility

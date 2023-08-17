@@ -14,7 +14,7 @@ public class HexDrawer : MonoBehaviour
     public static readonly Color HEX_TARGETABLE_COLOR = Color.red;
     public static readonly Color HEX_ABILITY_TARGETABLE_COLOR = new(148f / 255f, 0f, 211f / 255f);
     public static readonly Color HEX_ATTACK_HOVER_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
-    public static readonly Color HEX_IN_ACTION_RANGE_COLOR = new(176f/255f, 98f/255f, 100f/255f);
+    public static readonly Color HEX_IN_ACTION_RANGE_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
     public static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.gray;
     public static readonly Color HEX_ABILITY_HOVER_COLOR = new(148f / 255f, 0f, 211f / 255f);
     #endregion
@@ -86,7 +86,8 @@ public class HexDrawer : MonoBehaviour
         else if (isStartingZone && !isLocalStartingZone)
         {
             this.baseColor = HexDrawer.HEX_OPPONENT_START_COLOR;
-        } else
+        }
+        else
         {
             this.baseColor = HexDrawer.HEX_DEFAULT_COLOR;
         }
@@ -176,4 +177,10 @@ public class HexDrawer : MonoBehaviour
         }
     }
 
+    public void ClearStartZone()
+    {
+        this.currentColor = HexDrawer.HEX_DEFAULT_COLOR;
+        this.baseColor = HexDrawer.HEX_DEFAULT_COLOR;
+        this.unHoveredColor = HexDrawer.HEX_DEFAULT_COLOR;
+    }
 }

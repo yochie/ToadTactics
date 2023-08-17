@@ -19,6 +19,9 @@ public class GameplayPhase : IGamePhase
         this.Name = name;
         this.Controller = controller;
 
+        //TODO : fix bug here caused by race condition : need to either wait for this to resolve on all clients OR integrate to initial character selection.....
+        this.Controller.LocalPlayer.RpcClearStartZones();
+
         Controller.SetTurnOrderIndex(0);
         Controller.SetPlayerTurn(0);
 
@@ -32,7 +35,7 @@ public class GameplayPhase : IGamePhase
             Controller.SwapPlayerTurn();
         }
 
-        this.SetupActionButtonsOnPlayingClient(currentCharacter);
+        this.SetupControlModes(currentCharacter);
 
         Controller.RpcOnInitGameplayMode();
     }
@@ -79,13 +82,13 @@ public class GameplayPhase : IGamePhase
             this.Controller.SwapPlayerTurn();
         }
 
-        this.SetupActionButtonsOnPlayingClient(currentCharacter);
+        this.SetupControlModes(currentCharacter);
 
         //update life because it might have been changed by buff applications...
         currentCharacter.RpcOnCharacterLifeChanged(currentCharacter.CurrentLife, currentCharacter.CurrentStats.maxHealth);
     }
 
-    private void SetupActionButtonsOnPlayingClient(PlayerCharacter currentCharacter)
+    private void SetupControlModes(PlayerCharacter currentCharacter)
     {
         List<ControlMode> activeControlModes = currentCharacter.GetRemainingActions();
 

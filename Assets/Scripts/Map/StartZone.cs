@@ -10,7 +10,6 @@ public class StartZone : MonoBehaviour
     [SerializeField]
     private int playerIndex;
 
-
     //checks hexes in map overlapping this objects collider to destroy them
     public void SetStartingZone(Dictionary<Vector2Int, Hex> grid, int xSize, int ySize)
     {        
@@ -37,6 +36,6 @@ public class StartZone : MonoBehaviour
                 }
             }
         }
-        this.gameObject.SetActive(false);
+        this.outlineCollider.enabled = false;
     }
 }
