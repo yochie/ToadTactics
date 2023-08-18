@@ -71,7 +71,7 @@ public class MapRangeDisplayer : MonoBehaviour
             if (h != source)
             {
                 if (attackRange[h] == LOSTargetType.inRange)
-                    h.drawer.DisplayInActionRange(true);
+                    h.drawer.DisplayInAttackRange(true);
                 else if (attackRange[h] == LOSTargetType.targetable)
                     h.drawer.DisplayAttackTargetable(true);
                 else if (attackRange[h] == LOSTargetType.outOfRange)
@@ -100,7 +100,7 @@ public class MapRangeDisplayer : MonoBehaviour
             if (h != source)
             {
                 if (abilityRange[h] == LOSTargetType.inRange)
-                    h.drawer.DisplayInActionRange(true);
+                    h.drawer.DisplayInAbilityRange(true);
                 else if (abilityRange[h] == LOSTargetType.targetable)
                     h.drawer.DisplayAbilityTargetable(true);
                 else if (abilityRange[h] == LOSTargetType.outOfRange)
@@ -111,16 +111,32 @@ public class MapRangeDisplayer : MonoBehaviour
         }
     }
 
-    public void HideActionRange()
+    public void HideAttackRange()
     {
         foreach (Hex h in this.displayedActionRange.Keys)
         {
             if (this.displayedActionRange[h] == LOSTargetType.inRange)
-                h.drawer.DisplayInActionRange(false);
+                h.drawer.DisplayInAttackRange(false);
+            else if (this.displayedActionRange[h] == LOSTargetType.targetable)
+            {
+                h.drawer.DisplayAttackTargetable(false);
+            }                
+            else if (this.displayedActionRange[h] == LOSTargetType.outOfRange)
+            {
+                h.drawer.DisplayOutOfActionRange(false);
+            }
+        }
+    }
+    
+    public void HideAbilityRange()
+    {
+        foreach (Hex h in this.displayedActionRange.Keys)
+        {
+            if (this.displayedActionRange[h] == LOSTargetType.inRange)
+                h.drawer.DisplayInAbilityRange(false);
             else if (this.displayedActionRange[h] == LOSTargetType.targetable)
             {
                 h.drawer.DisplayAbilityTargetable(false);
-                h.drawer.DisplayAttackTargetable(false);
             }                
             else if (this.displayedActionRange[h] == LOSTargetType.outOfRange)
             {

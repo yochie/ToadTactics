@@ -112,7 +112,8 @@ public class MapInputHandler : NetworkBehaviour
 
         this.rangeDisplayer.HidePath();
         this.rangeDisplayer.HideMovementRange();
-        this.rangeDisplayer.HideActionRange();
+        this.rangeDisplayer.HideAttackRange();
+        this.rangeDisplayer.HideAbilityRange();
         this.rangeDisplayer.HideAOE();
     }
 

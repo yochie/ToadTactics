@@ -27,9 +27,15 @@ public class MainHUD : NetworkBehaviour
     private TextMeshProUGUI abilityButtonText;
 
     [SerializeField]
+    private GameObject abilityCooldownIndicator;
+    [SerializeField]
+    private TextMeshProUGUI abilityCooldownIndicatorCount;
+
+    [SerializeField]
     private GameObject actionButtonsGrid;
 
     private Dictionary<ControlMode, GameObject> gameplayButtons;
+    
 
     public static MainHUD Singleton { get; set; }
 
@@ -51,12 +57,22 @@ public class MainHUD : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight, string abilityName, int abilityCooldown)
-    {
+    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight, string abilityName, int abilityCooldown, bool hasActiveAbility)
+    {        
         this.ToggleActiveButtons(activeButtons, toHighlight);
+        if (!hasActiveAbility)
+            return;
+        
+        this.abilityButtonText.text = String.Format("{0}", abilityName);
+        if (abilityCooldown > 0)
+        {
+            this.abilityCooldownIndicator.SetActive(true);
+            this.abilityCooldownIndicatorCount.gameObject.SetActive(true);
+            this.abilityCooldownIndicatorCount.text = String.Format("{0}", abilityCooldown);
+        }            
+        else
+            this.abilityCooldownIndicator.SetActive(false);
 
-        string abilityButtonText = String.Format("{0} : {1}", abilityName, abilityCooldown);
-        this.abilityButtonText.text = abilityButtonText;
     }
 
     [TargetRpc]
@@ -261,7 +277,7 @@ public class MainHUD : NetworkBehaviour
                 activeColor = HexDrawer.HEX_ATTACK_TARGETABLE_COLOR;
                 break;
             case ControlMode.useAbility:
-                activeColor = HexDrawer.HEX_ABILITY_HOVER_COLOR;
+                activeColor = HexDrawer.HEX_ABILITY_TARGETABLE_COLOR;
                 break;
         }
 

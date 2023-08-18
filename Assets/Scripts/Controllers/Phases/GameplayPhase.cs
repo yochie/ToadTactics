@@ -102,10 +102,21 @@ public class GameplayPhase : IGamePhase
         this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, startingMode);
 
         NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
-        string abilityName = currentCharacter.charClass.abilities[0].interfaceName;
-        int abilityCooldown = 0;
+        CharacterAbilityStats abilityStats = currentCharacter.charClass.abilities[0];
+        if (abilityStats.isPassive)
+        {
+            //passing in empty strings since RPC cannot have optional arguments
+            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, "", -1, hasActiveAbility:false);
+        }
+        else
+        {
+            string abilityName = abilityStats.interfaceName;
+            string abilityID = currentCharacter.charClass.abilities[0].stringID;
+            int abilityCooldown = currentCharacter.GetAbilityCooldown(abilityID);
 
-        MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown);
+            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown, hasActiveAbility: true);
+        }
+
     }
 
     private IEnumerator CoroutineWaitForStartZoneClear() {

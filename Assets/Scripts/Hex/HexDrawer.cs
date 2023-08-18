@@ -12,11 +12,12 @@ public class HexDrawer : MonoBehaviour
     public static readonly Color HEX_SELECT_COLOR = Color.green;
     public static readonly Color HEX_IN_MOVE_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
     public static readonly Color HEX_ATTACK_TARGETABLE_COLOR = Color.red;
-    public static readonly Color HEX_ABILITY_TARGETABLE_COLOR = new(148f / 255f, 0f, 211f / 255f);
-    public static readonly Color HEX_ATTACK_HOVER_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
-    public static readonly Color HEX_IN_ACTION_RANGE_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
+    public static readonly Color HEX_ABILITY_TARGETABLE_COLOR = new(103f / 255f, 10f / 255f, 142f / 255f); 
+    public static readonly Color HEX_ATTACK_HOVER_COLOR = Color.cyan; 
+    public static readonly Color HEX_IN_ATTACK_RANGE_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
+    public static readonly Color HEX_IN_ABILITY_RANGE_COLOR = new(189 / 255f, 111f / 255f, 221f / 255f);
     public static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.gray;
-    public static readonly Color HEX_ABILITY_HOVER_COLOR = new(148f / 255f, 0f, 211f / 255f);
+    public static readonly Color HEX_ABILITY_HOVER_COLOR = Color.cyan;
     #endregion
 
     #region Editor vars
@@ -127,10 +128,17 @@ public class HexDrawer : MonoBehaviour
         this.unHoveredColor = mode ? HexDrawer.HEX_IN_MOVE_RANGE_COLOR : this.baseColor;
         this.currentColor = mode ? HexDrawer.HEX_IN_MOVE_RANGE_COLOR : this.baseColor;
     }
-    public void DisplayInActionRange(bool mode)
+
+    public void DisplayInAttackRange(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_IN_ACTION_RANGE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_IN_ACTION_RANGE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? HexDrawer.HEX_IN_ATTACK_RANGE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_IN_ATTACK_RANGE_COLOR : this.baseColor;
+    }
+
+    public void DisplayInAbilityRange(bool mode)
+    {
+        this.unHoveredColor = mode ? HexDrawer.HEX_IN_ABILITY_RANGE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_IN_ABILITY_RANGE_COLOR : this.baseColor;
     }
 
     public void DisplayAttackTargetable(bool mode)
