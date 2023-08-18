@@ -258,7 +258,7 @@ public class MainHUD : NetworkBehaviour
                 activeColor = HexDrawer.HEX_IN_MOVE_RANGE_COLOR;
                 break;
             case ControlMode.attack:
-                activeColor = HexDrawer.HEX_TARGETABLE_COLOR;
+                activeColor = HexDrawer.HEX_ATTACK_TARGETABLE_COLOR;
                 break;
             case ControlMode.useAbility:
                 activeColor = HexDrawer.HEX_ABILITY_HOVER_COLOR;

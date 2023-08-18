@@ -11,7 +11,7 @@ public class HexDrawer : MonoBehaviour
     public static readonly Color HEX_HOVER_COLOR = Color.cyan;
     public static readonly Color HEX_SELECT_COLOR = Color.green;
     public static readonly Color HEX_IN_MOVE_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
-    public static readonly Color HEX_TARGETABLE_COLOR = Color.red;
+    public static readonly Color HEX_ATTACK_TARGETABLE_COLOR = Color.red;
     public static readonly Color HEX_ABILITY_TARGETABLE_COLOR = new(148f / 255f, 0f, 211f / 255f);
     public static readonly Color HEX_ATTACK_HOVER_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
     public static readonly Color HEX_IN_ACTION_RANGE_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
@@ -135,8 +135,8 @@ public class HexDrawer : MonoBehaviour
 
     public void DisplayAttackTargetable(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_TARGETABLE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_TARGETABLE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? HexDrawer.HEX_ATTACK_TARGETABLE_COLOR : this.baseColor;
+        this.currentColor = mode ? HexDrawer.HEX_ATTACK_TARGETABLE_COLOR : this.baseColor;
     }
 
     public void DisplayAbilityTargetable(bool mode)
