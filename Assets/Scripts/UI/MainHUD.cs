@@ -58,14 +58,17 @@ public class MainHUD : NetworkBehaviour
 
     [TargetRpc]
     public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight, string abilityName, int abilityCooldown, bool hasActiveAbility)
-    {        
+    {
+        this.SetActiveGameplayButtons(true);
         this.ToggleActiveButtons(activeButtons, toHighlight);
         if (!hasActiveAbility)
-            return;
-        
-        this.abilityButtonText.text = String.Format("{0}", abilityName);
-        this.UpdateAbilityCooldownIndicator(abilityCooldown);
-
+        {
+            this.abilityButton.SetActive(false);
+        } else
+        {
+            this.abilityButtonText.text = String.Format("{0}", abilityName);
+            this.UpdateAbilityCooldownIndicator(abilityCooldown);
+        }
     }
 
     [TargetRpc]
@@ -198,10 +201,6 @@ public class MainHUD : NetworkBehaviour
     {        
         this.instructionLabel.text = "Your turn";
         this.endTurnButton.SetActive(true);
-        if (GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
-        {
-            this.SetActiveGameplayButtons(true);
-        }
     }
 
     [Client]
@@ -209,20 +208,6 @@ public class MainHUD : NetworkBehaviour
     {
         this.instructionLabel.text = "Waiting...";
         this.endTurnButton.SetActive(false);
-        if (GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
-        {
-            this.SetActiveGameplayButtons(false);
-        }
-    }
-
-    //TODO : Remove, its called by RPC/syncvar hook and checks recently set syncvar, big nono,  i dont event think its necessary but needs to be tested
-    [Client]
-    public void OnInitGameplayMode()
-    {
-        if (GameController.Singleton.ItsMyTurn())
-        {
-            this.SetActiveGameplayButtons(true);
-        }
     }
 
     //TODO : Remove, its called by RPC/syncvar hook and checks recently set syncvar, big nono
@@ -236,13 +221,9 @@ public class MainHUD : NetworkBehaviour
 
         PlayerCharacter newTurnCharacter = GameController.Singleton.PlayerCharactersByID[GameController.Singleton.GetCharacterIDForTurn(newTurnIndex)];
 
+        //TODO : remove, i dont think its required
         if (!newTurnCharacter.CanMove)
             this.GrayOutGameplayButton(ControlMode.move);
-
-        //if (GameController.Singleton.ItsMyTurn())
-        //{
-        //    this.SetInteractableGameplayButtons(true);
-        //}
     }
     #endregion
 
@@ -264,18 +245,6 @@ public class MainHUD : NetworkBehaviour
         Debug.Log("pretending you lost round");
         GameController.Singleton.EndRound(sender.identity.GetComponent<PlayerController>().playerID);
     }
-
-    //private void Update()
-    //{
-    //    if(GameController.Singleton.ItsMyTurn())
-    //        this.
-
-                
-    //    if (!canTakeTurn)
-    //        return;
-    //    if (!canMove)
-    //        this.GrayOutGameplayButton(ControlMode.move);            
-    //}
 
     private Color GetSelectedColor(ControlMode controlMode)
     {

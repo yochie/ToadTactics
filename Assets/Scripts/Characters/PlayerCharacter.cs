@@ -134,12 +134,6 @@ public class PlayerCharacter : NetworkBehaviour
         return buffIcons;
     }
 
-    [Server]
-    internal int GetAbilityCooldown(string abilityID)
-    {
-        return this.abilityCooldowns[abilityID];
-    }
-
     internal void SetCurrentLife(int value)
     {
         int previousHealth = this.CurrentLife;
@@ -532,6 +526,22 @@ public class PlayerCharacter : NetworkBehaviour
     private CharacterAbilityStats GetAbilityWithID(string abilityID)
     {
         return this.charClass.abilities.Single(ability => ability.stringID == abilityID);
+    }
+
+    [Server]
+    internal int GetAbilityCooldown(string abilityID)
+    {
+        return this.abilityCooldowns[abilityID];
+    }
+
+    internal bool HasActiveAbility()
+    {
+        foreach (CharacterAbilityStats ability in this.charClass.abilities)
+        {
+            if (!ability.isPassive)
+                return true;
+        }
+        return false;
     }
     #endregion
 }

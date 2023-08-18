@@ -228,8 +228,9 @@ public class ActionExecutor : NetworkBehaviour
             }
             else
                 MainHUD.Singleton.TargetRpcToggleActiveButtons(sender, activeControlModes, currentControlMode);
-
-            MainHUD.Singleton.TargetRpcUpdateAbilityCooldownIndicator(sender, actor.GetAbilityCooldown(actor.charClass.abilities[0].stringID));
+            
+            if(actor.HasActiveAbility())
+                MainHUD.Singleton.TargetRpcUpdateAbilityCooldownIndicator(sender, actor.GetAbilityCooldown(actor.charClass.abilities[0].stringID));
         }
     }
 
