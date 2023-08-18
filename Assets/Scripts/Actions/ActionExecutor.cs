@@ -219,14 +219,17 @@ public class ActionExecutor : NetworkBehaviour
         }
         else
         {
-            List<ControlMode> activeControlModes = actor.GetRemainingActions();
+            List<ControlMode> activeControlModes = actor.GetRemainingActions();            
             if (!activeControlModes.Contains(currentControlMode))
             {
+                //switch to next available control mode
                 MainHUD.Singleton.TargetRpcToggleActiveButtons(sender, activeControlModes, activeControlModes[0]);
                 MapInputHandler.Singleton.TargetRpcSetControlMode(sender, activeControlModes[0]);
             }
             else
                 MainHUD.Singleton.TargetRpcToggleActiveButtons(sender, activeControlModes, currentControlMode);
+
+            MainHUD.Singleton.TargetRpcUpdateAbilityCooldownIndicator(sender, actor.GetAbilityCooldown(actor.charClass.abilities[0].stringID));
         }
     }
 

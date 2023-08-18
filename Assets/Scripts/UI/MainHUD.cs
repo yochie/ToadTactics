@@ -64,12 +64,24 @@ public class MainHUD : NetworkBehaviour
             return;
         
         this.abilityButtonText.text = String.Format("{0}", abilityName);
+        this.UpdateAbilityCooldownIndicator(abilityCooldown);
+
+    }
+
+    [TargetRpc]
+    public void TargetRpcUpdateAbilityCooldownIndicator(NetworkConnectionToClient target, int abilityCooldown)
+    {
+        this.UpdateAbilityCooldownIndicator(abilityCooldown);
+    }
+
+    private void UpdateAbilityCooldownIndicator(int abilityCooldown)
+    {
         if (abilityCooldown > 0)
         {
             this.abilityCooldownIndicator.SetActive(true);
             this.abilityCooldownIndicatorCount.gameObject.SetActive(true);
             this.abilityCooldownIndicatorCount.text = String.Format("{0}", abilityCooldown);
-        }            
+        }
         else
             this.abilityCooldownIndicator.SetActive(false);
 
