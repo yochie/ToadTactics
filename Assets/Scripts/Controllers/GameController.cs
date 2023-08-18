@@ -6,6 +6,7 @@ using Mirror;
 using TMPro;
 using System;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class GameController : NetworkBehaviour
 {
@@ -60,6 +61,9 @@ public class GameController : NetworkBehaviour
     List<int> charactersInstantiantedOnRemote;
     private int treasureOpenedByPlayerID;
     private List<string> alreadyDraftedEquipmentIDs = new();
+    public bool StartZonesCleared { get; internal set; }
+    public Dictionary<int, bool> ClearedStartZones { get; private set; }
+
 
     //Only exist in some scenes, so they need to plug themselves here in their own Awake()
     //dont try to set them here, too tricky to wait for them before handling scene initialization
@@ -127,6 +131,7 @@ public class GameController : NetworkBehaviour
     private int playerTurn;
 
     public int PlayerTurn { get => this.playerTurn;}
+
     [Server]
     public void SetPlayerTurn(int value)
     {
@@ -139,7 +144,7 @@ public class GameController : NetworkBehaviour
 
     private void Start()
     {
-        DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(this.gameObject);        
     }
 
     private void Awake()
@@ -180,6 +185,8 @@ public class GameController : NetworkBehaviour
         this.currentRound = -1;
         this.charactersInstantiantedOnRemote = new();
         this.treasureOpenedByPlayerID = -1;
+        this.StartZonesCleared = false;
+        this.ClearedStartZones = new();
     }
 
     #endregion
@@ -484,6 +491,20 @@ public class GameController : NetworkBehaviour
     internal int AlreadyDraftedEquipmentCount()
     {
         return this.alreadyDraftedEquipmentIDs.Count;
+    }
+
+    [Command(requiresAuthority = false)]
+    internal void CmdNotifyStartZonesCleared(int clearedForplayerID)
+    {
+        this.ClearedStartZones[clearedForplayerID] = true;
+        foreach (int playerID in this.playerControllers.Select(player => player.playerID).ToList())
+        {
+            if(!ClearedStartZones.ContainsKey(playerID) || ClearedStartZones[playerID] == false)
+            {
+                return;
+            }
+        }
+        this.StartZonesCleared = true;
     }
     #endregion
 

@@ -320,6 +320,7 @@ public class PlayerController : NetworkBehaviour
             if(hex.isStartingZone)
                 hex.drawer.ClearStartZone();
         }
+        GameController.Singleton.CmdNotifyStartZonesCleared(GameController.Singleton.LocalPlayer.playerID);
     }
     #endregion
 

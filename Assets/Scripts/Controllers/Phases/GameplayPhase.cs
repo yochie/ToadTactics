@@ -22,6 +22,11 @@ public class GameplayPhase : IGamePhase
         //TODO : fix bug here caused by race condition : need to either wait for this to resolve on all clients OR integrate to initial character selection.....
         this.Controller.LocalPlayer.RpcClearStartZones();
 
+        this.Controller.StartCoroutine(this.CoroutineWaitForStartZoneClear());
+    }
+
+    private void FinishInit()
+    {
         Controller.SetTurnOrderIndex(0);
         Controller.SetPlayerTurn(0);
 
@@ -102,4 +107,14 @@ public class GameplayPhase : IGamePhase
 
         MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown);
     }
+
+    private IEnumerator CoroutineWaitForStartZoneClear() {
+        while (!this.Controller.StartZonesCleared)
+        {
+            yield return null;
+        }
+
+        this.FinishInit();
+    }
+
 }
