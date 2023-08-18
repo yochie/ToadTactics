@@ -208,6 +208,10 @@ public class MainHUD : NetworkBehaviour
     {
         this.instructionLabel.text = "Waiting...";
         this.endTurnButton.SetActive(false);
+        if (GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
+        {
+            this.SetActiveGameplayButtons(false);
+        }
     }
 
     //TODO : Remove, its called by RPC/syncvar hook and checks recently set syncvar, big nono
