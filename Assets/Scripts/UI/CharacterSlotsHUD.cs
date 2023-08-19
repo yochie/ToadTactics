@@ -17,7 +17,7 @@ public class CharacterSlotsHUD : MonoBehaviour
     public static CharacterSlotsHUD Singleton {get; set;}
 
     //Todo: spawn at runtime to allow gaining new slots for clone or losing slots for amalgam
-    private List<CharacterSlotUI> characterSlots = new();
+    private List<GameplayCharacterSlotUI> characterSlots = new();
 
 
     private void Awake()
@@ -27,9 +27,9 @@ public class CharacterSlotsHUD : MonoBehaviour
 
     public void OnCharacterPlaced(int classID)
     {
-        foreach (CharacterSlotUI slot in this.characterSlots)
+        foreach (GameplayCharacterSlotUI slot in this.characterSlots)
         {
-            if (slot.holdsCharacterWithClassID == classID)
+            if (slot.HoldsCharacterWithClassID == classID)
             {
                 slot.HasBeenPlacedOnBoard = true;
             }
@@ -44,14 +44,14 @@ public class CharacterSlotsHUD : MonoBehaviour
                 return;
         
             GameObject characterSlotObject = Instantiate(this.characterSlotPrefab, this.transform);        
-            CharacterSlotUI characterSlot = characterSlotObject.GetComponent<CharacterSlotUI>();
+            GameplayCharacterSlotUI characterSlot = characterSlotObject.GetComponent<GameplayCharacterSlotUI>();
             characterSlot.SetInputHandler(this.inputHandler);
         
             characterSlots.Add(characterSlot);
 
             characterSlot.GetComponent<Image>().sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);
 
-            characterSlot.holdsCharacterWithClassID = classID;
+            characterSlot.HoldsCharacterWithClassID = classID;
 
             if (GameController.Singleton.IsAKing(classID))
                 characterSlot.DisplayCrown();

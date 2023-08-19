@@ -137,8 +137,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteImage: {fileID: 188290515717721786}
-  crownSpriteImage: {fileID: 4691065123431434512}
-  heldCharacterClassID: 0
+  <CrownImage>k__BackingField: {fileID: 8827257652880007472}
+  <OnCharacterSheetDisplayedEvent>k__BackingField: {fileID: 11400000, guid: 41dfc3699ccdb3d438c4801410371c4a, type: 2}
 --- !u!114 &6804839993002498231
 MonoBehaviour:
   m_ObjectHideFlags: 0

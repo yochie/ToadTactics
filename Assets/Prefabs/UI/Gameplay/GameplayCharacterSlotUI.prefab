@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 110651761229220715}
   - component: {fileID: 8689543760212937469}
   m_Layer: 5
-  m_Name: CharacterSlotUI
+  m_Name: GameplayCharacterSlotUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

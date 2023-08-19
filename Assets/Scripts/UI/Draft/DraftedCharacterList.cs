@@ -2,28 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DraftedCharacterList : MonoBehaviour
+public class DraftedCharacterList : BasicCharacterSlotListUI
 {
-
-    List<DraftedCharacterSlotUI> slots;
-
     [SerializeField]
     bool isForSelf;
-
-    [SerializeField]
-    GameObject slotPrefab;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     //Called by unity event configured in inspector
     public void OnCharacterDrafted(int draftedByPlayerID, int draftedClassID)
@@ -38,9 +20,10 @@ public class DraftedCharacterList : MonoBehaviour
         if (!addToThisList)
             return;
 
-        GameObject slotObject = Instantiate(this.slotPrefab, this.transform);
-        DraftedCharacterSlotUI slot = slotObject.GetComponent<DraftedCharacterSlotUI>();
-        slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(draftedClassID));
-        slot.SetClassID(draftedClassID);
+        this.AddBasicSlotToList(draftedClassID);
+        //GameObject slotObject = Instantiate(this.slotPrefab, this.transform);
+        //DraftedCharacterSlotUI slot = slotObject.GetComponent<DraftedCharacterSlotUI>();
+        //slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(draftedClassID));
+        //slot.SetClassID(draftedClassID);
     }
 }

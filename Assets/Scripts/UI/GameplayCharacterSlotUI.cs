@@ -6,9 +6,7 @@ using Mirror;
 using UnityEngine.UI;
 using System;
 
-
-//RTODO: Character creation should be handled by playerController since he stores the PlayerCharacter thereafter. Means he should maybe be registerd here as observer of drag.
-public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+public class GameplayCharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     private MapInputHandler mapInputHandler;
 
@@ -19,7 +17,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private IntGameEventSO onCharacterSheetDisplayed;
 
     private Vector3 dragStartPosition;
-    public int holdsCharacterWithClassID;
+    public int HoldsCharacterWithClassID { get; set; }
 
     private bool hasBeenPlacedOnBoard = false;
     public bool HasBeenPlacedOnBoard
@@ -89,7 +87,7 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             this.transform.position = this.dragStartPosition;
             Hex destinationHex = this.mapInputHandler.HoveredHex;
             if (destinationHex == null) { return; }
-            GameController.Singleton.LocalPlayer.CmdPlaceCharOnBoard(this.holdsCharacterWithClassID, destinationHex);
+            GameController.Singleton.LocalPlayer.CmdPlaceCharOnBoard(this.HoldsCharacterWithClassID, destinationHex);
         }
     }
 
@@ -124,6 +122,6 @@ public class CharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (this.dragging)
             return;
-        this.onCharacterSheetDisplayed.Raise(this.holdsCharacterWithClassID);
+        this.onCharacterSheetDisplayed.Raise(this.HoldsCharacterWithClassID);
     }
 }

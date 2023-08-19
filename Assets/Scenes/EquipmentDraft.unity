@@ -586,12 +586,23 @@ PrefabInstance:
       propertyPath: m_Name
       value: EquipmentDraftUI
       objectReference: {fileID: 0}
+    - target: {fileID: 8235933264979330535, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_Name
+      value: OwnTeam
+      objectReference: {fileID: 0}
+    - target: {fileID: 8424628511553872046, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_Name
+      value: OpponentTeam
+      objectReference: {fileID: 0}
     - target: {fileID: 8537482888627092807, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
       propertyPath: sceneId
       value: 1366222293
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedComponents:
+    - {fileID: 4124780854774542661, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+    - {fileID: 2119654744512948347, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+    m_RemovedGameObjects:
+    - {fileID: 8424628511553872046, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
