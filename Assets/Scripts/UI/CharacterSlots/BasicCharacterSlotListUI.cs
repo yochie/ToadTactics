@@ -16,11 +16,11 @@ public class BasicCharacterSlotListUI : MonoBehaviour
         this.slotList.Add(basicSlot);
     }
 
-    //public void Init(List<int> classIDs)
-    //{
-    //    foreach(int classID in classIDs)
-    //    {
-    //        this.AddBasicSlotToList(classID);
-    //    }
-    //}
+    public void Init(List<int> classIDs)
+    {
+        foreach (int classID in classIDs)
+        {
+            this.AddBasicSlotToList(classID);
+        }
+    }
 }
