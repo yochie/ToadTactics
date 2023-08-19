@@ -71,6 +71,17 @@ public class EquipmentDraftPhase : IGamePhase
 
         //will init slots using Rpcs (careful, async, need to set all state before)
         this.Controller.equipmentDraftUI.InitSlotsForDraft(rolledIDs);
+
+        foreach (PlayerController player in Controller.playerControllers)
+        {
+            List<int> ownedCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(player.playerID)
+                .Select(character => character.CharClassID).ToList();
+
+            List<int> opponentCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(this.Controller.OtherPlayer(player.playerID))
+                .Select(character => character.CharClassID).ToList();
+            player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
+            player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);
+        }
     }
 
     [Server]

@@ -1546,6 +1546,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 297310965}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnTestButtonClicked
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MainHUD, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 7819407145326496621, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
       propertyPath: m_Color.b
       value: 0

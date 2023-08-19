@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DraftedCharacterList : BasicCharacterSlotListUI, IOwnedByPlayer
+public class DraftedCharacterListUI : BasicCharacterSlotListUI, IOwnedByPlayer
 {
     [field: SerializeField]
     public bool IsForSelf { get; set; }

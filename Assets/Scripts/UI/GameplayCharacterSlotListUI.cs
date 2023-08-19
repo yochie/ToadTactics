@@ -32,7 +32,7 @@ public class GameplayCharacterSlotListUI : BasicCharacterSlotListUI, IOwnedByPla
         }
     }
 
-    public new void Init(List<int> classIDs)
+    public override void Init(List<int> classIDs)
     {
         base.Init(classIDs);
         foreach(BasicCharacterSlotUI basicSlot in this.slotList)
