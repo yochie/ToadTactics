@@ -2825,6 +2825,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5530923541023456599, guid: ed19b8abe513f064d801db8d8af08802, type: 3}
+      propertyPath: <IsForSelf>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6362994154423056571, guid: ed19b8abe513f064d801db8d8af08802, type: 3}
       propertyPath: m_Name
       value: SelfDraftedChars

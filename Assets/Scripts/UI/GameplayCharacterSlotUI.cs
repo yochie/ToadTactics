@@ -18,7 +18,7 @@ public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler,
     {
         get { return this.hasBeenPlacedOnBoard; }
         set { 
-            hasBeenPlacedOnBoard = value;
+            this.hasBeenPlacedOnBoard = value;
             this.IsHighlighted = !value;
         }
     }
@@ -26,12 +26,11 @@ public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler,
     private bool isHighlighted = false;
     public bool IsHighlighted
     {
-        get { return isHighlighted; }
+        get { return this.isHighlighted; }
         set
         {
-            isHighlighted = value;
-            Color oldColor = this.highlightImage.color;
-            this.highlightImage.color = Utility.SetHighlight(oldColor, value); ;
+            this.isHighlighted = value;
+            this.highlightImage.gameObject.SetActive(value);
         }
     }
 
@@ -93,7 +92,7 @@ public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler,
         return toReturn;
     }
 
-    public new void OnPointerClick(PointerEventData eventData)
+    public override void OnPointerClick(PointerEventData eventData)
     {
         if (this.dragging)
             return;

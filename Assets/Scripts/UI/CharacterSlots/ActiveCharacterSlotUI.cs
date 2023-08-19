@@ -20,7 +20,7 @@ public class ActiveCharacterSlotUI : BasicCharacterSlotUI, IDisplaysCharacterShe
         this.CrownImage.gameObject.SetActive(state);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public virtual void OnPointerClick(PointerEventData eventData)
     {
         this.OnCharacterSheetDisplayedEvent.Raise(this.HoldsCharacterWithClassID);
     }
