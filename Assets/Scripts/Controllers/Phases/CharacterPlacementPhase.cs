@@ -80,7 +80,11 @@ public class CharacterPlacementPhase : IGamePhase
         {
             List<int> ownedCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(player.playerID)
                 .Select(character => character.CharClassID).ToList();
-            player.TargetRpcInitCharacterSlotsHUD(ownedCharacterIDs);
+
+            List<int> opponentCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(this.Controller.OtherPlayer(player.playerID))
+                .Select(character => character.CharClassID).ToList();
+            player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
+            player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);
         }
 
         //do an artificial setting to trigger new player turn event even if he was last to play during draft

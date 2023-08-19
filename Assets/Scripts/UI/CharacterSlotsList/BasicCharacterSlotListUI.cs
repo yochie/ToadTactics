@@ -12,7 +12,7 @@ public class BasicCharacterSlotListUI : MonoBehaviour
     public void AddBasicSlotToList(int classID)
     {        
         BasicCharacterSlotUI basicSlot = Instantiate(this.slotPrefab, this.transform);
-        basicSlot.InitBasicsWithClassID(classID);
+        basicSlot.InitForClassID(classID);
         this.slotList.Add(basicSlot);
     }
 

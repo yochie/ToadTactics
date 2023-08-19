@@ -92,7 +92,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &584387507938983497
 RectTransform:
   m_ObjectHideFlags: 0
@@ -241,9 +241,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30e037a16294ccd49857813decef3b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crown: {fileID: 1232212253129671401}
-  onCharacterSheetDisplayed: {fileID: 11400000, guid: 41dfc3699ccdb3d438c4801410371c4a, type: 2}
-  holdsCharacterWithClassID: 0
+  spriteImage: {fileID: 7018610921847236666}
+  <CrownImage>k__BackingField: {fileID: 8430565099359638471}
+  <OnCharacterSheetDisplayedEvent>k__BackingField: {fileID: 11400000, guid: 41dfc3699ccdb3d438c4801410371c4a, type: 2}
+  highlightImage: {fileID: 1892256225765757620}
 --- !u!61 &8689543760212937469
 BoxCollider2D:
   m_ObjectHideFlags: 0

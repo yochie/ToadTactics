@@ -10,7 +10,7 @@ public class BasicCharacterSlotUI : MonoBehaviour
 
     public int HoldsCharacterWithClassID { get; set; }
 
-    public void InitBasicsWithClassID(int classID)
+    public void InitForClassID(int classID)
     {
         this.HoldsCharacterWithClassID = classID;
         this.spriteImage.sprite = ClassDataSO.Singleton.GetSpriteByClassID(classID);

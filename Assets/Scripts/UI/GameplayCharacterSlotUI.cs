@@ -6,18 +6,12 @@ using Mirror;
 using UnityEngine.UI;
 using System;
 
-public class GameplayCharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler, IDragHandler, IEndDragHandler, IOwnedByPlayer
 {
+    [SerializeField]
+    private Image highlightImage;
+
     private MapInputHandler mapInputHandler;
-
-    [SerializeField]
-    private GameObject crown;
-
-    [SerializeField]
-    private IntGameEventSO onCharacterSheetDisplayed;
-
-    private Vector3 dragStartPosition;
-    public int HoldsCharacterWithClassID { get; set; }
 
     private bool hasBeenPlacedOnBoard = false;
     public bool HasBeenPlacedOnBoard
@@ -28,11 +22,8 @@ public class GameplayCharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHa
             this.IsHighlighted = !value;
         }
     }
-
-    private Image highlightImage;
+    
     private bool isHighlighted = false;
-    private bool dragging;
-
     public bool IsHighlighted
     {
         get { return isHighlighted; }
@@ -44,38 +35,22 @@ public class GameplayCharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHa
         }
     }
 
-    public void Awake()
-    {
-        foreach (Image child in this.GetComponentsInChildren<Image>())
-        {
-            if (child.gameObject.GetInstanceID() != this.gameObject.GetInstanceID())
-            {
-                this.highlightImage = child;
-            }
-        }
-    }
+    public bool IsForSelf { get; set; }
 
-    void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
+    private Vector3 dragStartPosition;
+    private bool dragging;
+
+    public void OnBeginDrag(PointerEventData eventData)
     {
         if (this.IsDraggable())
             this.dragStartPosition = this.transform.position;
         this.dragging = true;
     }
 
-    internal void DisplayCrown()
-    {
-        this.crown.SetActive(true);
-    }
-
     public void OnDrag(PointerEventData eventData)
     {
         if (this.IsDraggable())
             this.transform.position = eventData.position;
-    }
-
-    internal void SetInputHandler(MapInputHandler inputHandler)
-    {
-        this.mapInputHandler = inputHandler;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -98,7 +73,8 @@ public class GameplayCharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHa
         {
             case GamePhaseID.characterPlacement:
                 if (GameController.Singleton.ItsMyTurn() &&
-                    !this.HasBeenPlacedOnBoard)
+                    !this.HasBeenPlacedOnBoard &&
+                    this.IsForSelf)
                 {
                     toReturn = true;
                 }
@@ -108,7 +84,6 @@ public class GameplayCharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHa
                 }
                 break;
             case GamePhaseID.gameplay:
-                toReturn = false;
                 break;
             case GamePhaseID.characterDraft:
                 break;
@@ -118,10 +93,15 @@ public class GameplayCharacterSlotUI : MonoBehaviour, IBeginDragHandler, IDragHa
         return toReturn;
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public new void OnPointerClick(PointerEventData eventData)
     {
         if (this.dragging)
             return;
-        this.onCharacterSheetDisplayed.Raise(this.HoldsCharacterWithClassID);
+        this.OnCharacterSheetDisplayedEvent.Raise(this.HoldsCharacterWithClassID);
+    }
+
+    public void SetMapInputHandler (MapInputHandler inputHandler)
+    {
+        this.mapInputHandler = inputHandler;
     }
 }
