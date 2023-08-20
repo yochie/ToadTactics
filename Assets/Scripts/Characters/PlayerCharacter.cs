@@ -19,6 +19,9 @@ public class PlayerCharacter : NetworkBehaviour
 
     [SerializeField]
     private IntIntIntGameEventSO onCharacterLifeChanged;
+
+    [SerializeField]
+    private Color kingColor;
     #endregion
 
     #region Sync vars
@@ -337,6 +340,10 @@ public class PlayerCharacter : NetworkBehaviour
     public void RpcPlaceAndSetVisible(bool visibleState, Vector3 position)
     {
         this.spriteRenderer.enabled = visibleState;
+        if (this.isKing)
+        {
+            this.spriteRenderer.color = this.kingColor;
+        }
         this.transform.position = position;
     }
 
