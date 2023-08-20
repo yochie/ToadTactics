@@ -13,13 +13,16 @@ public class DamageEquipmentSO : EquipmentSO, IEquipmentQuality, IDamageModifier
     public void ApplyStatModification(PlayerCharacter playerCharacter)
     {
         int currentDamage = playerCharacter.CurrentStats.damage;
-        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, damage: currentDamage + this.DamageOffset));
+        int currentKingDamage = playerCharacter.CurrentStats.kingDamage;
+
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, damage: currentDamage + this.DamageOffset, kingDamage: currentKingDamage + this.DamageOffset));
     }
 
     public void RemoveStatModification(PlayerCharacter playerCharacter)
     {
         int currentDamage = playerCharacter.CurrentStats.damage;
-        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, damage: currentDamage - this.DamageOffset));
+        int currentKingDamage = playerCharacter.CurrentStats.kingDamage;
+        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, damage: currentDamage - this.DamageOffset, kingDamage: currentKingDamage - this.DamageOffset));
     }
 
     public Dictionary<string, string> GetPrintableStatDictionary()
