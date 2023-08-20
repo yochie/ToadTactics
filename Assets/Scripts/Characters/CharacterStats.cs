@@ -31,6 +31,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
 
     public readonly bool attacksRequireLOS;
 
+    //TODO: change to offset
     public readonly int kingDamage;
 
     public readonly bool penetratingDamage;
