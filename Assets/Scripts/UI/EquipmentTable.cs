@@ -5,7 +5,7 @@ using System;
 
 public class EquipmentTable : MonoBehaviour
 {
-    private List<Image> displayedIcons = new();
+    private List<GameObject> displayedIcons = new();
 
     [SerializeField]
     private GameObject blankIconContainerPrefab;
@@ -24,16 +24,16 @@ public class EquipmentTable : MonoBehaviour
     {
         GameObject equipmentIConContainer = Instantiate(this.blankIconContainerPrefab, this.transform);
         Image equipmentIcon = equipmentIConContainer.GetComponentInChildren<Image>();
-        this.displayedIcons.Add(equipmentIcon);
+        this.displayedIcons.Add(equipmentIConContainer);
         equipmentIcon.sprite = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).Sprite;
         equipmentIcon.color = Color.black;
     }
 
     private void Clear()
     {
-        foreach(Image icon in this.displayedIcons)
+        foreach(GameObject iconContainer in this.displayedIcons)
         {
-            Destroy(icon.gameObject);
+            Destroy(iconContainer.gameObject);
         }
         this.displayedIcons.Clear();
     }
