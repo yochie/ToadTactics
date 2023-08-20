@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EquipmentDraftCharacterListUI : BasicCharacterSlotListUI, IOwnedByPlayer
 {
+    [field: SerializeField]
     public bool IsForSelf { get; set; }
 
     private void Awake()
