@@ -122,6 +122,13 @@ public class Map : NetworkBehaviour
         }
     }
 
+    internal HazardType CharacterStandingOnHazard(int classID)
+    {
+        HexCoordinates characterPosition = this.characterPositions[classID];
+        Hex hex = Map.GetHex(this.hexGrid, characterPosition);
+        return hex.holdsHazard;
+    }
+
     //coroutine to finish matching netids
     [Client]
     IEnumerator HexFromNetIdCoroutine(Vector2Int key, uint netIdArg)
@@ -144,6 +151,19 @@ public class Map : NetworkBehaviour
     public static Hex GetHex(Dictionary<Vector2Int, Hex> grid, int x, int y)
     {
         if (grid.TryGetValue(new Vector2Int(x, y), out Hex toReturn))
+        {
+            return toReturn;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+    public static Hex GetHex(Dictionary<Vector2Int, Hex> grid, HexCoordinates hexCoordinates)
+    {
+        if (grid.TryGetValue(hexCoordinates.OffsetCoordinatesAsVector(), out Hex toReturn))
         {
             return toReturn;
         }

@@ -15,6 +15,7 @@ MonoBehaviour:
   hazardPrefabs:
   - {fileID: 4066588543361744108, guid: 01536a0e1528faa4d89ccdf907dc8658, type: 3}
   - {fileID: 1425512457202989034, guid: a472cd4c2cb296f4fb179cd4515a1506, type: 3}
-  fireHazardDamage: 30
+  fireHazardDamage: 20
+  fireHazardStandingDamage: 10
   fireHazardDamageType: 1
   coldHazardMovementPenalty: 1

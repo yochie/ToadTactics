@@ -23,13 +23,16 @@ public class HazardDataSO : ScriptableObject
     
     [SerializeField]
     private int fireHazardDamage;
+    
+    [SerializeField]
+    private int fireHazardStandingDamage;
+
 
     [SerializeField]
     private DamageType fireHazardDamageType;
 
     [SerializeField]
     private int coldHazardMovementPenalty;
-
 
     public GameObject GetHazardPrefab(HazardType typeToGet)
     {
@@ -45,13 +48,16 @@ public class HazardDataSO : ScriptableObject
         throw new System.Exception("Could not find request hazard prefab.");
     }
 
-    public int GetHazardDamage(HazardType typeToGet)
+    public int GetHazardDamage(HazardType hazardType, bool standingDamage = false)
     {
 
-        switch (typeToGet)
+        switch (hazardType)
         {
-            case HazardType.fire: 
-                return this.fireHazardDamage;
+            case HazardType.fire:
+                if (standingDamage)
+                    return this.fireHazardStandingDamage;
+                else
+                    return this.fireHazardDamage;
             default:
                 return 0;
         }

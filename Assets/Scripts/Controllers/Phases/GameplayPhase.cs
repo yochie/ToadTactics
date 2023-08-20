@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class GameplayPhase : IGamePhase
 {
@@ -48,23 +49,42 @@ public class GameplayPhase : IGamePhase
     [Server]
     public void Tick()
     {
+        this.EndOfTurn();
 
+        this.IncrementTurnOrder();
+
+        this.StartOfTurn();
+    }
+    private void EndOfTurn()
+    {
         int lastTurnCharacterID = this.Controller.GetCharacterIDForTurn();
         if (lastTurnCharacterID == -1)
         {
             throw new System.Exception("Error : couldn't find playing character in turn order");
         }
+        PlayerCharacter lastTurnCharacter = this.Controller.PlayerCharactersByID[lastTurnCharacterID];
         BuffManager.Singleton.TickBuffsForTurn(lastTurnCharacterID);
-        this.Controller.PlayerCharactersByID[lastTurnCharacterID].TickCooldownsForTurn();
+        lastTurnCharacter.TickCooldownsForTurn();
+        HazardType standingOnHazardType = Map.Singleton.CharacterStandingOnHazard(lastTurnCharacterID);
+        if (standingOnHazardType != HazardType.none)
+        {
+            lastTurnCharacter.TakeDamage(HazardDataSO.Singleton.GetHazardDamage(standingOnHazardType, standingDamage: true), HazardDataSO.Singleton.GetHazardDamageType(standingOnHazardType));
+        }
 
-        //loops through turn order                
-        if (this.Controller.TurnOrderIndex >= this.Controller.SortedTurnOrder.Count - 1)
-            this.Controller.SetTurnOrderIndex(0);
-        else
-            this.Controller.SetTurnOrderIndex(this.Controller.TurnOrderIndex + 1);
+        if(lastTurnCharacter.IsDead && lastTurnCharacter.IsKing)
+        {
+            Debug.Log("The king is dead. Long live the king.");
+            GameController.Singleton.EndRound(looserID: lastTurnCharacter.OwnerID);
+            return;
+        }
 
-        //finds character class id for the next turn so that we can check who owns it
-        
+        //update life because it might have been changed by buffs of standing in hazards
+        lastTurnCharacter.RpcOnCharacterLifeChanged(lastTurnCharacter.CurrentLife, lastTurnCharacter.CurrentStats.maxHealth);
+    }
+
+    private void StartOfTurn()
+    {
+        //finds character class id for the next turn so that we can check who owns it        
         int newTurnCharacterID = this.Controller.GetCharacterIDForTurn();
         if (newTurnCharacterID == -1)
         {
@@ -72,6 +92,7 @@ public class GameplayPhase : IGamePhase
         }
 
         PlayerCharacter currentCharacter = this.Controller.PlayerCharactersByID[newTurnCharacterID];
+
         if (currentCharacter.IsDead || !currentCharacter.CanTakeTurns)
         {
             //skips turn
@@ -88,9 +109,14 @@ public class GameplayPhase : IGamePhase
         }
 
         this.SetupControlModes(currentCharacter);
+    }
 
-        //update life because it might have been changed by buff applications...
-        currentCharacter.RpcOnCharacterLifeChanged(currentCharacter.CurrentLife, currentCharacter.CurrentStats.maxHealth);
+    private void IncrementTurnOrder()
+    {
+        if (this.Controller.TurnOrderIndex >= this.Controller.SortedTurnOrder.Count - 1)
+            this.Controller.SetTurnOrderIndex(0);
+        else
+            this.Controller.SetTurnOrderIndex(this.Controller.TurnOrderIndex + 1);
     }
 
     private void SetupControlModes(PlayerCharacter currentCharacter)
@@ -127,5 +153,4 @@ public class GameplayPhase : IGamePhase
 
         this.FinishInit();
     }
-
 }

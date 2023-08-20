@@ -279,6 +279,8 @@ public class PlayerCharacter : NetworkBehaviour
         }
     }
 
+    //Don't check for round end here since we don't want to keep context on call stack when ending round.
+    //instead check for round end wherever characters can take damage (end of actions, end of turn, start of turn)
     [Server]
     public void Die()
     {
