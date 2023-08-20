@@ -32,16 +32,27 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     [SerializeField]
     private Image lifebar;
 
+    [SerializeField]
+    private float highlightScaling;
+
+
     private int holdsCharacterWithClassID = -1;
     public int HoldsCharacterWithClassID { get => this.holdsCharacterWithClassID; set { this.holdsCharacterWithClassID = value; } }
 
     //unique buffID => image
     private Dictionary<int, Image> displayedBuffs;
 
-    public void DisplayHighlight(bool state)
+    public void setHighlight(bool highlighted)
     {
         Color oldColor = this.highlightImage.color;
-        this.highlightImage.color = Utility.SetHighlight(oldColor, state);
+        this.highlightImage.color = Utility.SetHighlight(oldColor, highlighted);
+
+        if(highlighted)
+            this.transform.localScale = new Vector3(this.highlightScaling, this.highlightScaling, 1f);
+        else
+            this.transform.localScale = Vector3.one;
+
+        LayoutRebuilder.MarkLayoutForRebuild((RectTransform)this.transform.parent);
     }
 
     internal void SetLifeDisplay(int currentLife, int maxHealth)
