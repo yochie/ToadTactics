@@ -9,6 +9,9 @@ public class MapInputHandler : NetworkBehaviour
     [SerializeField]
     private MapRangeDisplayer rangeDisplayer;
 
+    [SerializeField]
+    private MapLOSDisplayer MapLOSDisplayer;
+
     public static MapInputHandler Singleton { get; private set; }
 
     //to be used eventually...
@@ -22,9 +25,9 @@ public class MapInputHandler : NetworkBehaviour
         private set;
     }
 
-    private CharacterAbilityStats currentAbilityStats;
-    private EquipmentSO currentEquipmentStats;
-
+    private CharacterAbilityStats currentActivatedAbilityStats;
+    private EquipmentSO currentActivedEquipmentStats;
+    
     private void Awake()
     {
         if (MapInputHandler.Singleton == null)
@@ -37,7 +40,7 @@ public class MapInputHandler : NetworkBehaviour
         this.CurrentControlMode = ControlMode.none;
     }
 
-    public void setPlayingCharacter(PlayerCharacter character)
+    public void SetPlayingCharacter(PlayerCharacter character)
     {
         this.playingCharacter = character;
     }
@@ -58,9 +61,9 @@ public class MapInputHandler : NetworkBehaviour
                 break;
             case ControlMode.useAbility:
                 //TODO :remove after implementation of all abilities
-                if (currentAbilityStats.stringID == "fake")
+                if (currentActivatedAbilityStats.stringID == "fake")
                     return;
-                ActionExecutor.Singleton.CmdUseAbility(this.SelectedHex, clickedHex, this.currentAbilityStats);
+                ActionExecutor.Singleton.CmdUseAbility(this.SelectedHex, clickedHex, this.currentActivatedAbilityStats);
                 break;
         }
     }
@@ -78,6 +81,7 @@ public class MapInputHandler : NetworkBehaviour
 
         int heldCharacterID = h.holdsCharacterWithClassID;
         PlayerCharacter heldCharacter = GameController.Singleton.PlayerCharactersByID[heldCharacterID];
+        this.SetPlayingCharacter(heldCharacter);
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -93,7 +97,7 @@ public class MapInputHandler : NetworkBehaviour
                 this.rangeDisplayer.DisplayAttackRange(h, heldCharacter.CurrentStats.range, heldCharacter);
                 break;
             case ControlMode.useAbility:
-                this.rangeDisplayer.DisplayAbilityRange(h, currentAbilityStats, heldCharacter);
+                this.rangeDisplayer.DisplayAbilityRange(h, currentActivatedAbilityStats, heldCharacter);
                 //Debug.Log("Trying to select hex while control mode is useAbility (currently unsupported).");
                 break;
             case ControlMode.useEquipment:
@@ -145,10 +149,14 @@ public class MapInputHandler : NetworkBehaviour
                 break;
             case ControlMode.attack:
                 hoveredHex.drawer.AttackHover(true);
+                if (this.playingCharacter.CurrentStats.attacksRequireLOS)
+                {
+                    this.MapLOSDisplayer.DisplayLOS(source: this.SelectedHex, destination: hoveredHex, highlightPath: false);
+                }
                 break;
             case ControlMode.useAbility:
-                if(currentAbilityStats.aoe > 0)
-                    this.rangeDisplayer.DisplayAOE(hoveredHex, currentAbilityStats.aoe);
+                if(currentActivatedAbilityStats.aoe > 0)
+                    this.rangeDisplayer.DisplayAOE(hoveredHex, currentActivatedAbilityStats.aoe);
                 else
                     hoveredHex.drawer.AbilityHover(true);
                 break;
@@ -223,13 +231,13 @@ public class MapInputHandler : NetworkBehaviour
                 currentlyPlayingCharacter.charClass.abilities[0].isPassive)
             {
                 Debug.LogFormat("{0} has no defined activated abilities to fetch.", currentlyPlayingCharacter);
-                this.currentAbilityStats = new(fake: true);
+                this.currentActivatedAbilityStats = new(fake: true);
             }                
              else
             {
                 //TODO : fetch actual requested ability instead of just grabbing first
                 CharacterAbilityStats abilityStats = currentlyPlayingCharacter.charClass.abilities[0];
-                this.currentAbilityStats = abilityStats;
+                this.currentActivatedAbilityStats = abilityStats;
             }
         }
 
