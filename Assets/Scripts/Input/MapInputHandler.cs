@@ -171,6 +171,8 @@ public class MapInputHandler : NetworkBehaviour
             this.HoveredHex = null;
         }
 
+        this.MapLOSDisplayer.HideLOS();
+
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -215,6 +217,7 @@ public class MapInputHandler : NetworkBehaviour
     {
         MainHUD.Singleton.HighlightGameplayButton(mode);
         this.UnselectHex();
+        this.MapLOSDisplayer.HideLOS();
         this.CurrentControlMode = mode;
 
         if (mode == ControlMode.characterPlacement)
