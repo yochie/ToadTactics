@@ -31,7 +31,7 @@ public static class MapPathfinder
         return toReturn;
     }
 
-    internal static List<Hex> HexesOnLine(Hex startHex, Hex endHex)
+    internal static List<Hex> HexesOnLine(Hex startHex, Hex endHex, bool excludeStart = true, bool excludeDestination = false)
     {
         LayerMask hexMask = LayerMask.GetMask("MapHex");
 
@@ -46,9 +46,12 @@ public static class MapPathfinder
         {
             GameObject hitObject = hit.collider.gameObject;
             Hex hitHex = hitObject.GetComponent<Hex>();
-            if (hitHex != null && hitHex != startHex)
+            if (hitHex != null)
             {
-                //hitHex.DisplayLOSObstruction(true);
+                if (excludeStart && hitHex == startHex)
+                    continue;
+                if (excludeDestination && hitHex == endHex)
+                    continue;
                 hexesOnLine.Add(hitHex);
             }
         }

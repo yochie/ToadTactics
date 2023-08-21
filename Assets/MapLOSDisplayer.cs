@@ -8,9 +8,7 @@ public class MapLOSDisplayer : MonoBehaviour
     [SerializeField]
     LineRenderer lineRenderer;
 
-    private Vector2 fromPosition;
-    private Vector2 toPosition;
-    private List<Hex> higlightedPath;
+    private List<Hex> highlightedPath = new();
 
     private void Start()
     {
@@ -19,8 +17,8 @@ public class MapLOSDisplayer : MonoBehaviour
 
     internal void DisplayLOS(Hex source, Hex destination, bool highlightPath)
     {
-        this.fromPosition = source.transform.position;
-        this.toPosition = destination.transform.position;
+        Vector2 fromPosition = source.transform.position;
+        Vector2 toPosition = destination.transform.position;
 
         this.lineRenderer.enabled = true;
         this.lineRenderer.SetPosition(0, fromPosition);
@@ -29,10 +27,25 @@ public class MapLOSDisplayer : MonoBehaviour
         float horizontalFactor = 120f;
         float verticalFactor = 1.5f;
         this.lineRenderer.textureScale = new Vector2(length / horizontalFactor, verticalFactor);
+
+        if (highlightPath)
+        {
+            this.highlightedPath = MapPathfinder.HexesOnLine(source, destination, excludeStart: true, excludeDestination: true);
+            foreach(Hex hex in this.highlightedPath)
+            {
+                hex.drawer.AbilityHover(true);
+            }
+
+        }
     }
 
     internal void HideLOS()
     {
         this.lineRenderer.enabled = false;
+        foreach(Hex hex in this.highlightedPath)
+        {
+            hex.drawer.AbilityHover(false);
+        }
+        this.highlightedPath.Clear();
     }
 }

@@ -24,6 +24,7 @@ public readonly struct CharacterAbilityStats
     public readonly int cooldownDuration;
     public readonly bool isPassive;
     public readonly bool penetratingDamage;
+    public readonly bool piercesLOS;
 
     //Todo: remove once all characters has abilities defined
     public CharacterAbilityStats(bool fake)
@@ -46,7 +47,7 @@ public readonly struct CharacterAbilityStats
         this.cooldownDuration = 0;
         this.isPassive = false;
         this.penetratingDamage = false;
-
+        this.piercesLOS = false;
 
     }
 
@@ -67,7 +68,8 @@ public readonly struct CharacterAbilityStats
                             int usesPerRound = -1,
                             int cooldownDuration = 0,
                             bool isPassive = false,
-                            bool penetratingDamage = false
+                            bool penetratingDamage = false,
+                            bool piercesLOS = false
                             )
     {
         this.stringID = stringID;
@@ -97,5 +99,6 @@ public readonly struct CharacterAbilityStats
         this.cooldownDuration = cooldownDuration;
         this.isPassive = isPassive;
         this.penetratingDamage = penetratingDamage;
+        this.piercesLOS = piercesLOS;
     }
 }

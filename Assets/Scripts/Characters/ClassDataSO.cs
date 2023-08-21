@@ -213,8 +213,9 @@ public class ClassDataSO : ScriptableObject
                     damage: 30,
                     range: Utility.MAX_DISTANCE_ON_MAP,
                     requiresLOS: false,
-                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars},
-                    cooldownDuration: 3
+                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle},
+                    cooldownDuration: 3,
+                    piercesLOS: true
                 ) 
             }
             );

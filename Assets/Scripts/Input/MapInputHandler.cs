@@ -150,15 +150,15 @@ public class MapInputHandler : NetworkBehaviour
             case ControlMode.attack:
                 hoveredHex.drawer.AttackHover(true);
                 if (this.playingCharacter.CurrentStats.attacksRequireLOS)
-                {
                     this.MapLOSDisplayer.DisplayLOS(source: this.SelectedHex, destination: hoveredHex, highlightPath: false);
-                }
                 break;
             case ControlMode.useAbility:
                 if(currentActivatedAbilityStats.aoe > 0)
                     this.rangeDisplayer.DisplayAOE(hoveredHex, currentActivatedAbilityStats.aoe);
                 else
                     hoveredHex.drawer.AbilityHover(true);
+                if (this.currentActivatedAbilityStats.requiresLOS || this.currentActivatedAbilityStats.piercesLOS)
+                    this.MapLOSDisplayer.DisplayLOS(source: this.SelectedHex, destination: hoveredHex, highlightPath: this.currentActivatedAbilityStats.piercesLOS);
                 break;
         }
     }
@@ -233,8 +233,7 @@ public class MapInputHandler : NetworkBehaviour
                 currentlyPlayingCharacter.charClass.abilities.Count < 1 ||
                 currentlyPlayingCharacter.charClass.abilities[0].isPassive)
             {
-                Debug.LogFormat("{0} has no defined activated abilities to fetch.", currentlyPlayingCharacter);
-                this.currentActivatedAbilityStats = new(fake: true);
+                throw new System.Exception("Trying to use ability while character has no defined activated abilities to fetch.");
             }                
              else
             {
