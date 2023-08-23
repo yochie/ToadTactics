@@ -24,9 +24,12 @@ public class PriestResurrectAbility : IAbilityAction, ITargetedAction
     public int Range { get; set; }
 
     [Server]
-    public void ServerUse()
+    public void ServerUse(INetworkedLogger logger)
     {
-        Debug.Log("Using priest resurrect!");
+        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        Debug.Log(message);
+        logger.RpcLogMessage(message);
+        
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
         PlayerCharacter toResurrect = this.TargetHex.GetHeldCorpseCharacterObject();
         int lifeOnResurrection = toResurrect.CurrentStats.maxHealth / 2;

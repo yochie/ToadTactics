@@ -24,9 +24,12 @@ public class ArcherSnipeAbility : IAbilityAction, ITargetedAction
     public int Range { get; set; }
 
     [Server]
-    public void ServerUse()
+    public void ServerUse(INetworkedLogger logger)
     {
-        Debug.Log("Using archer snipe!");
+        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        Debug.Log(message);
+        logger.RpcLogMessage(message);
+
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
         List<Hex> hexesOnLine = MapPathfinder.HexesOnLine(this.ActorHex, this.TargetHex);

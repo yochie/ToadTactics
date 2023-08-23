@@ -25,9 +25,12 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedActi
     public int Range { get; set; }
 
     [Server]
-    public void ServerUse()
-    {        
-        Debug.Log("Using Paladin team buff!");
+    public void ServerUse(INetworkedLogger logger)
+    {
+        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        Debug.Log(message);
+        logger.RpcLogMessage(message);
+        
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
         List<int> affectedCharacterIDs = new();
 

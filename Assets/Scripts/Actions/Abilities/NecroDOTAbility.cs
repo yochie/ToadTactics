@@ -25,9 +25,12 @@ public class NecroDOTAbility : IAbilityAction, IBuffSource, ITargetedAction, ICo
     public int Range { get; set; }
 
     [Server]
-    public void ServerUse()
-    {        
-        Debug.Log("Using Necro DOT!");
+    public void ServerUse(INetworkedLogger logger)
+    {
+        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        Debug.Log(message);
+        logger.RpcLogMessage(message);
+
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
         List<int> affectedCharacterIDs = new () { this.TargetHex.holdsCharacterWithClassID };
 

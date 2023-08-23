@@ -26,8 +26,13 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
     public Type AppliesBuffType { get => typeof(CavalierStunEffect); }
 
     [Server]
-    public void ServerUse()
+    public void ServerUse(INetworkedLogger logger)
     {
+
+        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        Debug.Log(message);
+        logger.RpcLogMessage(message);
+
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
         ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
@@ -36,7 +41,6 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
         if (!TargetHex.HoldsACharacter() || TargetHex.GetHeldCharacterObject() == null)
             return;
 
-        Debug.Log("Using cavalier stun debuff!");
         List<int> affectedCharacterIDs = new List<int> { this.TargetHex.holdsCharacterWithClassID };
         IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);

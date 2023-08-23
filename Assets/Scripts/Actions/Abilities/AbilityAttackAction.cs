@@ -27,7 +27,7 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
     public CharacterAbilityStats AbilityStats { get; set; }
 
     [Server]
-    public void ServerUse()
+    public void ServerUse(INetworkedLogger logger)
     {
 
         if(this.TargetHex.HoldsAnObstacle() && this.DefenderCharacter == null)
@@ -37,7 +37,9 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
             GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
             Object.Destroy(attackedTree);
             TargetHex.ClearObstacle();
-            Debug.LogFormat("{0} attacked tree to destroy it", this.ActorCharacter);
+            string message = string.Format("{0} destroyed tree", this.ActorCharacter.charClass.name);
+            Debug.Log(message);
+            logger.RpcLogMessage(message);        
         }
         else 
         {
@@ -53,15 +55,18 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
                 int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AbilityStats.damage, critMulti) : this.AbilityStats.damage;
                 this.DefenderCharacter.TakeDamage(rolledDamage, this.AbilityStats.damageType, penetrates);
 
-                Debug.LogFormat("{0} hit {1} for {2} ({6} {5} {7}) leaving him with {3} => {4} life.",
-                this.ActorCharacter,
-                this.DefenderCharacter,
+                string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
+                this.ActorCharacter.charClass.name,
+                this.DefenderCharacter.charClass.name,
                 rolledDamage,
                 prevLife,
                 this.DefenderCharacter.CurrentLife,
-                isCrit ? "crit" : "normal",
+                isCrit ? "crit" : "nocrit",
                 this.AbilityStats.damageType,
                 penetrates ? " penetrating" : "");
+
+                Debug.Log(message);
+                logger.RpcLogMessage(message);
 
                 if (this.DefenderCharacter.IsDead)
                 {

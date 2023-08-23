@@ -11,7 +11,7 @@ public interface IAction
 
     public NetworkConnectionToClient RequestingClient { get; set; }
 
-    public abstract void ServerUse();
+    public abstract void ServerUse(INetworkedLogger logger);
 
     public abstract bool ServerValidate();
 

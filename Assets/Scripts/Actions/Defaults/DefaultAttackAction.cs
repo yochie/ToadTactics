@@ -24,7 +24,7 @@ public class DefaultAttackAction : IAttackAction
     public PlayerCharacter DefenderCharacter { get; set; }
 
     [Server]
-    public void ServerUse()
+    public void ServerUse(INetworkedLogger logger)
     {
 
         if(this.TargetHex.HoldsAnObstacle() && this.DefenderCharacter == null)
@@ -34,7 +34,10 @@ public class DefaultAttackAction : IAttackAction
             GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
             Object.Destroy(attackedTree);
             TargetHex.ClearObstacle();
-            Debug.LogFormat("{0} attacked tree to destroy it", this.ActorCharacter);
+
+            string message = string.Format("{0} destroyed tree", this.ActorCharacter.charClass.name);
+            Debug.Log(message);
+            logger.RpcLogMessage(message);
         }
         else 
         {
@@ -50,15 +53,18 @@ public class DefaultAttackAction : IAttackAction
                 int critRolledDamage = isCrit ? Utility.CalculateCritDamage(damageStatToUse, this.AttackerStats.critMultiplier) : damageStatToUse;
                 this.DefenderCharacter.TakeDamage(critRolledDamage, this.AttackerStats.damageType, penetrates);
 
-                Debug.LogFormat("{0} hit {1} for {2} ({6} {5}{7}) leaving him with {3} => {4} life.",
-                this.ActorCharacter,
-                this.DefenderCharacter,
+                string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
+                this.ActorCharacter.charClass.name,
+                this.DefenderCharacter.charClass.name,
                 critRolledDamage,
                 prevLife,
                 this.DefenderCharacter.CurrentLife,
-                isCrit ? "crit" : "normal",
+                isCrit ? "crit" : "nocrit",
                 this.AttackerStats.damageType,
                 penetrates ? " penetrating" : "");
+
+                Debug.Log(message);
+                logger.RpcLogMessage(message);
 
                 if (this.DefenderCharacter.IsDead)
                     break;
@@ -67,26 +73,6 @@ public class DefaultAttackAction : IAttackAction
 
         //PlayerCharacter state updated to track that attack was used
         this.ActorCharacter.UsedAttack();
-
-        //TODO Move to event listeners
-        //if(!this.ActorCharacter.HasAvailableAttacks())
-        //    MainHUD.Singleton.TargetRpcGrayOutAttackButton(this.RequestingClient);
-
-        //if (this.ActorCharacter.HasAvailableMoves())
-        //{
-        //    MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.move);
-        //}
-        //else
-        //{
-        //    MainHUD.Singleton.TargetRpcGrayOutMoveButton(this.RequestingClient);
-        //    MapInputHandler.Singleton.TargetRpcSetControlMode(this.RequestingClient, ControlMode.none);
-        //}
-
-        //TODO: move to action executor FinishAction code to avoid recursion
-        //if (!this.ActorCharacter.HasRemainingActions())
-        //{
-        //    GameController.Singleton.CmdNextTurn();
-        //}
     }
 
     [Server]

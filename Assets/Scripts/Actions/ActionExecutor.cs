@@ -7,9 +7,8 @@ using System;
 
 public class ActionExecutor : NetworkBehaviour
 {
-    public AttackEvent attackEvent;
-    public MoveEvent moveEvent;
-    public AbilityEvent abilityEvent;
+    [SerializeField]
+    private MainLogger logger;
 
     //TODO : remove this field, should simply be referenced by mapinputhandler
     public static ActionExecutor Singleton { get; private set; }
@@ -183,7 +182,7 @@ public class ActionExecutor : NetworkBehaviour
     {
         if (action.ServerValidate())
         {
-            action.ServerUse();            
+            action.ServerUse(this.logger);            
             return true;
         }
         else

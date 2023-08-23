@@ -24,9 +24,12 @@ public class RogueCritAbility : IAbilityAction, ITargetedAction
     public int Range { get; set; }
 
     [Server]
-    public void ServerUse()
+    public void ServerUse(INetworkedLogger logger)
     {
-        Debug.Log("Using rogue crit!");
+        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        Debug.Log(message);
+        logger.RpcLogMessage(message);
+        
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
         ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
     }

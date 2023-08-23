@@ -24,7 +24,7 @@ public class DefaultMoveAction : IMoveAction
     private List<Hex> movePath;
 
     [Server]
-    public void ServerUse()
+    public void ServerUse(INetworkedLogger logger)
     {
         //move one hex at a time to ensure we die on correct tile
         //still need to call rpcs after loop to avoid race conditions
@@ -37,7 +37,9 @@ public class DefaultMoveAction : IMoveAction
 
             if (nextHex.holdsTreasure)
             {
-                Debug.Log("{0} has moved on treasure. He will be assigned extra treasure.");
+                string message = string.Format("{0} has collected treasure.", this.ActorCharacter.charClass.name);
+                Debug.Log(message);
+                logger.RpcLogMessage(message);
                 Object.Destroy(Map.Singleton.Treasure);
                 GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);
             }

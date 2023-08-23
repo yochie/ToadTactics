@@ -26,11 +26,14 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
     public Type AppliesBuffType { get => typeof(WarriorRootEffect); }
 
     [Server]
-    public void ServerUse()
+    public void ServerUse(INetworkedLogger logger)
     {
-        this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
+        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        Debug.Log(message);
+        logger.RpcLogMessage(message);
 
-        Debug.Log("Using warrior root debuff!");
+        this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
+        
         List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.aoe, Map.Singleton.hexGrid);
         List<int> targetsIDs = new();
         foreach (Hex hex in hexesInAOE)
