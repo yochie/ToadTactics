@@ -36,7 +36,6 @@ public class DefaultAttackAction : IAttackAction
             TargetHex.ClearObstacle();
 
             string message = string.Format("{0} destroyed tree", this.ActorCharacter.charClass.name);
-            Debug.Log(message);
             logger.RpcLogMessage(message);
         }
         else 
@@ -63,7 +62,6 @@ public class DefaultAttackAction : IAttackAction
                 this.AttackerStats.damageType,
                 penetrates ? " penetrating" : "");
 
-                Debug.Log(message);
                 logger.RpcLogMessage(message);
 
                 if (this.DefenderCharacter.IsDead)

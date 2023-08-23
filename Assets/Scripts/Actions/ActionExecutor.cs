@@ -7,8 +7,7 @@ using System;
 
 public class ActionExecutor : NetworkBehaviour
 {
-    [SerializeField]
-    private MainLogger logger;
+    private INetworkedLogger logger;
 
     //TODO : remove this field, should simply be referenced by mapinputhandler
     public static ActionExecutor Singleton { get; private set; }
@@ -16,6 +15,7 @@ public class ActionExecutor : NetworkBehaviour
     public void Awake()
     {
         ActionExecutor.Singleton = this;
+        this.logger = MasterLogger.Singleton;
     }
 
     [Command(requiresAuthority = false)]

@@ -38,7 +38,6 @@ public class DefaultMoveAction : IMoveAction
             if (nextHex.holdsTreasure)
             {
                 string message = string.Format("{0} has collected treasure.", this.ActorCharacter.charClass.name);
-                Debug.Log(message);
                 logger.RpcLogMessage(message);
                 Object.Destroy(Map.Singleton.Treasure);
                 GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);

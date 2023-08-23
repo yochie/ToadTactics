@@ -30,7 +30,6 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
     {
 
         string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
-        Debug.Log(message);
         logger.RpcLogMessage(message);
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
