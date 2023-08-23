@@ -57,6 +57,9 @@ internal class BuffManager : NetworkBehaviour
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.AddAffectingBuff(buff);
+
+            string message = string.Format("{0} {1} applied to {2}", buff.UIName, buff.IsPositive ? "buff" : "debuff", affectedCharacter.charClass.name);
+            MasterLogger.Singleton.RpcLogMessage(message);
         }
 
         IAbilityBuffEffect abilityBuff = buff as IAbilityBuffEffect;
@@ -69,6 +72,8 @@ internal class BuffManager : NetworkBehaviour
         buff.ApplyEffect(buff.AffectedCharacterIDs, isReapplication: false);
 
         this.RpcAddBuffIcons( buff.UniqueID, buff.AffectedCharacterIDs, buff.IconName);
+
+
     }
 
     [Server]
@@ -95,6 +100,8 @@ internal class BuffManager : NetworkBehaviour
                 if (buff.NeedsToBeReAppliedEachTurn)
                 {
                     buff.ApplyEffect(new List<int> { character.CharClassID }, isReapplication: true);
+                    string message = string.Format("Ticking {0} {1} on {2}", buff.UIName, buff.IsPositive ? "buff" : "debuff", character.charClass.name);
+                    MasterLogger.Singleton.RpcLogMessage(message);
                 }
             }
         }

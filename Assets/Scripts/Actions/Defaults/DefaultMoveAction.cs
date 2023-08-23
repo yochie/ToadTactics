@@ -43,9 +43,18 @@ public class DefaultMoveAction : IMoveAction
                 GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);
             }
 
-            if (nextHex.DealsDamageWhenMovedInto() > 0)
+            int moveDamage = nextHex.DealsDamageWhenMovedInto();
+            if (moveDamage > 0)
             {
-                this.ActorCharacter.TakeDamage(nextHex.DealsDamageWhenMovedInto(), nextHex.DealsDamageTypeWhenMovedInto());
+                this.ActorCharacter.TakeDamage(moveDamage, nextHex.DealsDamageTypeWhenMovedInto());
+
+                string message = string.Format("{0} takes {1} {2} damage for walking on {3} hazard",
+                    this.ActorCharacter.charClass.name,
+                    moveDamage,
+                    nextHex.DealsDamageTypeWhenMovedInto(),
+                    nextHex.holdsHazard);
+                MasterLogger.Singleton.RpcLogMessage(message);
+
                 if (this.ActorCharacter.IsDead)
                 {
                     diedOnHex = nextHex;

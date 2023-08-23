@@ -289,7 +289,10 @@ public class PlayerCharacter : NetworkBehaviour
         this.ResetCooldownsAndUses();
         this.RemoveRoundBuffs();
         this.RpcOnCharacterDeath();
-        Debug.LogFormat("{0} is dead.", this);
+
+        string message = string.Format("{0} has died", this.charClass.name);
+        MasterLogger.Singleton.RpcLogMessage(message);
+
         Map.Singleton.SetCharacterAliveState(this.charClassID, isDead: true);
     }
 
