@@ -80,7 +80,12 @@ public class StatsTable : MonoBehaviour
             if(isAKing && stat.Key == "Health")
             {
                 if (baseStats)
-                    valueLabel.text = (Utility.ApplyKingLifeBuff(Int32.Parse(stat.Value))).ToString();
+                {
+                    string baseHealth = stat.Value;
+                    string buffedHealth = (Utility.ApplyKingLifeBuff(Int32.Parse(baseHealth))).ToString();
+                    string kingBaseHealthWithBuffDisplay = string.Format("{0} => {1}", baseHealth, buffedHealth);
+                    valueLabel.text = kingBaseHealthWithBuffDisplay;
+                } 
                 else
                     valueLabel.text = stat.Value;
                 valueLabel.color = Color.green;
