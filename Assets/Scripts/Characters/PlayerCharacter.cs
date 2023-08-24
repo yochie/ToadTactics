@@ -409,6 +409,12 @@ public class PlayerCharacter : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void GrantMovesForTurn(int movesDelta)
+    {
+        this.remainingMoves += movesDelta;
+    }
+
     #endregion
 
     #region Events

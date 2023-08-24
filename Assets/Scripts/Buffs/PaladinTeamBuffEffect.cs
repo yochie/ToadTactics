@@ -78,6 +78,7 @@ public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmor
 
         int currentMoveSpeed = playerCharacter.CurrentStats.moveSpeed;
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, moveSpeed: currentMoveSpeed + this.MovementOffset));
+        playerCharacter.GrantMovesForTurn(this.MovementOffset);
     }
 
     public void RemoveStatModification(PlayerCharacter playerCharacter)
@@ -96,6 +97,7 @@ public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmor
 
         int currentMoveSpeed = playerCharacter.CurrentStats.moveSpeed;
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, moveSpeed: currentMoveSpeed - this.MovementOffset));
+        playerCharacter.GrantMovesForTurn(-this.MovementOffset);
     }
     #endregion
 }
