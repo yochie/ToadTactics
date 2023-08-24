@@ -9,7 +9,6 @@ public class ActionExecutor : NetworkBehaviour
 {
     private INetworkedLogger logger;
 
-    //TODO : remove this field, should simply be referenced by mapinputhandler
     public static ActionExecutor Singleton { get; private set; }
 
     public void Awake()
