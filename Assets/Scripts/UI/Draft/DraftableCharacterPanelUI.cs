@@ -34,6 +34,8 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
     [SerializeField]
     private Image grayOutPanel;
 
+    private bool assigningKing = false;
+
     #region Startup
     [TargetRpc]
     public void TargetRpcInitForDraft(NetworkConnectionToClient target, int classID, bool itsYourTurn)
@@ -53,7 +55,7 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderForClass(classData);
         this.statsTable.RenderForBaseStats(classData.stats, asKingCandidate);
-
+        this.assigningKing = asKingCandidate;
 
         if (asKingCandidate)
         {
@@ -71,7 +73,7 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
     #region Events
     //handler for event
     public void OnCharacterDrafted(int playerID, int classID){
-        if (this.holdsClassID != classID)
+        if (this.holdsClassID != classID || this.assigningKing)
             return;
 
         this.SetButtonActiveState(false);
