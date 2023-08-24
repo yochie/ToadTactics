@@ -120,30 +120,34 @@ public static class MapPathfinder
         return visited;
     }
 
-    public static HashSet<Hex> RangeWithObstaclesAndMoveCost(Hex start, int distance, Dictionary<Vector2Int, Hex> hexGrid)
+    public static HashSet<Hex> RangeWithObstaclesAndMoveCost(Hex start, int maxDistance, Dictionary<Vector2Int, Hex> hexGrid)
     {
-        HashSet<Hex> visited = new();
-        visited.Add(start);
+        HashSet<Hex> inRange = new();
+        inRange.Add(start);
         List<List<Hex>> fringes = new();
         fringes.Add(new List<Hex> { start });
         Dictionary<Hex, int> costsSoFar = new();
         costsSoFar[start] = 0;
 
-        for (int k = 1; k <= distance; k++)
+        for (int distance = 1; distance <= maxDistance; distance++)
         {
             fringes.Add(new List<Hex>());
-            foreach (Hex h in fringes[k - 1])
+            foreach (Hex fringeHex in fringes[distance - 1])
             {
-                foreach (Hex neighbour in MapPathfinder.HexUnobstructedNeighbours(h, hexGrid))
+                foreach (Hex neighbour in MapPathfinder.HexUnobstructedNeighbours(fringeHex, hexGrid))
                 {
-                    int costToNeighbour = costsSoFar[h] + neighbour.MoveCost();
+                    int costToNeighbour = costsSoFar[fringeHex] + neighbour.MoveCost();
                     if (!costsSoFar.ContainsKey(neighbour) || costsSoFar[neighbour] > costToNeighbour)
                     {
-                        if (costToNeighbour <= distance)
+                        if (costToNeighbour <= maxDistance)
                         {
                             costsSoFar[neighbour] = costToNeighbour;
-                            visited.Add(neighbour);
-                            fringes[k].Add(neighbour);
+                            fringes[distance].Add(neighbour);
+                            //prevents finishing moves on corpses
+                            if (neighbour.HoldsACorpse() && costToNeighbour == maxDistance)
+                                continue;
+                            else
+                                inRange.Add(neighbour);
                         }
                     }
 
@@ -151,7 +155,7 @@ public static class MapPathfinder
             }
         }
 
-        return visited;
+        return inRange;
     }
 
     //Returns null if destination is not in path
