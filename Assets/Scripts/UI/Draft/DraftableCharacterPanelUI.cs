@@ -121,7 +121,4 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
         else
             this.draftButton.SetActive(state);
     }
-
-
-
 }

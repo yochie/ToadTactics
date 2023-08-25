@@ -25,6 +25,9 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
     [SerializeField]
     private GameObject draftButton;
 
+    [SerializeField]
+    private Image grayOutPanel;
+
     #region Startup
 
     public void Awake()
@@ -76,6 +79,7 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
         if (this.holdsEquipmentID != equipmentID)
             return;
 
+        this.grayOutPanel.gameObject.SetActive(true);
         this.SetButtonActiveState(false);
     }
 
