@@ -23,10 +23,10 @@ public class EquipmentTable : MonoBehaviour
     public void AddEquipment(string equipmentID)
     {
         GameObject equipmentIConContainer = Instantiate(this.blankIconContainerPrefab, this.transform);
-        Image equipmentIcon = equipmentIConContainer.GetComponentInChildren<Image>();
         this.displayedIcons.Add(equipmentIConContainer);
-        equipmentIcon.sprite = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).Sprite;
-        equipmentIcon.color = Color.black;
+        EquipmentIcon equipmentIcon = equipmentIConContainer.GetComponent<EquipmentIcon>();
+
+        equipmentIcon.Init(equipmentID);
     }
 
     private void Clear()

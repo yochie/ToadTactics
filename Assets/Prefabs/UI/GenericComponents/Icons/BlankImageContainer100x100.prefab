@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4582723330281357591}
   - component: {fileID: 1427980099914766793}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: BlankImageContainer100x100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5861711105021143228, guid: f34ca6e6dcf35374f8c304f615c7debd, type: 3}
       propertyPath: m_Name
-      value: BlankImageflexible (6)
+      value: BlankImageflexible
       objectReference: {fileID: 0}
     - target: {fileID: 6535789589800771574, guid: f34ca6e6dcf35374f8c304f615c7debd, type: 3}
       propertyPath: m_Pivot.x

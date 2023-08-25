@@ -115,4 +115,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19da8abd20da8214c9959b55b99da526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blankIconContainerPrefab: {fileID: 4091910470282247900, guid: 1c50135d2d975ce4787795c246f6d1bd, type: 3}
+  blankIconContainerPrefab: {fileID: 5679622698131740926, guid: 78564837010f6874f9c01a26e008cb03, type: 3}
