@@ -23,23 +23,11 @@ public class StatsTable : MonoBehaviour
     {
         Dictionary<string, string> toPrint = new();
 
-        string formattedDamageType;
-        switch (stats.damageType)
-        {
-            case DamageType.physical:
-                formattedDamageType = "phys";
-                break;
-            case DamageType.healing:
-                formattedDamageType = "heal";
-                break;
-            default:
-                formattedDamageType = stats.damageType.ToString();
-                break;
-        }
+        string damageOneLiner = Utility.DamageStatsToString(stats.damage, stats.damageIterations, stats.damageType);
 
         toPrint.Add("Health", String.Format("{0}", stats.maxHealth));
         toPrint.Add("Armor", String.Format("{0}", stats.armor));
-        toPrint.Add("Damage", String.Format("{0} x {1} ({2})", stats.damage, stats.damageIterations, formattedDamageType));
+        toPrint.Add("Damage", damageOneLiner);
         toPrint.Add("Crit", String.Format("{0}% (+{1}%)", stats.critChance * 100, stats.critMultiplier * 100));
         toPrint.Add("Range", String.Format("{0}", stats.range));
         toPrint.Add("Moves", String.Format("{0}", stats.moveSpeed));

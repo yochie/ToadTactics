@@ -46,11 +46,11 @@ public class CharacterSheetUI : MonoBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderForClass(classData);
+        this.abilitiesTable.RenderForClassDefaults(classData);
         this.statsTable.RenderForBaseStats(classData.stats, isAKing);
     }
 
-    public void FillWithActiveCharacterData(int classID, CharacterStats currentStats, bool isAKing, List<string> equipmentIDs)
+    public void FillWithActiveCharacterData(int classID, CharacterStats currentStats, bool isAKing, List<string> equipmentIDs, PlayerCharacter character)
     {
         this.holdsClassID = classID;
 
@@ -60,7 +60,7 @@ public class CharacterSheetUI : MonoBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderForClass(classData);
+        this.abilitiesTable.RenderForLiveCharacter(character);
         this.statsTable.RenderForCurrentStats(currentStats, isAKing);
         GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
         equipmentRow.SetActive(equipmentIDs.Count > 0);
@@ -84,7 +84,7 @@ public class CharacterSheetUI : MonoBehaviour
         else
         {
             PlayerCharacter activeCharacter = GameController.Singleton.PlayerCharactersByID[classID];
-            this.FillWithActiveCharacterData(classID, activeCharacter.CurrentStats, GameController.Singleton.IsAKing(classID), activeCharacter.EquipmentIDsCopy);
+            this.FillWithActiveCharacterData(classID, activeCharacter.CurrentStats, GameController.Singleton.IsAKing(classID), activeCharacter.EquipmentIDsCopy, activeCharacter);
         }
         this.content.SetActive(true);
     }

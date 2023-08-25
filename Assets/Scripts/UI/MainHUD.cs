@@ -28,8 +28,6 @@ public class MainHUD : NetworkBehaviour
 
     [SerializeField]
     private GameObject abilityCooldownIndicator;
-    [SerializeField]
-    private TextMeshProUGUI abilityCooldownIndicatorCount;
 
     [SerializeField]
     private GameObject actionButtonsGrid;
@@ -57,7 +55,7 @@ public class MainHUD : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight, string abilityName, int abilityCooldown, bool hasActiveAbility)
+    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight, string abilityName, int abilityCooldown, int usesRemaining, bool hasActiveAbility)
     {
         this.SetActiveGameplayButtons(true);
         this.ToggleActiveButtons(activeButtons, toHighlight);
@@ -67,27 +65,23 @@ public class MainHUD : NetworkBehaviour
         } else
         {
             this.abilityButtonText.text = String.Format("{0}", abilityName);
-            this.UpdateAbilityCooldownIndicator(abilityCooldown);
+            this.UpdateAbilityCooldownIndicator(abilityCooldown, usesRemaining);
         }
     }
 
     [TargetRpc]
-    public void TargetRpcUpdateAbilityCooldownIndicator(NetworkConnectionToClient target, int abilityCooldown)
+    public void TargetRpcUpdateAbilityCooldownIndicator(NetworkConnectionToClient target, int abilityCooldown, int usesRemaining)
     {
-        this.UpdateAbilityCooldownIndicator(abilityCooldown);
+        this.UpdateAbilityCooldownIndicator(abilityCooldown, usesRemaining);
     }
 
-    private void UpdateAbilityCooldownIndicator(int abilityCooldown)
+    private void UpdateAbilityCooldownIndicator(int abilityCooldown, int usesRemaining)
     {
-        if (abilityCooldown > 0)
-        {
-            this.abilityCooldownIndicator.SetActive(true);
-            this.abilityCooldownIndicatorCount.gameObject.SetActive(true);
-            this.abilityCooldownIndicatorCount.text = String.Format("{0}", abilityCooldown);
-        }
-        else
-            this.abilityCooldownIndicator.SetActive(false);
-
+        string abilityCooldownString = abilityCooldown > 0 ? abilityCooldown.ToString() : "";
+        this.abilityCooldownIndicator.GetComponent<CooldownIndicator>().SetCooldown(abilityCooldownString);
+        
+        string abilityUsesString = usesRemaining >= 0 ? string.Format("{0} uses left", usesRemaining) : "";
+        this.abilityCooldownIndicator.GetComponent<CooldownIndicator>().SetUsesCount(abilityUsesString);
     }
 
     [TargetRpc]

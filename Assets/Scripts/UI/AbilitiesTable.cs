@@ -8,26 +8,39 @@ public class AbilitiesTable : MonoBehaviour
 {
 
     [SerializeField]
-    private GameObject abilityNameLabelPrefab;
+    private GameObject nameLabelPrefab;
 
     [SerializeField]
-    private GameObject abilityDescriptionLabelPrefab;
+    private GameObject descriptionLabelPrefab;
 
     [SerializeField]
-    private GameObject abilitiesNameTable;
+    private GameObject cooldownIndicatorPrefab;
 
     [SerializeField]
-    private GameObject abilitiesDescriptionTable;
+    private GameObject nameColumn;
 
-    public void RenderForClass(CharacterClass charClass)
+    [SerializeField]
+    private GameObject descriptionColumn;
+
+    [SerializeField] 
+    private GameObject cooldownsColumn;
+
+
+    public void RenderForClassDefaults(CharacterClass charClass)
     {
-        var toPrint = this.GetPrintableAbilityDictionary(charClass);
-        this.RenderFromDictionary(toPrint);
+        var toPrint = this.GetAbilityPrintData(charClass);
+        this.RenderFromPrintData(toPrint);
     }
 
-    private Dictionary<string, string> GetPrintableAbilityDictionary(CharacterClass charClass)
+    public void RenderForLiveCharacter(PlayerCharacter character)
     {
-        Dictionary<string, string> toPrint = new();
+        var toPrint = this.GetAbilityPrintData(character.charClass, live: true, liveCharacter: character);
+        this.RenderFromPrintData(toPrint, live: true);
+    }
+
+    private List<AbilityPrintData> GetAbilityPrintData(CharacterClass charClass, bool live = false, PlayerCharacter liveCharacter = null)
+    {
+        List<AbilityPrintData> toPrint = new();
 
         //return empty list if no abilities
         if (charClass.abilities == null)
@@ -35,35 +48,92 @@ public class AbilitiesTable : MonoBehaviour
 
         foreach (CharacterAbilityStats ability in charClass.abilities)
         {
-            toPrint.Add(ability.interfaceName, ability.description);
+
+            string name = ability.interfaceName;
+            string description = ability.description;
+            string damageOneLiner = Utility.DamageStatsToString(ability.damage, ability.damageIterations, ability.damageType);
+            string range = ability.range == -1 ? "" : ability.range.ToString();
+            string aoe = ability.aoe == -1 ? "" : ability.aoe.ToString();
+            string usesPerRound = ability.usesPerRound == -1 ? "" : ability.usesPerRound.ToString();
+            string cooldownDuration = ability.cooldownDuration == -1 ? "" : ability.cooldownDuration.ToString();
+            string passiveOrActive = ability.isPassive ? "Passive" : "Active";
+            string currentCooldownString = "";
+            string remainingUsesString = "";
+
+            if (live)
+            {
+                if (ability.isPassive)
+                {
+                    currentCooldownString = "";
+                    remainingUsesString = "";
+
+                }
+                else
+                {
+                    if (ability.cappedPerRound)
+                    {
+                        int remainingUses = liveCharacter.GetAbilityUsesRemaining(ability.stringID);
+                        remainingUsesString = string.Format("{0} uses left", remainingUses);
+                    }
+                    if (ability.cappedByCooldown)
+                    {
+                        int currentCooldown = liveCharacter.GetAbilityCooldown(ability.stringID);
+                        currentCooldownString = currentCooldown.ToString();
+                    }
+                }
+            }
+
+            toPrint.Add(new AbilityPrintData(name: name,
+                                             description: description,
+                                             passiveOrActive: passiveOrActive,
+                                             damageOneLiner: damageOneLiner,
+                                             range: range,
+                                             aoe: aoe,
+                                             usesPerRound: usesPerRound,
+                                             cooldownDuration: cooldownDuration,
+                                             currentCooldown: currentCooldownString,                                             
+                                             currentRemainingUses: remainingUsesString,
+                                             damageColor: Color.black));
         }
 
         return toPrint;
     }
 
-    private void RenderFromDictionary(Dictionary<string, string> dictionary)
+    private void RenderFromPrintData(List<AbilityPrintData> printData, bool live = false)
     {
         this.Clear();
-        foreach(KeyValuePair<string, string> ability in dictionary)
+        foreach(AbilityPrintData abilityPrintData in printData)
         {
-            GameObject nameLabelObject = Instantiate(this.abilityNameLabelPrefab, this.abilitiesNameTable.gameObject.transform);
+            GameObject nameLabelObject = Instantiate(this.nameLabelPrefab, this.nameColumn.transform);
             TextMeshProUGUI nameLabel = nameLabelObject.GetComponent<TextMeshProUGUI>();
-            nameLabel.text = ability.Key;
+            nameLabel.text = abilityPrintData.name;
 
-            GameObject valueLabelObject = Instantiate(this.abilityDescriptionLabelPrefab, this.abilitiesDescriptionTable.gameObject.transform);
+            GameObject valueLabelObject = Instantiate(this.descriptionLabelPrefab, this.descriptionColumn.transform);
             TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
-            valueLabel.text = ability.Value;
+            valueLabel.text = abilityPrintData.description;
+
+            GameObject cooldownIndicatorObject = Instantiate(this.cooldownIndicatorPrefab, this.cooldownsColumn.transform);
+            CooldownIndicator cooldownIndicator = cooldownIndicatorObject.GetComponent<CooldownIndicator>();
+            cooldownIndicator.SetCooldown(abilityPrintData.currentCooldown);
+            cooldownIndicator.SetUsesCount(abilityPrintData.currentRemainingUses);
         }
+
+        this.cooldownsColumn.SetActive(live);
     }
 
     private void Clear()
     {
-        foreach (TextMeshProUGUI child in this.abilitiesNameTable.GetComponentsInChildren<TextMeshProUGUI>())
+        foreach (TextMeshProUGUI child in this.nameColumn.GetComponentsInChildren<TextMeshProUGUI>())
         {
             Destroy(child.gameObject);
         }
 
-        foreach (TextMeshProUGUI child in this.abilitiesDescriptionTable.GetComponentsInChildren<TextMeshProUGUI>())
+        foreach (TextMeshProUGUI child in this.descriptionColumn.GetComponentsInChildren<TextMeshProUGUI>())
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (CooldownIndicator child in this.cooldownsColumn.GetComponentsInChildren<CooldownIndicator>())
         {
             Destroy(child.gameObject);
         }

@@ -26,50 +26,30 @@ public readonly struct CharacterAbilityStats
     public readonly bool penetratingDamage;
     public readonly bool piercesLOS;
 
-    //Todo: remove once all characters has abilities defined
-    public CharacterAbilityStats(bool fake)
-    {
-        this.stringID = "fake";
-        this.interfaceName = "";
-        this.description = "";
-        this.damage = 0;
-        this.range = 0;
-        this.aoe = 0;
-        this.buffTurnDuration = 0;
-        this.requiresLOS = false; ;
-        this.damageIterations = 0; ;
-        this.damageType = DamageType.none;
-        this.allowedAbilityTargets = new();
-        this.canCrit = false;
-        this.critChance = -1f;
-        this.critMultiplier = -1f;
-        this.usesPerRound = -1;
-        this.cooldownDuration = 0;
-        this.isPassive = false;
-        this.penetratingDamage = false;
-        this.piercesLOS = false;
-
-    }
+    public readonly bool cappedPerRound;
+    public readonly bool cappedByCooldown;
 
     public CharacterAbilityStats(string stringID,
                             string interfaceName,
                             string description,
-                            int damage = 0,
-                            int range = 0,
-                            int aoe = 0,
-                            int turnDuration = 0,
+                            int damage = -1,
+                            int range = -1,
+                            int aoe = -1,
+                            int buffTurnDuration = -1,
                             bool requiresLOS = true,
-                            int damageIterations = 1,
-                            DamageType damageType = DamageType.physical,
+                            int damageIterations = -1,
+                            DamageType damageType = DamageType.none,
                             List<TargetType> allowedAbilityTargets = null,
                             bool canCrit = false,
                             float critChance = -1f,
                             float critMultiplier = -1f,
                             int usesPerRound = -1,
-                            int cooldownDuration = 0,
+                            int cooldownDuration = -1,
                             bool isPassive = false,
                             bool penetratingDamage = false,
-                            bool piercesLOS = false
+                            bool piercesLOS = false,
+                            bool cappedPerRound = false,
+                            bool cappedByCooldown = false
                             )
     {
         this.stringID = stringID;
@@ -78,14 +58,14 @@ public readonly struct CharacterAbilityStats
         this.damage = damage;
         this.range = range;
         this.aoe = aoe;
-        this.buffTurnDuration = turnDuration;        
+        this.buffTurnDuration = buffTurnDuration;        
         this.requiresLOS = requiresLOS;
         this.damageIterations = damageIterations;
         this.damageType = damageType;
 
         if (allowedAbilityTargets == null)
         {
-            this.allowedAbilityTargets = new List<TargetType> { TargetType.ennemy_chars};
+            this.allowedAbilityTargets = new();
         }
         else
         {
@@ -100,5 +80,7 @@ public readonly struct CharacterAbilityStats
         this.isPassive = isPassive;
         this.penetratingDamage = penetratingDamage;
         this.piercesLOS = piercesLOS;
+        this.cappedPerRound = cappedPerRound;
+        this.cappedByCooldown = cappedByCooldown;
     }
 }

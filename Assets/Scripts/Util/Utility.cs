@@ -25,6 +25,29 @@ public static class Utility
         return false;
     }
 
+    internal static string DamageStatsToString(int damage, int damageIterations, DamageType damageType)
+    {
+        string formattedDamageType;
+        switch (damageType)
+        {
+            case DamageType.physical:
+                formattedDamageType = "phys";
+                break;
+            case DamageType.healing:
+                formattedDamageType = "heal";
+                break;
+            case DamageType.magic:
+                formattedDamageType = "magic";
+                break;
+            default:
+                formattedDamageType = damageType.ToString();
+                break;
+        }
+        return String.Format("{0} x {1} ({2})", damage, damageIterations, formattedDamageType);
+
+
+    }
+
     internal static Color SetHighlight(Color oldColor, bool state)
     {
         Color highlightOff = oldColor;

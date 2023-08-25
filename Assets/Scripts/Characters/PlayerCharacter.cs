@@ -119,8 +119,12 @@ public class PlayerCharacter : NetworkBehaviour
             //passive abilities are applied in phase init
             if (ability.isPassive)
                 continue;
-            this.abilityCooldowns.Add(ability.stringID, 0);
-            this.abilityUsesThisRound.Add(ability.stringID, 0);            
+
+            if(ability.cappedByCooldown)
+                this.abilityCooldowns.Add(ability.stringID, 0);
+
+            if(ability.cappedPerRound)
+                this.abilityUsesThisRound.Add(ability.stringID, 0);            
         }
             
         this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
@@ -320,8 +324,10 @@ public class PlayerCharacter : NetworkBehaviour
         foreach (CharacterAbilityStats ability in this.charClass.abilities)
         {
             string abilityID = ability.stringID;
-            this.abilityCooldowns[abilityID] = 0;
-            this.abilityUsesThisRound[abilityID] = 0;
+            if(ability.cappedByCooldown)
+                this.abilityCooldowns[abilityID] = 0;
+            if(ability.cappedPerRound)
+                this.abilityUsesThisRound[abilityID] = 0;
         }
     }
 
@@ -517,8 +523,8 @@ public class PlayerCharacter : NetworkBehaviour
     {
         CharacterAbilityStats ability = this.GetAbilityWithID(abilityID);
         
-        //-1 = infinite uses
-        if (ability.usesPerRound == -1)
+        //-1 means infinite uses
+        if (ability.usesPerRound == -1 || !ability.cappedPerRound)
             return false;
 
         if (this.abilityUsesThisRound[abilityID] >= ability.usesPerRound)
@@ -532,7 +538,7 @@ public class PlayerCharacter : NetworkBehaviour
         CharacterAbilityStats ability = this.GetAbilityWithID(abilityID);
 
         //0 = no cooldown, probably limited by uses per round instead
-        if (ability.cooldownDuration == 0)
+        if (ability.cooldownDuration == 0 || !ability.cappedByCooldown)
             return false;
 
         if (this.abilityCooldowns[abilityID] > 0)
@@ -549,7 +555,22 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     internal int GetAbilityCooldown(string abilityID)
     {
+        CharacterAbilityStats abilityStats = this.GetAbilityWithID(abilityID);
+        if (!abilityStats.cappedByCooldown)
+            return -1;
+
         return this.abilityCooldowns[abilityID];
+    }
+    
+    [Server]
+    internal int GetAbilityUsesRemaining(string abilityID)
+    {
+        CharacterAbilityStats abilityStats = this.GetAbilityWithID(abilityID);
+
+        if (abilityStats.usesPerRound == -1 || !abilityStats.cappedPerRound)
+            return -1;
+
+        return abilityStats.usesPerRound - this.abilityUsesThisRound[abilityID];
     }
 
     internal bool HasActiveAbility()

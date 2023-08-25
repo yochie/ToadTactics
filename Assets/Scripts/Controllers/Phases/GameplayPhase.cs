@@ -143,17 +143,17 @@ public class GameplayPhase : IGamePhase
         if (abilityStats.isPassive)
         {
             //passing in empty strings since RPC cannot have optional arguments
-            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, "", -1, hasActiveAbility:false);
+            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeButtons: activeControlModes, toHighlight: startingMode, abilityName: "", abilityCooldown: -1, usesRemaining: -1, hasActiveAbility:false);
         }
         else
         {
             string abilityName = abilityStats.interfaceName;
             string abilityID = currentCharacter.charClass.abilities[0].stringID;
             int abilityCooldown = currentCharacter.GetAbilityCooldown(abilityID);
+            int remainingUses = currentCharacter.GetAbilityUsesRemaining(abilityID);
 
-            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown, hasActiveAbility: true);
+            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown, remainingUses, hasActiveAbility: true);
         }
-
     }
 
     private IEnumerator CoroutineWaitForStartZoneClear() {

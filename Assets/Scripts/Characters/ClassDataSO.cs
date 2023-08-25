@@ -180,11 +180,13 @@ public class ClassDataSO : ScriptableObject
                     interfaceName: "Lance Throw",
                     description: "Throws a lance at an enemy in a 3 tile radius, dealing damage and stunning the target until next turn.",
                     damage: 20,
+                    damageIterations: 1,
+                    damageType: DamageType.physical,
                     range: 3,
-                    aoe: 0,
-                    turnDuration: 1,
+                    buffTurnDuration: 1,
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
-                    cooldownDuration: 3                    
+                    cooldownDuration: 3,
+                    cappedByCooldown: true
                 )
             }
         );
@@ -211,10 +213,13 @@ public class ClassDataSO : ScriptableObject
                     interfaceName: "Snipe",
                     description: "Targets an enemy with a shot that has infinite range that pierces all targets and destroys trees between the target and the Archer. The attack does not require LOS.",
                     damage: 30,
+                    damageIterations: 1,
+                    damageType: DamageType.physical,
                     range: Utility.MAX_DISTANCE_ON_MAP,
                     requiresLOS: false,
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle},
                     cooldownDuration: 3,
+                    cappedByCooldown: true,
                     piercesLOS: true
                 ) 
             }
@@ -243,9 +248,11 @@ public class ClassDataSO : ScriptableObject
                     description: "Targets an enemy and deals the Rogue's base damage (once) with a guaranteed critical strike that also ignore armor.",
                     damage: 15,
                     damageIterations: 1,
+                    damageType: DamageType.physical,
                     range: 1,                  
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
                     cooldownDuration: 3,
+                    cappedByCooldown: true,
                     canCrit: true,
                     critChance: 1f,
                     critMultiplier: -1f,
@@ -275,9 +282,11 @@ public class ClassDataSO : ScriptableObject
                     stringID: "WarriorRoot",
                     interfaceName: "Intimidating Shout",
                     description: "Shouts and scares close enemies, making them cower in fear for a turn.",
-                    turnDuration: 1,
+                    buffTurnDuration: 1,
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     aoe : 1,
+                    range: 0,
+                    cappedByCooldown: true,
                     cooldownDuration: 5
                 )
             }
@@ -304,9 +313,10 @@ public class ClassDataSO : ScriptableObject
                     stringID: "PaladinTeamBuff",
                     interfaceName: "Blessing of Kings",
                     description: "Grants a bonus to health, armor and movement to all allies.",
-                    turnDuration: 2,
+                    buffTurnDuration: 2,
                     allowedAbilityTargets: new List<TargetType>(){TargetType.self },
-                    cooldownDuration: 4
+                    cooldownDuration: 4, 
+                    cappedByCooldown: true
                 )
             }
             );
@@ -335,10 +345,12 @@ public class ClassDataSO : ScriptableObject
                     description: "Targets a tile and fissures the ground causing lava to erupt onto the battlefield.",
                     allowedAbilityTargets: Utility.GetAllEnumValues<TargetType>(),
                     cooldownDuration: 3,
+                    cappedByCooldown: true,
                     range : 3,
                     aoe: 1,
                     requiresLOS: false,
                     damage: HazardDataSO.Singleton.GetHazardDamage(HazardType.fire),
+                    damageIterations: 1,
                     damageType: HazardDataSO.Singleton.GetHazardDamageType(HazardType.fire)
                 )
             }
@@ -369,9 +381,11 @@ public class ClassDataSO : ScriptableObject
                     description: "Targets an enemy and inflitcts a curse that deals stackable damage over time.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.ennemy_chars },
                     cooldownDuration: 1,
+                    cappedByCooldown: true,
                     range: Utility.MAX_DISTANCE_ON_MAP,
                     requiresLOS: false,
                     damage: 10,
+                    damageIterations: 1,
                     damageType: DamageType.magic
                 )
             }
@@ -401,9 +415,11 @@ public class ClassDataSO : ScriptableObject
                     description: "Target any tile and throw exploding fireball that deals magic damage in area of effect.",                    
                     allowedAbilityTargets: Utility.GetAllEnumValues<TargetType>(),
                     cooldownDuration: 2,
+                    cappedByCooldown: true,
                     range: 3,
                     aoe: 1,
                     damage: 30,
+                    damageIterations: 1,
                     damageType: DamageType.magic
                 ) 
             }
@@ -435,6 +451,7 @@ public class ClassDataSO : ScriptableObject
                     description: "Resurrect ally with half of maximum health.",                    
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.friendly_corpse },
                     usesPerRound: 1,
+                    cappedPerRound: true,
                     requiresLOS: false,
                     range: Utility.MAX_DISTANCE_ON_MAP
                 )
