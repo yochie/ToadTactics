@@ -4118,10 +4118,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: LogWindow
       objectReference: {fileID: 0}
-    - target: {fileID: 2671600606778354701, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2947799056645007587, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -4206,48 +4202,12 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1392558183
       objectReference: {fileID: 0}
-    - target: {fileID: 5159811238670744690, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5159811238670744690, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6496299268733210123, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_Padding.m_Top
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6496299268733210123, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_Padding.m_Left
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6496299268733210123, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_Padding.m_Right
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6496299268733210123, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_Padding.m_Bottom
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7627946210132959423, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7627946210132959423, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8223013714437359290, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8223013714437359290, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8223013714437359290, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
-      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
