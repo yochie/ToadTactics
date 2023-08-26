@@ -34,6 +34,9 @@ public class CharacterSheetUI : MonoBehaviour
     [SerializeField]
     private GameObject closeButton;
 
+    [SerializeField]
+    private GameEventSO characterSheetClosedEvent;
+
     #region Startup
 
     public void FillWithClassData(int classID, bool isAKing)
@@ -75,6 +78,7 @@ public class CharacterSheetUI : MonoBehaviour
     public void CloseSheet()
     {
         this.content.SetActive(false);
+        this.characterSheetClosedEvent.Raise();
     }
 
     public void OnCharacterSheetDisplayed(int classID)

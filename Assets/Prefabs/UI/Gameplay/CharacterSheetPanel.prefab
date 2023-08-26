@@ -423,6 +423,7 @@ MonoBehaviour:
   statsTable: {fileID: 4231460053449590520}
   equipmentTable: {fileID: 99942708880899050}
   closeButton: {fileID: 6804896099933112046}
+  characterSheetClosedEvent: {fileID: 11400000, guid: be2b8f8535603724884e28e795b5aae3, type: 2}
 --- !u!114 &5336809617613088041
 MonoBehaviour:
   m_ObjectHideFlags: 0

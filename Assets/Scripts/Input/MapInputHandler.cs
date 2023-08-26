@@ -14,7 +14,6 @@ public class MapInputHandler : NetworkBehaviour
 
     public static MapInputHandler Singleton { get; private set; }
 
-    //to be used eventually...
     private PlayerCharacter playingCharacter;
     public Hex SelectedHex { get; set; }
     public Hex HoveredHex { get; set; }
@@ -27,6 +26,8 @@ public class MapInputHandler : NetworkBehaviour
 
     private CharacterAbilityStats currentActivatedAbilityStats;
     private EquipmentSO currentActivedEquipmentStats;
+
+    private bool allowInput = true;
     
     private void Awake()
     {
@@ -38,6 +39,7 @@ public class MapInputHandler : NetworkBehaviour
         this.SelectedHex = null;
         this.HoveredHex = null;      
         this.CurrentControlMode = ControlMode.none;
+        this.allowInput = true;
     }
 
     public void SetPlayingCharacter(PlayerCharacter character)
@@ -47,6 +49,9 @@ public class MapInputHandler : NetworkBehaviour
 
     public void ClickHex(Hex clickedHex)
     {
+        if (!this.allowInput)
+            return;
+
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -123,6 +128,9 @@ public class MapInputHandler : NetworkBehaviour
 
     public void HoverHex(Hex hoveredHex)
     {
+        if (!this.allowInput)
+            return;
+
         this.HoveredHex = hoveredHex;
 
         switch (this.CurrentControlMode)
@@ -277,6 +285,16 @@ public class MapInputHandler : NetworkBehaviour
     public void RpcSetControlModeOnAllClients(ControlMode mode)
     {
         this.SetControlMode(mode);
+    }
+
+    public void OnCharacterSheetDisplayed(int classID)
+    {
+        this.allowInput = false;
+    }
+
+    public void OnCharacterSheetClosed()
+    {
+        this.allowInput = true;
     }
 
 }
