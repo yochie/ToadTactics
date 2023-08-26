@@ -3719,7 +3719,7 @@ MonoBehaviour:
   isFlatTop: 1
   xSize: 7
   ySize: 7
-  obstacleSpawnPercent: 10
+  obstacleSpawnPercent: 20
   outline: {fileID: 1411125705}
   treasureGenerator: {fileID: 916223306}
   startingZones:
