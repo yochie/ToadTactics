@@ -4202,6 +4202,10 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1392558183
       objectReference: {fileID: 0}
+    - target: {fileID: 6552523708599895367, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
+      propertyPath: scrollRect
+      value: 
+      objectReference: {fileID: 475918089392122229}
     - target: {fileID: 7627946210132959423, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -4215,6 +4219,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
+--- !u!114 &475918089392122229 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6884473841822564763, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
+  m_PrefabInstance: {fileID: 475918089392122228}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2771509636760378648
 PrefabInstance:
   m_ObjectHideFlags: 0
