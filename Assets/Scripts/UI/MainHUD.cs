@@ -77,10 +77,19 @@ public class MainHUD : NetworkBehaviour
 
     private void UpdateAbilityCooldownIndicator(int abilityCooldown, int usesRemaining)
     {
+        if (abilityCooldown <= 0 && usesRemaining < 0)
+        {
+            this.abilityCooldownIndicator.SetActive(false);
+            return;
+        } else
+        {
+            this.abilityCooldownIndicator.SetActive(true);
+        }
+
         string abilityCooldownString = abilityCooldown > 0 ? abilityCooldown.ToString() : "";
         this.abilityCooldownIndicator.GetComponent<CooldownIndicator>().SetCooldown(abilityCooldownString);
         
-        string abilityUsesString = usesRemaining >= 0 ? string.Format("{0} uses left", usesRemaining) : "";
+        string abilityUsesString = usesRemaining >= 0 ? string.Format("{0} left", usesRemaining) : "";
         this.abilityCooldownIndicator.GetComponent<CooldownIndicator>().SetUsesCount(abilityUsesString);
     }
 

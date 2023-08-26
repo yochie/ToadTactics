@@ -234,9 +234,17 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     public void UsedAbility(string abilityID)
     {
-        this.abilityUsesThisRound[abilityID]++;
-        //adding one to defined cooldown duration because we tick it at end of every turn, including turn it is set
-        this.abilityCooldowns[abilityID] = this.GetAbilityWithID(abilityID).cooldownDuration + 1;
+        CharacterAbilityStats ability = this.GetAbilityWithID(abilityID);
+        if (ability.cappedByCooldown)
+        {
+            this.abilityCooldowns[abilityID] = this.GetAbilityWithID(abilityID).cooldownDuration + 1;
+
+        }
+
+        if (ability.cappedPerRound)
+        {
+            this.abilityUsesThisRound[abilityID]++;
+        }
 
         if (!this.HasAvailableAbilities())
         {

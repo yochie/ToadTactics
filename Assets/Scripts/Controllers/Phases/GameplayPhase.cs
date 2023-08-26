@@ -63,24 +63,22 @@ public class GameplayPhase : IGamePhase
             throw new System.Exception("Error : couldn't find playing character in turn order");
         }
         PlayerCharacter lastTurnCharacter = this.Controller.PlayerCharactersByID[lastTurnCharacterID];
+
         BuffManager.Singleton.TickBuffsForTurn(lastTurnCharacterID);
-        lastTurnCharacter.TickCooldownsForTurn();
-        HazardType standingOnHazardType = Map.Singleton.CharacterStandingOnHazard(lastTurnCharacterID);
-        if (standingOnHazardType != HazardType.none)
-        {
-            int damageTaken = HazardDataSO.Singleton.GetHazardDamage(standingOnHazardType, standingDamage: true);
-            DamageType damageTypeTaken = HazardDataSO.Singleton.GetHazardDamageType(standingOnHazardType);
-            lastTurnCharacter.TakeDamage(damageTaken,damageTypeTaken);
-            if(damageTaken > 0)
-            {
-                string message = string.Format("{0} takes {1} {2} damage at end of turn for standing on {3} hazard",
-                    lastTurnCharacter.charClass.name,
-                    damageTaken,
-                    damageTypeTaken,
-                    standingOnHazardType);
-                MasterLogger.Singleton.RpcLogMessage(message);
-            }
+
+        //need to check for king death after ticking buffs
+        //need to check ALL kings since losing a buff might also kill you
+        int deadKingOwnerID = this.Controller.AKingIsDead();
+        if (deadKingOwnerID >= 0)
+        {           
+            Debug.Log("The king is dead. Long live the king.");
+            GameController.Singleton.EndRound(looserID: deadKingOwnerID);
+            return;
         }
+
+        lastTurnCharacter.TickCooldownsForTurn();
+
+        this.ApplyHazardDamageForTurnEnd(lastTurnCharacter);
 
         if(lastTurnCharacter.IsDead && lastTurnCharacter.IsKing)
         {
@@ -91,6 +89,29 @@ public class GameplayPhase : IGamePhase
 
         //update life because it might have been changed by buffs of standing in hazards
         lastTurnCharacter.RpcOnCharacterLifeChanged(lastTurnCharacter.CurrentLife, lastTurnCharacter.CurrentStats.maxHealth);
+    }
+
+    private void ApplyHazardDamageForTurnEnd(PlayerCharacter lastTurnCharacter)
+    {
+        if (lastTurnCharacter.IsDead)
+            return;
+
+        HazardType standingOnHazardType = Map.Singleton.CharacterStandingOnHazard(lastTurnCharacter.CharClassID);
+        if (standingOnHazardType != HazardType.none)
+        {
+            int damageTaken = HazardDataSO.Singleton.GetHazardDamage(standingOnHazardType, standingDamage: true);
+            DamageType damageTypeTaken = HazardDataSO.Singleton.GetHazardDamageType(standingOnHazardType);
+            lastTurnCharacter.TakeDamage(damageTaken, damageTypeTaken);
+            if (damageTaken > 0)
+            {
+                string message = string.Format("{0} takes {1} {2} damage at end of turn for standing on {3} hazard",
+                    lastTurnCharacter.charClass.name,
+                    damageTaken,
+                    damageTypeTaken,
+                    standingOnHazardType);
+                MasterLogger.Singleton.RpcLogMessage(message);
+            }
+        }
     }
 
     private void StartOfTurn()

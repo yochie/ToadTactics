@@ -314,9 +314,10 @@ public class ClassDataSO : ScriptableObject
                     interfaceName: "Blessing of Kings",
                     description: "Grants a bonus to health, armor and movement to all allies.",
                     buffTurnDuration: 2,
-                    allowedAbilityTargets: new List<TargetType>(){TargetType.self },
+                    allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     cooldownDuration: 4, 
-                    cappedByCooldown: true
+                    cappedByCooldown: true,
+                    range:0
                 )
             }
             );

@@ -97,7 +97,7 @@ internal class BuffManager : NetworkBehaviour
 
             foreach (IBuffEffect buff in character.affectingBuffs.ToArray())
             {
-                if (buff.NeedsToBeReAppliedEachTurn)
+                if (buff.NeedsToBeReAppliedEachTurn && !character.IsDead)
                 {
                     buff.ApplyEffect(new List<int> { character.CharClassID }, isReapplication: true);
                     string message = string.Format("Ticking {0} {1} on {2}", buff.UIName, buff.IsPositive ? "buff" : "debuff", character.charClass.name);

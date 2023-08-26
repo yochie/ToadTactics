@@ -32,7 +32,7 @@ public class DefaultMoveAction : IMoveAction
         Hex diedOnHex = null;
         foreach(Hex nextHex in this.movePath)
         {
-            ActorCharacter.UsedMoves(1);
+            ActorCharacter.UsedMoves(nextHex.MoveCost());
             Map.Singleton.MoveCharacter(this.ActorCharacter.CharClassID, previousHex, nextHex);
 
             if (nextHex.holdsTreasure)

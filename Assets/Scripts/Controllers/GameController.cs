@@ -809,5 +809,17 @@ public class GameController : NetworkBehaviour
         return ownedCharacters;
     }
 
+    //returns owner ID
+    //returns -1 if none
+    internal int AKingIsDead()
+    {
+        foreach (PlayerCharacter character in this.playerCharactersByID.Values)
+        {
+            if (character.IsDead && character.IsKing)
+                return character.OwnerID;
+        }
+        return -1;
+    }
+
     #endregion
 }

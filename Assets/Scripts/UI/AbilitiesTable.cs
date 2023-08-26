@@ -73,7 +73,7 @@ public class AbilitiesTable : MonoBehaviour
                     if (ability.cappedPerRound)
                     {
                         int remainingUses = liveCharacter.GetAbilityUsesRemaining(ability.stringID);
-                        remainingUsesString = string.Format("{0} uses left", remainingUses);
+                        remainingUsesString = string.Format("{0} left", remainingUses);
                     }
                     if (ability.cappedByCooldown)
                     {
