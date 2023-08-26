@@ -68,11 +68,13 @@ public class PlayerCharacter : NetworkBehaviour
     private bool canTakeTurns;
     public bool CanTakeTurns { get => this.canTakeTurns; }
 
+    private readonly SyncDictionary<string, int> abilityCooldowns = new();
+
+    private readonly SyncDictionary<string, int> abilityUsesThisRound = new();
     #endregion
 
     #region Server only vars
-    private readonly Dictionary<string, int> abilityCooldowns = new();
-    private readonly Dictionary<string, int> abilityUsesThisRound = new();
+
     public List<IBuffEffect> appliedBuffs;
     public List<IBuffEffect> affectingBuffs;
     #endregion
@@ -124,7 +126,7 @@ public class PlayerCharacter : NetworkBehaviour
                 this.abilityCooldowns.Add(ability.stringID, 0);
 
             if(ability.cappedPerRound)
-                this.abilityUsesThisRound.Add(ability.stringID, 0);            
+                this.abilityUsesThisRound.Add(ability.stringID, 0);
         }
             
         this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
@@ -404,7 +406,7 @@ public class PlayerCharacter : NetworkBehaviour
         foreach(KeyValuePair<string, int> cooldown in this.abilityCooldowns.ToList())
         {
             if(cooldown.Value > 0)
-                abilityCooldowns[cooldown.Key]--;
+                this.abilityCooldowns[cooldown.Key]--;
         }
     }
 
@@ -560,7 +562,6 @@ public class PlayerCharacter : NetworkBehaviour
         return this.charClass.abilities.Single(ability => ability.stringID == abilityID);
     }
 
-    [Server]
     internal int GetAbilityCooldown(string abilityID)
     {
         CharacterAbilityStats abilityStats = this.GetAbilityWithID(abilityID);
@@ -570,7 +571,6 @@ public class PlayerCharacter : NetworkBehaviour
         return this.abilityCooldowns[abilityID];
     }
     
-    [Server]
     internal int GetAbilityUsesRemaining(string abilityID)
     {
         CharacterAbilityStats abilityStats = this.GetAbilityWithID(abilityID);
