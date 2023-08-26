@@ -48,15 +48,6 @@ public static class Utility
         }
         return String.Format("{0} x {1} ({2})", damage, damageIterations, formattedDamageType);
 
-
-    }
-
-    internal static void DestroyObstacleAt(Hex targetHex)
-    {
-        GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(targetHex.coordinates)).First();
-        UnityEngine.Object.Destroy(attackedTree);
-        targetHex.ClearObstacle();
     }
 
     internal static Color SetAlpha(Color oldColor, float alpha)

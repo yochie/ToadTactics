@@ -30,9 +30,8 @@ public class DefaultAttackAction : IAttackAction
         if(this.TargetHex.HoldsAnObstacle() && this.DefenderCharacter == null)
         {
             //attacking obstacle
-            Utility.DestroyObstacleAt(this.TargetHex);
-
-            string message = string.Format("{0} destroyed tree", this.ActorCharacter.charClass.name);
+            Map.Singleton.obstacleManager.DestroyObstacleAtPosition(Map.Singleton.hexGrid, this.TargetHex.coordinates.OffsetCoordinatesAsVector());
+            string message = string.Format("{0} felled tree", this.ActorCharacter.charClass.name);
             logger.RpcLogMessage(message);
         }
         else 

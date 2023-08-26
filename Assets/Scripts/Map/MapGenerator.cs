@@ -127,16 +127,10 @@ public class MapGenerator : MonoBehaviour
                 Hex h = Map.GetHex(this.generatedHexes, x, y);
                 if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard == HazardType.none)
                 {
-                    if (UnityEngine.Random.Range(1, 100) <= this.obstacleSpawnPercent)
+                    if (UnityEngine.Random.Range(0, 100) < this.obstacleSpawnPercent)
                     {
-                        //Debug.Log("Spawning tree");
-                        GameObject tree = Instantiate(this.treePrefab, h.transform.position, Quaternion.identity);
-                        Obstacle treeObstacle = tree.GetComponent<Obstacle>();
-                        treeObstacle.hexPosition = h.coordinates;
-                        NetworkServer.Spawn(tree);
-                        h.SetObstacle(ObstacleType.tree);
+                        Map.Singleton.obstacleManager.SpawnObstacleOnMap(this.generatedHexes, h.coordinates.OffsetCoordinatesAsVector(), ObstacleType.tree);
                     }
-
                 }
             }
         }

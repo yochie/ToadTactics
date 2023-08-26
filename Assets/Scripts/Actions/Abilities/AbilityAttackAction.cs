@@ -33,11 +33,8 @@ public class AbilityAttackAction : IAttackAction, IAbilityAction
         if(this.TargetHex.HoldsAnObstacle() && this.DefenderCharacter == null)
         {
             //attacking obstacle
-            GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-            GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
-            Object.Destroy(attackedTree);
-            TargetHex.ClearObstacle();
-            string message = string.Format("{0} destroyed tree", this.ActorCharacter.charClass.name);
+            Map.Singleton.obstacleManager.DestroyObstacleAtPosition(Map.Singleton.hexGrid, this.TargetHex.coordinates.OffsetCoordinatesAsVector());
+            string message = string.Format("{0} felled tree", this.ActorCharacter.charClass.name);
             logger.RpcLogMessage(message);        
         }
         else 

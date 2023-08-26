@@ -3790,6 +3790,7 @@ MonoBehaviour:
   mapGenerator: {fileID: 1982683011}
   inputHandler: {fileID: 1982683013}
   hazardManager: {fileID: 1982683014}
+  obstacleManager: {fileID: 1982683019}
   hexesSpawnedOnClient: 0
 --- !u!4 &1982683009
 Transform:
