@@ -2,21 +2,21 @@
 
 struct AbilityPrintData
 {
+    //main table entry
     public readonly string name;
     public readonly string description;
+    public readonly string currentCooldown;
+    public readonly string currentRemainingUses;
+
+    //tooltip
+    public readonly string passiveOrActive;
     public readonly string damageOneLiner;
     public readonly string range;
     public readonly string aoe;
     public readonly string usesPerRound;
     public readonly string cooldownDuration;
-    public readonly string passiveOrActive;
-    public readonly Color damageColor;
 
-    public readonly string currentCooldown;
-    public readonly string currentRemainingUses;
-
-
-    public AbilityPrintData(string name,
+    public AbilityPrintData (string name,
                             string description,
                             string passiveOrActive,
                             string damageOneLiner = "",
@@ -25,8 +25,8 @@ struct AbilityPrintData
                             string usesPerRound = "",
                             string cooldownDuration = "",                       
                             string currentCooldown = "",
-                            string currentRemainingUses = "",
-                            Color? damageColor = null)
+                            string currentRemainingUses = ""
+                            )
     {
         this.name = name;
         this.description = description;
@@ -37,7 +37,6 @@ struct AbilityPrintData
         this.usesPerRound = usesPerRound;
         this.cooldownDuration = cooldownDuration;
         this.currentCooldown = currentCooldown;
-        this.damageColor = damageColor == null ? Color.black : damageColor.GetValueOrDefault();
         this.currentRemainingUses = currentRemainingUses;
     }
 }

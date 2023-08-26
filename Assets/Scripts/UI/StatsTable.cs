@@ -19,42 +19,26 @@ public class StatsTable : MonoBehaviour
     [SerializeField]
     private GameObject statsValueTable;
 
-    public Dictionary<string, string> GetPrintableStatsDictionary(CharacterStats stats)
-    {
-        Dictionary<string, string> toPrint = new();
 
-        string damageOneLiner = Utility.DamageStatsToString(stats.damage, stats.damageIterations, stats.damageType);
-
-        toPrint.Add("Health", String.Format("{0}", stats.maxHealth));
-        toPrint.Add("Armor", String.Format("{0}", stats.armor));
-        toPrint.Add("Damage", damageOneLiner);
-        toPrint.Add("Crit", String.Format("{0}% (+{1}%)", stats.critChance * 100, stats.critMultiplier * 100));
-        toPrint.Add("Range", String.Format("{0}", stats.range));
-        toPrint.Add("Moves", String.Format("{0}", stats.moveSpeed));
-        toPrint.Add("Initiative", String.Format("{0}", stats.initiative));
-
-        return toPrint;
-    }
-
-    internal void RenderForEquipment(IStatModifier statEquipment)
+    internal void RenderForStatEquipment(IStatModifier statEquipment)
     {
         var toPrint = statEquipment.GetPrintableStatDictionary();
-        this.RenderFromDictionary(toPrint, false, true);
+        this.RenderFromDictionary(toPrint);
     }
 
-    public void RenderForBaseStats(CharacterStats stats, bool isAKing)
+    public void RenderForInactiveCharacterStats(CharacterStats stats, bool isAKing)
     {
-        var toPrint = this.GetPrintableStatsDictionary(stats);
-        this.RenderFromDictionary(stats: toPrint, isAKing : isAKing, baseStats: true);
+        var toPrint = stats.GetPrintableStatsDictionary();
+        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing : isAKing, forActiveCharacter: true);
     }
 
-    public void RenderForCurrentStats(CharacterStats stats, bool isAKing)
+    public void RenderForActiveCharacterStats(CharacterStats stats, bool isAKing)
     {
-        var toPrint = this.GetPrintableStatsDictionary(stats);
-        this.RenderFromDictionary(stats: toPrint, isAKing: isAKing, baseStats: false);
+        var toPrint = stats.GetPrintableStatsDictionary();
+        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing: isAKing, forActiveCharacter: false);
     }
 
-    internal void RenderFromDictionary(Dictionary<string, string> stats, bool isAKing, bool baseStats)
+    internal void RenderFromDictionaryForCharacter(Dictionary<string, string> stats, bool isAKing, bool forActiveCharacter)
     {
         this.Clear();
         foreach (KeyValuePair<string, string> stat in stats)
@@ -67,7 +51,7 @@ public class StatsTable : MonoBehaviour
             TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
             if(isAKing && stat.Key == "Health")
             {
-                if (baseStats)
+                if (!forActiveCharacter)
                 {
                     string baseHealth = stat.Value;
                     string buffedHealth = (Utility.ApplyKingLifeBuff(Int32.Parse(baseHealth))).ToString();
@@ -84,17 +68,20 @@ public class StatsTable : MonoBehaviour
         }
     }
 
-
-    //TODO : create PrintableStat class/struct with name, value string and colors
-    internal void RenderForActiveCharacter(PlayerCharacter playerCharacter)
+    internal void RenderFromDictionary(Dictionary<string, string> stats)
     {
         this.Clear();
-        CharacterStats currentStats = playerCharacter.CurrentStats;
-        CharacterStats baseStats = playerCharacter.charClass.stats;
+        foreach (KeyValuePair<string, string> stat in stats)
+        {
+            GameObject nameLabelObject = Instantiate(this.statNameLabelPrefab, this.statsNameTable.gameObject.transform);
+            TextMeshProUGUI nameLabel = nameLabelObject.GetComponent<TextMeshProUGUI>();
+            nameLabel.text = stat.Key;
 
-        throw new NotImplementedException();
+            GameObject valueLabelObject = Instantiate(this.statValueLabelPrefab, this.statsValueTable.gameObject.transform);
+            TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
+            valueLabel.text = stat.Value;
+        }
     }
-
 
     private void Clear()
     {

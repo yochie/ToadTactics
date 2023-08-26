@@ -8,23 +8,7 @@ public class AbilitiesTable : MonoBehaviour
 {
 
     [SerializeField]
-    private GameObject nameLabelPrefab;
-
-    [SerializeField]
-    private GameObject descriptionLabelPrefab;
-
-    [SerializeField]
-    private GameObject cooldownIndicatorPrefab;
-
-    [SerializeField]
-    private GameObject nameColumn;
-
-    [SerializeField]
-    private GameObject descriptionColumn;
-
-    [SerializeField] 
-    private GameObject cooldownsColumn;
-
+    private GameObject abilityTableEntryPrefab;
 
     public void RenderForClassDefaults(CharacterClass charClass)
     {
@@ -35,7 +19,7 @@ public class AbilitiesTable : MonoBehaviour
     public void RenderForLiveCharacter(PlayerCharacter character)
     {
         var toPrint = this.GetAbilityPrintData(character.charClass, live: true, liveCharacter: character);
-        this.RenderFromPrintData(toPrint, live: true);
+        this.RenderFromPrintData(toPrint, forLiveCharacter: true);
     }
 
     private List<AbilityPrintData> GetAbilityPrintData(CharacterClass charClass, bool live = false, PlayerCharacter liveCharacter = null)
@@ -52,9 +36,13 @@ public class AbilitiesTable : MonoBehaviour
             string name = ability.interfaceName;
             string description = ability.description;
             string damageOneLiner = Utility.DamageStatsToString(ability.damage, ability.damageIterations, ability.damageType);
-            string range = ability.range == -1 ? "" : ability.range.ToString();
+            string range = "";
+            if (ability.range == Utility.MAX_DISTANCE_ON_MAP)             
+                range = "infinite";
+            else
+                range = !(ability.range > 0) ? "" : ability.range.ToString();
             string aoe = ability.aoe == -1 ? "" : ability.aoe.ToString();
-            string usesPerRound = ability.usesPerRound == -1 ? "" : ability.usesPerRound.ToString();
+            string usesPerRound = ability.usesPerRound == -1 ? "" : string.Format("{0} per round", ability.usesPerRound);
             string cooldownDuration = ability.cooldownDuration == -1 ? "" : ability.cooldownDuration.ToString();
             string passiveOrActive = ability.isPassive ? "Passive" : "Active";
             string currentCooldownString = "";
@@ -92,50 +80,29 @@ public class AbilitiesTable : MonoBehaviour
                                              usesPerRound: usesPerRound,
                                              cooldownDuration: cooldownDuration,
                                              currentCooldown: currentCooldownString,                                             
-                                             currentRemainingUses: remainingUsesString,
-                                             damageColor: Color.black));
+                                             currentRemainingUses: remainingUsesString));
         }
 
         return toPrint;
     }
 
-    private void RenderFromPrintData(List<AbilityPrintData> printData, bool live = false)
+    private void RenderFromPrintData(List<AbilityPrintData> printData, bool forLiveCharacter = false)
     {
         this.Clear();
         foreach(AbilityPrintData abilityPrintData in printData)
         {
-            GameObject nameLabelObject = Instantiate(this.nameLabelPrefab, this.nameColumn.transform);
-            TextMeshProUGUI nameLabel = nameLabelObject.GetComponent<TextMeshProUGUI>();
-            nameLabel.text = abilityPrintData.name;
 
-            GameObject valueLabelObject = Instantiate(this.descriptionLabelPrefab, this.descriptionColumn.transform);
-            TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
-            valueLabel.text = abilityPrintData.description;
-
-            GameObject cooldownIndicatorObject = Instantiate(this.cooldownIndicatorPrefab, this.cooldownsColumn.transform);
-            CooldownIndicator cooldownIndicator = cooldownIndicatorObject.GetComponent<CooldownIndicator>();
-            cooldownIndicator.SetCooldown(abilityPrintData.currentCooldown);
-            cooldownIndicator.SetUsesCount(abilityPrintData.currentRemainingUses);
+            GameObject abilityTableEntry = Instantiate(this.abilityTableEntryPrefab, this.transform);
+            abilityTableEntry.GetComponent<AbilitiesTableEntry>().Init(abilityPrintData, forLiveCharacter);            
         }
 
-        this.cooldownsColumn.SetActive(live);
     }
 
     private void Clear()
     {
-        foreach (TextMeshProUGUI child in this.nameColumn.GetComponentsInChildren<TextMeshProUGUI>())
+        foreach (AbilitiesTableEntry entry in this.GetComponentsInChildren<AbilitiesTableEntry>())
         {
-            Destroy(child.gameObject);
-        }
-
-        foreach (TextMeshProUGUI child in this.descriptionColumn.GetComponentsInChildren<TextMeshProUGUI>())
-        {
-            Destroy(child.gameObject);
-        }
-
-        foreach (CooldownIndicator child in this.cooldownsColumn.GetComponentsInChildren<CooldownIndicator>())
-        {
-            Destroy(child.gameObject);
+            Destroy(entry.gameObject);
         }
     }
 }

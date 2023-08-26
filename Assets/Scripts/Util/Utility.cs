@@ -27,6 +27,9 @@ public static class Utility
 
     internal static string DamageStatsToString(int damage, int damageIterations, DamageType damageType)
     {
+        if (damage == -1)
+            return "";
+
         string formattedDamageType;
         switch (damageType)
         {

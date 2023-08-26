@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &7087930496049935815
+--- !u!1001 &3386422646863743738
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -58,7 +58,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4122331628749736371, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
       propertyPath: m_Name
-      value: EquipmentTooltip
+      value: AbilityTooltip
       objectReference: {fileID: 0}
     - target: {fileID: 4288448492744615667, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
       propertyPath: m_Pivot.x
@@ -239,5 +239,33 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4122331628749736371, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4379856596635073213}
   m_SourcePrefab: {fileID: 100100000, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
+--- !u!1 &1714617683864617801 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4122331628749736371, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
+  m_PrefabInstance: {fileID: 3386422646863743738}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4379856596635073213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714617683864617801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 1
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1

@@ -63,7 +63,7 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
         if (typeof(IStatModifier).IsAssignableFrom(equipmentData.GetType()))
         {
             IStatModifier statEquipment = equipmentData as IStatModifier;
-            this.statsTable.RenderForEquipment(statEquipment);
+            this.statsTable.RenderForStatEquipment(statEquipment);
         }
 
         //shows draft buttons if its your turn

@@ -146,4 +146,22 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             return false;
         }
     }
+
+    public Dictionary<string, string> GetPrintableStatsDictionary()
+    {
+        Dictionary<string, string> toPrint = new();
+
+        string damageOneLiner = Utility.DamageStatsToString(this.damage, this.damageIterations, this.damageType);
+
+        toPrint.Add("Health", String.Format("{0}", this.maxHealth));
+        toPrint.Add("Armor", String.Format("{0}", this.armor));
+        toPrint.Add("Damage", damageOneLiner);
+        toPrint.Add("Crit", String.Format("{0}% (+{1}%)", this.critChance * 100, this.critMultiplier * 100));
+        toPrint.Add("Range", String.Format("{0}", this.range == Utility.MAX_DISTANCE_ON_MAP ? "infinite" : this.range));
+        toPrint.Add("Moves", String.Format("{0}", this.moveSpeed));
+        toPrint.Add("Initiative", String.Format("{0}", this.initiative));
+
+        return toPrint;
+    }
+
 }

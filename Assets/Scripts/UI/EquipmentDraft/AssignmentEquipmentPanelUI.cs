@@ -36,7 +36,7 @@ public class AssignmentEquipmentPanelUI : MonoBehaviour
         if (typeof(IStatModifier).IsAssignableFrom(equipmentData.GetType()))
         {
             IStatModifier statEquipment = equipmentData as IStatModifier;
-            this.statsTable.RenderForEquipment(statEquipment);
+            this.statsTable.RenderForStatEquipment(statEquipment);
         }
 
     }

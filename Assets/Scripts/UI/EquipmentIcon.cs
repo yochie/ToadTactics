@@ -24,7 +24,7 @@ public class EquipmentIcon : MonoBehaviour
         this.tooltipTitle.text = equipmentData.NameUI;
         IStatModifier statModifier = equipmentData as IStatModifier;
         if (statModifier != null)
-            this.tooltipStatsTable.RenderForEquipment(statModifier);
+            this.tooltipStatsTable.RenderForStatEquipment(statModifier);
     }
 
     private void SetIcon(Sprite sprite)
