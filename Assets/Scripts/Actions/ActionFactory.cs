@@ -147,8 +147,8 @@ public class ActionFactory : MonoBehaviour
 
         //ITargetedAction
         //We are trusting main ability to assign valid targets to these sub actions since we might want to use different criteria than those for main ability action
-        abilityAttackAction.TargetHex = defenderHex;        
-        abilityAttackAction.AllowedTargetTypes = Enum.GetValues(typeof(TargetType)).Cast<TargetType>().ToList();
+        abilityAttackAction.TargetHex = defenderHex;
+        abilityAttackAction.AllowedTargetTypes = Utility.GetAllEnumValues<TargetType>();
         abilityAttackAction.RequiresLOS = false;
         abilityAttackAction.Range = 99;
 

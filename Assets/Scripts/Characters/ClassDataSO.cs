@@ -371,21 +371,21 @@ public class ClassDataSO : ScriptableObject
                 attacksRequireLOS: false,
                 critChance: 0.1f,
                 critMultiplier: 1.5f,
-                moveSpeed: 3,
+                moveSpeed: 2,
                 initiative: 8,
-                range: Utility.MAX_DISTANCE_ON_MAP,
+                range: 3,
                 damageIterations: 1),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "NecroDOT",
                     interfaceName: "Rotting Corpse",
-                    description: "Targets an enemy and inflitcts a curse that deals stackable damage over time.",
+                    description: "Self harms in order to inflict a curse that deals stackable damage over time on an enemy.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.ennemy_chars },
                     cooldownDuration: 1,
                     cappedByCooldown: true,
-                    range: Utility.MAX_DISTANCE_ON_MAP,
-                    requiresLOS: false,
-                    damage: 10,
+                    range: 3,
+                    requiresLOS: true,
+                    damage: 10, //this is for self damage, debuff damage defined in buff effect class
                     damageIterations: 1,
                     damageType: DamageType.magic
                 )

@@ -31,8 +31,11 @@ public class NecroDOTAbility : IAbilityAction, IBuffSource, ITargetedAction, ICo
         logger.RpcLogMessage(message);
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
-        List<int> affectedCharacterIDs = new () { this.TargetHex.holdsCharacterWithClassID };
 
+        //self harm
+        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.ActorHex, this.AbilityStats, this.RequestingClient);
+
+        List<int> affectedCharacterIDs = new () { this.TargetHex.holdsCharacterWithClassID };
         IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
     }
