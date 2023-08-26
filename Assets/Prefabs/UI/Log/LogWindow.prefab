@@ -173,7 +173,6 @@ GameObject:
   - component: {fileID: 2947799056645007587}
   - component: {fileID: 6884473841822564763}
   - component: {fileID: 7598634216018904634}
-  - component: {fileID: 3161610209306877492}
   - component: {fileID: 6552523708599895367}
   m_Layer: 5
   m_Name: LogWindow
@@ -241,23 +240,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2019989505502448331}
   m_CullTransparentMesh: 1
---- !u!114 &3161610209306877492
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2019989505502448331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 2322826467
-  serverOnly: 0
-  visible: 0
-  hasSpawned: 0
 --- !u!114 &6552523708599895367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,12 +252,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f89f225e3fc99b649b6964192ed7cde3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   logListOnScreen: {fileID: 4263768641639349775}
   logEntryPrefab: {fileID: 6351257374511050742, guid: ef9bc4c847de86946ac05e1ae962ddef, type: 3}
   scrollbar: {fileID: 6957134521156592627}
+  scrollRect: {fileID: 6884473841822564763}
 --- !u!1 &2284391333711305368
 GameObject:
   m_ObjectHideFlags: 0

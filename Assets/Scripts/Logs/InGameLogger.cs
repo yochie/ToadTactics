@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 using UnityEngine.UI;
 
-public class InGameLogger : NetworkBehaviour, ILogger
+public class InGameLogger : MonoBehaviour, ILogger
 {
     [SerializeField]
     private GameObject logListOnScreen;
@@ -47,45 +46,11 @@ public class InGameLogger : NetworkBehaviour, ILogger
         //currently working but its unclear if all this is required, would need more testing to cleanup
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
-        this.UpdateLayout(this.transform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)this.scrollRect.transform);
+        Canvas.ForceUpdateCanvases();
         this.scrollbar.value = 0;
         this.scrollRect.verticalNormalizedPosition = 0;
         LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)this.scrollRect.transform);
         Canvas.ForceUpdateCanvases();
     }
-
-    //https://forum.unity.com/threads/scroll-to-the-bottom-of-a-scrollrect-in-code.310919/
-    private void UpdateLayout(Transform transform)
-    {
-        Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)this.scrollRect.transform);
-        UpdateLayout_Internal(this.transform.parent);
-    }
-
-    private void UpdateLayout_Internal(Transform transform)
-    {
-        if (transform == null || transform.Equals(null))
-        {
-            return;
-        }
-
-        // Update children first
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            UpdateLayout_Internal(transform.GetChild(i));
-        }
-
-        // Update any components that might resize UI elements
-        foreach (var layout in transform.GetComponents<LayoutGroup>())
-        {
-            layout.CalculateLayoutInputVertical();
-            layout.CalculateLayoutInputHorizontal();
-        }
-        foreach (var fitter in transform.GetComponents<ContentSizeFitter>())
-        {
-            fitter.SetLayoutVertical();
-            fitter.SetLayoutHorizontal();
-        }
-    }
-
 }
