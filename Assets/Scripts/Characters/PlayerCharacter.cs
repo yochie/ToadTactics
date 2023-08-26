@@ -228,8 +228,7 @@ public class PlayerCharacter : NetworkBehaviour
             Debug.LogFormat("Attempting to attack with {0} while it has already attacked. You should validate attack beforehand.", this.charClass.name);
             return;
         }
-        if (this.hasMoved)
-            this.remainingMoves = 0;
+
         this.attackCountThisTurn++;
     }
 
