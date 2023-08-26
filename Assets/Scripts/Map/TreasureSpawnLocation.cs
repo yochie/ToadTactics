@@ -7,5 +7,6 @@ public class TreasureSpawnLocation : NetworkBehaviour
 {
     public Vector2Int treasureCoordinate;
     public List<Vector2Int> hazardCoordinates;
+    public List<Vector2Int> obstacleCoordinates;
 
 }

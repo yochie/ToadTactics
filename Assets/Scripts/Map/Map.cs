@@ -148,6 +148,18 @@ public class Map : NetworkBehaviour
         grid[new Vector2Int(x, y)] = h;
     }
 
+    public static Hex GetHex(Dictionary<Vector2Int, Hex> grid, Vector2Int xyPositions)
+    {
+        if (grid.TryGetValue(xyPositions, out Hex toReturn))
+        {
+            return toReturn;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     public static Hex GetHex(Dictionary<Vector2Int, Hex> grid, int x, int y)
     {
         if (grid.TryGetValue(new Vector2Int(x, y), out Hex toReturn))

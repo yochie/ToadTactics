@@ -7,14 +7,22 @@ public class treasureGenerator : NetworkBehaviour
 {
     [SerializeField]
     private List<TreasureSpawnLocation> spawnLocations;
+    
     [SerializeField]
     private List<HazardType> spawnedHazardTypes;
+    
     [SerializeField]
     private GameObject treasurePrefab;
+
+    [SerializeField]
+    private GameObject obstaclePrefab;
+
     [SerializeField]
     private MapHazardManager hazardManager;
 
-    //TODO : convert hazard prefab ref to use HazardData SO
+    [SerializeField]
+    private MapObstacleManager obstacleManager;
+    
     [Server]
     public void GenerateTreasure(Dictionary<Vector2Int, Hex> grid)
     {
@@ -32,6 +40,11 @@ public class treasureGenerator : NetworkBehaviour
         foreach (Vector2Int hazardCoordinate in chosenSpawnLocation.hazardCoordinates)
         {
             this.hazardManager.SpawnHazardOnMap(grid, hazardCoordinate, rolledHazardType);
+        }
+
+        foreach (Vector2Int obstacleCoordinate in chosenSpawnLocation.obstacleCoordinates)
+        {
+            this.obstacleManager.SpawnObstacleOnMap(grid, obstacleCoordinate, this.obstaclePrefab.GetComponent<Obstacle>().type);
         }
 
         Map.Singleton.Treasure = treasureObject;

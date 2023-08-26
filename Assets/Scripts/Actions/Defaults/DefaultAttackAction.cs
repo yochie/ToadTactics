@@ -30,10 +30,7 @@ public class DefaultAttackAction : IAttackAction
         if(this.TargetHex.HoldsAnObstacle() && this.DefenderCharacter == null)
         {
             //attacking obstacle
-            GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-            GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(this.TargetHex.coordinates)).First();
-            Object.Destroy(attackedTree);
-            TargetHex.ClearObstacle();
+            Utility.DestroyObstacleAt(this.TargetHex);
 
             string message = string.Format("{0} destroyed tree", this.ActorCharacter.charClass.name);
             logger.RpcLogMessage(message);

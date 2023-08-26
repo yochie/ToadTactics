@@ -51,13 +51,19 @@ public static class Utility
 
     }
 
-    internal static Color SetHighlight(Color oldColor, bool state)
+    internal static void DestroyObstacleAt(Hex targetHex)
     {
-        Color highlightOff = oldColor;
-        Color highlightOn = oldColor;
-        highlightOn.a = 0.5f;
-        highlightOff.a = 0f;
-        return state ? highlightOn : highlightOff;
+        GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+        GameObject attackedTree = allObstacles.Where(obstacle => obstacle.GetComponent<Obstacle>().hexPosition.Equals(targetHex.coordinates)).First();
+        UnityEngine.Object.Destroy(attackedTree);
+        targetHex.ClearObstacle();
+    }
+
+    internal static Color SetAlpha(Color oldColor, float alpha)
+    {
+        Color newColor = oldColor;
+        newColor.a = alpha;
+        return newColor;
 
     }
 

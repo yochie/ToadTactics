@@ -45,7 +45,7 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     public void setHighlight(bool highlighted)
     {
         Color oldColor = this.highlightImage.color;
-        this.highlightImage.color = Utility.SetHighlight(oldColor, highlighted);
+        this.highlightImage.color = Utility.SetAlpha(oldColor, highlighted ? 0.5f : 0f);
 
         if(highlighted)
             this.transform.localScale = new Vector3(this.highlightScaling, this.highlightScaling, 1f);
