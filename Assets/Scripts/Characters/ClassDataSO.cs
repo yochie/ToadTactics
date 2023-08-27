@@ -141,7 +141,8 @@ public class ClassDataSO : ScriptableObject
                                        moveSpeed: 4,
                                        initiative: 1,
                                        range: 1,
-                                       damageIterations: 2);
+                                       damageIterations: 2,
+                                       hasFaith: false);
         //Barb
         CharacterClass barbarian = new(
             classID: 0,
@@ -173,7 +174,8 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 4,
                 initiative: 2,
                 range: 2,
-                damageIterations: 1),
+                damageIterations: 1,
+                hasFaith: false),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "CavalierStun",
@@ -206,7 +208,8 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 3,
                 range: 3,
-                damageIterations: 1),
+                damageIterations: 1,
+                hasFaith: false),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "ArcherSnipe",
@@ -240,7 +243,8 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 3,
                 initiative: 4,
                 range: 1,
-                damageIterations: 2),
+                damageIterations: 2,
+                hasFaith: false),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "RogueCrit",
@@ -276,7 +280,8 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 3,
                 initiative: 5,
                 range: 1,
-                damageIterations: 1),
+                damageIterations: 1,
+                hasFaith: false),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "WarriorRoot",
@@ -307,7 +312,8 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 6,
                 range: 1,
-                damageIterations: 1),
+                damageIterations: 1,
+                hasFaith: true),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "PaladinTeamBuff",
@@ -338,7 +344,8 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 7,
                 range: 3,
-                damageIterations: 1),
+                damageIterations: 1,
+                hasFaith: true),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "DruidLava",
@@ -374,7 +381,8 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 8,
                 range: 3,
-                damageIterations: 1),
+                damageIterations: 1,
+                hasFaith: true),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "NecroDOT",
@@ -408,7 +416,8 @@ public class ClassDataSO : ScriptableObject
                 moveSpeed: 2,
                 initiative: 9,
                 range: 3,
-                damageIterations: 1),
+                damageIterations: 1,
+                hasFaith: false),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "WizardFireball",
@@ -444,7 +453,8 @@ public class ClassDataSO : ScriptableObject
                 initiative: 10,
                 range: 3,
                 damageIterations: 1,
-                allowedAttackTargets: new List<TargetType> { TargetType.other_friendly_chars, TargetType.self }),
+                allowedAttackTargets: new List<TargetType> { TargetType.other_friendly_chars, TargetType.self },
+                hasFaith: true),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "PriestResurrect",

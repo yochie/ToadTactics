@@ -36,6 +36,9 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
 
     public readonly bool penetratingDamage;
 
+    public readonly bool hasFaith;
+
+
     public CharacterStats(int maxHealth,
                           int armor,
                           int damage,
@@ -50,8 +53,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                           DamageType damageType = DamageType.physical,
                           List<TargetType> allowedAttackTargets = null,
                           int? kingDamage = null,
-                          bool penetratingDamage = false
-                          )
+                          bool penetratingDamage = false,
+                          bool hasFaith = false)
     {
         this.maxHealth = maxHealth;
         this.armor = armor;
@@ -65,10 +68,11 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.initiative = initiative;
         this.range = range;
         this.attacksRequireLOS = attacksRequireLOS;
-        if(allowedAttackTargets == null)
+        if (allowedAttackTargets == null)
         {
             this.allowedAttackTargets = new List<TargetType> { TargetType.ennemy_chars, TargetType.obstacle };
-        } else
+        }
+        else
         {
             this.allowedAttackTargets = new List<TargetType>(allowedAttackTargets);
         }
@@ -77,7 +81,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         else
             this.kingDamage = kingDamage.GetValueOrDefault();
         this.penetratingDamage = penetratingDamage;
-
+        this.hasFaith = hasFaith;
     }
 
     public CharacterStats(CharacterStats toCopy,
@@ -95,8 +99,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                       DamageType? damageType = null,
                       int? kingDamage = null,
                       bool? penetratingDamage = null,
-                      List<TargetType> allowedAttackTargets = null
-                      )
+                      List<TargetType> allowedAttackTargets = null, 
+                      bool? hasFaith = null)
     {
         this.maxHealth = maxHealth == null ? toCopy.maxHealth : maxHealth.GetValueOrDefault();
         this.armor = armor == null ? toCopy.armor : armor.GetValueOrDefault();
@@ -114,7 +118,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.penetratingDamage = penetratingDamage == null ? toCopy.penetratingDamage : penetratingDamage.GetValueOrDefault();
 
         this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : allowedAttackTargets;
-
+        this.hasFaith = hasFaith == null ? toCopy.hasFaith : hasFaith.GetValueOrDefault();
     }
 
     public bool Equals(CharacterStats other)
@@ -132,7 +136,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.range == other.range &&
             this.attacksRequireLOS == other.attacksRequireLOS &&
             this.kingDamage == other.kingDamage &&
-            this.penetratingDamage == other.penetratingDamage
+            this.penetratingDamage == other.penetratingDamage &&
+            this.hasFaith == other.hasFaith
             )
         {
             foreach (TargetType t in this.allowedAttackTargets)
@@ -160,6 +165,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         toPrint.Add("Range", String.Format("{0}", this.range == Utility.MAX_DISTANCE_ON_MAP ? "infinite" : this.range));
         toPrint.Add("Moves", String.Format("{0}", this.moveSpeed));
         toPrint.Add("Initiative", String.Format("{0}", this.initiative));
+        toPrint.Add("Faithful", String.Format("{0}", this.hasFaith ? "yes" : "no"));
 
         return toPrint;
     }
