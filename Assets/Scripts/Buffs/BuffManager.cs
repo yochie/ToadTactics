@@ -81,7 +81,7 @@ internal class BuffManager : NetworkBehaviour
             this.RpcAddBuffIcons(displayedBuff.UniqueID, displayedBuff.AffectedCharacterIDs, displayedBuff.IconName);
         }
     }
-
+    
     [Server]
     public void TickBuffsForTurn(int playingCharacterID)
     {        
@@ -89,24 +89,26 @@ internal class BuffManager : NetworkBehaviour
         {
             if (character.CharClassID != playingCharacterID)
                 continue;
-            foreach(IAppliedBuff buff in character.ownerOfBuffs.ToArray())
+            foreach(IAbilityBuffEffect abilityBuff in character.ownerOfBuffs.ToArray())
             {
-                ITimedEffect timedBuff = buff as ITimedEffect;
+                ITimedEffect timedBuff = abilityBuff as ITimedEffect;
                 if (timedBuff == null)
                     continue;                
                 timedBuff.TurnDurationRemaining--;
                 if (timedBuff.TurnDurationRemaining == 0)
                 {
-                    this.RemoveBuff(buff);
+                    this.RemoveBuff(abilityBuff);
                 }
             }
 
-            foreach (IAppliedBuff buff in character.affectedByBuffs.ToArray())
+            foreach (IBuff buff in character.affectedByBuffs.ToArray())
             {
-                if (buff.NeedsToBeReAppliedEachTurn && !character.IsDead)
+                IAppliedBuff appliedBuff = buff as IAppliedBuff;
+
+                if (appliedBuff != null && appliedBuff.NeedsToBeReAppliedEachTurn && !character.IsDead)
                 {
-                    buff.ApplyEffect(new List<int> { character.CharClassID }, isReapplication: true);
-                    string message = string.Format("Ticking {0} {1} on {2}", buff.UIName, buff.IsPositive ? "buff" : "debuff", character.charClass.name);
+                    appliedBuff.ApplyEffect(new List<int> { character.CharClassID }, isReapplication: true);
+                    string message = string.Format("Ticking {0} {1} on {2}", appliedBuff.UIName, appliedBuff.IsPositive ? "buff" : "debuff", character.charClass.name);
                     MasterLogger.Singleton.RpcLogMessage(message);
                 }
             }

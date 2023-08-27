@@ -13,4 +13,11 @@ public class CavalierStunEffect : StunEffectBase, IAbilityBuffEffect, IDisplayed
     //set at runtime
     public int ApplyingCharacterID {get; set;}
     public CharacterAbilityStats AppliedByAbility { get; set; }
+
+    public Dictionary<string, string> GetAbilityBuffPrintoutDictionnary()
+    {
+        Dictionary<string, string> printouts = new();
+        printouts.Add("Stun duration", "1 turn");
+
+    }
 }

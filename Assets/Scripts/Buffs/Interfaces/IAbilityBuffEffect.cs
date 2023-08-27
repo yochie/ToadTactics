@@ -4,6 +4,4 @@ public interface IAbilityBuffEffect : IBuff
 {
     public int ApplyingCharacterID { get; set; }
     public CharacterAbilityStats AppliedByAbility { get; set; }
-
-    public Dictionary<string, string> GetAbilityBuffPrintoutDictionnary();
 }
