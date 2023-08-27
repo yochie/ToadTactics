@@ -21,7 +21,7 @@ public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmor
     #region IStatModifier
     private const int HEALTH_OFFSET = 30;
     private const int ARMOR_OFFSET = 5;
-    private const int MOVEMENT_OFFSET = 2;
+    private const int MOVEMENT_OFFSET = 1;
 
     public int HealthOffset { get => HEALTH_OFFSET; set => throw new NotSupportedException(); }
     public int ArmorOffset { get => ARMOR_OFFSET; set => throw new NotSupportedException(); }
