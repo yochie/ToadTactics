@@ -41,7 +41,7 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedActi
             }
         }
 
-        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
+        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
 
     }

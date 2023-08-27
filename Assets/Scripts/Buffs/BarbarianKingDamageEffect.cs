@@ -2,28 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-
-public class BarbarianKingDamageEffect : IAbilityBuffEffect, IKingDamageModifier, IPassiveEffect
+public class BarbarianKingDamageEffect : IAbilityBuffEffect, IPassiveEffect, IAttackEnhancer
 {
-    #region IBuffEffect
+    #region IBuff
     public string BuffTypeID => "BarbarianKingDamageEffect";
     public string UIName => "Kingslayer";
-    public string IconName => "crown";
-    public bool IsPositive => true;
-    public bool NeedsToBeReAppliedEachTurn => false;
     // set at runtime
     public int UniqueID { get; set; }
     public List<int> AffectedCharacterIDs { get; set; }
-
     #endregion
 
-    #region  IKingDamageModifier
-    private const int KING_DAMAGE_OFFSET = 20;
-
-    public int KingDamageOffset { get => KING_DAMAGE_OFFSET; set => throw new NotSupportedException(); }
-
-    #endregion
+    private const int KING_DAMAGE_BONUS = 20;
 
     #region IAbilityBuffEffect
     //set at runtime
@@ -31,44 +22,20 @@ public class BarbarianKingDamageEffect : IAbilityBuffEffect, IKingDamageModifier
     public CharacterAbilityStats AppliedByAbility { get; set; }
     #endregion
 
-    #region IBuffEffect functions
-    public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication)
+    [Server]
+    public IAttackAction EnhanceAttack(IAttackAction attackToEnhance)
     {
-        foreach(int affectedCharacterID in applyToCharacterIDs)
+        if (attackToEnhance.TargetHex.GetHeldCharacterObject().IsKing)
         {
-            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
-            this.ApplyStatModification(affectedCharacter);
+            attackToEnhance.Damage = attackToEnhance.Damage + KING_DAMAGE_BONUS;
         }
-        return true;
+        return attackToEnhance;
     }
 
-    public void UnApply(List<int> applyToCharacterIDs)
+    public Dictionary<string, string> GetAbilityBuffPrintoutDictionnary()
     {
-        foreach (int affectedCharacterID in applyToCharacterIDs)
-        {
-            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
-            this.RemoveStatModification(affectedCharacter);
-        }
+        Dictionary<string, string> printouts = new();
+        printouts.Add("King damage", string.Format("+{0}", KING_DAMAGE_BONUS));
+        return printouts;
     }
-    #endregion
-
-    #region IStatModifier functions
-    public Dictionary<string, string> GetPrintableStatDictionary()
-    {
-        throw new NotSupportedException();
-    }
-
-    public void ApplyStatModification(PlayerCharacter playerCharacter)
-    {
-        int currentKingDamage = playerCharacter.CurrentStats.kingDamage;
-        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, kingDamage: currentKingDamage + this.KingDamageOffset));
-        Debug.Log("Applying king dmg buff.");
-    }
-
-    public void RemoveStatModification(PlayerCharacter playerCharacter)
-    {
-        int currentKingDamage = playerCharacter.CurrentStats.kingDamage;
-        playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, kingDamage: currentKingDamage - this.KingDamageOffset));
-    }
-    #endregion
 }

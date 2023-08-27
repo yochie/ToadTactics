@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class RootEffectBase : IBuffEffect, ITimedEffect
+public abstract class RootEffectBase : IAppliedBuff, ITimedEffect, IDisplayedBuff
 {
     public bool NeedsToBeReAppliedEachTurn => true;
     public bool IsPositive => false;

@@ -41,7 +41,7 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
             return;
 
         List<int> affectedCharacterIDs = new List<int> { this.TargetHex.holdsCharacterWithClassID };
-        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
+        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
 
     }

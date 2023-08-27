@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class NecroDOTEffect : IAbilityBuffEffect, IPermanentEffect
+public class NecroDOTEffect : IAbilityBuffEffect, IPermanentEffect, IDisplayedBuff, IAppliedBuff
 {
     #region IBuffEffect
     public string BuffTypeID => "NecroDOTEffect";

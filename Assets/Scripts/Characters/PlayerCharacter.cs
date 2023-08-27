@@ -75,8 +75,8 @@ public class PlayerCharacter : NetworkBehaviour
 
     #region Server only vars
 
-    public List<IBuffEffect> appliedBuffs;
-    public List<IBuffEffect> affectingBuffs;
+    public List<IAbilityBuffEffect> ownerOfBuffs;
+    public List<IBuff> affectedByBuffs;
     #endregion
 
     #region Startup
@@ -84,8 +84,8 @@ public class PlayerCharacter : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        appliedBuffs = new();
-        affectingBuffs = new();
+        ownerOfBuffs = new();
+        affectedByBuffs = new();
     }
 
     public override void OnStartClient()
@@ -136,7 +136,7 @@ public class PlayerCharacter : NetworkBehaviour
     internal Dictionary<int, string> GetAffectingBuffIcons()
     {
         Dictionary<int, string> buffIcons = new();
-        foreach(IBuffEffect buff in this.affectingBuffs)
+        foreach(IAppliedBuff buff in this.affectedByBuffs)
         {
             buffIcons[buff.UniqueID] = buff.IconName;
         }
@@ -316,15 +316,15 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    internal void RemoveAppliedBuff(IBuffEffect buff)
+    internal void RemoveOwnedBuff(IAbilityBuffEffect buff)
     {
-        this.appliedBuffs.Remove(buff);
+        this.ownerOfBuffs.Remove(buff);
     }
 
     [Server]
-    internal void RemoveAffectingBuff(IBuffEffect buff)
+    internal void RemoveAffectingBuff(IBuff buff)
     {
-        this.affectingBuffs.Remove(buff);
+        this.affectedByBuffs.Remove(buff);
     }
 
     [Server]
@@ -388,15 +388,15 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    internal void AddAffectingBuff(IBuffEffect buff)
+    internal void AddAffectingBuff(IBuff buff)
     {
-        this.affectingBuffs.Add(buff);
+        this.affectedByBuffs.Add(buff);
     }
 
     [Server]
-    internal void AddAppliedBuff(IBuffEffect buff)
+    internal void AddOwnedBuff(IAbilityBuffEffect buff)
     {
-        this.appliedBuffs.Add(buff);
+        this.ownerOfBuffs.Add(buff);
     }
 
     [Server]
@@ -419,7 +419,7 @@ public class PlayerCharacter : NetworkBehaviour
 
             Type passiveBuffType = ClassDataSO.Singleton.GetBuffTypesByPassiveAbilityID(ability.stringID);
             List<int> applyTo = new List<int> { this.CharClassID };
-            IBuffEffect passiveBuff = BuffManager.Singleton.CreateAbilityBuff(passiveBuffType, ability, this.CharClassID, applyTo);
+            IAbilityBuffEffect passiveBuff = BuffManager.Singleton.CreateAbilityBuff(passiveBuffType, ability, this.CharClassID, applyTo);
             BuffManager.Singleton.ApplyNewBuff(passiveBuff);
         }
     }

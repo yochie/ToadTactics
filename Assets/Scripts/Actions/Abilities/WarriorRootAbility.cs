@@ -39,8 +39,8 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
         {
             if (hex.HoldsACharacter() && hex.GetHeldCharacterObject().OwnerID != this.RequestingPlayerID)
                 targetsIDs.Add(hex.GetHeldCharacterObject().CharClassID);
-        }        
-        IBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, targetsIDs);
+        }
+        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, targetsIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
 
     }

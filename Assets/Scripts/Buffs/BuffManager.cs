@@ -51,14 +51,14 @@ internal class BuffManager : NetworkBehaviour
     }
 
     [Server]
-    public void ApplyNewBuff(IBuffEffect buff)
+    public void ApplyNewBuff(IBuff buff)
     {
         foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.AddAffectingBuff(buff);
 
-            string message = string.Format("{0} {1} applied to {2}", buff.UIName, buff.IsPositive ? "buff" : "debuff", affectedCharacter.charClass.name);
+            string message = string.Format("{0} applied to {2}", buff.UIName, affectedCharacter.charClass.name);
             MasterLogger.Singleton.RpcLogMessage(message);
         }
 
@@ -66,14 +66,20 @@ internal class BuffManager : NetworkBehaviour
         if (abilityBuff != null)
         {
             PlayerCharacter applyingCharacter = GameController.Singleton.PlayerCharactersByID[abilityBuff.ApplyingCharacterID];
-            applyingCharacter.AddAppliedBuff(buff);
+            applyingCharacter.AddOwnedBuff(abilityBuff);
         }
 
-        buff.ApplyEffect(buff.AffectedCharacterIDs, isReapplication: false);
+        IAppliedBuff appliedBuff = buff as IAppliedBuff;
+        if (appliedBuff != null)
+        {
+            appliedBuff.ApplyEffect(appliedBuff.AffectedCharacterIDs, isReapplication: false);
+        }
 
-        this.RpcAddBuffIcons( buff.UniqueID, buff.AffectedCharacterIDs, buff.IconName);
-
-
+        IDisplayedBuff displayedBuff = buff as IDisplayedBuff;
+        if(displayedBuff != null)
+        {
+            this.RpcAddBuffIcons(displayedBuff.UniqueID, displayedBuff.AffectedCharacterIDs, displayedBuff.IconName);
+        }
     }
 
     [Server]
@@ -83,7 +89,7 @@ internal class BuffManager : NetworkBehaviour
         {
             if (character.CharClassID != playingCharacterID)
                 continue;
-            foreach(IBuffEffect buff in character.appliedBuffs.ToArray())
+            foreach(IAppliedBuff buff in character.ownerOfBuffs.ToArray())
             {
                 ITimedEffect timedBuff = buff as ITimedEffect;
                 if (timedBuff == null)
@@ -91,11 +97,11 @@ internal class BuffManager : NetworkBehaviour
                 timedBuff.TurnDurationRemaining--;
                 if (timedBuff.TurnDurationRemaining == 0)
                 {
-                    this.RemoveBuff(buff, character);
+                    this.RemoveBuff(buff);
                 }
             }
 
-            foreach (IBuffEffect buff in character.affectingBuffs.ToArray())
+            foreach (IAppliedBuff buff in character.affectedByBuffs.ToArray())
             {
                 if (buff.NeedsToBeReAppliedEachTurn && !character.IsDead)
                 {
@@ -108,25 +114,31 @@ internal class BuffManager : NetworkBehaviour
     }
 
     [Server]
-    private void RemoveBuff(IBuffEffect buff, PlayerCharacter appliedByCharacter = null)
+    private void RemoveBuff(IBuff buff)
     {
-        buff.UnApply(buff.AffectedCharacterIDs);
+        IAppliedBuff appliedBuff = buff as IAppliedBuff;
+        if(appliedBuff != null)
+            appliedBuff.UnApply(buff.AffectedCharacterIDs);
 
         foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.RemoveAffectingBuff(buff);
         }
-        this.RpcRemoveBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs);
 
-        if (appliedByCharacter != null)
-            appliedByCharacter.RemoveAppliedBuff(buff);
+        IDisplayedBuff displayedBuff = buff as IDisplayedBuff;
+        if (displayedBuff != null)            
+            this.RpcRemoveBuffIcons(displayedBuff.UniqueID, displayedBuff.AffectedCharacterIDs);
+
+        IAbilityBuffEffect abilityBuff = buff as IAbilityBuffEffect;
+        if (abilityBuff != null)
+            GameController.Singleton.PlayerCharactersByID[abilityBuff.ApplyingCharacterID].RemoveOwnedBuff(abilityBuff);
     }
 
     [Server]
     internal void RemoveRoundBuffsAppliedToCharacter(PlayerCharacter character)
     {
-        foreach (IBuffEffect buff in character.affectingBuffs.ToArray())
+        foreach (IAppliedBuff buff in character.affectedByBuffs.ToArray())
         {
             IPassiveEffect passiveBuff = buff as IPassiveEffect;
             if (passiveBuff != null)

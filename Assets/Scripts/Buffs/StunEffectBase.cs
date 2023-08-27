@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class StunEffectBase : IBuffEffect, ITimedEffect
+public abstract class StunEffectBase : IAppliedBuff, ITimedEffect, IDisplayedBuff
 {
     public bool NeedsToBeReAppliedEachTurn => false;
     public bool IsPositive => false;

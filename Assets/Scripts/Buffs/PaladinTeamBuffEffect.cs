@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmorModifier, IMovementModifier, ITimedEffect
+public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmorModifier, IMovementModifier, ITimedEffect, IDisplayedBuff, IAppliedBuff
 {
     #region IBuffEffect
     public string BuffTypeID => "PaladinTeamBuffEffect";

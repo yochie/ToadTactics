@@ -31,9 +31,6 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
 
     public readonly bool attacksRequireLOS;
 
-    //TODO: change to offset
-    public readonly int kingDamage;
-
     public readonly bool penetratingDamage;
 
     public readonly bool hasFaith;
@@ -52,7 +49,6 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                           int damageIterations = 1,
                           DamageType damageType = DamageType.physical,
                           List<TargetType> allowedAttackTargets = null,
-                          int? kingDamage = null,
                           bool penetratingDamage = false,
                           bool hasFaith = false)
     {
@@ -76,10 +72,6 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         {
             this.allowedAttackTargets = new List<TargetType>(allowedAttackTargets);
         }
-        if (kingDamage == null)
-            this.kingDamage = damage;
-        else
-            this.kingDamage = kingDamage.GetValueOrDefault();
         this.penetratingDamage = penetratingDamage;
         this.hasFaith = hasFaith;
     }
@@ -114,7 +106,6 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.damageIterations = damageIterations == null ? toCopy.damageIterations : damageIterations.GetValueOrDefault();
         this.attacksRequireLOS = attacksRequireLOS == null ? toCopy.attacksRequireLOS : attacksRequireLOS.GetValueOrDefault();
         this.damageType = damageType == null ? toCopy.damageType : damageType.GetValueOrDefault();
-        this.kingDamage = kingDamage == null ? toCopy.kingDamage : kingDamage.GetValueOrDefault();
         this.penetratingDamage = penetratingDamage == null ? toCopy.penetratingDamage : penetratingDamage.GetValueOrDefault();
 
         this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : allowedAttackTargets;
@@ -135,7 +126,6 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.initiative == other.initiative &&
             this.range == other.range &&
             this.attacksRequireLOS == other.attacksRequireLOS &&
-            this.kingDamage == other.kingDamage &&
             this.penetratingDamage == other.penetratingDamage &&
             this.hasFaith == other.hasFaith
             )

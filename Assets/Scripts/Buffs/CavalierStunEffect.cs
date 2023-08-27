@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class CavalierStunEffect : StunEffectBase, IAbilityBuffEffect
+public class CavalierStunEffect : StunEffectBase, IAbilityBuffEffect, IDisplayedBuff, IAppliedBuff
 {
     public override string BuffTypeID => "CavalierStunEffect";
     public override string UIName => "Cavalier Stun";

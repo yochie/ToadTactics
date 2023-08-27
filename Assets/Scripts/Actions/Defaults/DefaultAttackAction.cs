@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System.Linq;
+using System;
 
 public class DefaultAttackAction : IAttackAction
 {
@@ -19,54 +20,67 @@ public class DefaultAttackAction : IAttackAction
     public int Range { get; set; }
 
     //IAttackAction
-    public CharacterStats AttackerStats { get; set; }
-    public CharacterStats DefenderStats { get; set; }
-    public PlayerCharacter DefenderCharacter { get; set; }
+    //public CharacterStats AttackerStats { get; set; }
+    //public CharacterStats DefenderStats { get; set; }
+    //public PlayerCharacter DefenderCharacter { get; set; }
+    public int Damage { get; set; }
+    public int DamageIterations { get; set; }
+    public DamageType AttackDamageType { get; set; }
+    public bool PenetratingDamage { get; set; }
+    public bool KnocksBack { get; set; }
+    public float CritChance { get; set; }
+    public float CritMultiplier { get; set; }
+    public AreaType AttackAreaType { get; set; }
+    public List<Hex> SecondaryTargetedHexes { get; set; }
+    public int AttackAreaScaler { get; set; }
 
     [Server]
     public void ServerUse(INetworkedLogger logger)
     {
-
-        if(this.TargetHex.HoldsAnObstacle() && this.DefenderCharacter == null)
+        List<Hex> allTargets = AttackAreaGenerator.GetAttackArea(Map.Singleton.hexGrid, this.AttackAreaType, this.ActorHex, this.TargetHex, this.AttackAreaScaler);
+        for (int i = 0; i < this.DamageIterations; i++)
         {
-            //attacking obstacle
-            Map.Singleton.obstacleManager.DestroyObstacleAtPosition(Map.Singleton.hexGrid, this.TargetHex.coordinates.OffsetCoordinatesAsVector());
-            string message = string.Format("{0} felled tree", this.ActorCharacter.charClass.name);
-            logger.RpcLogMessage(message);
-        }
-        else 
-        {
-            //attacking character
-            float critChance = this.AttackerStats.critChance;
-            bool penetrates = this.AttackerStats.penetratingDamage;
-
-            for (int i = 0; i < this.AttackerStats.damageIterations; i++)
+            foreach (Hex target in allTargets)
             {
-                int prevLife = this.DefenderCharacter.CurrentLife;
-                bool isCrit = Utility.RollCrit(critChance);
-                int damageStatToUse = this.DefenderCharacter.IsKing ? this.AttackerStats.kingDamage : this.AttackerStats.damage;
-                int critRolledDamage = isCrit ? Utility.CalculateCritDamage(damageStatToUse, this.AttackerStats.critMultiplier) : damageStatToUse;
-                this.DefenderCharacter.TakeDamage(critRolledDamage, this.AttackerStats.damageType, penetrates);
-
-                string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
-                this.ActorCharacter.charClass.name,
-                this.DefenderCharacter.charClass.name,
-                critRolledDamage,
-                prevLife,
-                this.DefenderCharacter.CurrentLife,
-                isCrit ? "crit" : "nocrit",
-                this.AttackerStats.damageType,
-                penetrates ? " penetrating" : "");
-
-                logger.RpcLogMessage(message);
-
-                if (this.DefenderCharacter.IsDead)
-                    break;
+                this.HitTarget(target, logger);
             }
         }
 
         //PlayerCharacter state updated to track that attack was used
         this.ActorCharacter.UsedAttack();
+    }
+
+    private void HitTarget(Hex target, INetworkedLogger logger)
+    {
+        if (target.HoldsAnObstacle())
+        {
+            //attacking obstacle
+            Map.Singleton.obstacleManager.DestroyObstacleAtPosition(Map.Singleton.hexGrid, target.coordinates.OffsetCoordinatesAsVector());
+            string logMessage = string.Format("{0} felled tree", this.ActorCharacter.charClass.name);
+            logger.RpcLogMessage(logMessage);
+            return;
+        }
+
+        if (!target.HoldsACharacter())
+            return;
+
+        PlayerCharacter DefenderCharacter = target.GetHeldCharacterObject();
+        int prevLife = DefenderCharacter.CurrentLife;
+        bool isCrit = Utility.RollCrit(this.CritChance);
+        int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
+        DefenderCharacter.TakeDamage(critRolledDamage, this.AttackDamageType, this.PenetratingDamage);
+
+        string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
+        this.ActorCharacter.charClass.name,
+        DefenderCharacter.charClass.name,
+        critRolledDamage,
+        prevLife,
+        DefenderCharacter.CurrentLife,
+        isCrit ? "crit" : "",
+        this.AttackDamageType,
+        this.PenetratingDamage ? " penetrating" : "");
+
+        logger.RpcLogMessage(message);
     }
 
     [Server]
