@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class treasureGenerator : NetworkBehaviour
+public class TreasureGenerator : NetworkBehaviour
 {
     [SerializeField]
     private List<TreasureSpawnLocation> spawnLocations;
@@ -15,7 +15,7 @@ public class treasureGenerator : NetworkBehaviour
     private GameObject treasurePrefab;
 
     [SerializeField]
-    private GameObject obstaclePrefab;
+    private ObstacleType obstacleType;
 
     [SerializeField]
     private MapHazardManager hazardManager;
@@ -44,7 +44,7 @@ public class treasureGenerator : NetworkBehaviour
 
         foreach (Vector2Int obstacleCoordinate in chosenSpawnLocation.obstacleCoordinates)
         {
-            this.obstacleManager.SpawnObstacleOnMap(grid, obstacleCoordinate, this.obstaclePrefab.GetComponent<Obstacle>().type);
+            this.obstacleManager.SpawnObstacleOnMap(grid, obstacleCoordinate, this.obstacleType);
         }
 
         Map.Singleton.Treasure = treasureObject;

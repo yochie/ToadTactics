@@ -2247,7 +2247,7 @@ MonoBehaviour:
   - {fileID: 288615335}
   spawnedHazardTypes: 0000000001000000
   treasurePrefab: {fileID: 8248381651605195454, guid: 7c03064db92ff5646b6e531a6ffc31ea, type: 3}
-  obstaclePrefab: {fileID: 6196915132452724319, guid: 3f7607b4dff716845914240a21818a89, type: 3}
+  obstacleType: 0
   hazardManager: {fileID: 1982683014}
   obstacleManager: {fileID: 1982683019}
 --- !u!114 &916223307

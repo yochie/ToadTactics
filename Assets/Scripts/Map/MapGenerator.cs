@@ -19,7 +19,7 @@ public class MapGenerator : MonoBehaviour
     [SerializeField]
     private MapOutline outline;
     [SerializeField]
-    private treasureGenerator treasureGenerator;
+    private TreasureGenerator treasureGenerator;
     [SerializeField]
     private List<StartZone> startingZones;
 
