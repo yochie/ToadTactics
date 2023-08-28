@@ -100,7 +100,6 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                       int? damageIterations = null,
                       bool? attacksRequireLOS = null,
                       DamageType? damageType = null,
-                      int? kingDamage = null,
                       bool? penetratingDamage = null,
                       List<TargetType> allowedAttackTargets = null,
                       bool? hasFaith = null,
@@ -136,6 +135,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.damage == other.damage &&
             this.damageType == other.damageType &&
             this.damageIterations == other.damageIterations &&
+            this.attackAreaScaler == other.attackAreaScaler &&
+            this.attackAreaType == other.attackAreaType &&
             this.critChance == other.critChance &&
             this.critMultiplier == other.critMultiplier &&
             this.moveSpeed == other.moveSpeed &&
@@ -143,7 +144,9 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.range == other.range &&
             this.attacksRequireLOS == other.attacksRequireLOS &&
             this.penetratingDamage == other.penetratingDamage &&
-            this.hasFaith == other.hasFaith
+            this.hasFaith == other.hasFaith &&
+            this.attacksPerTurn == other.attacksPerTurn &&
+            this.knocksBack == other.knocksBack
             )
         {
             foreach (TargetType t in this.allowedAttackTargets)
