@@ -7,10 +7,13 @@ public class MapRangeDisplayer : MonoBehaviour
 {
     [SerializeField]
     private Map map;
+    [SerializeField]
+    private MapLOSDisplayer MapLOSDisplayer;
+
     private HashSet<Hex> displayedMoveRange = new();
     private Dictionary<Hex, LOSTargetType> displayedActionRange = new();
     private List<Hex> displayedPath = new();
-    private List<Hex> displayedAOE = new();
+    private List<Hex> highlightedArea = new();
 
     public void DisplayMovementRange(Hex source, int moveDistance)
     {
@@ -145,21 +148,26 @@ public class MapRangeDisplayer : MonoBehaviour
         }
     }
 
-    internal void HideAOE()
+    internal void UnHighlightTargetedArea()
     {
-        foreach (Hex h in this.displayedAOE)
+        foreach (Hex h in this.highlightedArea)
         {
-            h.drawer.AbilityHover(false);
+            h.drawer.defaultHover(false);
         }
+        this.MapLOSDisplayer.HideLOS();
     }
 
-    internal void DisplayAOE(Hex source, int aoe)
+    internal void HighlightTargetedArea(Hex sourceHex, Hex primaryTargetHex, AreaType areaType, int areaScaler, bool requiresLOS)
     {
-        this.displayedAOE = MapPathfinder.RangeIgnoringObstacles(source, aoe,this.map.hexGrid);
+        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, areaType, sourceHex, primaryTargetHex, areaScaler);
 
-        foreach (Hex h in this.displayedAOE)
+        foreach (Hex targetedHex in targetedHexes)
         {
-            h.drawer.AbilityHover(true);
+            this.highlightedArea.Add(targetedHex);
+            targetedHex.drawer.defaultHover(true);
         }
+
+        if (requiresLOS || areaType == AreaType.pierce)
+            this.MapLOSDisplayer.DisplayLOS(source: sourceHex, destination: primaryTargetHex, highlightPath: false);
     }
 }

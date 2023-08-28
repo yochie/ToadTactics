@@ -225,7 +225,7 @@ public class ClassDataSO : ScriptableObject
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle},
                     cooldownDuration: 3,
                     cappedByCooldown: true,
-                    piercesLOS: true
+                    areaType: AreaType.pierce                    
                 )
             }
             );
@@ -277,6 +277,9 @@ public class ClassDataSO : ScriptableObject
                 maxHealth: 180,
                 armor: 8,
                 damage: 30,
+                allowedAttackTargets: Utility.GetAllEnumValues<TargetType>(),
+                attackAreaType: AreaType.arc,
+                attackAreaScaler: 1,
                 critChance: 0.2f,
                 critMultiplier: 1.5f,
                 moveSpeed: 3,
@@ -291,10 +294,12 @@ public class ClassDataSO : ScriptableObject
                     description: "Shouts and scares close enemies, making them cower in fear for a turn.",
                     buffTurnDuration: 1,
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
+                    areaType: AreaType.radial,
                     areaScaler : 1,
                     range: 0,
                     cappedByCooldown: true,
-                    cooldownDuration: 5
+                    cooldownDuration: 5,
+                    requiresLOS:false
                 )
             }
             );
@@ -357,6 +362,7 @@ public class ClassDataSO : ScriptableObject
                     cooldownDuration: 3,
                     cappedByCooldown: true,
                     range : 3,
+                    areaType: AreaType.radial,
                     areaScaler: 1,
                     requiresLOS: false,
                     damage: HazardDataSO.Singleton.GetHazardDamage(HazardType.fire),
@@ -429,6 +435,7 @@ public class ClassDataSO : ScriptableObject
                     cooldownDuration: 2,
                     cappedByCooldown: true,
                     range: 3,
+                    areaType: AreaType.radial,                    
                     areaScaler: 1,
                     damage: 30,
                     damageIterations: 1,

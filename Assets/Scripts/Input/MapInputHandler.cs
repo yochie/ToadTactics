@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class MapInputHandler : NetworkBehaviour
 {
 
     [SerializeField]
     private MapRangeDisplayer rangeDisplayer;
-
-    [SerializeField]
-    private MapLOSDisplayer MapLOSDisplayer;
 
     public static MapInputHandler Singleton { get; private set; }
 
@@ -123,7 +121,7 @@ public class MapInputHandler : NetworkBehaviour
         this.rangeDisplayer.HideMovementRange();
         this.rangeDisplayer.HideAttackRange();
         this.rangeDisplayer.HideAbilityRange();
-        this.rangeDisplayer.HideAOE();
+        this.rangeDisplayer.UnHighlightTargetedArea();
     }
 
     public void HoverHex(Hex hoveredHex)
@@ -156,17 +154,19 @@ public class MapInputHandler : NetworkBehaviour
                 }
                 break;
             case ControlMode.attack:
-                hoveredHex.drawer.AttackHover(true);
-                if (this.playingCharacter.CurrentStats.attacksRequireLOS)
-                    this.MapLOSDisplayer.DisplayLOS(source: this.SelectedHex, destination: hoveredHex, highlightPath: false);
+                Hex attackerHex = this.SelectedHex;
+                CharacterStats attackerStats = this.playingCharacter.CurrentStats;
+                AreaType attackAreaType = attackerStats.attackAreaType;
+                int attackAreaScaler = attackerStats.attackAreaScaler;
+                bool attackRequiresLOS = attackerStats.attacksRequireLOS;
+                this.rangeDisplayer.HighlightTargetedArea(attackerHex, hoveredHex, attackAreaType, attackAreaScaler, attackRequiresLOS);
                 break;
             case ControlMode.useAbility:
-                if(currentActivatedAbilityStats.areaScaler > 0)
-                    this.rangeDisplayer.DisplayAOE(hoveredHex, currentActivatedAbilityStats.areaScaler);
-                else
-                    hoveredHex.drawer.AbilityHover(true);
-                if (this.currentActivatedAbilityStats.requiresLOS || this.currentActivatedAbilityStats.piercesLOS)
-                    this.MapLOSDisplayer.DisplayLOS(source: this.SelectedHex, destination: hoveredHex, highlightPath: this.currentActivatedAbilityStats.piercesLOS);
+                Hex userHex = this.SelectedHex;
+                AreaType abilityAreaType = currentActivatedAbilityStats.areaType;
+                int abilityAreaScaler = currentActivatedAbilityStats.areaScaler;
+                bool abilityRequiresLOS = currentActivatedAbilityStats.requiresLOS;
+                this.rangeDisplayer.HighlightTargetedArea(userHex, hoveredHex, abilityAreaType, abilityAreaScaler, abilityRequiresLOS);
                 break;
         }
     }
@@ -178,8 +178,6 @@ public class MapInputHandler : NetworkBehaviour
         {
             this.HoveredHex = null;
         }
-
-        this.MapLOSDisplayer.HideLOS();
 
         switch (this.CurrentControlMode)
         {
@@ -194,11 +192,10 @@ public class MapInputHandler : NetworkBehaviour
                 this.rangeDisplayer.HidePath();
                 break;
             case ControlMode.attack:
-                unhoveredHex.drawer.AttackHover(false);
+                this.rangeDisplayer.UnHighlightTargetedArea();
                 break;
             case ControlMode.useAbility:
-                unhoveredHex.drawer.AbilityHover(false);
-                this.rangeDisplayer.HideAOE();
+                this.rangeDisplayer.UnHighlightTargetedArea();
                 break;
         }
     }
@@ -225,7 +222,6 @@ public class MapInputHandler : NetworkBehaviour
     {
         MainHUD.Singleton.HighlightGameplayButton(mode);
         this.UnselectHex();
-        this.MapLOSDisplayer.HideLOS();
         this.CurrentControlMode = mode;
 
         if (mode == ControlMode.characterPlacement)

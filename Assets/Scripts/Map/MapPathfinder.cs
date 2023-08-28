@@ -31,6 +31,33 @@ public static class MapPathfinder
         return toReturn;
     }
 
+    //only supports range of 1
+    internal static List<Hex> HexesInArc(Hex sourceHex, Hex primaryTargetHex, Dictionary<Vector2Int, Hex> hexGrid, int scale)
+    {
+        if (MapPathfinder.HexDistance(sourceHex, primaryTargetHex) != 1)
+            return new List<Hex>() { primaryTargetHex };
+
+        HexCoordinates sourceToTarget = HexCoordinates.Substract(primaryTargetHex.coordinates, sourceHex.coordinates);
+        List<bool> directions = new() { true, false };
+        List<Hex> hexesInArc = new();
+        hexesInArc.Add(primaryTargetHex);
+        foreach (bool direction in directions)
+        {
+            HexCoordinates currentRotatedVector = sourceToTarget;
+            for(int i = 0; i < scale; i++)
+            {
+                currentRotatedVector = HexCoordinates.RotateVector(currentRotatedVector, clockwise: direction);
+                HexCoordinates hexCoordinatesAtRotation = HexCoordinates.Add(sourceHex.coordinates, currentRotatedVector);
+                Hex hexAtRotation = Map.GetHex(hexGrid, hexCoordinatesAtRotation);
+                if (hexAtRotation != null)
+                    hexesInArc.Add(hexAtRotation);
+            }
+        }
+
+        return hexesInArc;
+
+    }
+
     internal static List<Hex> HexesOnLine(Hex startHex, Hex endHex, bool excludeStart = true, bool excludeDestination = false)
     {
         LayerMask hexMask = LayerMask.GetMask("MapHex");

@@ -3864,6 +3864,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   map: {fileID: 1982683008}
+  MapLOSDisplayer: {fileID: 1982683015}
 --- !u!114 &1982683013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3880,7 +3881,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   rangeDisplayer: {fileID: 1982683012}
-  MapLOSDisplayer: {fileID: 1982683015}
 --- !u!114 &1982683014
 MonoBehaviour:
   m_ObjectHideFlags: 0

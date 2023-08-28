@@ -159,7 +159,7 @@ public class HexDrawer : MonoBehaviour
         this.currentColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
     }
 
-    internal void AbilityHover(bool mode)
+    internal void defaultHover(bool mode)
     {
         if (mode) { this.unHoveredColor = this.currentColor; }
         this.currentColor = mode ? HexDrawer.HEX_ABILITY_HOVER_COLOR : this.unHoveredColor;

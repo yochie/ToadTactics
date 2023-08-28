@@ -25,8 +25,6 @@ public readonly struct CharacterAbilityStats
     public readonly int cooldownDuration;
     public readonly bool isPassive;
     public readonly bool penetratingDamage;
-    public readonly bool piercesLOS;
-
     public readonly bool cappedPerRound;
     public readonly bool cappedByCooldown;
     public readonly bool knocksBack;
@@ -50,7 +48,6 @@ public readonly struct CharacterAbilityStats
                             int cooldownDuration = -1,
                             bool isPassive = false,
                             bool penetratingDamage = false,
-                            bool piercesLOS = false,
                             bool cappedPerRound = false,
                             bool cappedByCooldown = false,
                             bool knocksBack = false, 
@@ -83,7 +80,6 @@ public readonly struct CharacterAbilityStats
         this.cooldownDuration = cooldownDuration;
         this.isPassive = isPassive;
         this.penetratingDamage = penetratingDamage;
-        this.piercesLOS = piercesLOS;
         this.cappedPerRound = cappedPerRound;
         this.cappedByCooldown = cappedByCooldown;
         this.knocksBack = knocksBack;
