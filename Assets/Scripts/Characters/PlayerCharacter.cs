@@ -41,9 +41,6 @@ public class PlayerCharacter : NetworkBehaviour
     private CharacterStats currentStats;
     public CharacterStats CurrentStats { get => this.currentStats; }
     [SyncVar]
-    private bool hasMoved;
-    public bool HasMoved => this.hasMoved;
-    [SyncVar]
     private int attackCountThisTurn;
     public int AttackCountThisTurn => this.attackCountThisTurn;
     [SyncVar]
@@ -232,7 +229,6 @@ public class PlayerCharacter : NetworkBehaviour
             return;
         }
         this.remainingMoves -= moveDistance;
-        this.hasMoved = true;
     }
 
     [Server]
@@ -271,7 +267,6 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     public void ResetTurnState()
     {
-        this.hasMoved = false;
         this.attackCountThisTurn = 0;
         this.remainingMoves = this.CurrentStats.moveSpeed;
     }
