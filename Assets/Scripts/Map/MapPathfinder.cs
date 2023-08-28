@@ -32,14 +32,14 @@ public static class MapPathfinder
     }
 
     //only supports range of 1
-    internal static List<Hex> HexesInArc(Hex sourceHex, Hex primaryTargetHex, Dictionary<Vector2Int, Hex> hexGrid, int scale)
+    internal static HashSet<Hex> HexesInArc(Hex sourceHex, Hex primaryTargetHex, Dictionary<Vector2Int, Hex> hexGrid, int scale)
     {
         if (MapPathfinder.HexDistance(sourceHex, primaryTargetHex) != 1)
-            return new List<Hex>() { primaryTargetHex };
+            return new HashSet<Hex>() { primaryTargetHex };
 
         HexCoordinates sourceToTarget = HexCoordinates.Substract(primaryTargetHex.coordinates, sourceHex.coordinates);
         List<bool> directions = new() { true, false };
-        List<Hex> hexesInArc = new();
+        HashSet<Hex> hexesInArc = new();
         hexesInArc.Add(primaryTargetHex);
         foreach (bool direction in directions)
         {
