@@ -58,7 +58,7 @@ internal class BuffManager : NetworkBehaviour
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.AddAffectingBuff(buff);
 
-            string message = string.Format("{0} applied to {2}", buff.UIName, affectedCharacter.charClass.name);
+            string message = string.Format("{0} applied to {1}", buff.UIName, affectedCharacter.charClass.name);
             MasterLogger.Singleton.RpcLogMessage(message);
         }
 

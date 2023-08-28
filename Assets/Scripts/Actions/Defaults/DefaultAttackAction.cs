@@ -20,9 +20,6 @@ public class DefaultAttackAction : IAttackAction
     public int Range { get; set; }
 
     //IAttackAction
-    //public CharacterStats AttackerStats { get; set; }
-    //public CharacterStats DefenderStats { get; set; }
-    //public PlayerCharacter DefenderCharacter { get; set; }
     public int Damage { get; set; }
     public int DamageIterations { get; set; }
     public DamageType AttackDamageType { get; set; }
@@ -31,11 +28,10 @@ public class DefaultAttackAction : IAttackAction
     public float CritChance { get; set; }
     public float CritMultiplier { get; set; }
     public AreaType AttackAreaType { get; set; }
-    public List<Hex> SecondaryTargetedHexes { get; set; }
     public int AttackAreaScaler { get; set; }
 
     [Server]
-    public void ServerUse(INetworkedLogger logger)
+    public virtual void ServerUse(INetworkedLogger logger)
     {
         List<Hex> allTargets = AttackAreaGenerator.GetAttackArea(Map.Singleton.hexGrid, this.AttackAreaType, this.ActorHex, this.TargetHex, this.AttackAreaScaler);
         for (int i = 0; i < this.DamageIterations; i++)
@@ -84,7 +80,7 @@ public class DefaultAttackAction : IAttackAction
     }
 
     [Server]
-    public bool ServerValidate()
+    public virtual bool ServerValidate()
     {
         if (IAction.ValidateBasicAction(this) &&
             this.ActorCharacter.HasAvailableAttacks() &&

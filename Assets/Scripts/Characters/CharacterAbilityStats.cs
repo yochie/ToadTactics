@@ -11,7 +11,8 @@ public readonly struct CharacterAbilityStats
     public readonly int damageIterations;
     public readonly DamageType damageType;
     public readonly int range;
-    public readonly int aoe;
+    public readonly AreaType areaType;
+    public readonly int areaScaler;
     public readonly bool requiresLOS;
     public readonly List<TargetType> allowedAbilityTargets;
     public readonly bool canCrit;
@@ -28,13 +29,15 @@ public readonly struct CharacterAbilityStats
 
     public readonly bool cappedPerRound;
     public readonly bool cappedByCooldown;
+    public readonly bool knocksBack;
 
+    //-1 to crit chance or crit multi means use attacker stats if canCrit
     public CharacterAbilityStats(string stringID,
                             string interfaceName,
                             string description,
                             int damage = -1,
                             int range = -1,
-                            int aoe = -1,
+                            int areaScaler = -1,
                             int buffTurnDuration = -1,
                             bool requiresLOS = true,
                             int damageIterations = -1,
@@ -49,16 +52,17 @@ public readonly struct CharacterAbilityStats
                             bool penetratingDamage = false,
                             bool piercesLOS = false,
                             bool cappedPerRound = false,
-                            bool cappedByCooldown = false
-                            )
+                            bool cappedByCooldown = false,
+                            bool knocksBack = false, 
+                            AreaType areaType = default)
     {
         this.stringID = stringID;
         this.interfaceName = interfaceName;
         this.description = description;
         this.damage = damage;
         this.range = range;
-        this.aoe = aoe;
-        this.buffTurnDuration = buffTurnDuration;        
+        this.areaScaler = areaScaler;
+        this.buffTurnDuration = buffTurnDuration;
         this.requiresLOS = requiresLOS;
         this.damageIterations = damageIterations;
         this.damageType = damageType;
@@ -82,5 +86,7 @@ public readonly struct CharacterAbilityStats
         this.piercesLOS = piercesLOS;
         this.cappedPerRound = cappedPerRound;
         this.cappedByCooldown = cappedByCooldown;
+        this.knocksBack = knocksBack;
+        this.areaType = areaType;
     }
 }

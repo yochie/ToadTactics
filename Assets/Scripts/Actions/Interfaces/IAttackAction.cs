@@ -13,5 +13,4 @@ public interface IAttackAction : ITargetedAction
     public float CritMultiplier { get; set; }
     public AreaType AttackAreaType { get; set; }
     public int AttackAreaScaler { get; set; }
-    public List<Hex> SecondaryTargetedHexes { get; set; }
 }

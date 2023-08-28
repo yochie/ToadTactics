@@ -33,7 +33,7 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
         
-        List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.aoe, Map.Singleton.hexGrid);
+        List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.areaScaler, Map.Singleton.hexGrid);
         List<int> targetsIDs = new();
         foreach (Hex hex in hexesInAOE)
         {

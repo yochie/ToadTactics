@@ -161,8 +161,8 @@ public class MapInputHandler : NetworkBehaviour
                     this.MapLOSDisplayer.DisplayLOS(source: this.SelectedHex, destination: hoveredHex, highlightPath: false);
                 break;
             case ControlMode.useAbility:
-                if(currentActivatedAbilityStats.aoe > 0)
-                    this.rangeDisplayer.DisplayAOE(hoveredHex, currentActivatedAbilityStats.aoe);
+                if(currentActivatedAbilityStats.areaScaler > 0)
+                    this.rangeDisplayer.DisplayAOE(hoveredHex, currentActivatedAbilityStats.areaScaler);
                 else
                     hoveredHex.drawer.AbilityHover(true);
                 if (this.currentActivatedAbilityStats.requiresLOS || this.currentActivatedAbilityStats.piercesLOS)

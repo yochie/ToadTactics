@@ -4,90 +4,13 @@ using UnityEngine;
 using Mirror;
 using System.Linq;
 
-public class AbilityAttackAction : IAttackAction, IAbilityAction
+public class AbilityAttackAction : DefaultAttackAction
 {
-    //IAction
-    public PlayerCharacter ActorCharacter { get; set; }
-    public Hex ActorHex { get; set; }
-    public int RequestingPlayerID { get; set; }
-    public NetworkConnectionToClient RequestingClient { get; set; }
 
-    //ITargetedAction
-    public Hex TargetHex { get; set; }
-    public List<TargetType> AllowedTargetTypes { get; set; }
-    public bool RequiresLOS { get; set; }
-    public int Range { get; set; }
-
-    //IAttackAction
-    //public CharacterStats AttackerStats { get; set; }
-    //public CharacterStats DefenderStats { get; set; }
-    //public PlayerCharacter DefenderCharacter { get; set; }
-    public int Damage { get; set; }
-    public int DamageIterations { get; set; }
-    public DamageType AttackDamageType { get; set; }
-    public bool PenetratingDamage { get; set; }
-    public bool KnocksBack { get; set; }
-    public float CritChance { get; set; }
-    public float CritMultiplier { get; set; }
-    public AreaType AttackAreaType { get; set; }
-    public int AttackAreaScaler { get; set; }
-    public List<Hex> SecondaryTargetedHexes { get; set; }
-
-    //IAbilityAction
-    public CharacterAbilityStats AbilityStats { get; set; }
-
+    //Same as default but skip on checking if character has available attacks
     [Server]
-    public void ServerUse(INetworkedLogger logger)
+    public override bool ServerValidate()
     {
-
-        if(this.TargetHex.HoldsAnObstacle() && this.DefenderCharacter == null)
-        {
-            //attacking obstacle
-            Map.Singleton.obstacleManager.DestroyObstacleAtPosition(Map.Singleton.hexGrid, this.TargetHex.coordinates.OffsetCoordinatesAsVector());
-            string message = string.Format("{0} felled tree", this.ActorCharacter.charClass.name);
-            logger.RpcLogMessage(message);        
-        }
-        else 
-        {
-            //attacking character
-            float critChance = this.AbilityStats.critChance == -1 ? this.AttackerStats.critChance : this.AbilityStats.critChance;
-            float critMulti = this.AbilityStats.critMultiplier == -1 ? this.AttackerStats.critMultiplier : this.AbilityStats.critChance;
-            bool penetrates = this.AbilityStats.penetratingDamage;
-
-            for (int i = 0; i < this.AbilityStats.damageIterations; i++)
-            {
-                int prevLife = this.DefenderCharacter.CurrentLife;
-                bool isCrit = this.AbilityStats.canCrit ? Utility.RollCrit(critChance) : false;
-                int rolledDamage = isCrit ? Utility.CalculateCritDamage(this.AbilityStats.damage, critMulti) : this.AbilityStats.damage;
-                this.DefenderCharacter.TakeDamage(rolledDamage, this.AbilityStats.damageType, penetrates);
-
-                string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
-                this.ActorCharacter.charClass.name,
-                this.DefenderCharacter.charClass.name,
-                rolledDamage,
-                prevLife,
-                this.DefenderCharacter.CurrentLife,
-                isCrit ? "crit" : "nocrit",
-                this.AbilityStats.damageType,
-                penetrates ? " penetrating" : "");
-
-                logger.RpcLogMessage(message);
-
-                if (this.DefenderCharacter.IsDead)
-                {
-                    break;
-                }
-            }
-        }
-    }
-
-    [Server]
-    public bool ServerValidate()
-    {
-        //if this is NOT an obstacle attack, make sure targets are correctly configured
-        if (this.TargetHex.HoldsACharacter() && this.TargetHex.GetHeldCharacterObject() != this.DefenderCharacter)
-            return false;
-
         if (IAction.ValidateBasicAction(this) &&
             ITargetedAction.ValidateTarget(this)
             )

@@ -34,7 +34,12 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
     public readonly bool penetratingDamage;
 
     public readonly bool hasFaith;
+    
+    public readonly bool knocksBack;
 
+    public readonly AreaType attackAreaType;
+
+    public readonly int attackAreaScaler;
 
     public CharacterStats(int maxHealth,
                           int armor,
@@ -50,7 +55,10 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                           DamageType damageType = DamageType.physical,
                           List<TargetType> allowedAttackTargets = null,
                           bool penetratingDamage = false,
-                          bool hasFaith = false)
+                          bool hasFaith = false,
+                          bool knocksBack = false,
+                          AreaType attackAreaType = default,
+                          int attackAreaScaler = 1)
     {
         this.maxHealth = maxHealth;
         this.armor = armor;
@@ -74,6 +82,9 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         }
         this.penetratingDamage = penetratingDamage;
         this.hasFaith = hasFaith;
+        this.knocksBack = knocksBack;
+        this.attackAreaType = attackAreaType;
+        this.attackAreaScaler = attackAreaScaler;
     }
 
     public CharacterStats(CharacterStats toCopy,
@@ -91,8 +102,11 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                       DamageType? damageType = null,
                       int? kingDamage = null,
                       bool? penetratingDamage = null,
-                      List<TargetType> allowedAttackTargets = null, 
-                      bool? hasFaith = null)
+                      List<TargetType> allowedAttackTargets = null,
+                      bool? hasFaith = null,
+                      bool? knocksBack = null, 
+                      int? attackAreaScaler = null, 
+                      AreaType? attackAreaType = null)
     {
         this.maxHealth = maxHealth == null ? toCopy.maxHealth : maxHealth.GetValueOrDefault();
         this.armor = armor == null ? toCopy.armor : armor.GetValueOrDefault();
@@ -107,9 +121,11 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.attacksRequireLOS = attacksRequireLOS == null ? toCopy.attacksRequireLOS : attacksRequireLOS.GetValueOrDefault();
         this.damageType = damageType == null ? toCopy.damageType : damageType.GetValueOrDefault();
         this.penetratingDamage = penetratingDamage == null ? toCopy.penetratingDamage : penetratingDamage.GetValueOrDefault();
-
         this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : allowedAttackTargets;
         this.hasFaith = hasFaith == null ? toCopy.hasFaith : hasFaith.GetValueOrDefault();
+        this.knocksBack = knocksBack == null ? toCopy.knocksBack : knocksBack.GetValueOrDefault();
+        this.attackAreaType = attackAreaType == null ? toCopy.attackAreaType : attackAreaType.GetValueOrDefault();
+        this.attackAreaScaler = attackAreaScaler == null ? toCopy.attackAreaScaler : attackAreaScaler.GetValueOrDefault();
     }
 
     public bool Equals(CharacterStats other)

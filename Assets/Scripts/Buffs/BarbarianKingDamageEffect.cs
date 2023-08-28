@@ -20,6 +20,8 @@ public class BarbarianKingDamageEffect : IAbilityBuffEffect, IPassiveEffect, IAt
     //set at runtime
     public int ApplyingCharacterID {get; set;}
     public CharacterAbilityStats AppliedByAbility { get; set; }
+
+    public bool IsPositive => true;
     #endregion
 
     [Server]

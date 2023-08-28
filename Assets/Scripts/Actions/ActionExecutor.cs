@@ -21,11 +21,10 @@ public class ActionExecutor : NetworkBehaviour
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter movingCharacter = GameController.Singleton.PlayerCharactersByID[source.holdsCharacterWithClassID];
-
-        bool success = ActionExecutor.Singleton.TryMove(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
-        if (success)
-            this.FinishAction(movingCharacter, sender, ControlMode.move);
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        IMoveAction moveAction = ActionFactory.CreateDefaultMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
+        moveAction.SetupPath();
+        this.TryAction(moveAction, isFullAction: true, startingMode: ControlMode.move);
     }
 
 
@@ -33,35 +32,19 @@ public class ActionExecutor : NetworkBehaviour
     public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = GameController.Singleton.PlayerCharactersByID[source.holdsCharacterWithClassID];
-        PlayerCharacter targetedCharacter = null;
-        if (target.HoldsACharacter())
-        {
-            targetedCharacter = GameController.Singleton.PlayerCharactersByID[target.holdsCharacterWithClassID];
-        }
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
+        this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.attack);
 
-        bool success;
-        if (targetedCharacter != null)
-        {
-            success = ActionExecutor.Singleton.TryAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.CurrentStats, targetedCharacter.CurrentStats, source, target);
-        }
-        else
-        {
-            success = ActionExecutor.Singleton.TryAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
-        }
-        if (success)
-            this.FinishAction(attackingCharacter, sender, ControlMode.attack);
     }
 
     [Command(requiresAuthority = false)]
     internal void CmdUseAbility(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter usingCharacter = GameController.Singleton.PlayerCharactersByID[source.holdsCharacterWithClassID];
-
-        bool success = ActionExecutor.Singleton.TryAbility(sender, playerID, usingCharacter, abilityStats, source, target);
-        if (success)
-            this.FinishAction(usingCharacter, sender, ControlMode.useAbility);
+        PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
+        IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, playerID, usingCharacter, abilityStats, source, target);
+        this.TryAction(abilityAction, isFullAction: true, startingMode: ControlMode.useAbility);
     }
 
     //should only be used from abilities to handle their attack portions
@@ -70,124 +53,35 @@ public class ActionExecutor : NetworkBehaviour
     public void AbilityAttack(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = GameController.Singleton.PlayerCharactersByID[source.holdsCharacterWithClassID];
-        PlayerCharacter targetedCharacter = null;
-        if (target.HoldsACharacter())
-        {
-            targetedCharacter = GameController.Singleton.PlayerCharactersByID[target.holdsCharacterWithClassID];
-        }
-        if (targetedCharacter != null)
-        {
-            ActionExecutor.Singleton.TryAbilityAttackCharacter(sender, playerID, attackingCharacter, targetedCharacter, attackingCharacter.CurrentStats, targetedCharacter.CurrentStats, abilityStats, source, target);
-        }
-        else
-        {
-            ActionExecutor.Singleton.TryAbilityAttackObstacle(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, abilityStats, source, target);
-        }
-    }
-
-
-
-    [Server]
-    public bool TryMove(NetworkConnectionToClient sender,
-                                   int actingPlayerID,
-                                   PlayerCharacter moverCharacter,                                   
-                                   CharacterStats moverStats,                                   
-                                   Hex moverHex,
-                                   Hex targetHex)
-    {
-        DefaultMoveAction moveAction = ActionFactory.CreateDefaultMoveAction(sender, actingPlayerID, moverCharacter, moverStats, moverHex, targetHex);
-        moveAction.SetupPath();
-        return this.TryAction(moveAction);
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        AbilityAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(sender,
+                                                                                   playerID,
+                                                                                   attackingCharacter,
+                                                                                   attackingCharacter.CurrentStats,
+                                                                                   abilityStats,
+                                                                                   source,
+                                                                                   target);
+        this.TryAction(abilityAttackAction, isFullAction : false);
     }
 
     [Server]
-    public bool TryAttackCharacter(NetworkConnectionToClient sender,
-                                   int actingPlayerID,
-                                   PlayerCharacter attackerCharacter,
-                                   PlayerCharacter defenderCharacter,
-                                   CharacterStats attackerStats,
-                                   CharacterStats defenderStats,
-                                   Hex attackerHex,
-                                   Hex defenderHex)
+    private void TryAction(IAction action, bool isFullAction, ControlMode? startingMode = null)
     {
-        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, actingPlayerID, attackerCharacter, defenderCharacter, attackerStats, defenderStats, attackerHex, defenderHex);       
-        return this.TryAction(attackAction);
-    }
-
-    [Server]
-    public bool TryAttackObstacle(NetworkConnectionToClient sender,
-                                  int actingPlayerID,
-                                  PlayerCharacter attackerCharacter,
-                                  CharacterStats attackerStats,
-                                  Hex attackerHex,
-                                  Hex defenderHex)
-    {
-        IAttackAction attackAction = ActionFactory.CreateObstacleAttackAction(sender, actingPlayerID, attackerCharacter, attackerStats, attackerHex, defenderHex);
-        return this.TryAction(attackAction);
-    }
-
-    [Server]
-    public bool TryAbility(NetworkConnectionToClient sender,
-                           int actingPlayerID,
-                           PlayerCharacter actingCharacter,
-                           CharacterAbilityStats ability,
-                           Hex source,
-                           Hex target)
-    {
-        IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, actingPlayerID, actingCharacter, ability, source, target);       
-        return this.TryAction(abilityAction);
-    }
-
-    [Server]
-    public bool TryAbilityAttackCharacter(NetworkConnectionToClient sender,
-                               int actingPlayerID,
-                               PlayerCharacter attackerCharacter,
-                               PlayerCharacter defenderCharacter,
-                               CharacterStats attackerStats,
-                               CharacterStats defenderStats,
-                               CharacterAbilityStats abilityStats,
-                               Hex attackerHex,
-                               Hex defenderHex)
-    {
-        AbilityAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackCharacterAction(sender,
-                                                                                          actingPlayerID,
-                                                                                          attackerCharacter,
-                                                                                          defenderCharacter,
-                                                                                          attackerStats,
-                                                                                          defenderStats,
-                                                                                          abilityStats,
-                                                                                          attackerHex,
-                                                                                          defenderHex);
-        return this.TryAction(abilityAttackAction);
-    }
-
-
-    private bool TryAbilityAttackObstacle(NetworkConnectionToClient sender, int playerID, PlayerCharacter attackingCharacter, CharacterStats attackerStats, CharacterAbilityStats abilityStats, Hex attackerHex, Hex defenderHex)
-    {
-        AbilityAttackAction abilityAttackObstacleAction = ActionFactory.CreateAbilityAttackObstacleAction(sender,
-                                                                                          playerID,
-                                                                                          attackingCharacter,
-                                                                                          attackerStats,
-                                                                                          abilityStats,
-                                                                                          attackerHex,
-                                                                                          defenderHex);
-        return this.TryAction(abilityAttackObstacleAction);
-    }
-
-
-    [Server]
-    private bool TryAction(IAction action)
-    {
+        bool success;
         if (action.ServerValidate())
         {
             action.ServerUse(this.logger);            
-            return true;
+            success = true;
         }
         else
         {
             Debug.LogFormat("Action {0} validation failed.", action);
-            return false;
+            success = false;
+        }
+
+        if (success && isFullAction && startingMode != null)
+        {
+            this.FinishAction(action.ActorCharacter, action.RequestingClient, startingMode.GetValueOrDefault());
         }
     }
 

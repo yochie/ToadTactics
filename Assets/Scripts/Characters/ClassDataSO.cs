@@ -209,6 +209,8 @@ public class ClassDataSO : ScriptableObject
                 initiative: 3,
                 range: 3,
                 damageIterations: 1,
+                attackAreaType: AreaType.pierce,
+                attacksRequireLOS: false,
                 hasFaith: false),
             abilities: new List<CharacterAbilityStats> {
                 new (
@@ -224,7 +226,7 @@ public class ClassDataSO : ScriptableObject
                     cooldownDuration: 3,
                     cappedByCooldown: true,
                     piercesLOS: true
-                ) 
+                )
             }
             );
         classes.Add(archer);
@@ -289,7 +291,7 @@ public class ClassDataSO : ScriptableObject
                     description: "Shouts and scares close enemies, making them cower in fear for a turn.",
                     buffTurnDuration: 1,
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
-                    aoe : 1,
+                    areaScaler : 1,
                     range: 0,
                     cappedByCooldown: true,
                     cooldownDuration: 5
@@ -355,7 +357,7 @@ public class ClassDataSO : ScriptableObject
                     cooldownDuration: 3,
                     cappedByCooldown: true,
                     range : 3,
-                    aoe: 1,
+                    areaScaler: 1,
                     requiresLOS: false,
                     damage: HazardDataSO.Singleton.GetHazardDamage(HazardType.fire),
                     damageIterations: 1,
@@ -427,7 +429,7 @@ public class ClassDataSO : ScriptableObject
                     cooldownDuration: 2,
                     cappedByCooldown: true,
                     range: 3,
-                    aoe: 1,
+                    areaScaler: 1,
                     damage: 30,
                     damageIterations: 1,
                     damageType: DamageType.magic

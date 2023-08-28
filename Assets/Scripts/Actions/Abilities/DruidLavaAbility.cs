@@ -31,7 +31,7 @@ public class DruidLavaAbility : IAbilityAction, ITargetedAction
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
-        List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.aoe, Map.Singleton.hexGrid);
+        List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.areaScaler, Map.Singleton.hexGrid);
 
         foreach (Hex hex in hexesInAOE)
         {

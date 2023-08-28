@@ -41,7 +41,7 @@ public class AbilitiesTable : MonoBehaviour
                 range = "infinite";
             else
                 range = !(ability.range > 0) ? "" : ability.range.ToString();
-            string aoe = ability.aoe == -1 ? "" : ability.aoe.ToString();
+            string aoe = ability.areaScaler == -1 ? "" : ability.areaScaler.ToString();
             string usesPerRound = ability.usesPerRound == -1 ? "" : string.Format("{0} per round", ability.usesPerRound);
             string cooldownDuration = ability.cooldownDuration == -1 ? "" : ability.cooldownDuration.ToString();
             string passiveOrActive = ability.isPassive ? "Passive" : "Active";

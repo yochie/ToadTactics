@@ -5,4 +5,5 @@ using UnityEngine;
 public interface IMoveAction : ITargetedAction
 {
     public CharacterStats MoverStats { get; set; }
+    public void SetupPath();
 }

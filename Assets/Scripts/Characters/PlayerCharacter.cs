@@ -133,12 +133,27 @@ public class PlayerCharacter : NetworkBehaviour
         this.ResetTurnState();
     }
 
+    //TODO: add check for equipments here eventually once they exist in this category
+    internal List<IAttackEnhancer> GetAttackEnhancers()
+    {
+        List<IAttackEnhancer> toReturn = new();
+        foreach(IBuff buff in this.affectedByBuffs)
+        {
+            IAttackEnhancer attackEnhancer = buff as IAttackEnhancer;
+            if (attackEnhancer != null)
+                toReturn.Add(attackEnhancer);
+        }
+        return toReturn;
+    }
+
     internal Dictionary<int, string> GetAffectingBuffIcons()
     {
         Dictionary<int, string> buffIcons = new();
-        foreach(IAppliedBuff buff in this.affectedByBuffs)
+        foreach(IBuff buff in this.affectedByBuffs)
         {
-            buffIcons[buff.UniqueID] = buff.IconName;
+            IDisplayedBuff displayedBuff = buff as IDisplayedBuff;
+            if(displayedBuff != null)
+                buffIcons[displayedBuff.UniqueID] = displayedBuff.IconName;
         }
         return buffIcons;
     }

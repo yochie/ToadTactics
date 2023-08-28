@@ -12,4 +12,6 @@ public interface IBuff
     public int UniqueID { get; set; }
 
     public List<int> AffectedCharacterIDs { get; set; }
+
+    public bool IsPositive { get; }
 }

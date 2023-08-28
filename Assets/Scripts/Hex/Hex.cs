@@ -3,9 +3,6 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.EventSystems;
 
-//RTODO: Split into seperate classes
-//RTODO: IsDraggable and IsClickable moved to registered observers that do the movement/selecting
-
 [RequireComponent(typeof(HexDrawer))]
 [RequireComponent(typeof(HexMouseEventTracker))]
 
