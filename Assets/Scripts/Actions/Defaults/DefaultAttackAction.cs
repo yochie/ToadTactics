@@ -27,13 +27,13 @@ public class DefaultAttackAction : IAttackAction
     public bool KnocksBack { get; set; }
     public float CritChance { get; set; }
     public float CritMultiplier { get; set; }
-    public AreaType AttackAreaType { get; set; }
-    public int AttackAreaScaler { get; set; }
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
 
     [Server]
     public virtual void ServerUse(INetworkedLogger logger)
     {
-        List<Hex> allTargets = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.AttackAreaType, this.ActorHex, this.TargetHex, this.AttackAreaScaler);
+        List<Hex> allTargets = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
         for (int i = 0; i < this.DamageIterations; i++)
         {
             foreach (Hex target in allTargets)
