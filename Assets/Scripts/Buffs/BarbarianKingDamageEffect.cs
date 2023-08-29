@@ -27,7 +27,8 @@ public class BarbarianKingDamageEffect : IAbilityBuffEffect, IPassiveEffect, IAt
     [Server]
     public IAttackAction EnhanceAttack(IAttackAction attackToEnhance)
     {
-        if (attackToEnhance.TargetHex.GetHeldCharacterObject().IsKing)
+
+        if (attackToEnhance.TargetHex.HoldsACharacter() && attackToEnhance.TargetHex.GetHeldCharacterObject().IsKing)
         {
             attackToEnhance.Damage = attackToEnhance.Damage + KING_DAMAGE_BONUS;
         }
