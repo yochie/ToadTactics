@@ -15,12 +15,17 @@ public class ClassDataSO : ScriptableObject
     private Dictionary<int, CharacterClass> characterClasses;
     private Dictionary<string, Type> abilityActionTypes;
     private Dictionary<string, Type> passiveAbilitiesBuffTypes;
+    private Dictionary<string, Type> movementActionTypes;
+    private Dictionary<string, Type> attackActionTypes;
+
 
     //singleton loaded from resources
     private const string resourcePath = "ClassData";
     private static ClassDataSO singleton = null;
-    public static ClassDataSO Singleton {
-        get {
+    public static ClassDataSO Singleton
+    {
+        get
+        {
             if (ClassDataSO.singleton == null)
                 ClassDataSO.singleton = Resources.Load<ClassDataSO>(resourcePath);
             return ClassDataSO.singleton;
@@ -29,9 +34,11 @@ public class ClassDataSO : ScriptableObject
 
     private void Awake()
     {
-        ClassDataSO.Singleton.characterClasses = this.DefineClasses().ToDictionary(charClass => charClass.classID);
-        ClassDataSO.Singleton.abilityActionTypes = this.LinkAbilitiesToTheirActionTypes();
-        ClassDataSO.Singleton.passiveAbilitiesBuffTypes = this.LinkPassiveAbilitiesToTheirBuffTypes();
+        this.characterClasses = this.DefineClasses().ToDictionary(charClass => charClass.classID);
+        this.abilityActionTypes = this.DefineAbilityActionIDs();
+        this.passiveAbilitiesBuffTypes = this.LinkPassiveAbilitiesToTheirBuffTypes();
+        this.movementActionTypes = this.DefineMoveActionsIDs();
+        this.attackActionTypes = this.DefineAttackActionsIDs();
 
     }
 
@@ -39,7 +46,7 @@ public class ClassDataSO : ScriptableObject
     {
         foreach (PlayerCharacter prefab in characterPrefabs)
         {
-            if(prefab.CharClassID == classID)
+            if (prefab.CharClassID == classID)
             {
                 return prefab.GetComponent<SpriteRenderer>().sprite;
             }
@@ -79,15 +86,27 @@ public class ClassDataSO : ScriptableObject
         return this.characterClasses[classID];
     }
 
-    public Type GetActionTypeByID(string abilityID)
-    {        
+    public Type GetAbilityActionTypeByID(string abilityID)
+    {
         return this.abilityActionTypes[abilityID];
+    }
+
+    public Type GetMoveActionTypeByID(string actionID)
+    {
+        return this.movementActionTypes[actionID];
+    }
+
+    public Type GetAttackActionTypeByID(string actionID)
+    {
+        return this.attackActionTypes[actionID];
     }
 
     public Type GetBuffTypesByPassiveAbilityID(string abilityID)
     {
         return this.passiveAbilitiesBuffTypes[abilityID];
     }
+
+
 
 
 
@@ -149,7 +168,7 @@ public class ClassDataSO : ScriptableObject
             name: "Barbarian",
             description: "A barbarian is a primal warrior, embodying raw power and untamed fury on the battlefield. They eschew finesse and tactical subtlety in favor of sheer physical might. Wielding massive weapons in each hand, barbarians charge into combat with a relentless assault.",
             stats: barbStats,
-            abilities: new List<CharacterAbilityStats> { 
+            abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "BarbarianKingDamage",
                     interfaceName: "KingSlayer",
@@ -225,7 +244,7 @@ public class ClassDataSO : ScriptableObject
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle},
                     cooldownDuration: 3,
                     cappedByCooldown: true,
-                    areaType: AreaType.pierce                    
+                    areaType: AreaType.pierce
                 )
             }
             );
@@ -255,7 +274,7 @@ public class ClassDataSO : ScriptableObject
                     damage: 15,
                     damageIterations: 1,
                     damageType: DamageType.physical,
-                    range: 1,                  
+                    range: 1,
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
                     cooldownDuration: 3,
                     cappedByCooldown: true,
@@ -328,7 +347,7 @@ public class ClassDataSO : ScriptableObject
                     description: "Grants a bonus to health, armor and movement to all allies.",
                     buffTurnDuration: 2,
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
-                    cooldownDuration: 4, 
+                    cooldownDuration: 4,
                     cappedByCooldown: true,
                     range:0
                 )
@@ -390,7 +409,8 @@ public class ClassDataSO : ScriptableObject
                 initiative: 8,
                 range: 3,
                 damageIterations: 1,
-                hasFaith: true),
+                hasFaith: true,
+                attacksPerTurn: 2),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "NecroDOT",
@@ -430,17 +450,17 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "WizardFireball",
                     interfaceName: "Fireball",
-                    description: "Target any tile and throw exploding fireball that deals magic damage in area of effect.",                    
+                    description: "Target any tile and throw exploding fireball that deals magic damage in area of effect.",
                     allowedAbilityTargets: Utility.GetAllEnumValues<TargetType>(),
                     cooldownDuration: 2,
                     cappedByCooldown: true,
                     range: 3,
-                    areaType: AreaType.radial,                    
+                    areaType: AreaType.radial,
                     areaScaler: 1,
                     damage: 30,
                     damageIterations: 1,
                     damageType: DamageType.magic
-                ) 
+                )
             }
             );
         classes.Add(wizard);
@@ -468,7 +488,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "PriestResurrect",
                     interfaceName: "Resurrect",
-                    description: "Resurrect ally with half of maximum health.",                    
+                    description: "Resurrect ally with half of maximum health.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.friendly_corpse },
                     usesPerRound: 1,
                     cappedPerRound: true,
@@ -482,14 +502,14 @@ public class ClassDataSO : ScriptableObject
         return classes;
     }
 
-    private Dictionary<string, Type> LinkAbilitiesToTheirActionTypes()
+    private Dictionary<string, Type> DefineAbilityActionIDs()
     {
         Dictionary<string, Type> actionsByAbilityID = new();
 
         actionsByAbilityID.Add("CavalierStun", typeof(CavalierStunAbility));
         actionsByAbilityID.Add("PaladinTeamBuff", typeof(PaladinTeamBuffAbility));
         actionsByAbilityID.Add("PriestResurrect", typeof(PriestResurrectAbility));
-        actionsByAbilityID.Add("WizardFireball", typeof(WizardFireballAbility));      
+        actionsByAbilityID.Add("WizardFireball", typeof(WizardFireballAbility));
         actionsByAbilityID.Add("WarriorRoot", typeof(WarriorRootAbility));
         actionsByAbilityID.Add("NecroDOT", typeof(NecroDOTAbility));
         actionsByAbilityID.Add("RogueCrit", typeof(RogueCritAbility));
@@ -506,5 +526,23 @@ public class ClassDataSO : ScriptableObject
         buffsByPassiveAbilityID.Add("BarbarianKingDamage", typeof(BarbarianKingDamageEffect));
         return buffsByPassiveAbilityID;
     }
+
+    private Dictionary<string, Type> DefineMoveActionsIDs()
+    {
+        Dictionary<string, Type> movementActionsByID = new();
+        movementActionsByID.Add("DefaultMoveAction", typeof(DefaultMoveAction));
+        //movementActionsByID.Add("DruidMoveAction", typeof(DruidMoveAction));
+        return movementActionsByID;
+
+    }
+
+    private Dictionary<string, Type> DefineAttackActionsIDs()
+    {
+        Dictionary<string, Type> attackActionsByID = new();
+        attackActionsByID.Add("DefaultAttackAction", typeof(DefaultAttackAction));
+        //attackActionsByID.Add("NecroAttackAction", typeof(NecroAttackAction));
+        return attackActionsByID;
+    }
     #endregion
 }
+

@@ -7,14 +7,15 @@ using System.Linq;
 
 public class ActionFactory : MonoBehaviour
 {
-    public static IMoveAction CreateDefaultMoveAction(NetworkConnectionToClient sender,
+    public static IMoveAction CreateMoveAction(NetworkConnectionToClient sender,
                                            int requestingPlayerID,
                                            PlayerCharacter moverCharacter,
                                            CharacterStats moverStats,
                                            Hex moverHex,
                                            Hex targetHex)
     {
-        IMoveAction moveAction = new DefaultMoveAction();
+        Type moveActionType = ClassDataSO.Singleton.GetMoveActionTypeByID(moverCharacter.charClass.moveActionID);
+        IMoveAction moveAction = (IMoveAction) Activator.CreateInstance(moveActionType);
 
         //IAction
         moveAction.RequestingPlayerID = requestingPlayerID;
@@ -42,7 +43,8 @@ public class ActionFactory : MonoBehaviour
                                                    Hex attackerHex,
                                                    Hex defenderHex)
     {
-        IAttackAction attackAction = new DefaultAttackAction();
+        Type attackActionType = ClassDataSO.Singleton.GetAttackActionTypeByID(attackerCharacter.charClass.attackActionID);
+        IAttackAction attackAction = (IAttackAction) Activator.CreateInstance(attackActionType);
 
         //IAction
         attackAction.RequestingPlayerID = requestingPlayerID;
@@ -82,7 +84,7 @@ public class ActionFactory : MonoBehaviour
         {
             throw new Exception("Attempting to create action for passive ability. No can do.");
         }
-        Type actionType = ClassDataSO.Singleton.GetActionTypeByID(ability.stringID);
+        Type actionType = ClassDataSO.Singleton.GetAbilityActionTypeByID(ability.stringID);
         IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(actionType);
 
         //IAction

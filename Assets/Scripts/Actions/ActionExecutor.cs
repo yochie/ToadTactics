@@ -22,7 +22,7 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
-        IMoveAction moveAction = ActionFactory.CreateDefaultMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
+        IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
         moveAction.SetupPath();
         this.TryAction(moveAction, isFullAction: true, startingMode: ControlMode.move);
     }
