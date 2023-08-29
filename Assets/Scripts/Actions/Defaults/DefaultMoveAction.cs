@@ -21,10 +21,11 @@ public class DefaultMoveAction : IMoveAction
     public CharacterStats MoverStats { get; set; }
 
     private int moveCost;
-    private List<Hex> movePath;
+    protected List<Hex> movePath;
+    protected Hex interruptedAtHex;
 
     [Server]
-    public void ServerUse(INetworkedLogger logger)
+    public virtual void ServerUse(INetworkedLogger logger)
     {
         //move one hex at a time to ensure we die on correct tile
         //still need to call rpcs after loop to avoid race conditions
@@ -67,6 +68,8 @@ public class DefaultMoveAction : IMoveAction
 
         if (diedOnHex != null)
         {
+            //in case sub classes need to do stuff on pathed hexes
+            this.interruptedAtHex = diedOnHex;
             this.ActorCharacter.RpcPlaceCharSprite(diedOnHex.transform.position);
         }
         else
