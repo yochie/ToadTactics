@@ -258,39 +258,6 @@ public static class MapPathfinder
         }
         return hexTargetableTypes;
     }
-
-    //TODO : remove if no issues with using LOSReaches instead
-    //private static bool IsHexReachableByLOS(Hex source, Hex target)
-    //{
-    //    LayerMask hexMask = LayerMask.GetMask("MapHex");
-    //    RaycastHit2D[] hits;
-    //    Vector2 sourcePos = source.transform.position;
-    //    Vector2 targetPos = target.transform.position;
-    //    Vector2 direction = targetPos - sourcePos;
-
-    //    hits = Physics2D.RaycastAll(sourcePos, direction, direction.magnitude, hexMask);
-    //    Array.Sort(hits, Comparer<RaycastHit2D>.Create((RaycastHit2D x, RaycastHit2D y) => x.distance.CompareTo(y.distance)));
-
-    //    bool firstHit = true;
-    //    foreach (RaycastHit2D raycastHit in hits)
-    //    {
-    //        //skip first hit, its always source hex
-    //        if (firstHit)
-    //        {
-    //            firstHit = false;
-    //            continue;
-    //        }
-
-    //        Hex hitHex = raycastHit.collider.GetComponent<Hex>();
-    //        if (hitHex != null && hitHex.BreaksLOSToTarget(target))
-    //        {
-    //            return false;
-    //        }
-    //    }
-
-    //    return true;
-    //}
-
     public static bool LOSReaches(Hex source, Hex target, int? range = null)
     {
 
