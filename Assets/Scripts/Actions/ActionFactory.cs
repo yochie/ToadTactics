@@ -66,8 +66,8 @@ public class ActionFactory : MonoBehaviour
         attackAction.KnocksBack = attackerStats.knocksBack;
         attackAction.CritChance = attackerStats.critChance;
         attackAction.CritMultiplier = attackerStats.critMultiplier;
-        attackAction.AttackAreaType = attackerStats.attackAreaType;
-        attackAction.AttackAreaScaler = attackerStats.attackAreaScaler;
+        attackAction.TargetedAreaType = attackerStats.attackAreaType;
+        attackAction.AreaScaler = attackerStats.attackAreaScaler;
 
         List<IAttackEnhancer> attackEnhancers = attackerCharacter.GetAttackEnhancers();
         foreach(IAttackEnhancer attackEnhancer in attackEnhancers)
@@ -84,8 +84,8 @@ public class ActionFactory : MonoBehaviour
         {
             throw new Exception("Attempting to create action for passive ability. No can do.");
         }
-        Type actionType = ClassDataSO.Singleton.GetAbilityActionTypeByID(ability.stringID);
-        IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(actionType);
+        Type abilityActionType = ClassDataSO.Singleton.GetAbilityActionTypeByID(ability.stringID);
+        IAbilityAction abilityAction = (IAbilityAction) Activator.CreateInstance(abilityActionType);
 
         //IAction
         abilityAction.RequestingPlayerID = requestingPlayerID;
@@ -98,7 +98,7 @@ public class ActionFactory : MonoBehaviour
         
         //ITargetedAction (conditionally)
         //Assign target hex if ability implements ITargetedAction
-        if (typeof(ITargetedAction).IsAssignableFrom(actionType))
+        if (typeof(ITargetedAction).IsAssignableFrom(abilityActionType))
         {
             ITargetedAction actionWithTarget = abilityAction as ITargetedAction;
             actionWithTarget.TargetHex = targetHex;
@@ -106,7 +106,15 @@ public class ActionFactory : MonoBehaviour
             actionWithTarget.Range = ability.range;
             actionWithTarget.RequiresLOS = ability.requiresLOS;
         }
-        
+
+        if (typeof(IAreaTargeter).IsAssignableFrom(abilityActionType))
+        {
+            IAreaTargeter actionWithTargetedArea = abilityAction as IAreaTargeter;
+            actionWithTargetedArea.TargetedAreaType = ability.areaType;
+            actionWithTargetedArea.AreaScaler = ability.areaScaler;
+
+        }
+
         return abilityAction;
     }
 
@@ -150,8 +158,8 @@ public class ActionFactory : MonoBehaviour
             abilityAttackAction.CritMultiplier = 1f;
         }
         
-        abilityAttackAction.AttackAreaType = abilityStats.areaType;
-        abilityAttackAction.AttackAreaScaler = abilityStats.areaScaler;
+        abilityAttackAction.TargetedAreaType = abilityStats.areaType;
+        abilityAttackAction.AreaScaler = abilityStats.areaScaler;
 
         return abilityAttackAction;
     }
