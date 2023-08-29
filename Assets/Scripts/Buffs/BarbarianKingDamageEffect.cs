@@ -28,6 +28,10 @@ public class BarbarianKingDamageEffect : IAbilityBuffEffect, IPassiveEffect, IAt
     public IAttackAction EnhanceAttack(IAttackAction attackToEnhance)
     {
 
+        //We are only checking if primary target is king and buffing whole attack damage. 
+        //If barb attack were ever to have a different area type than single, we might want to revisit this.
+        //Perhaps use some SetupTargets function inside any ability/attack action so that any modifiers get to check on all targets
+        //similar to what is done for IMovementActions
         if (attackToEnhance.TargetHex.HoldsACharacter() && attackToEnhance.TargetHex.GetHeldCharacterObject().IsKing)
         {
             attackToEnhance.Damage = attackToEnhance.Damage + KING_DAMAGE_BONUS;
