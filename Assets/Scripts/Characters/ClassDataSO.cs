@@ -106,10 +106,6 @@ public class ClassDataSO : ScriptableObject
         return this.passiveAbilitiesBuffTypes[abilityID];
     }
 
-
-
-
-
     #region Static definitions
 
     //Instantiate all classes to set their definitions here
@@ -372,6 +368,7 @@ public class ClassDataSO : ScriptableObject
                 range: 3,
                 damageIterations: 1,
                 hasFaith: true),
+            moveActionID: "DruidMoveAction",
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "DruidLava",
@@ -531,7 +528,7 @@ public class ClassDataSO : ScriptableObject
     {
         Dictionary<string, Type> movementActionsByID = new();
         movementActionsByID.Add("DefaultMoveAction", typeof(DefaultMoveAction));
-        //movementActionsByID.Add("DruidMoveAction", typeof(DruidMoveAction));
+        movementActionsByID.Add("DruidMoveAction", typeof(DruidMoveAction));
         return movementActionsByID;
 
     }
