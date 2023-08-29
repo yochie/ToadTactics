@@ -199,5 +199,25 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         return 1 + movementPenalty;
     }
 
+    internal bool IsEmpty()
+    {
+        if (this.HoldsACharacter())
+            return false;
+        if (this.HoldsAnObstacle())
+            return false;
+        if (this.HoldsACorpse())
+            return false;
+        if (this.HolsAHazard())
+            return false;
+        return true;
+    }
+
+    private bool HolsAHazard()
+    {
+        if (this.holdsHazard != HazardType.none)
+            return true;
+        else
+            return false;
+    }
     #endregion
 }
