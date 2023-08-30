@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
 {
@@ -22,8 +23,13 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
     public List<TargetType> AllowedTargetTypes { get; set; }
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
-
+    
+    //IBuffSource
     public Type AppliesBuffType { get => typeof(CavalierStunEffect); }
+
+    //IAreaTargeter
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
 
     [Server]
     public void ServerUse(INetworkedLogger logger)
@@ -34,15 +40,13 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
-        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
-        
-        //ability was used only as attack on obstacle or targeted character died
-        if (!TargetHex.HoldsACharacter() || TargetHex.GetHeldCharacterObject() == null)
-            return;
+        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
 
-        List<int> affectedCharacterIDs = new List<int> { this.TargetHex.holdsCharacterWithClassID };
+        List<int> affectedCharacterIDs = targetedHexes.Where(hex => hex.HoldsACharacter()).Select(hex => hex.holdsCharacterWithClassID).ToList();
         IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
+
+        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
 
     }
 

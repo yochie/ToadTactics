@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ArcherSnipeAbility : IAbilityAction, ITargetedAction
+public class ArcherSnipeAbility : IAbilityAction
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -22,6 +22,10 @@ public class ArcherSnipeAbility : IAbilityAction, ITargetedAction
     public List<TargetType> AllowedTargetTypes { get; set; }
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
+    
+    //IAreaTargeter
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
 
     [Server]
     public void ServerUse(INetworkedLogger logger)
@@ -31,12 +35,8 @@ public class ArcherSnipeAbility : IAbilityAction, ITargetedAction
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
-        List<Hex> hexesOnLine = MapPathfinder.HexesOnLine(this.ActorHex, this.TargetHex);
-        foreach (Hex hex in hexesOnLine)
-        {
-            if (hex.HoldsACharacter() || hex.HoldsAnObstacle())
-                ActionExecutor.Singleton.AbilityAttack(this.ActorHex, hex, this.AbilityStats, this.RequestingClient);
-        }
+        //area is calculated using ability stats
+        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
     }
 
     [Server]

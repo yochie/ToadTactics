@@ -23,6 +23,10 @@ public class WizardFireballAbility : IAbilityAction, ITargetedAction
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
 
+    //IAreaTargeter
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
+
     [Server]
     public void ServerUse(INetworkedLogger logger)
     {
@@ -30,32 +34,7 @@ public class WizardFireballAbility : IAbilityAction, ITargetedAction
         logger.RpcLogMessage(message);
         
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
-
-        List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.areaScaler, Map.Singleton.hexGrid);
-        foreach (Hex hex in hexesInAOE)
-        {
-            if (hex.HoldsACharacter() || hex.HoldsAnObstacle())
-                ActionExecutor.Singleton.AbilityAttack(this.ActorHex, hex, this.AbilityStats, this.RequestingClient);
-        }
-
-        //version for non obstacle destruction
-        //List<PlayerCharacter> allTargets = new();
-        //PlayerCharacter mainTarget= this.TargetHex.GetHeldCorpseCharacterObject();
-        //allTargets.Add(mainTarget);
-        //List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.aoe, Map.Singleton.hexGrid);
-        //foreach(Hex hex in hexesInAOE)
-        //{
-        //    if (!hex.HoldsACharacter())
-        //        continue;
-
-        //    PlayerCharacter characterInAOE = hex.GetHeldCharacterObject();
-        //    allTargets.Add(characterInAOE);
-        //}
-
-        //foreach(PlayerCharacter character in allTargets)
-        //{
-        //    ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
-        //}
+        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
     }
 
     [Server]

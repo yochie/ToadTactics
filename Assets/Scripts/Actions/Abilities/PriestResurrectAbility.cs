@@ -23,6 +23,10 @@ public class PriestResurrectAbility : IAbilityAction, ITargetedAction
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
 
+    //IAreaTargeter
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
+
     [Server]
     public void ServerUse(INetworkedLogger logger)
     {
@@ -30,9 +34,19 @@ public class PriestResurrectAbility : IAbilityAction, ITargetedAction
         logger.RpcLogMessage(message);
         
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
-        PlayerCharacter toResurrect = this.TargetHex.GetHeldCorpseCharacterObject();
-        int lifeOnResurrection = toResurrect.CurrentStats.maxHealth / 2;
-        toResurrect.Resurrect(lifeOnResurrection);
+
+        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
+        foreach(Hex targetedHex in targetedHexes)
+        {
+            //this is hacky, we're using primary target validation on secondary targets... 
+            //allows priest to have all resurrected characters validated by single setting
+            //to do properly would mean to implement validation on secondary targets, which isn't needed anywhere else yet...
+            if (!targetedHex.HoldsACorpse() || !ActionExecutor.IsValidTargetType(this.ActorCharacter, targetedHex, this.AllowedTargetTypes))
+                continue;
+            PlayerCharacter toResurrect = targetedHex.GetHeldCorpseCharacterObject();
+            int lifeOnResurrection = toResurrect.CurrentStats.maxHealth / 2;
+            toResurrect.Resurrect(lifeOnResurrection);
+        }        
     }
 
     [Server]

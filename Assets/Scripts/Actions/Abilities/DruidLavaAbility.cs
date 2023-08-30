@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DruidLavaAbility : IAbilityAction, ITargetedAction, IAreaTargeter
+public class DruidLavaAbility : IAbilityAction, ITargetedAction
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -36,20 +36,13 @@ public class DruidLavaAbility : IAbilityAction, ITargetedAction, IAreaTargeter
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
         List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
-        //MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.areaScaler, Map.Singleton.hexGrid);
 
         foreach (Hex hex in targetedHexes)
-        {
-            //apply hazard damage to any already present character and destroy obstacles
-            //ability needs to be configured manually with hazard damage.... not great but i think ok
-            if (hex.HoldsACharacter() || hex.HoldsAnObstacle())
-                ActionExecutor.Singleton.AbilityAttack(this.ActorHex, hex, this.AbilityStats, this.RequestingClient);
-
+        { 
             if (hex.holdsHazard == HazardType.fire)
             {
                 continue;
             }
-                
 
             MapHazardManager hazardManager = Map.Singleton.hazardManager;
             if (hex.holdsHazard == HazardType.cold)
@@ -59,6 +52,10 @@ public class DruidLavaAbility : IAbilityAction, ITargetedAction, IAreaTargeter
 
             hazardManager.SpawnHazardOnMap(Map.Singleton.hexGrid, hex.coordinates.OffsetCoordinatesAsVector(), HazardType.fire);
         }
+
+        //apply hazard damage to any already present character and destroy obstacles
+        //ability needs to be configured manually with hazard damage.... not great but i think ok
+        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
     }
 
     [Server]

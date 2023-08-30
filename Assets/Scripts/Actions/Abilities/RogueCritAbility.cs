@@ -23,6 +23,10 @@ public class RogueCritAbility : IAbilityAction, ITargetedAction
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
 
+    //IAreaTargeter
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
+
     [Server]
     public void ServerUse(INetworkedLogger logger)
     {

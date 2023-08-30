@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedAction, ICooldownedAction
+public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ICooldownedAction
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -24,6 +24,10 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedActi
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
 
+    //IAreaTargeter
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
+
     [Server]
     public void ServerUse(INetworkedLogger logger)
     {
@@ -31,27 +35,27 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ITargetedActi
         logger.RpcLogMessage(message);
         
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
-        List<int> affectedCharacterIDs = new();
 
+        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
+
+        List<int> affectedCharacterIDs = new();
         foreach(PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
         {
-            if(GameController.Singleton.HeOwnsThisCharacter(ActorCharacter.OwnerID, character.CharClassID) && !character.IsDead)
+            Hex characterPosition = Map.GetHex(Map.Singleton.hexGrid, Map.Singleton.characterPositions[character.CharClassID]);
+            if(GameController.Singleton.HeOwnsThisCharacter(ActorCharacter.OwnerID, character.CharClassID) && !character.IsDead && targetedHexes.Contains(characterPosition))
             {
                 affectedCharacterIDs.Add(character.CharClassID);
             }
         }
 
         IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
-        BuffManager.Singleton.ApplyNewBuff(buff);
 
+        BuffManager.Singleton.ApplyNewBuff(buff);
     }
 
     [Server]
     public bool ServerValidate()
     {
-
-        //TODO check for individual ability uses instead of single hasUsedAbility to allow multiple abilities
-
         if (IAction.ValidateBasicAction(this) &&
             ITargetedAction.ValidateTarget(this) &&
             IAbilityAction.ValidateCooldowns(this)

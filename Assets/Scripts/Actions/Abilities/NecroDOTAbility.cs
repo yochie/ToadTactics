@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Linq;
 public class NecroDOTAbility : IAbilityAction, IBuffSource, ITargetedAction, ICooldownedAction
 {
     //IAction
@@ -24,6 +24,10 @@ public class NecroDOTAbility : IAbilityAction, IBuffSource, ITargetedAction, ICo
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
 
+    //IAreaTargeter
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
+
     [Server]
     public void ServerUse(INetworkedLogger logger)
     {
@@ -32,10 +36,24 @@ public class NecroDOTAbility : IAbilityAction, IBuffSource, ITargetedAction, ICo
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
-        //self harm
-        ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.ActorHex, this.AbilityStats, this.RequestingClient);
+        //self harm attack
+        ActionExecutor.Singleton.CustomAttack(source: this.ActorHex,
+                                              primaryTarget: this.ActorHex,
+                                              areaType: AreaType.single,
+                                              areaScaler: 1,
+                                              damage: this.AbilityStats.damage,
+                                              damageType: this.AbilityStats.damageType,
+                                              damageIterations: this.AbilityStats.damageIterations,
+                                              penetratingDamage: this.AbilityStats.penetratingDamage,
+                                              knocksBack: false,
+                                              canCrit: false,
+                                              critChance: 0f,
+                                              critMultiplier: 0f,
+                                              sender: this.RequestingClient);
 
-        List<int> affectedCharacterIDs = new () { this.TargetHex.holdsCharacterWithClassID };
+        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
+
+        List<int> affectedCharacterIDs = targetedHexes.Where(hex => hex.HoldsACharacter()).Select(hex => hex.holdsCharacterWithClassID).ToList();
         IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
     }

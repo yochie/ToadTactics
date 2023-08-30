@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
 {
@@ -23,6 +24,11 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
 
+    //IAreaTargeter
+    public AreaType TargetedAreaType { get; set; }
+    public int AreaScaler { get; set; }
+    
+    //IBuffSource
     public Type AppliesBuffType { get => typeof(WarriorRootEffect); }
 
     [Server]
@@ -32,17 +38,13 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
         logger.RpcLogMessage(message);
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
-        
-        List<Hex> hexesInAOE = MapPathfinder.RangeIgnoringObstacles(this.TargetHex, this.AbilityStats.areaScaler, Map.Singleton.hexGrid);
-        List<int> targetsIDs = new();
-        foreach (Hex hex in hexesInAOE)
-        {
-            if (hex.HoldsACharacter() && hex.GetHeldCharacterObject().OwnerID != this.RequestingPlayerID)
-                targetsIDs.Add(hex.GetHeldCharacterObject().CharClassID);
-        }
-        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, targetsIDs);
-        BuffManager.Singleton.ApplyNewBuff(buff);
 
+        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
+        List<int> affectedCharacters = targetedHexes
+            .Where(hex => hex.HoldsACharacter() && hex.GetHeldCharacterObject().OwnerID != this.RequestingPlayerID)
+            .Select(hex => hex.holdsCharacterWithClassID).ToList();
+        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacters);
+        BuffManager.Singleton.ApplyNewBuff(buff);
     }
 
     [Server]

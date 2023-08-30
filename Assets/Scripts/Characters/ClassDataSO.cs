@@ -203,6 +203,7 @@ public class ClassDataSO : ScriptableObject
                     buffTurnDuration: 1,
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
                     cooldownDuration: 3,
+                    areaType: AreaType.single,
                     cappedByCooldown: true
                 )
             }
@@ -276,7 +277,7 @@ public class ClassDataSO : ScriptableObject
                     cappedByCooldown: true,
                     canCrit: true,
                     critChance: 1f,
-                    critMultiplier: -1f,
+                    critMultiplier: -1f,                                        
                     penetratingDamage: true
                 )
             }
@@ -345,7 +346,9 @@ public class ClassDataSO : ScriptableObject
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     cooldownDuration: 4,
                     cappedByCooldown: true,
-                    range:0
+                    range:0,
+                    areaType: AreaType.radial,
+                    areaScaler: Utility.MAX_DISTANCE_ON_MAP/2
                 )
             }
             );
@@ -408,6 +411,7 @@ public class ClassDataSO : ScriptableObject
                 damageIterations: 1,
                 hasFaith: true,
                 attacksPerTurn: 2),
+            attackActionID: "NecroAttackAction",
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "NecroDOT",
@@ -537,7 +541,7 @@ public class ClassDataSO : ScriptableObject
     {
         Dictionary<string, Type> attackActionsByID = new();
         attackActionsByID.Add("DefaultAttackAction", typeof(DefaultAttackAction));
-        //attackActionsByID.Add("NecroAttackAction", typeof(NecroAttackAction));
+        attackActionsByID.Add("NecroAttackAction", typeof(NecroAttackAction));
         return attackActionsByID;
     }
     #endregion
