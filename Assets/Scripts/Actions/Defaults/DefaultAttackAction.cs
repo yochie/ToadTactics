@@ -46,7 +46,7 @@ public class DefaultAttackAction : IAttackAction
         this.ActorCharacter.UsedAttack();
     }
 
-    private void HitTarget(Hex target, INetworkedLogger logger)
+    protected void HitTarget(Hex target, INetworkedLogger logger)
     {
         if (target.HoldsAnObstacle())
         {
