@@ -25,8 +25,8 @@ public class NecroDOTEffect : IAbilityBuffEffect, IPermanentEffect, IDisplayedBu
     public CharacterAbilityStats AppliedByAbility { get; set; }
     #endregion
 
-    private int damage = 10;
-    private DamageType damageType = DamageType.magic;
+    private const int DOT_DAMAGE = 10;
+    private const DamageType DOT_DAMAGE_TYPE = DamageType.magic;
 
     #region IBuffEffect functions
     public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication)
@@ -39,7 +39,7 @@ public class NecroDOTEffect : IAbilityBuffEffect, IPermanentEffect, IDisplayedBu
         foreach (int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
-            affectedCharacter.TakeDamage(this.damage, this.damageType);
+            affectedCharacter.TakeDamage(DOT_DAMAGE, DOT_DAMAGE_TYPE);
         }
         return true;
     }
