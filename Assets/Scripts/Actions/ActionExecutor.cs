@@ -38,6 +38,8 @@ public class ActionExecutor : NetworkBehaviour
 
     }
 
+
+
     [Command(requiresAuthority = false)]
     internal void CmdUseAbility(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
     {
@@ -54,7 +56,7 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        AbilityAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(sender,
+        CustomAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(sender,
                                                                                    playerID,
                                                                                    attackingCharacter,
                                                                                    attackingCharacter.CurrentStats,
@@ -62,6 +64,40 @@ public class ActionExecutor : NetworkBehaviour
                                                                                    source,
                                                                                    target);
         this.TryAction(abilityAttackAction, isFullAction : false);
+    }
+    internal void CustomAttack(Hex source,
+                               Hex primaryTarget,
+                               AreaType areaType,
+                               int areaScaler,
+                               int damage,
+                               DamageType damageType,
+                               int damageIterations,
+                               bool penetratingDamage,
+                               bool knocksBack,
+                               bool canCrit,
+                               float critChance,
+                               float critMultiplier,
+                               NetworkConnectionToClient sender)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        CustomAttackAction customAttackAction = ActionFactory.CreateCustomAttackAction(
+                                                                 sender,
+                                                                 playerID,
+                                                                 attackingCharacter,
+                                                                 damage,
+                                                                 damageType,
+                                                                 damageIterations,
+                                                                 penetratingDamage,
+                                                                 knocksBack,
+                                                                 canCrit,
+                                                                 critChance,
+                                                                 critMultiplier,
+                                                                 areaType,
+                                                                 areaScaler,
+                                                                 source,
+                                                                 primaryTarget);
+        this.TryAction(customAttackAction, isFullAction: false);
     }
 
     [Server]

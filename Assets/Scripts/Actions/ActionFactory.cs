@@ -118,7 +118,62 @@ public class ActionFactory : MonoBehaviour
         return abilityAction;
     }
 
-    public static AbilityAttackAction CreateAbilityAttackAction(NetworkConnectionToClient sender,
+    internal static CustomAttackAction CreateCustomAttackAction(NetworkConnectionToClient sender,
+                                                                 int requestingPlayerID,
+                                                                 PlayerCharacter attackingCharacter,
+                                                                 int damage,
+                                                                 DamageType damageType,
+                                                                 int damageIterations,
+                                                                 bool penetratingDamage,
+                                                                 bool knocksBack,
+                                                                 bool canCrit,
+                                                                 float critChance,
+                                                                 float critMultiplier,
+                                                                 AreaType areaType,
+                                                                 int areaScaler,
+                                                                 Hex source,
+                                                                 Hex primaryTarget)
+    {
+        CustomAttackAction customAttackAction = new CustomAttackAction();
+
+        //IAction
+        customAttackAction.RequestingPlayerID = requestingPlayerID;
+        customAttackAction.ActorCharacter = attackingCharacter;
+        customAttackAction.ActorHex = source;
+        customAttackAction.RequestingClient = sender;
+
+        //ITargetedAction
+        //We are trusting main ability to assign valid targets to these sub actions since we might want to use different criteria than those main action
+        customAttackAction.TargetHex = primaryTarget;
+        customAttackAction.AllowedTargetTypes = Utility.GetAllEnumValues<TargetType>();
+        customAttackAction.RequiresLOS = false;
+        customAttackAction.Range = 99;
+
+        //IAttackAction from ability stats
+        customAttackAction.Damage = damage;
+        customAttackAction.DamageIterations = damageIterations;
+        customAttackAction.AttackDamageType = damageType;
+        customAttackAction.PenetratingDamage = penetratingDamage;
+        customAttackAction.KnocksBack = knocksBack;
+        //use attack stats if -1 and can crit
+        if (canCrit)
+        {
+            customAttackAction.CritChance = critChance;
+            customAttackAction.CritMultiplier = critMultiplier;
+        }
+        else
+        {
+            customAttackAction.CritChance = 0f;
+            customAttackAction.CritMultiplier = 1f;
+        }
+
+        customAttackAction.TargetedAreaType = areaType;
+        customAttackAction.AreaScaler = areaScaler;
+
+        return customAttackAction;
+    }
+
+    public static CustomAttackAction CreateAbilityAttackAction(NetworkConnectionToClient sender,
                                                                 int requestingPlayerID,
                                                                 PlayerCharacter attackerCharacter,
                                                                 CharacterStats attackerStats,
@@ -126,7 +181,7 @@ public class ActionFactory : MonoBehaviour
                                                                 Hex attackerHex,
                                                                 Hex targetedHex)
     {
-        AbilityAttackAction abilityAttackAction = new AbilityAttackAction();
+        CustomAttackAction abilityAttackAction = new CustomAttackAction();
 
         //IAction
         abilityAttackAction.RequestingPlayerID = requestingPlayerID;
@@ -151,7 +206,7 @@ public class ActionFactory : MonoBehaviour
         if (abilityStats.canCrit)
         {
             abilityAttackAction.CritChance = abilityStats.critChance == -1f ? attackerStats.critChance : abilityStats.critChance;
-            abilityAttackAction.CritMultiplier = abilityStats.critMultiplier == -1f ? attackerStats.critMultiplier : abilityStats.critChance;
+            abilityAttackAction.CritMultiplier = abilityStats.critMultiplier == -1f ? attackerStats.critMultiplier : abilityStats.critMultiplier;
         } else
         {
             abilityAttackAction.CritChance = 0f;
