@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public interface IAbilityAction : IAction
+public interface IAbilityAction : IAction, ITargetedAction, IAreaTargeter
 {
     public CharacterAbilityStats AbilityStats { get; set; }
 
