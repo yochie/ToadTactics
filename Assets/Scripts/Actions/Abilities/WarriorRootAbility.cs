@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
+public class WarriorRootAbility : IAbilityAction, ITargetedAction, IActivatedBuffSource
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -29,7 +29,7 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
     public int AreaScaler { get; set; }
     
     //IBuffSource
-    public Type AppliesBuffType { get => typeof(WarriorRootEffect); }
+    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("WarriorRootData"); }
 
     [Server]
     public void ServerUse(INetworkedLogger logger)
@@ -43,7 +43,7 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IBuffSource
         List<int> affectedCharacters = targetedHexes
             .Where(hex => hex.HoldsACharacter() && hex.GetHeldCharacterObject().OwnerID != this.RequestingPlayerID)
             .Select(hex => hex.holdsCharacterWithClassID).ToList();
-        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacters);
+        RuntimeBuff buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffOnActivation, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacters);
         BuffManager.Singleton.ApplyNewBuff(buff);
     }
 

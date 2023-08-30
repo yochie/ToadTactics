@@ -3,26 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.UI;
 
-public class BarbarianKingDamageEffect : IAbilityBuffEffect, IPassiveEffect, IAttackEnhancer
+[CreateAssetMenu]
+public class BarbarianKingDamageEffect : IBuffDataSO, IAttackEnhancer
 {
     #region IBuff
-    public string BuffTypeID => "BarbarianKingDamageEffect";
-    public string UIName => "Kingslayer";
-    // set at runtime
-    public int UniqueID { get; set; }
-    public List<int> AffectedCharacterIDs { get; set; }
+    [field: SerializeField]
+    public string BuffTypeID { get; set; }
+
+    [field: SerializeField]
+    public string UIName { get; set; }
+
+    [field: SerializeField] 
+    public bool IsPositive { get; set; }
+
+    [field: SerializeField] 
+    public DurationType DurationType { get; set; }
+
+    [field: SerializeField] 
+    public int TurnDuration { get; set; }
+
+    [field: SerializeField] 
+    public Image Icon { get; set; }
+    public string tooltipDescription { get; set; }
     #endregion
 
-    private const int KING_DAMAGE_BONUS = 20;
-
-    #region IAbilityBuffEffect
-    //set at runtime
-    public int ApplyingCharacterID {get; set;}
-    public CharacterAbilityStats AppliedByAbility { get; set; }
-
-    public bool IsPositive => true;
-    #endregion
+    [field: SerializeField]
+    private int kingDamageBonus { get; set; }
 
     [Server]
     public IAttackAction EnhanceAttack(IAttackAction attackToEnhance)
@@ -34,7 +42,7 @@ public class BarbarianKingDamageEffect : IAbilityBuffEffect, IPassiveEffect, IAt
         //similar to what is done for IMovementActions
         if (attackToEnhance.TargetHex.HoldsACharacter() && attackToEnhance.TargetHex.GetHeldCharacterObject().IsKing)
         {
-            attackToEnhance.Damage = attackToEnhance.Damage + KING_DAMAGE_BONUS;
+            attackToEnhance.Damage = attackToEnhance.Damage + kingDamageBonus;
         }
         return attackToEnhance;
     }
@@ -42,7 +50,7 @@ public class BarbarianKingDamageEffect : IAbilityBuffEffect, IPassiveEffect, IAt
     public Dictionary<string, string> GetAbilityBuffPrintoutDictionnary()
     {
         Dictionary<string, string> printouts = new();
-        printouts.Add("King damage", string.Format("+{0}", KING_DAMAGE_BONUS));
+        printouts.Add("King damage", string.Format("+{0}", kingDamageBonus));
         return printouts;
     }
 }

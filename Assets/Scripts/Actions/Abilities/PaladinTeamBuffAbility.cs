@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ICooldownedAction
+public class PaladinTeamBuffAbility : IAbilityAction, IActivatedBuffSource, ICooldownedAction
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -18,7 +18,7 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ICooldownedAc
     public CharacterAbilityStats AbilityStats { get; set; }
 
     //IBuffSource
-    public Type AppliesBuffType { get => typeof(PaladinTeamBuffEffect); }
+    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("PaladinTeamBuffData"); }
     public Hex TargetHex { get; set; }
     public List<TargetType> AllowedTargetTypes { get; set; }
     public bool RequiresLOS { get; set; }
@@ -48,7 +48,7 @@ public class PaladinTeamBuffAbility : IAbilityAction, IBuffSource, ICooldownedAc
             }
         }
 
-        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
+        RuntimeBuff buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffOnActivation, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
 
         BuffManager.Singleton.ApplyNewBuff(buff);
     }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IAppliedBuff : IBuff, IDisplayedBuff
+public interface IAppliablBuff : IBuffDataSO
 {        
     public bool NeedsToBeReAppliedEachTurn { get;}
 

@@ -25,33 +25,30 @@ internal class BuffManager : NetworkBehaviour
     }
 
     [Server]
-    internal IAbilityBuffEffect CreateAbilityBuff(Type buffType, CharacterAbilityStats abilityStats, int applyingCharacterID, List<int> affectedCharacterIDs)
+    internal RuntimeBuff CreateAbilityBuff(IBuffDataSO buffData, CharacterAbilityStats abilityStats, int applyingCharacterID, List<int> affectedCharacterIDs)
     {        
-        //IAbilityBuffEffect
-        IAbilityBuffEffect buff = (IAbilityBuffEffect)Activator.CreateInstance(buffType);
-        buff.AppliedByAbility = abilityStats;
-        buff.ApplyingCharacterID = applyingCharacterID;
+        RuntimeBuff runtimeBuff = new RuntimeBuff();
+        runtimeBuff.UniqueID = IDGenerator.GetNewID();
+        runtimeBuff.AffectedCharacterIDs = affectedCharacterIDs;
+        runtimeBuff.BuffData = buffData;
 
-        //IBuffEffect
-        buff.UniqueID = IDGenerator.GetNewID();
-        buff.AffectedCharacterIDs = affectedCharacterIDs;
-
-        //ITimedEffect
-        ITimedEffect timedBuff = buff as ITimedEffect;
-        if (timedBuff != null)
+        AbilityRuntimeBuff abilityBuffComponent = new AbilityRuntimeBuff();
+        abilityBuffComponent.AppliedByAbility = abilityStats;
+        abilityBuffComponent.ApplyingCharacterID = applyingCharacterID;
+        runtimeBuff.AddComponent(abilityBuffComponent);
+        
+        if(buffData.DurationType == DurationType.timed)
         {
-            timedBuff.TurnDurationRemaining = abilityStats.buffTurnDuration + 1;
+            TimedRuntimeBuff timedBuffComponent = new TimedRuntimeBuff();
+            timedBuffComponent.TurnDurationRemaining = abilityStats.buffTurnDuration + 1;
+            runtimeBuff.AddComponent(timedBuffComponent);
         }
 
-        //IPermanentEffect => nothing to do for now...
-        //IPassiveEffect => nothing to do for now...
-        //TODO : IConditionalEffect setup some stuff here eventually
-
-        return buff;
+        return runtimeBuff;
     }
 
     [Server]
-    public void ApplyNewBuff(IBuff buff)
+    public void ApplyNewBuff(RuntimeBuff buff)
     {
         foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
         {
@@ -62,14 +59,14 @@ internal class BuffManager : NetworkBehaviour
             MasterLogger.Singleton.RpcLogMessage(message);
         }
 
-        IAbilityBuffEffect abilityBuff = buff as IAbilityBuffEffect;
-        if (abilityBuff != null)
+        AbilityRuntimeBuff abilityComponent = (AbilityRuntimeBuff) buff.GetComponent(typeof(AbilityRuntimeBuff));
+        if (abilityComponent != null)
         {
-            PlayerCharacter applyingCharacter = GameController.Singleton.PlayerCharactersByID[abilityBuff.ApplyingCharacterID];
-            applyingCharacter.AddOwnedBuff(abilityBuff);
+            PlayerCharacter applyingCharacter = GameController.Singleton.PlayerCharactersByID[abilityComponent.ApplyingCharacterID];
+            applyingCharacter.AddOwnedBuff(buff);
         }
 
-        IAppliedBuff appliedBuff = buff as IAppliedBuff;
+        IAppliablBuff appliedBuff = buff as IAppliablBuff;
         if (appliedBuff != null)
         {
             appliedBuff.ApplyEffect(appliedBuff.AffectedCharacterIDs, isReapplication: false);
@@ -89,9 +86,9 @@ internal class BuffManager : NetworkBehaviour
         {
             if (character.CharClassID != playingCharacterID)
                 continue;
-            foreach(IAbilityBuffEffect abilityBuff in character.ownerOfBuffs.ToArray())
+            foreach(AbilityRuntimeBuff abilityBuff in character.ownerOfBuffs.ToArray())
             {
-                ITimedEffect timedBuff = abilityBuff as ITimedEffect;
+                TimedRuntimeBuff timedBuff = abilityBuff as TimedRuntimeBuff;
                 if (timedBuff == null)
                     continue;                
                 timedBuff.TurnDurationRemaining--;
@@ -101,9 +98,9 @@ internal class BuffManager : NetworkBehaviour
                 }
             }
 
-            foreach (IBuff buff in character.affectedByBuffs.ToArray())
+            foreach (IBuffDataSO buff in character.affectedByBuffs.ToArray())
             {
-                IAppliedBuff appliedBuff = buff as IAppliedBuff;
+                IAppliablBuff appliedBuff = buff as IAppliablBuff;
 
                 if (appliedBuff != null && appliedBuff.NeedsToBeReAppliedEachTurn && !character.IsDead)
                 {
@@ -116,9 +113,9 @@ internal class BuffManager : NetworkBehaviour
     }
 
     [Server]
-    private void RemoveBuff(IBuff buff)
+    private void RemoveBuff(IBuffDataSO buff)
     {
-        IAppliedBuff appliedBuff = buff as IAppliedBuff;
+        IAppliablBuff appliedBuff = buff as IAppliablBuff;
         if(appliedBuff != null)
             appliedBuff.UnApply(buff.AffectedCharacterIDs);
 
@@ -132,7 +129,7 @@ internal class BuffManager : NetworkBehaviour
         if (displayedBuff != null)            
             this.RpcRemoveBuffIcons(displayedBuff.UniqueID, displayedBuff.AffectedCharacterIDs);
 
-        IAbilityBuffEffect abilityBuff = buff as IAbilityBuffEffect;
+        AbilityRuntimeBuff abilityBuff = buff as AbilityRuntimeBuff;
         if (abilityBuff != null)
             GameController.Singleton.PlayerCharactersByID[abilityBuff.ApplyingCharacterID].RemoveOwnedBuff(abilityBuff);
     }
@@ -140,9 +137,9 @@ internal class BuffManager : NetworkBehaviour
     [Server]
     internal void RemoveRoundBuffsAppliedToCharacter(PlayerCharacter character)
     {
-        foreach (IAppliedBuff buff in character.affectedByBuffs.ToArray())
+        foreach (IAppliablBuff buff in character.affectedByBuffs.ToArray())
         {
-            IPassiveEffect passiveBuff = buff as IPassiveEffect;
+            IPassiveAbility passiveBuff = buff as IPassiveAbility;
             if (passiveBuff != null)
             {
                 continue;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
+public class CavalierStunAbility : IAbilityAction, ITargetedAction, IActivatedBuffSource
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -25,7 +25,7 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
     public int Range { get; set; }
     
     //IBuffSource
-    public Type AppliesBuffType { get => typeof(CavalierStunEffect); }
+    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("CavalierStunData"); }
 
     //IAreaTargeter
     public AreaType TargetedAreaType { get; set; }
@@ -43,7 +43,7 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IBuffSource
         List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
 
         List<int> affectedCharacterIDs = targetedHexes.Where(hex => hex.HoldsACharacter()).Select(hex => hex.holdsCharacterWithClassID).ToList();
-        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
+        RuntimeBuff buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffOnActivation, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
 
         ActionExecutor.Singleton.AbilityAttack(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-public class NecroDOTAbility : IAbilityAction, IBuffSource, ITargetedAction, ICooldownedAction
+public class NecroDOTAbility : IAbilityAction, IActivatedBuffSource, ITargetedAction, ICooldownedAction
 {
     //IAction
     public int RequestingPlayerID { get; set; }
@@ -18,7 +18,7 @@ public class NecroDOTAbility : IAbilityAction, IBuffSource, ITargetedAction, ICo
     public CharacterAbilityStats AbilityStats { get; set; }
 
     //IBuffSource
-    public Type AppliesBuffType { get => typeof(NecroDOTEffect); }
+    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("NecroDOTData"); }
     public Hex TargetHex { get; set; }
     public List<TargetType> AllowedTargetTypes { get; set; }
     public bool RequiresLOS { get; set; }
@@ -54,7 +54,7 @@ public class NecroDOTAbility : IAbilityAction, IBuffSource, ITargetedAction, ICo
         List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
 
         List<int> affectedCharacterIDs = targetedHexes.Where(hex => hex.HoldsACharacter()).Select(hex => hex.holdsCharacterWithClassID).ToList();
-        IAbilityBuffEffect buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffType, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
+        RuntimeBuff buff = BuffManager.Singleton.CreateAbilityBuff(this.AppliesBuffOnActivation, this.AbilityStats, this.ActorCharacter.CharClassID, affectedCharacterIDs);
         BuffManager.Singleton.ApplyNewBuff(buff);
     }
 

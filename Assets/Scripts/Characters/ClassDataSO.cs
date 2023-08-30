@@ -14,7 +14,7 @@ public class ClassDataSO : ScriptableObject
     //keys are classID
     private Dictionary<int, CharacterClass> characterClasses;
     private Dictionary<string, Type> abilityActionTypes;
-    private Dictionary<string, Type> passiveAbilitiesBuffTypes;
+    private Dictionary<string, IBuffDataSO> passiveAbilitiesBuffData;
     private Dictionary<string, Type> movementActionTypes;
     private Dictionary<string, Type> attackActionTypes;
 
@@ -36,7 +36,7 @@ public class ClassDataSO : ScriptableObject
     {
         this.characterClasses = this.DefineClasses().ToDictionary(charClass => charClass.classID);
         this.abilityActionTypes = this.DefineAbilityActionIDs();
-        this.passiveAbilitiesBuffTypes = this.LinkPassiveAbilitiesToTheirBuffTypes();
+        this.passiveAbilitiesBuffData = this.LinkPassiveAbilitiesToTheirBuffDataAssets();
         this.movementActionTypes = this.DefineMoveActionsIDs();
         this.attackActionTypes = this.DefineAttackActionsIDs();
 
@@ -101,9 +101,9 @@ public class ClassDataSO : ScriptableObject
         return this.attackActionTypes[actionID];
     }
 
-    public Type GetBuffTypesByPassiveAbilityID(string abilityID)
+    public IBuffDataSO GetBuffTypesByPassiveAbilityID(string abilityID)
     {
-        return this.passiveAbilitiesBuffTypes[abilityID];
+        return this.passiveAbilitiesBuffData[abilityID];
     }
 
     #region Static definitions
@@ -520,11 +520,11 @@ public class ClassDataSO : ScriptableObject
         return actionsByAbilityID;
     }
 
-    private Dictionary<string, Type> LinkPassiveAbilitiesToTheirBuffTypes()
+    private Dictionary<string, IBuffDataSO> LinkPassiveAbilitiesToTheirBuffDataAssets()
     {
-        Dictionary<string, Type> buffsByPassiveAbilityID = new();
+        Dictionary<string, IBuffDataSO> buffsByPassiveAbilityID = new();
 
-        buffsByPassiveAbilityID.Add("BarbarianKingDamage", typeof(BarbarianKingDamageEffect));
+        buffsByPassiveAbilityID.Add("BarbarianKingDamage", BuffDataSO.Singleton.GetBuffData("BarbarianKingDamageBuffData"));
         return buffsByPassiveAbilityID;
     }
 

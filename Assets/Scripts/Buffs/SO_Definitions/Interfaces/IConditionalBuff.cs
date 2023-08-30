@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public interface IConditionalEffect
+public interface IConditionalBuff
 {
-    public Object ListensToEventsRaisedBy { get; set; }
     public GameEventSO EndEvent { get; set; }
 
     public void OnEndEvent();

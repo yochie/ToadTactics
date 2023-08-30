@@ -100,7 +100,7 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     {
         this.buffList.SetActive(true);        
         Image buffImage = Instantiate(this.blankImagePrefab, this.buffList.transform);
-        buffImage.sprite = BuffIconsDataSO.Singleton.GetBuffIcon(iconName);
+        buffImage.sprite = BuffDataSO.Singleton.GetBuffIcon(iconName);
         if (this.displayedBuffs == null)
             this.displayedBuffs = new();
         this.displayedBuffs.Add(buffID, buffImage);

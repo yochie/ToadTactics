@@ -2,21 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-
-public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmorModifier, IMovementModifier, ITimedEffect, IDisplayedBuff, IAppliedBuff
+public class PaladinTeamBuffEffect : IHealthModifier, IArmorModifier, IMovementModifier, IAppliablBuff
 {
-    #region IBuffEffect
-    public string BuffTypeID => "PaladinTeamBuffEffect";
-    public string UIName => "Paladin team buff ";
-    public string IconName => "statbuff";
-    public bool IsPositive => true;
-    public bool NeedsToBeReAppliedEachTurn => false;
-    // set at runtime
-    public int UniqueID { get; set; }
-    public List<int> AffectedCharacterIDs { get; set; }
+    //public string BuffTypeID => "PaladinTeamBuffData";
+    //public string UIName => "Paladin team buff ";
+    //public string IconName => "statbuff";
+    //public bool IsPositive => true;
+    //public bool NeedsToBeReAppliedEachTurn => false;
 
-    #endregion
 
     #region IStatModifier
     private const int HEALTH_OFFSET = 30;
@@ -26,17 +21,16 @@ public class PaladinTeamBuffEffect : IAbilityBuffEffect, IHealthModifier, IArmor
     public int HealthOffset { get => HEALTH_OFFSET; set => throw new NotSupportedException(); }
     public int ArmorOffset { get => ARMOR_OFFSET; set => throw new NotSupportedException(); }
     public int MovementOffset { get => MOVEMENT_OFFSET; set => throw new NotSupportedException(); }
-    #endregion
 
-    #region IAbilityBuffEffect
-    //set at runtime
-    public int ApplyingCharacterID {get; set;}
-    public CharacterAbilityStats AppliedByAbility { get; set; }
-    #endregion
+    public bool NeedsToBeReAppliedEachTurn => throw new NotImplementedException();
 
-    #region ITimedEffect
-    public int TurnDurationRemaining { get; set; }
-
+    public string BuffTypeID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public string UIName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public bool IsPositive { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public DurationType DurationType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public int TurnDuration { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public Image Icon { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public string tooltipDescription { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     #endregion
 
     #region IBuffEffect functions

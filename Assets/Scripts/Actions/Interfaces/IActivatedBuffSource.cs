@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IBuffSource
+public interface IActivatedBuffSource
 {
-    public Type AppliesBuffType { get; }
+    public IBuffDataSO AppliesBuffOnActivation { get; }
 }
