@@ -60,7 +60,7 @@ public class TurnOrderHUD : MonoBehaviour
             int i = 0;
             foreach(int buffID in slotData.orderedBuffIDs)
             {
-                slot.AddBuffIcon(buffID, slotData.orderedBuffIcons[i]);
+                slot.AddBuffIcon(buffID, slotData.orderedBuffDataIDs[i]);
                 i++;
             }
         }
@@ -90,19 +90,19 @@ public class TurnOrderHUD : MonoBehaviour
 
     #region Utility
 
-    internal void AddBuffIcons(int buffID, List<int> affectedCharacterIDs, string iconName)
+    internal void AddBuffIcons(int buffID, List<int> affectedCharacterIDs, string buffDataID)
     {
 
         foreach(TurnOrderSlotUI slot in this.turnOrderSlots)
         {
             if (affectedCharacterIDs.Contains(slot.HoldsCharacterWithClassID))
             {
-                slot.AddBuffIcon(buffID, iconName);
+                slot.AddBuffIcon(buffID, buffDataID);
             }
         }
     }
 
-    internal void RemoveBuffIcons(int buffID, List<int> removeFromCharacters)
+    internal void RemoveBuffIconFromCharacters(int buffID, List<int> removeFromCharacters)
     {
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
         {

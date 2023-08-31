@@ -6,7 +6,6 @@ public readonly struct CharacterAbilityStats
     public readonly string stringID;
     public readonly string interfaceName;
     public readonly string description;
-    public readonly int buffTurnDuration;
     public readonly int damage;
     public readonly int damageIterations;
     public readonly DamageType damageType;
@@ -28,6 +27,7 @@ public readonly struct CharacterAbilityStats
     public readonly bool cappedPerRound;
     public readonly bool cappedByCooldown;
     public readonly bool knocksBack;
+    public readonly string appliesSelfBuffOnRoundStart;
 
     //-1 to crit chance or crit multi means use attacker stats if canCrit
     public CharacterAbilityStats(string stringID,
@@ -36,7 +36,6 @@ public readonly struct CharacterAbilityStats
                             int damage = -1,
                             int range = -1,
                             int areaScaler = -1,
-                            int buffTurnDuration = -1,
                             bool requiresLOS = true,
                             int damageIterations = -1,
                             DamageType damageType = DamageType.none,
@@ -50,8 +49,9 @@ public readonly struct CharacterAbilityStats
                             bool penetratingDamage = false,
                             bool cappedPerRound = false,
                             bool cappedByCooldown = false,
-                            bool knocksBack = false, 
-                            AreaType areaType = default)
+                            bool knocksBack = false,
+                            AreaType areaType = default, 
+                            string appliesBuffIDOnRoundStart = null)
     {
         this.stringID = stringID;
         this.interfaceName = interfaceName;
@@ -59,7 +59,6 @@ public readonly struct CharacterAbilityStats
         this.damage = damage;
         this.range = range;
         this.areaScaler = areaScaler;
-        this.buffTurnDuration = buffTurnDuration;
         this.requiresLOS = requiresLOS;
         this.damageIterations = damageIterations;
         this.damageType = damageType;
@@ -84,5 +83,6 @@ public readonly struct CharacterAbilityStats
         this.cappedByCooldown = cappedByCooldown;
         this.knocksBack = knocksBack;
         this.areaType = areaType;
+        this.appliesSelfBuffOnRoundStart = appliesBuffIDOnRoundStart;
     }
 }

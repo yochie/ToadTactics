@@ -26,12 +26,12 @@ public class BuffDataSO : ScriptableObject
     internal IBuffDataSO GetBuffData(string buffDataID)
     {
         List<IBuffDataSO> buffDataList = this.buffDataAssets.Cast<IBuffDataSO>().ToList();
-        return buffDataList.Single(buffData => buffData.BuffTypeID == buffDataID);
+        return buffDataList.Single(buffData => buffData.stringID == buffDataID);
     }
 
     public Sprite GetBuffIcon(string buffDataID)
     {
         List<IBuffDataSO> buffDataList = this.buffDataAssets.Cast<IBuffDataSO>().ToList();
-        return buffDataList.Single(buffData => buffData.BuffTypeID == buffDataID).Icon.sprite;
+        return buffDataList.Single(buffData => buffData.stringID == buffDataID).Icon.sprite;
     }
 }

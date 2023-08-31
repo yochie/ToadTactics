@@ -5,16 +5,16 @@ using System;
 
 public class RuntimeBuff
 {
-    public IBuffDataSO BuffData { get; set; }
+    public IBuffDataSO Data { get; set; }
     public int UniqueID { get; set; }
     public List<int> AffectedCharacterIDs { get; set; }
 
     private readonly Dictionary<Type, IRuntimeBuffComponent> buffComponents = new();
 
-    public IRuntimeBuffComponent GetComponent(Type type)
+    public T GetComponent<T>() where T : class, IRuntimeBuffComponent
     {
-        if (this.buffComponents.ContainsKey(type))
-            return this.buffComponents[type];
+        if (this.buffComponents.ContainsKey(typeof(T)))
+            return (T) this.buffComponents[typeof(T)];
         else
             return null;
     }

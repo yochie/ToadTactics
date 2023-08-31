@@ -7,6 +7,6 @@ public interface IAppliablBuff : IBuffDataSO
 
     public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication);
 
-    public void UnApply(List<int> unApplyToCharacterIDs);
+    public void UnApply(List<int> unApplyFromCharacterIDs);
 
 }

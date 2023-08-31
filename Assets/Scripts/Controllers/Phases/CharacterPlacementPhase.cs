@@ -54,7 +54,7 @@ public class CharacterPlacementPhase : IGamePhase
         //apply passives to characters, needs to be called here instead of character init because relies on list of playerCharacters on controller
         foreach (PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
         {
-            character.ApplyPassiveAbilityBuffs();
+            character.ApplyAbilityBuffsForRoundStart();
         }
 
         //setup turn order list
@@ -69,8 +69,8 @@ public class CharacterPlacementPhase : IGamePhase
             bool isAKing = GameController.Singleton.IsAKing(character.CharClassID);
             bool itsHisTurn = GameController.Singleton.ItsThisCharactersTurn(character.CharClassID);
             int maxHealth = character.CurrentStats.maxHealth;
-            Dictionary<int, string> characterBuffIcons = character.GetAffectingBuffIcons();
-            TurnOrderSlotInitData slotData = new(character.CharClassID, isAKing, itsHisTurn, maxHealth, characterBuffIcons);
+            Dictionary<int, string> characterBuffDataIDs = character.GetAffectingBuffDataIDs();
+            TurnOrderSlotInitData slotData = new(character.CharClassID, isAKing, itsHisTurn, maxHealth, characterBuffDataIDs);
             slotDataList.Add(slotData);
         }
 

@@ -12,16 +12,16 @@ public readonly struct TurnOrderSlotInitData
     //These two have to correspond implicitely via index because we cant send Dictionary over network
     //Implementing serialization manually could be a more reliable solution but I think its essentially equivalent...    
     public readonly List<int> orderedBuffIDs;
-    public readonly List<string> orderedBuffIcons;
+    public readonly List<string> orderedBuffDataIDs;
 
-    public TurnOrderSlotInitData(int classID, bool isAKing, bool itsHisTurn, int maxHealth, Dictionary<int, string> buffIconsByID)
+    public TurnOrderSlotInitData(int classID, bool isAKing, bool itsHisTurn, int maxHealth, Dictionary<int, string> buffDataIDByUniqueID)
     {
         this.classID = classID;
         this.isAKing = isAKing;
         this.itsHisTurn = itsHisTurn;
         this.maxHealth = maxHealth;
-        this.orderedBuffIDs = buffIconsByID.Keys.ToList();
-        this.orderedBuffIcons = buffIconsByID.Values.ToList();
+        this.orderedBuffIDs = buffDataIDByUniqueID.Keys.ToList();
+        this.orderedBuffDataIDs = buffDataIDByUniqueID.Values.ToList();
     }
 }
 

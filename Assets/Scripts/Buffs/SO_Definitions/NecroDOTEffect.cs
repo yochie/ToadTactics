@@ -18,7 +18,7 @@ public class NecroDOTEffect : IAppliablBuff
 
     public bool NeedsToBeReAppliedEachTurn => throw new NotImplementedException();
 
-    public string BuffTypeID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public string stringID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public string UIName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public bool IsPositive { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public DurationType DurationType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

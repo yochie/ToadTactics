@@ -134,7 +134,7 @@ public class PlayerCharacter : NetworkBehaviour
     internal List<IAttackEnhancer> GetAttackEnhancers()
     {
         List<IAttackEnhancer> toReturn = new();
-        foreach(IBuffDataSO buff in this.affectedByBuffs)
+        foreach(IBuffDataSO buff in this.affectedByBuffs.Select(buff => buff.Data))
         {
             IAttackEnhancer attackEnhancer = buff as IAttackEnhancer;
             if (attackEnhancer != null)
@@ -143,16 +143,15 @@ public class PlayerCharacter : NetworkBehaviour
         return toReturn;
     }
 
-    internal Dictionary<int, string> GetAffectingBuffIcons()
+    internal Dictionary<int, string> GetAffectingBuffDataIDs()
     {
-        Dictionary<int, string> buffIcons = new();
-        foreach(IBuffDataSO buff in this.affectedByBuffs)
-        {
-            IDisplayedBuff displayedBuff = buff as IDisplayedBuff;
-            if(displayedBuff != null)
-                buffIcons[displayedBuff.UniqueID] = displayedBuff.IconName;
+        Dictionary<int, string> buffIDs = new();
+        foreach(RuntimeBuff buff in this.affectedByBuffs)
+        {            
+            if(buff.Data.Icon != null)
+                buffIDs[buff.UniqueID] = buff.Data.stringID;
         }
-        return buffIcons;
+        return buffIDs;
     }
 
     internal void SetCurrentLife(int value)
@@ -310,7 +309,7 @@ public class PlayerCharacter : NetworkBehaviour
         this.isDead = true;
         this.currentLife = 0;
         this.ResetCooldownsAndUses();
-        this.RemoveRoundBuffs();
+        this.RemoveBuffsOnDeath();
         this.RpcOnCharacterDeath();
 
         string message = string.Format("{0} has died", this.charClass.name);
@@ -320,19 +319,19 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    private void RemoveRoundBuffs()
+    private void RemoveBuffsOnDeath()
     {
-        BuffManager.Singleton.RemoveRoundBuffsAppliedToCharacter(this);
+        BuffManager.Singleton.RemoveBuffsOnDeath(this);
     }
 
     [Server]
-    internal void RemoveOwnedBuff(AbilityRuntimeBuff buff)
+    internal void RemoveOwnedBuff(RuntimeBuff buff)
     {
         this.ownerOfBuffs.Remove(buff);
     }
 
     [Server]
-    internal void RemoveAffectingBuff(IBuffDataSO buff)
+    internal void RemoveAffectingBuff(RuntimeBuff buff)
     {
         this.affectedByBuffs.Remove(buff);
     }
@@ -420,16 +419,16 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    internal void ApplyPassiveAbilityBuffs()
+    internal void ApplyAbilityBuffsForRoundStart()
     {
         foreach (CharacterAbilityStats ability in this.charClass.abilities)
         {
-            if (!ability.isPassive)
+            if (ability.appliesSelfBuffOnRoundStart == null)
                 continue;
 
-            Type passiveBuffType = ClassDataSO.Singleton.GetBuffTypesByPassiveAbilityID(ability.stringID);
+            IBuffDataSO passiveBuffData = BuffDataSO.Singleton.GetBuffData(ability.appliesSelfBuffOnRoundStart);
             List<int> applyTo = new List<int> { this.CharClassID };
-            RuntimeBuff passiveBuff = BuffManager.Singleton.CreateAbilityBuff(passiveBuffType, ability, this.CharClassID, applyTo);
+            RuntimeBuff passiveBuff = BuffManager.Singleton.CreateAbilityBuff(passiveBuffData, ability, this.CharClassID, applyTo);
             BuffManager.Singleton.ApplyNewBuff(passiveBuff);
         }
     }

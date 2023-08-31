@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public abstract class StunEffectBase : IAppliablBuff
 {
     public abstract bool NeedsToBeReAppliedEachTurn { get; }
-    public abstract string BuffTypeID { get; set; }
+    public abstract string stringID { get; set; }
     public abstract string UIName { get; set; }
     public abstract bool IsPositive { get; set; }
     public abstract DurationType DurationType { get; set; }

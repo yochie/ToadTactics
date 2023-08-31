@@ -10,7 +10,7 @@ public class CavalierStunEffect : StunEffectBase
     //public override string IconName => "stun";
     public override bool NeedsToBeReAppliedEachTurn => throw new System.NotImplementedException();
 
-    public override string BuffTypeID { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public override string stringID { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public override string UIName { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public override bool IsPositive { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public override DurationType DurationType { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }

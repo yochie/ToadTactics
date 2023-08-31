@@ -14,7 +14,6 @@ public class ClassDataSO : ScriptableObject
     //keys are classID
     private Dictionary<int, CharacterClass> characterClasses;
     private Dictionary<string, Type> abilityActionTypes;
-    private Dictionary<string, IBuffDataSO> passiveAbilitiesBuffData;
     private Dictionary<string, Type> movementActionTypes;
     private Dictionary<string, Type> attackActionTypes;
 
@@ -36,7 +35,6 @@ public class ClassDataSO : ScriptableObject
     {
         this.characterClasses = this.DefineClasses().ToDictionary(charClass => charClass.classID);
         this.abilityActionTypes = this.DefineAbilityActionIDs();
-        this.passiveAbilitiesBuffData = this.LinkPassiveAbilitiesToTheirBuffDataAssets();
         this.movementActionTypes = this.DefineMoveActionsIDs();
         this.attackActionTypes = this.DefineAttackActionsIDs();
 
@@ -99,11 +97,6 @@ public class ClassDataSO : ScriptableObject
     public Type GetAttackActionTypeByID(string actionID)
     {
         return this.attackActionTypes[actionID];
-    }
-
-    public IBuffDataSO GetBuffTypesByPassiveAbilityID(string abilityID)
-    {
-        return this.passiveAbilitiesBuffData[abilityID];
     }
 
     #region Static definitions
@@ -169,7 +162,8 @@ public class ClassDataSO : ScriptableObject
                     stringID: "BarbarianKingDamage",
                     interfaceName: "KingSlayer",
                     description: "Grants a bonus to damage when attacking the king.",
-                    isPassive: true
+                    isPassive: true,
+                    appliesBuffIDOnRoundStart: "BarbPassiveKingDamageBuff"
                 )
             }
         );
@@ -200,7 +194,6 @@ public class ClassDataSO : ScriptableObject
                     damageIterations: 1,
                     damageType: DamageType.physical,
                     range: 3,
-                    buffTurnDuration: 1,
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
                     cooldownDuration: 3,
                     areaType: AreaType.single,
@@ -308,7 +301,6 @@ public class ClassDataSO : ScriptableObject
                     stringID: "WarriorRoot",
                     interfaceName: "Intimidating Shout",
                     description: "Shouts and scares close enemies, making them cower in fear for a turn.",
-                    buffTurnDuration: 1,
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     areaType: AreaType.radial,
                     areaScaler : 1,
@@ -342,7 +334,6 @@ public class ClassDataSO : ScriptableObject
                     stringID: "PaladinTeamBuff",
                     interfaceName: "Blessing of Kings",
                     description: "Grants a bonus to health, armor and movement to all allies.",
-                    buffTurnDuration: 2,
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     cooldownDuration: 4,
                     cappedByCooldown: true,
@@ -520,21 +511,12 @@ public class ClassDataSO : ScriptableObject
         return actionsByAbilityID;
     }
 
-    private Dictionary<string, IBuffDataSO> LinkPassiveAbilitiesToTheirBuffDataAssets()
-    {
-        Dictionary<string, IBuffDataSO> buffsByPassiveAbilityID = new();
-
-        buffsByPassiveAbilityID.Add("BarbarianKingDamage", BuffDataSO.Singleton.GetBuffData("BarbarianKingDamageBuffData"));
-        return buffsByPassiveAbilityID;
-    }
-
     private Dictionary<string, Type> DefineMoveActionsIDs()
     {
         Dictionary<string, Type> movementActionsByID = new();
         movementActionsByID.Add("DefaultMoveAction", typeof(DefaultMoveAction));
         movementActionsByID.Add("DruidMoveAction", typeof(DruidMoveAction));
         return movementActionsByID;
-
     }
 
     private Dictionary<string, Type> DefineAttackActionsIDs()

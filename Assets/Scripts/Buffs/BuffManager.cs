@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.UI;
 
 internal class BuffManager : NetworkBehaviour
 {
@@ -30,9 +31,9 @@ internal class BuffManager : NetworkBehaviour
         RuntimeBuff runtimeBuff = new RuntimeBuff();
         runtimeBuff.UniqueID = IDGenerator.GetNewID();
         runtimeBuff.AffectedCharacterIDs = affectedCharacterIDs;
-        runtimeBuff.BuffData = buffData;
+        runtimeBuff.Data = buffData;
 
-        AbilityRuntimeBuff abilityBuffComponent = new AbilityRuntimeBuff();
+        RuntimeBuffAbility abilityBuffComponent = new RuntimeBuffAbility();
         abilityBuffComponent.AppliedByAbility = abilityStats;
         abilityBuffComponent.ApplyingCharacterID = applyingCharacterID;
         runtimeBuff.AddComponent(abilityBuffComponent);
@@ -40,7 +41,7 @@ internal class BuffManager : NetworkBehaviour
         if(buffData.DurationType == DurationType.timed)
         {
             TimedRuntimeBuff timedBuffComponent = new TimedRuntimeBuff();
-            timedBuffComponent.TurnDurationRemaining = abilityStats.buffTurnDuration + 1;
+            timedBuffComponent.TurnDurationRemaining = buffData.TurnDuration + 1;
             runtimeBuff.AddComponent(timedBuffComponent);
         }
 
@@ -55,27 +56,27 @@ internal class BuffManager : NetworkBehaviour
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.AddAffectingBuff(buff);
 
-            string message = string.Format("{0} applied to {1}", buff.UIName, affectedCharacter.charClass.name);
+            string message = string.Format("{0} applied to {1}", buff.Data.UIName, affectedCharacter.charClass.name);
             MasterLogger.Singleton.RpcLogMessage(message);
         }
 
-        AbilityRuntimeBuff abilityComponent = (AbilityRuntimeBuff) buff.GetComponent(typeof(AbilityRuntimeBuff));
+        RuntimeBuffAbility abilityComponent = buff.GetComponent<RuntimeBuffAbility>();
         if (abilityComponent != null)
         {
             PlayerCharacter applyingCharacter = GameController.Singleton.PlayerCharactersByID[abilityComponent.ApplyingCharacterID];
             applyingCharacter.AddOwnedBuff(buff);
         }
 
-        IAppliablBuff appliedBuff = buff as IAppliablBuff;
+        IAppliablBuff appliedBuff = buff.Data as IAppliablBuff;
         if (appliedBuff != null)
         {
-            appliedBuff.ApplyEffect(appliedBuff.AffectedCharacterIDs, isReapplication: false);
+            appliedBuff.ApplyEffect(buff.AffectedCharacterIDs, isReapplication: false);
         }
 
-        IDisplayedBuff displayedBuff = buff as IDisplayedBuff;
-        if(displayedBuff != null)
+        Image buffIcon = buff.Data.Icon;
+        if(buffIcon != null)
         {
-            this.RpcAddBuffIcons(displayedBuff.UniqueID, displayedBuff.AffectedCharacterIDs, displayedBuff.IconName);
+            this.RpcAddBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs, buff.Data.stringID);
         }
     }
     
@@ -86,26 +87,26 @@ internal class BuffManager : NetworkBehaviour
         {
             if (character.CharClassID != playingCharacterID)
                 continue;
-            foreach(AbilityRuntimeBuff abilityBuff in character.ownerOfBuffs.ToArray())
+            foreach(RuntimeBuff ownedBuff in character.ownerOfBuffs.ToArray())
             {
-                TimedRuntimeBuff timedBuff = abilityBuff as TimedRuntimeBuff;
-                if (timedBuff == null)
+                TimedRuntimeBuff timedBuffComponent = ownedBuff.GetComponent<TimedRuntimeBuff>();
+                if (timedBuffComponent == null)
                     continue;                
-                timedBuff.TurnDurationRemaining--;
-                if (timedBuff.TurnDurationRemaining == 0)
+                timedBuffComponent.TurnDurationRemaining--;
+                if (timedBuffComponent.TurnDurationRemaining == 0)
                 {
-                    this.RemoveBuff(abilityBuff);
+                    this.RemoveBuff(ownedBuff);
                 }
             }
 
-            foreach (IBuffDataSO buff in character.affectedByBuffs.ToArray())
+            foreach (RuntimeBuff buff in character.affectedByBuffs.ToArray())
             {
-                IAppliablBuff appliedBuff = buff as IAppliablBuff;
+                IAppliablBuff appliableBuff = buff.Data as IAppliablBuff;
 
-                if (appliedBuff != null && appliedBuff.NeedsToBeReAppliedEachTurn && !character.IsDead)
+                if (appliableBuff != null && appliableBuff.NeedsToBeReAppliedEachTurn && !character.IsDead)
                 {
-                    appliedBuff.ApplyEffect(new List<int> { character.CharClassID }, isReapplication: true);
-                    string message = string.Format("Ticking {0} {1} on {2}", appliedBuff.UIName, appliedBuff.IsPositive ? "buff" : "debuff", character.charClass.name);
+                    appliableBuff.ApplyEffect(new List<int> { character.CharClassID }, isReapplication: true);
+                    string message = string.Format("Ticking {0} {1} on {2}", appliableBuff.UIName, appliableBuff.IsPositive ? "buff" : "debuff", character.charClass.name);
                     MasterLogger.Singleton.RpcLogMessage(message);
                 }
             }
@@ -113,7 +114,7 @@ internal class BuffManager : NetworkBehaviour
     }
 
     [Server]
-    private void RemoveBuff(IBuffDataSO buff)
+    private void RemoveBuff(RuntimeBuff buff)
     {
         IAppliablBuff appliedBuff = buff as IAppliablBuff;
         if(appliedBuff != null)
@@ -125,41 +126,43 @@ internal class BuffManager : NetworkBehaviour
             affectedCharacter.RemoveAffectingBuff(buff);
         }
 
-        IDisplayedBuff displayedBuff = buff as IDisplayedBuff;
-        if (displayedBuff != null)            
-            this.RpcRemoveBuffIcons(displayedBuff.UniqueID, displayedBuff.AffectedCharacterIDs);
+        Image buffIcon = buff.Data.Icon;
+        if (buffIcon != null)            
+            this.RpcRemoveBuffIconFromCharacters(buff.UniqueID, buff.AffectedCharacterIDs);
 
-        AbilityRuntimeBuff abilityBuff = buff as AbilityRuntimeBuff;
+        RuntimeBuffAbility abilityBuff = buff.GetComponent<RuntimeBuffAbility>();
         if (abilityBuff != null)
-            GameController.Singleton.PlayerCharactersByID[abilityBuff.ApplyingCharacterID].RemoveOwnedBuff(abilityBuff);
+            GameController.Singleton.PlayerCharactersByID[abilityBuff.ApplyingCharacterID].RemoveOwnedBuff(buff);
     }
 
     [Server]
-    internal void RemoveRoundBuffsAppliedToCharacter(PlayerCharacter character)
+    internal void RemoveBuffsOnDeath(PlayerCharacter character)
     {
-        foreach (IAppliablBuff buff in character.affectedByBuffs.ToArray())
+        foreach (RuntimeBuff buff in character.affectedByBuffs.ToArray())
         {
-            IPassiveAbility passiveBuff = buff as IPassiveAbility;
-            if (passiveBuff != null)
+            if (buff.Data.DurationType == DurationType.eternal)
             {
                 continue;
             }
-            buff.UnApply(new List<int> { character.CharClassID });
+            IAppliablBuff appliableBuff = buff.Data as IAppliablBuff;
+            if (appliableBuff != null)
+                appliableBuff.UnApply(new List<int> { character.CharClassID });
             buff.AffectedCharacterIDs.Remove(character.CharClassID);
             character.RemoveAffectingBuff(buff);
-            this.RpcRemoveBuffIcons(buff.UniqueID, new List<int> { character.CharClassID });
+            if(buff.Data.Icon != null)
+                this.RpcRemoveBuffIconFromCharacters(buff.UniqueID, new List<int> { character.CharClassID });
         }
     }
 
     [ClientRpc]
-    private void RpcAddBuffIcons(int buffID, List<int> affectedCharacterIDs, string iconName)
+    private void RpcAddBuffIcons(int buffID, List<int> affectedCharacterIDs, string buffDataID)
     {
-        TurnOrderHUD.Singleton.AddBuffIcons(buffID, affectedCharacterIDs, iconName);
+        TurnOrderHUD.Singleton.AddBuffIcons(buffID, affectedCharacterIDs, buffDataID);
     }
 
     [ClientRpc]
-    private void RpcRemoveBuffIcons(int buffID, List<int> affectedCharacterIDs)
+    private void RpcRemoveBuffIconFromCharacters(int buffID, List<int> affectedCharacterIDs)
     {
-        TurnOrderHUD.Singleton.RemoveBuffIcons(buffID, affectedCharacterIDs);
+        TurnOrderHUD.Singleton.RemoveBuffIconFromCharacters(buffID, affectedCharacterIDs);
     }
 }

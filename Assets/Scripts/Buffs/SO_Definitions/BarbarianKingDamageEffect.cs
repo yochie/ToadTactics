@@ -5,12 +5,12 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 
-[CreateAssetMenu]
-public class BarbarianKingDamageEffect : IBuffDataSO, IAttackEnhancer
+[CreateAssetMenu(fileName = "KingDamageBuff", menuName = "Buffs/KingDamageBuff")]
+public class BarbarianKingDamageEffect : ScriptableObject, IBuffDataSO, IAttackEnhancer
 {
     #region IBuff
     [field: SerializeField]
-    public string BuffTypeID { get; set; }
+    public string stringID { get; set; }
 
     [field: SerializeField]
     public string UIName { get; set; }
