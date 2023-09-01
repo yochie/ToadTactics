@@ -16,7 +16,7 @@ MonoBehaviour:
   <UIName>k__BackingField: Touch of God
   <DOTDamage>k__BackingField: 10
   <DOTDamageType>k__BackingField: 2
-  <TargetedAreaType>k__BackingField: 2
+  <TargetedAreaType>k__BackingField: 3
   <AuraAppliesTo>k__BackingField: 01000000
   <AreaScaler>k__BackingField: 1
   <NeedsToBeReAppliedEachTurn>k__BackingField: 1

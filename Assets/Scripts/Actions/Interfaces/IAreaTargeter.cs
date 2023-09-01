@@ -10,16 +10,19 @@
         switch (areaType)
         {
             case AreaType.arc:
-                areaString = string.Format("Arcing {0} tile{1} around target", areaScaler, areaScaler > 1 ? "s" : "");
+                areaString = string.Format("{0} tile arc", areaScaler);
                 break;
             case AreaType.pierce:
-                areaString = string.Format("Line from source to target");
+                areaString = string.Format("line to target");
                 break;
             case AreaType.radial:
-                areaString = string.Format("Circle with {0} tile radius", areaScaler);
+                areaString = string.Format("{0} tile radius", areaScaler);
                 break;
             case AreaType.single:
-                areaString = string.Format("Single target");
+                areaString = string.Format("single target");
+                break;
+            case AreaType.none:
+                areaString = string.Format("");
                 break;
             default:
                 areaString = "";

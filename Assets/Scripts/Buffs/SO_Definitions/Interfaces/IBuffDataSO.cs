@@ -27,13 +27,13 @@ public interface IBuffDataSO
         switch (buffData.DurationType)
         {
             case DurationType.untilDeath:
-                durationDescription = "Lasts until death.";
+                durationDescription = "until death";
                 break;
             case DurationType.timed:
-                durationDescription = string.Format("Lasts {0} turns of applying character.", buffData.TurnDuration);
+                durationDescription = string.Format("{0} turns", buffData.TurnDuration);
                 break;
             case DurationType.eternal:
-                durationDescription = string.Format("Cannot be removed.");
+                durationDescription = string.Format("passive");
                 break;
             case DurationType.conditional:
                 IConditionalBuff conditionalBuff = buffData as IConditionalBuff;
