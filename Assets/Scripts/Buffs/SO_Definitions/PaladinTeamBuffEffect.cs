@@ -22,15 +22,15 @@ public class PaladinTeamBuffEffect : IHealthModifier, IArmorModifier, IMovementM
     public int ArmorOffset { get => ARMOR_OFFSET; set => throw new NotSupportedException(); }
     public int MovementOffset { get => MOVEMENT_OFFSET; set => throw new NotSupportedException(); }
 
-    public bool NeedsToBeReAppliedEachTurn => throw new NotImplementedException();
+    public bool NeedsToBeReAppliedEachTurn { get; set; }
 
     public string stringID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public string UIName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public bool IsPositive { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public DurationType DurationType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public int TurnDuration { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public Image Icon { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public string tooltipDescription { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public Sprite Icon { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public string DescriptionFormat { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     #endregion
 
     #region IBuffEffect functions
@@ -92,6 +92,11 @@ public class PaladinTeamBuffEffect : IHealthModifier, IArmorModifier, IMovementM
         int currentMoveSpeed = playerCharacter.CurrentStats.moveSpeed;
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, moveSpeed: currentMoveSpeed - this.MovementOffset));
         playerCharacter.GrantMovesForTurn(-this.MovementOffset);
+    }
+
+    public string GetDescription()
+    {
+        throw new NotImplementedException();
     }
     #endregion
 }

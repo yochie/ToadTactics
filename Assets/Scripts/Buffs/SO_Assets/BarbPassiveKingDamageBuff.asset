@@ -18,4 +18,4 @@ MonoBehaviour:
   <DurationType>k__BackingField: 3
   <TurnDuration>k__BackingField: 0
   <Icon>k__BackingField: {fileID: 0}
-  <kingDamageBonus>k__BackingField: 20
+  <KingDamageBonus>k__BackingField: 20

@@ -4,14 +4,14 @@ using UnityEngine.UI;
 
 public abstract class StunEffectBase : IAppliablBuff
 {
-    public abstract bool NeedsToBeReAppliedEachTurn { get; }
+    public abstract bool NeedsToBeReAppliedEachTurn { get; set; }
     public abstract string stringID { get; set; }
     public abstract string UIName { get; set; }
     public abstract bool IsPositive { get; set; }
     public abstract DurationType DurationType { get; set; }
     public abstract int TurnDuration { get; set; }
-    public abstract Image Icon { get; set; }
-    public abstract string tooltipDescription { get; set; }
+    public abstract Sprite Icon { get; set; }
+    public abstract string DescriptionFormat { get; set; }
 
     //public bool NeedsToBeReAppliedEachTurn => false;
     //public bool IsPositive => false;
@@ -30,6 +30,11 @@ public abstract class StunEffectBase : IAppliablBuff
         }
 
         return true;
+    }
+
+    public string GetDescription()
+    {
+        throw new System.NotImplementedException();
     }
 
     public void UnApply(List<int> applyToCharacterIDs)

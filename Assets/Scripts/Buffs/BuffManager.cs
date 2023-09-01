@@ -73,7 +73,7 @@ internal class BuffManager : NetworkBehaviour
             appliedBuff.ApplyEffect(buff.AffectedCharacterIDs, isReapplication: false);
         }
 
-        Image buffIcon = buff.Data.Icon;
+        Sprite buffIcon = buff.Data.Icon;
         if(buffIcon != null)
         {
             this.RpcAddBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs, buff.Data.stringID);
@@ -126,7 +126,7 @@ internal class BuffManager : NetworkBehaviour
             affectedCharacter.RemoveAffectingBuff(buff);
         }
 
-        Image buffIcon = buff.Data.Icon;
+        Sprite buffIcon = buff.Data.Icon;
         if (buffIcon != null)            
             this.RpcRemoveBuffIconFromCharacters(buff.UniqueID, buff.AffectedCharacterIDs);
 

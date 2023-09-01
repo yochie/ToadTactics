@@ -6,9 +6,8 @@ using Mirror;
 using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "KingDamageBuff", menuName = "Buffs/KingDamageBuff")]
-public class BarbarianKingDamageEffect : ScriptableObject, IBuffDataSO, IAttackEnhancer
+public class KingDamageBuff : ScriptableObject, IBuffDataSO, IAttackEnhancer
 {
-    #region IBuff
     [field: SerializeField]
     public string stringID { get; set; }
 
@@ -25,12 +24,10 @@ public class BarbarianKingDamageEffect : ScriptableObject, IBuffDataSO, IAttackE
     public int TurnDuration { get; set; }
 
     [field: SerializeField] 
-    public Image Icon { get; set; }
-    public string tooltipDescription { get; set; }
-    #endregion
+    public Sprite Icon { get; set; }
 
     [field: SerializeField]
-    private int kingDamageBonus { get; set; }
+    private int KingDamageBonus { get; set; }
 
     [Server]
     public IAttackAction EnhanceAttack(IAttackAction attackToEnhance)
@@ -42,15 +39,13 @@ public class BarbarianKingDamageEffect : ScriptableObject, IBuffDataSO, IAttackE
         //similar to what is done for IMovementActions
         if (attackToEnhance.TargetHex.HoldsACharacter() && attackToEnhance.TargetHex.GetHeldCharacterObject().IsKing)
         {
-            attackToEnhance.Damage = attackToEnhance.Damage + kingDamageBonus;
+            attackToEnhance.Damage = attackToEnhance.Damage + KingDamageBonus;
         }
         return attackToEnhance;
     }
 
-    public Dictionary<string, string> GetAbilityBuffPrintoutDictionnary()
+    public string GetDescription()
     {
-        Dictionary<string, string> printouts = new();
-        printouts.Add("King damage", string.Format("+{0}", kingDamageBonus));
-        return printouts;
+        return string.Format("+{0} king damage", this.KingDamageBonus);
     }
 }

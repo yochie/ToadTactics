@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IAppliablBuff : IBuffDataSO
 {        
-    public bool NeedsToBeReAppliedEachTurn { get;}
+    public bool NeedsToBeReAppliedEachTurn { get; set; }
 
     public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication);
 

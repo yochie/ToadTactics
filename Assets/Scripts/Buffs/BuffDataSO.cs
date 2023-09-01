@@ -32,6 +32,6 @@ public class BuffDataSO : ScriptableObject
     public Sprite GetBuffIcon(string buffDataID)
     {
         List<IBuffDataSO> buffDataList = this.buffDataAssets.Cast<IBuffDataSO>().ToList();
-        return buffDataList.Single(buffData => buffData.stringID == buffDataID).Icon.sprite;
+        return buffDataList.Single(buffData => buffData.stringID == buffDataID).Icon;
     }
 }
