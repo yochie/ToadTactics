@@ -116,7 +116,7 @@ internal class BuffManager : NetworkBehaviour
     [Server]
     private void RemoveBuff(RuntimeBuff buff)
     {
-        IAppliablBuffDataSO appliedBuff = buff as IAppliablBuffDataSO;
+        IAppliablBuffDataSO appliedBuff = buff.Data as IAppliablBuffDataSO;
         if(appliedBuff != null)
             appliedBuff.UnApply(buff.AffectedCharacterIDs);
 
