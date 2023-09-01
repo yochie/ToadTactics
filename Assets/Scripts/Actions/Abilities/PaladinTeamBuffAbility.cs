@@ -18,7 +18,7 @@ public class PaladinTeamBuffAbility : IAbilityAction, IActivatedBuffSource, ICoo
     public CharacterAbilityStats AbilityStats { get; set; }
 
     //IBuffSource
-    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("PaladinTeamBuffData"); }
+    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("PaladinTeamDefensiveBuff"); }
     public Hex TargetHex { get; set; }
     public List<TargetType> AllowedTargetTypes { get; set; }
     public bool RequiresLOS { get; set; }

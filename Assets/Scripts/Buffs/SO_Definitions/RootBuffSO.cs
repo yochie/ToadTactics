@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "RootBuff", menuName = "Buffs/RootBuff")]
-public class RootBuffSO : ScriptableObject, IAppliablBuff
+public class RootBuffSO : ScriptableObject, IAppliablBuffDataSO
 {
     //public override string BuffTypeID => "WarriorRootData";
     //public override string UIName => "Warrior fear";
@@ -30,15 +30,13 @@ public class RootBuffSO : ScriptableObject, IAppliablBuff
     [field: SerializeField]
     public bool NeedsToBeReAppliedEachTurn { get; set; }
 
-    public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication = false)
+    public void Apply(List<int> applyToCharacterIDs, bool isReapplication = false)
     {
         foreach (int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter appliedTo = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             appliedTo.SetCanMove(false);
         }
-
-        return true;
     }
 
     public void UnApply(List<int> applyToCharacterIDs)

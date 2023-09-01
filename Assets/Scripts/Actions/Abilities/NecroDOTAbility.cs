@@ -18,7 +18,7 @@ public class NecroDOTAbility : IAbilityAction, IActivatedBuffSource, ITargetedAc
     public CharacterAbilityStats AbilityStats { get; set; }
 
     //IBuffSource
-    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("NecroDOTData"); }
+    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("NecroDOTBuff"); }
     public Hex TargetHex { get; set; }
     public List<TargetType> AllowedTargetTypes { get; set; }
     public bool RequiresLOS { get; set; }
@@ -36,7 +36,7 @@ public class NecroDOTAbility : IAbilityAction, IActivatedBuffSource, ITargetedAc
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
-        //self harm attack
+        //self harm
         ActionExecutor.Singleton.CustomAttack(source: this.ActorHex,
                                               primaryTarget: this.ActorHex,
                                               areaType: AreaType.single,

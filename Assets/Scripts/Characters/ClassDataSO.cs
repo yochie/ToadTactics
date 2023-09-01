@@ -486,6 +486,13 @@ public class ClassDataSO : ScriptableObject
                     cappedPerRound: true,
                     requiresLOS: false,
                     range: Utility.MAX_DISTANCE_ON_MAP
+                ),
+                new (
+                    stringID: "PriestAuraHeal",
+                    interfaceName: "Touch of God",
+                    description: "Heals nearby allies at end of his turn.",
+                    isPassive: true,
+                    appliesBuffIDOnRoundStart: "PriestPassiveAuraDOTBuff"
                 )
             }
             );

@@ -5,8 +5,8 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 
-[CreateAssetMenu(fileName = "KingDamageBuff", menuName = "Buffs/KingDamageBuff")]
-public class KingDamageBuff : ScriptableObject, IBuffDataSO, IAttackEnhancer
+[CreateAssetMenu(fileName = "FaithlessDamageBuff", menuName = "Buffs/FaithlessDamageBuff")]
+public class FaithlessDamageBuffSO : ScriptableObject, IBuffDataSO, IAttackEnhancer
 {
     [field: SerializeField]
     public string stringID { get; set; }
@@ -14,20 +14,23 @@ public class KingDamageBuff : ScriptableObject, IBuffDataSO, IAttackEnhancer
     [field: SerializeField]
     public string UIName { get; set; }
 
-    [field: SerializeField] 
+    [field: SerializeField]
     public bool IsPositive { get; set; }
 
-    [field: SerializeField] 
+    [field: SerializeField]
     public DurationType DurationType { get; set; }
 
-    [field: SerializeField] 
+    [field: SerializeField]
     public int TurnDuration { get; set; }
 
-    [field: SerializeField] 
+    [field: SerializeField]
     public Sprite Icon { get; set; }
 
     [field: SerializeField]
-    private int KingDamageBonus { get; set; }
+    private int faithlessDamageBonus { get; set; }
+
+    //[field: SerializeField]
+    //private int faithlessDamageType { get; set; }
 
     [Server]
     public IAttackAction EnhanceAttack(IAttackAction attackToEnhance)
@@ -37,15 +40,15 @@ public class KingDamageBuff : ScriptableObject, IBuffDataSO, IAttackEnhancer
         //If barb attack were ever to have a different area type than single, we might want to revisit this.
         //Perhaps use some SetupTargets function inside any ability/attack action so that any modifiers get to check on all targets
         //similar to what is done for IMovementActions
-        if (attackToEnhance.TargetHex.HoldsACharacter() && attackToEnhance.TargetHex.GetHeldCharacterObject().IsKing)
+        if (attackToEnhance.TargetHex.HoldsACharacter() && !attackToEnhance.TargetHex.GetHeldCharacterObject().CurrentStats.hasFaith)
         {
-            attackToEnhance.Damage = attackToEnhance.Damage + KingDamageBonus;
+            attackToEnhance.Damage = attackToEnhance.Damage + faithlessDamageBonus;
         }
         return attackToEnhance;
     }
 
     public string GetDescription()
     {
-        return string.Format("+{0} king damage", this.KingDamageBonus);
+        return string.Format("+{0} damage to faithless characters.", this.faithlessDamageBonus);
     }
 }

@@ -28,7 +28,7 @@ public interface IBuffDataSO
                 durationDescription = "Lasts until death.";
                 break;
             case DurationType.timed:
-                durationDescription = string.Format("Lasts {0} turns.", buffData.TurnDuration);
+                durationDescription = string.Format("Lasts {0} turns of applying character.", buffData.TurnDuration);
                 break;
             case DurationType.eternal:
                 durationDescription = string.Format("Cannot be removed.");

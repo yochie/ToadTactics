@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "DOTBuff", menuName = "Buffs/DOTBuff")]
-public class DOTBuff : ScriptableObject, IAppliablBuff
+public class DOTBuffSO : ScriptableObject, IAppliablBuffDataSO
 {
 
     //public string BuffTypeID => "NecroDOTData";
@@ -17,19 +17,19 @@ public class DOTBuff : ScriptableObject, IAppliablBuff
     //private DamageType DOTDamageType = DamageType.magic;
 
     [field: SerializeField]
-    private int DOTdamage { get; set; }
+    public string stringID { get; set; }
+
+    [field: SerializeField]
+    public string UIName { get; set; }
+
+    [field: SerializeField]
+    private int DOTDamage { get; set; }
     
     [field: SerializeField]
     private DamageType DOTDamageType { get; set; }
 
     [field: SerializeField]
     public bool NeedsToBeReAppliedEachTurn { get; set; }
-    
-    [field: SerializeField]
-    public string stringID { get; set; }
-
-    [field: SerializeField]
-    public string UIName { get; set; }
 
     [field: SerializeField]
     public bool IsPositive { get; set; }
@@ -43,19 +43,20 @@ public class DOTBuff : ScriptableObject, IAppliablBuff
     [field: SerializeField]
     public Sprite Icon { get; set; }
 
-    public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication)
+    public void Apply(List<int> applyToCharacterIDs, bool isReapplication)
     {
+        if (!this.NeedsToBeReAppliedEachTurn)
+            throw new Exception("DOT buff must have reapplication enabled.");
         if (!isReapplication)
-            return false;
+            return;
 
-        Debug.Log("Reapplying Necro DOT effect.");
+        Debug.Log("Reapplying DOT effect.");
 
         foreach (int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
-            affectedCharacter.TakeDamage(DOTdamage, DOTDamageType);
+            affectedCharacter.TakeDamage(DOTDamage, DOTDamageType);
         }
-        return true;
     }
 
     public void UnApply(List<int> applyToCharacterIDs)
@@ -69,6 +70,6 @@ public class DOTBuff : ScriptableObject, IAppliablBuff
         
         string durationString = IBuffDataSO.GetDurationDescritpion(this);
         
-        return string.Format("Afflicted character takes {0} {1} damage at the end of their turn. {2}", this.DOTdamage, this.DOTDamageType, durationString);
+        return string.Format("Afflicted character takes {0} {1} damage at the end of their turn. {2}", this.DOTDamage, this.DOTDamageType, durationString);
     }
 }

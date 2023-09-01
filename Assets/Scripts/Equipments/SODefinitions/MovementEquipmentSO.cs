@@ -20,7 +20,7 @@ public class MovementEquipmentSO : EquipmentSO, IEquipmentQuality, IMovementModi
     {
         Dictionary<string, string> toPrint = new();
 
-        toPrint.Add("Movement", System.String.Format("+{0}", this.MovementOffset));
+        toPrint.Add("Moves", System.String.Format("+{0}", this.MovementOffset));
 
         return toPrint;
     }

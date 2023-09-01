@@ -29,7 +29,7 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IActivatedBuf
     public int AreaScaler { get; set; }
     
     //IBuffSource
-    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("WarriorRootData"); }
+    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("WarriorRootBuff"); }
 
     [Server]
     public void ServerUse(INetworkedLogger logger)

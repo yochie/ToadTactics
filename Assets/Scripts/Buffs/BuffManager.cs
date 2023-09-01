@@ -67,10 +67,10 @@ internal class BuffManager : NetworkBehaviour
             applyingCharacter.AddOwnedBuff(buff);
         }
 
-        IAppliablBuff appliedBuff = buff.Data as IAppliablBuff;
+        IAppliablBuffDataSO appliedBuff = buff.Data as IAppliablBuffDataSO;
         if (appliedBuff != null)
         {
-            appliedBuff.ApplyEffect(buff.AffectedCharacterIDs, isReapplication: false);
+            appliedBuff.Apply(buff.AffectedCharacterIDs, isReapplication: false);
         }
 
         Sprite buffIcon = buff.Data.Icon;
@@ -101,11 +101,11 @@ internal class BuffManager : NetworkBehaviour
 
             foreach (RuntimeBuff buff in character.affectedByBuffs.ToArray())
             {
-                IAppliablBuff appliableBuff = buff.Data as IAppliablBuff;
+                IAppliablBuffDataSO appliableBuff = buff.Data as IAppliablBuffDataSO;
 
                 if (appliableBuff != null && appliableBuff.NeedsToBeReAppliedEachTurn && !character.IsDead)
                 {
-                    appliableBuff.ApplyEffect(new List<int> { character.CharClassID }, isReapplication: true);
+                    appliableBuff.Apply(new List<int> { character.CharClassID }, isReapplication: true);
                     string message = string.Format("Ticking {0} {1} on {2}", appliableBuff.UIName, appliableBuff.IsPositive ? "buff" : "debuff", character.charClass.name);
                     MasterLogger.Singleton.RpcLogMessage(message);
                 }
@@ -116,7 +116,7 @@ internal class BuffManager : NetworkBehaviour
     [Server]
     private void RemoveBuff(RuntimeBuff buff)
     {
-        IAppliablBuff appliedBuff = buff as IAppliablBuff;
+        IAppliablBuffDataSO appliedBuff = buff as IAppliablBuffDataSO;
         if(appliedBuff != null)
             appliedBuff.UnApply(buff.AffectedCharacterIDs);
 
@@ -144,7 +144,7 @@ internal class BuffManager : NetworkBehaviour
             {
                 continue;
             }
-            IAppliablBuff appliableBuff = buff.Data as IAppliablBuff;
+            IAppliablBuffDataSO appliableBuff = buff.Data as IAppliablBuffDataSO;
             if (appliableBuff != null)
                 appliableBuff.UnApply(new List<int> { character.CharClassID });
             buff.AffectedCharacterIDs.Remove(character.CharClassID);

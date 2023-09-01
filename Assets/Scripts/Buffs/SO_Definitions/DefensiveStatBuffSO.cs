@@ -4,44 +4,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PaladinTeamBuffEffect : IHealthModifier, IArmorModifier, IMovementModifier, IAppliablBuff
+[CreateAssetMenu(fileName = "DefensiveBuff", menuName = "Buffs/DefensiveBuff")]
+public class DefensiveStatBuffSO : ScriptableObject, IAppliablBuffDataSO, IHealthModifier, IArmorModifier, IMovementModifier
 {
     //public string BuffTypeID => "PaladinTeamBuffData";
     //public string UIName => "Paladin team buff ";
     //public string IconName => "statbuff";
     //public bool IsPositive => true;
     //public bool NeedsToBeReAppliedEachTurn => false;
+    //private const int HEALTH_OFFSET = 30;
+    //private const int ARMOR_OFFSET = 5;
+    //private const int MOVEMENT_OFFSET = 1;
 
+    [field: SerializeField]
+    public string stringID { get; set; }
 
-    #region IStatModifier
-    private const int HEALTH_OFFSET = 30;
-    private const int ARMOR_OFFSET = 5;
-    private const int MOVEMENT_OFFSET = 1;
+    [field: SerializeField]
+    public string UIName { get; set; }
 
-    public int HealthOffset { get => HEALTH_OFFSET; set => throw new NotSupportedException(); }
-    public int ArmorOffset { get => ARMOR_OFFSET; set => throw new NotSupportedException(); }
-    public int MovementOffset { get => MOVEMENT_OFFSET; set => throw new NotSupportedException(); }
+    [field: SerializeField]
+    public bool IsPositive { get; set; }
 
+    [field: SerializeField]
+    public DurationType DurationType { get; set; }
+
+    [field: SerializeField]
+    public int TurnDuration { get; set; }
+
+    [field: SerializeField]
+    public Sprite Icon { get; set; }
+
+    [field: SerializeField]
+    public int HealthOffset { get; set; }
+
+    [field: SerializeField]
+    public int ArmorOffset { get; set; }
+
+    [field: SerializeField]
+    public int MovementOffset { get; set; }
+
+    [field: SerializeField]
     public bool NeedsToBeReAppliedEachTurn { get; set; }
 
-    public string stringID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public string UIName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public bool IsPositive { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public DurationType DurationType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public int TurnDuration { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public Sprite Icon { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public string DescriptionFormat { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    #endregion
-
-    #region IBuffEffect functions
-    public bool ApplyEffect(List<int> applyToCharacterIDs, bool isReapplication)
+    public void Apply(List<int> applyToCharacterIDs, bool isReapplication)
     {
         foreach(int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             this.ApplyStatModification(affectedCharacter);
         }
-        return true;
     }
 
     public void UnApply(List<int> applyToCharacterIDs)
@@ -51,13 +62,6 @@ public class PaladinTeamBuffEffect : IHealthModifier, IArmorModifier, IMovementM
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             this.RemoveStatModification(affectedCharacter);
         }
-    }
-    #endregion
-
-    #region IStatModifier functions
-    public Dictionary<string, string> GetPrintableStatDictionary()
-    {
-        throw new NotSupportedException();
     }
 
     public void ApplyStatModification(PlayerCharacter playerCharacter)
@@ -96,7 +100,20 @@ public class PaladinTeamBuffEffect : IHealthModifier, IArmorModifier, IMovementM
 
     public string GetDescription()
     {
-        throw new NotImplementedException();
+        return IBuffDataSO.GetDurationDescritpion(this);
     }
-    #endregion
+
+    public Dictionary<string, string> GetPrintableStatDictionary()
+    {
+        Dictionary<string, string> toPrint = new();
+
+        if(this.ArmorOffset != 0)
+            toPrint.Add("Armor", System.String.Format("+{0}", this.ArmorOffset));
+        if (this.HealthOffset != 0)
+            toPrint.Add("Health", System.String.Format("+{0}", this.HealthOffset));
+        if (this.MovementOffset != 0)
+            toPrint.Add("Moves", System.String.Format("+{0}", this.MovementOffset));
+
+        return toPrint;
+    }
 }

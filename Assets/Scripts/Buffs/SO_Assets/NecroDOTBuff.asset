@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b6672d8b6b101147baa498c935a22c1, type: 3}
   m_Name: NecroDOTBuff
   m_EditorClassIdentifier: 
-  <DOTdamage>k__BackingField: 10
+  <DOTDamage>k__BackingField: 10
   <DOTDamageType>k__BackingField: 1
   <NeedsToBeReAppliedEachTurn>k__BackingField: 1
   <stringID>k__BackingField: NecroDOTBuff

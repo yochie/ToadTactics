@@ -25,7 +25,7 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IActivatedBu
     public int Range { get; set; }
     
     //IBuffSource
-    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("CavalierStunData"); }
+    public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("CavalierStunBuff"); }
 
     //IAreaTargeter
     public AreaType TargetedAreaType { get; set; }
