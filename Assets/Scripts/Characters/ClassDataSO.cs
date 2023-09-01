@@ -150,7 +150,8 @@ public class ClassDataSO : ScriptableObject
                                        initiative: 1,
                                        range: 1,
                                        damageIterations: 2,
-                                       hasFaith: false);
+                                       hasFaith: false,
+                                       attackAreaType: AreaType.single);
         //Barb
         CharacterClass barbarian = new(
             classID: 0,
@@ -163,7 +164,8 @@ public class ClassDataSO : ScriptableObject
                     interfaceName: "KingSlayer",
                     description: "Grants a bonus to damage when attacking the king.",
                     isPassive: true,
-                    appliesBuffIDOnRoundStart: "BarbPassiveKingDamageBuff"
+                    appliesBuffIDOnRoundStart: "BarbPassiveKingDamageBuff",
+                    areaType: AreaType.none
                 )
             }
         );
@@ -184,7 +186,9 @@ public class ClassDataSO : ScriptableObject
                 initiative: 2,
                 range: 2,
                 damageIterations: 1,
-                hasFaith: false),
+                hasFaith: false,
+                attackAreaType: AreaType.single
+                ),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "CavalierStun",
@@ -255,7 +259,8 @@ public class ClassDataSO : ScriptableObject
                 initiative: 4,
                 range: 1,
                 damageIterations: 2,
-                hasFaith: false),
+                hasFaith: false,
+                attackAreaType: AreaType.single),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "RogueCrit",
@@ -271,7 +276,8 @@ public class ClassDataSO : ScriptableObject
                     canCrit: true,
                     critChance: 1f,
                     critMultiplier: -1f,                                        
-                    penetratingDamage: true
+                    penetratingDamage: true,
+                    areaType: AreaType.single
                 )
             }
             );
@@ -328,7 +334,8 @@ public class ClassDataSO : ScriptableObject
                 initiative: 6,
                 range: 1,
                 damageIterations: 1,
-                hasFaith: true),
+                hasFaith: true,
+                attackAreaType: AreaType.single),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "PaladinTeamBuff",
@@ -361,7 +368,8 @@ public class ClassDataSO : ScriptableObject
                 initiative: 7,
                 range: 3,
                 damageIterations: 1,
-                hasFaith: true),
+                hasFaith: true,
+                attackAreaType: AreaType.single),
             moveActionID: "DruidMoveAction",
             abilities: new List<CharacterAbilityStats> {
                 new (
@@ -401,7 +409,8 @@ public class ClassDataSO : ScriptableObject
                 range: 3,
                 damageIterations: 1,
                 hasFaith: true,
-                attacksPerTurn: 2),
+                attacksPerTurn: 2,
+                attackAreaType: AreaType.single),
             attackActionID: "NecroAttackAction",
             abilities: new List<CharacterAbilityStats> {
                 new (
@@ -415,7 +424,8 @@ public class ClassDataSO : ScriptableObject
                     requiresLOS: true,
                     damage: 10, //this is for self damage, debuff damage defined in buff effect class
                     damageIterations: 1,
-                    damageType: DamageType.magic
+                    damageType: DamageType.magic,
+                    areaType: AreaType.single
                 )
             }
             );
@@ -437,7 +447,9 @@ public class ClassDataSO : ScriptableObject
                 initiative: 9,
                 range: 3,
                 damageIterations: 1,
-                hasFaith: false),
+                hasFaith: false,
+                attackAreaType: AreaType.single
+                ),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "WizardFireball",
@@ -475,7 +487,8 @@ public class ClassDataSO : ScriptableObject
                 range: 3,
                 damageIterations: 1,
                 allowedAttackTargets: new List<TargetType> { TargetType.other_friendly_chars, TargetType.self },
-                hasFaith: true),
+                hasFaith: true,
+                attackAreaType: AreaType.single),
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "PriestResurrect",
@@ -485,14 +498,16 @@ public class ClassDataSO : ScriptableObject
                     usesPerRound: 1,
                     cappedPerRound: true,
                     requiresLOS: false,
-                    range: Utility.MAX_DISTANCE_ON_MAP
+                    range: Utility.MAX_DISTANCE_ON_MAP,
+                    areaType: AreaType.single
                 ),
                 new (
                     stringID: "PriestAuraHeal",
                     interfaceName: "Touch of God",
                     description: "Heals nearby allies at end of his turn.",
                     isPassive: true,
-                    appliesBuffIDOnRoundStart: "PriestPassiveAuraDOTBuff"
+                    appliesBuffIDOnRoundStart: "PriestPassiveAuraDOTBuff",
+                    areaType: AreaType.none
                 )
             }
             );

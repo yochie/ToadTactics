@@ -22,7 +22,7 @@ public class StatsTable : MonoBehaviour
 
     internal void RenderForStatEquipment(IStatModifier statEquipment)
     {
-        var toPrint = statEquipment.GetPrintableStatDictionary();
+        var toPrint = statEquipment.GetStatModificationsDictionnary();
         this.RenderFromDictionary(toPrint);
     }
 

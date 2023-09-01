@@ -21,7 +21,7 @@ public class CritMultiplierSO : EquipmentSO, IEquipmentQuality, ICritMultiplierM
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, critMultiplier: currentCritMultiplier - this.CritMultiplierOffset));
     }
 
-    public Dictionary<string, string> GetPrintableStatDictionary()
+    public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string> toPrint = new();
 

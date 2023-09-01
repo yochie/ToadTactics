@@ -26,7 +26,7 @@ public class StunBuffSO : ScriptableObject, IAppliablBuffDataSO
     [field: SerializeField]
     public bool NeedsToBeReAppliedEachTurn { get; set; }
 
-    public string GetDescription()
+    public string GetTooltip()
     {
         string durationString = IBuffDataSO.GetDurationDescritpion(this);
 
@@ -49,5 +49,11 @@ public class StunBuffSO : ScriptableObject, IAppliablBuffDataSO
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.SetCanTakeTurns(true);
         }
+    }
+    public Dictionary<string, string> GetBuffStatsDictionary()
+    {
+        Dictionary<string, string> statsDictionary = new();
+        statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
+        return statsDictionary;
     }
 }

@@ -78,12 +78,20 @@ public class AuraDOTBuffSO : ScriptableObject, IAppliablBuffDataSO, IAreaTargete
         return;
     }
 
-    public string GetDescription()
+    public string GetTooltip()
     {
         
         string durationString = IBuffDataSO.GetDurationDescritpion(this);
-        string areaString = IAreaTargeter.GetAreaDescription(this);
+        string areaString = IAreaTargeter.GetAreaDescription(this.TargetedAreaType, this.AreaScaler);
         string damageOrHeal = this.DOTDamageType == DamageType.healing ? "" : " damage";
         return string.Format("Character in aura takes {0} {1}{4} at the end of their turn. {2} {3}", this.DOTDamage, this.DOTDamageType, durationString, areaString, damageOrHeal);
+    }
+    public Dictionary<string, string> GetBuffStatsDictionary()
+    {
+        Dictionary<string, string> statsDictionary = new();
+        statsDictionary.Add("Damage", string.Format("{0} {1}", this.DOTDamage, this.DOTDamageType));
+        statsDictionary.Add("Aura area", IAreaTargeter.GetAreaDescription(this.TargetedAreaType, this.AreaScaler));
+        statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
+        return statsDictionary;
     }
 }

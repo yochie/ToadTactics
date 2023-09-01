@@ -20,7 +20,7 @@ public class HealthEquipmentSO : EquipmentSO, IHealthModifier, IEquipmentQuality
         playerCharacter.TakeDamage(HealthOffset, DamageType.healing);
     }
 
-    public Dictionary<string, string> GetPrintableStatDictionary()
+    public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string> toPrint = new();
 

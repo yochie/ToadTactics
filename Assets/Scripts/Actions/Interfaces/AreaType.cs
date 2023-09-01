@@ -1,4 +1,4 @@
 ﻿public enum AreaType
 {
-    single = 0, pierce, radial, arc
+    none = 0, single, pierce, radial, arc
 }

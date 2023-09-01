@@ -16,7 +16,7 @@ public class ArmorEquipmentSO : EquipmentSO, IEquipmentQuality, IArmorModifier
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, armor: currentArmor + this.ArmorOffset));
     }
 
-    public Dictionary<string, string> GetPrintableStatDictionary()
+    public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string> toPrint = new();
 

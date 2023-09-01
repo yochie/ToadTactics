@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 [CreateAssetMenu(fileName = "DefensiveBuff", menuName = "Buffs/DefensiveBuff")]
 public class DefensiveStatBuffSO : ScriptableObject, IAppliablBuffDataSO, IHealthModifier, IArmorModifier, IMovementModifier
@@ -98,12 +99,12 @@ public class DefensiveStatBuffSO : ScriptableObject, IAppliablBuffDataSO, IHealt
         playerCharacter.GrantMovesForTurn(-this.MovementOffset);
     }
 
-    public string GetDescription()
+    public string GetTooltip()
     {
         return IBuffDataSO.GetDurationDescritpion(this);
     }
 
-    public Dictionary<string, string> GetPrintableStatDictionary()
+    public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string> toPrint = new();
 
@@ -115,5 +116,16 @@ public class DefensiveStatBuffSO : ScriptableObject, IAppliablBuffDataSO, IHealt
             toPrint.Add("Moves", System.String.Format("+{0}", this.MovementOffset));
 
         return toPrint;
+    }
+    public Dictionary<string, string> GetBuffStatsDictionary()
+    {
+        Dictionary<string, string> statsDictionary = new();
+        this.GetStatModificationsDictionnary().ToList().ForEach(stat => { 
+            if (statsDictionary.ContainsKey(stat.Key)) 
+            { return; }
+            statsDictionary.Add(stat.Key, stat.Value);
+            });
+        statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
+        return statsDictionary;
     }
 }

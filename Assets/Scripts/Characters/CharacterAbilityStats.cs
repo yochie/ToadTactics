@@ -85,4 +85,27 @@ public readonly struct CharacterAbilityStats
         this.areaType = areaType;
         this.appliesSelfBuffOnRoundStart = appliesBuffIDOnRoundStart;
     }
+
+    public IBuffDataSO GetAppliedBuf()
+    {
+        IBuffDataSO buff = null;
+        if (this.isPassive && this.appliesSelfBuffOnRoundStart != null)
+        {
+            buff = BuffDataSO.Singleton.GetBuffData(this.appliesSelfBuffOnRoundStart);
+        }
+        else if (!this.isPassive)
+        {
+            Type abilityType = ClassDataSO.Singleton.GetAbilityActionTypeByID(this.stringID);
+
+            //Need to create instance since buff data isn't stored statically in ability objects... this is issue caused by not having ability data stored as SO
+            IAbilityAction abilityAction = (IAbilityAction)Activator.CreateInstance(abilityType);
+            IActivatedBuffSource buffingAction = abilityAction as IActivatedBuffSource;
+            if (buffingAction != null)
+            {
+                buff = buffingAction.AppliesBuffOnActivation;
+            }
+        }
+
+        return buff;
+    }
 }

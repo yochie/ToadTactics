@@ -17,7 +17,9 @@ public interface IBuffDataSO
 
     public Sprite Icon { get; set; }
 
-    public string GetDescription();
+    public string GetTooltip();
+
+    Dictionary<string, string> GetBuffStatsDictionary();
 
     public static string GetDurationDescritpion(IBuffDataSO buffData)
     {
@@ -45,4 +47,5 @@ public interface IBuffDataSO
         }
         return durationDescription;
     }
+
 }

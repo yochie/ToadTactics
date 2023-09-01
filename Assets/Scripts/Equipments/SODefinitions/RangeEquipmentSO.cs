@@ -16,7 +16,7 @@ public class RangeEquipmentSO : EquipmentSO, IEquipmentQuality, IRangeModifier
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, range: currentRange + this.RangeOffset));
     }
 
-    public Dictionary<string, string> GetPrintableStatDictionary()
+    public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string> toPrint = new();
 

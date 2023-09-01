@@ -22,7 +22,7 @@ public class CritChanceEquipmentSO : EquipmentSO, IEquipmentQuality, ICritChance
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, critChance: currentCritChance - this.CritChanceOffset));
     }
 
-    public Dictionary<string, string> GetPrintableStatDictionary()
+    public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string> toPrint = new();
 

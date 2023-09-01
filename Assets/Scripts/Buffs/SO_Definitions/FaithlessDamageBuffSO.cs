@@ -27,7 +27,7 @@ public class FaithlessDamageBuffSO : ScriptableObject, IBuffDataSO, IAttackEnhan
     public Sprite Icon { get; set; }
 
     [field: SerializeField]
-    private int faithlessDamageBonus { get; set; }
+    private int FaithlessDamageBonus { get; set; }
 
     //[field: SerializeField]
     //private int faithlessDamageType { get; set; }
@@ -42,13 +42,19 @@ public class FaithlessDamageBuffSO : ScriptableObject, IBuffDataSO, IAttackEnhan
         //similar to what is done for IMovementActions
         if (attackToEnhance.TargetHex.HoldsACharacter() && !attackToEnhance.TargetHex.GetHeldCharacterObject().CurrentStats.hasFaith)
         {
-            attackToEnhance.Damage = attackToEnhance.Damage + faithlessDamageBonus;
+            attackToEnhance.Damage = attackToEnhance.Damage + FaithlessDamageBonus;
         }
         return attackToEnhance;
     }
 
-    public string GetDescription()
+    public string GetTooltip()
     {
-        return string.Format("+{0} damage to faithless characters.", this.faithlessDamageBonus);
+        return string.Format("+{0} damage to faithless characters.", this.FaithlessDamageBonus);
+    }
+    public Dictionary<string, string> GetBuffStatsDictionary()
+    {
+        Dictionary<string, string> statsDictionary = new();
+        statsDictionary.Add("Faithless Damage", string.Format("{0}", this.FaithlessDamageBonus));
+        return statsDictionary;
     }
 }

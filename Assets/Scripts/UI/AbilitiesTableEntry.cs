@@ -30,10 +30,17 @@ public class AbilitiesTableEntry : MonoBehaviour
     private GameObject tooltip;
 
     [SerializeField]
-    private StatsTable tooltipStats;
+    private StatsTable tooltipAbilityStats;
+
+    [SerializeField]
+    private StatsTable tooltipBuffStats;
 
     [SerializeField]
     private TextMeshProUGUI tooltipTitle;
+
+    [SerializeField]
+    private TextMeshProUGUI buffSectionTitle;
+
 
     internal void Init(AbilityPrintData abilityPrintData, bool forLiveCharacter)
     {
@@ -53,31 +60,28 @@ public class AbilitiesTableEntry : MonoBehaviour
 
         this.tooltipTitle.text = abilityPrintData.passiveOrActive;
 
-        Dictionary<string, string> abilityStatsForTooltipTable = new();
-        if(abilityPrintData.damageOneLiner != "")
-            abilityStatsForTooltipTable.Add("Damage", abilityPrintData.damageOneLiner);
-        
-        if(abilityPrintData.range != "")
-            abilityStatsForTooltipTable.Add("Range", abilityPrintData.range);
 
-        if (abilityPrintData.aoe != "")
-            abilityStatsForTooltipTable.Add("AOE", abilityPrintData.aoe);
-
-        if (abilityPrintData.usesPerRound != "")
-            abilityStatsForTooltipTable.Add("Uses", abilityPrintData.usesPerRound);
-
-        if (abilityPrintData.cooldownDuration != "")
-            abilityStatsForTooltipTable.Add("Cooldown", abilityPrintData.cooldownDuration);
-
-        if(abilityStatsForTooltipTable.Count == 0)
+        if(abilityPrintData.abilityStatsDictionary.Count == 0)
         {
-            this.tooltipStats.gameObject.SetActive(false);
+            this.tooltipAbilityStats.gameObject.SetActive(false);
         }
         else
         {
-            this.tooltipStats.gameObject.SetActive(true);
-            this.tooltipStats.RenderFromDictionary(abilityStatsForTooltipTable);
+            this.tooltipAbilityStats.gameObject.SetActive(true);
+            this.tooltipAbilityStats.RenderFromDictionary(abilityPrintData.abilityStatsDictionary);
         }
 
+        if (abilityPrintData.buffStatsDictionary.Count == 0)
+        {
+            this.tooltipBuffStats.gameObject.SetActive(false);
+            this.buffSectionTitle.gameObject.SetActive(false);
+        }
+        else
+        {
+            this.tooltipBuffStats.gameObject.SetActive(true);
+            this.buffSectionTitle.gameObject.SetActive(true);
+            this.buffSectionTitle.text = abilityPrintData.buffOrDebuff;
+            this.tooltipBuffStats.RenderFromDictionary(abilityPrintData.buffStatsDictionary);
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 struct AbilityPrintData
 {
@@ -10,33 +12,32 @@ struct AbilityPrintData
 
     //tooltip
     public readonly string passiveOrActive;
-    public readonly string damageOneLiner;
-    public readonly string range;
-    public readonly string aoe;
-    public readonly string usesPerRound;
-    public readonly string cooldownDuration;
+
+    //main stats table
+    public readonly Dictionary<string, string> abilityStatsDictionary;
+
+    //buff stats table
+    public readonly Dictionary<string, string> buffStatsDictionary;
+    public readonly string buffOrDebuff;
 
     public AbilityPrintData (string name,
                             string description,
-                            string passiveOrActive,
-                            string damageOneLiner = "",
-                            string range = "",
-                            string aoe = "",
-                            string usesPerRound = "",
-                            string cooldownDuration = "",                       
                             string currentCooldown = "",
-                            string currentRemainingUses = ""
+                            string currentRemainingUses = "",
+                            string passiveOrActive = "",
+                            string buffOrDebuff = "",
+                            Dictionary<string, string> statsDictionary  = null,
+                            Dictionary<string, string> buffsDictionary = null
                             )
     {
         this.name = name;
         this.description = description;
-        this.passiveOrActive = passiveOrActive;
-        this.damageOneLiner = damageOneLiner;
-        this.range = range;
-        this.aoe = aoe;
-        this.usesPerRound = usesPerRound;
-        this.cooldownDuration = cooldownDuration;
         this.currentCooldown = currentCooldown;
         this.currentRemainingUses = currentRemainingUses;
+        this.passiveOrActive = passiveOrActive;
+        this.buffOrDebuff = buffOrDebuff;
+        this.abilityStatsDictionary = statsDictionary;
+        this.buffStatsDictionary = buffsDictionary;
+
     }
 }

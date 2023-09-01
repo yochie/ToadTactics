@@ -23,7 +23,7 @@ public class DamageEquipmentSO : EquipmentSO, IEquipmentQuality, IDamageModifier
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, damage: currentDamage - this.DamageOffset));
     }
 
-    public Dictionary<string, string> GetPrintableStatDictionary()
+    public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string> toPrint = new();
 

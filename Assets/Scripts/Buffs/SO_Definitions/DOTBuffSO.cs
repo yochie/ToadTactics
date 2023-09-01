@@ -65,11 +65,18 @@ public class DOTBuffSO : ScriptableObject, IAppliablBuffDataSO
         return;
     }
 
-    public string GetDescription()
+    public string GetTooltip()
     {
         
         string durationString = IBuffDataSO.GetDurationDescritpion(this);
         
         return string.Format("Afflicted character takes {0} {1} damage at the end of their turn. {2}", this.DOTDamage, this.DOTDamageType, durationString);
+    }
+    public Dictionary<string, string> GetBuffStatsDictionary()
+    {
+        Dictionary<string, string> statsDictionary = new();
+        statsDictionary.Add("Damage", string.Format("{0} {1}", this.DOTDamage, this.DOTDamageType));
+        statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
+        return statsDictionary;
     }
 }

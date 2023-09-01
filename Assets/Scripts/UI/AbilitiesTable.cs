@@ -35,19 +35,9 @@ public class AbilitiesTable : MonoBehaviour
 
             string name = ability.interfaceName;
             string description = ability.description;
-            string damageOneLiner = Utility.DamageStatsToString(ability.damage, ability.damageIterations, ability.damageType);
-            string range = "";
-            if (ability.range == Utility.MAX_DISTANCE_ON_MAP)             
-                range = "infinite";
-            else
-                range = !(ability.range > 0) ? "" : ability.range.ToString();
-            string aoe = ability.areaScaler == -1 ? "" : ability.areaScaler.ToString();
-            string usesPerRound = ability.usesPerRound == -1 ? "" : string.Format("{0} per round", ability.usesPerRound);
-            string cooldownDuration = ability.cooldownDuration == -1 ? "" : ability.cooldownDuration.ToString();
             string passiveOrActive = ability.isPassive ? "Passive" : "Active";
             string currentCooldownString = "";
             string remainingUsesString = "";
-
             if (live)
             {
                 if (ability.isPassive)
@@ -70,20 +60,66 @@ public class AbilitiesTable : MonoBehaviour
                     }
                 }
             }
+            
+            Dictionary<string, string> abilityStatsDictionary = this.GenerateAbilityStatsDictionary(ability);
+            
+            Dictionary<string, string> buffStatsDictionary = this.GenerateBuffStatsDictionary(ability);
+
+            IBuffDataSO buff = ability.GetAppliedBuf();
+            string buffOrDebuff = "";
+            if (buff != null)
+                buffOrDebuff = buff.IsPositive ? "Buff" : "Debuff";
 
             toPrint.Add(new AbilityPrintData(name: name,
                                              description: description,
                                              passiveOrActive: passiveOrActive,
-                                             damageOneLiner: damageOneLiner,
-                                             range: range,
-                                             aoe: aoe,
-                                             usesPerRound: usesPerRound,
-                                             cooldownDuration: cooldownDuration,
-                                             currentCooldown: currentCooldownString,                                             
-                                             currentRemainingUses: remainingUsesString));
+                                             currentCooldown: currentCooldownString,                                           
+                                             currentRemainingUses: remainingUsesString,
+                                             buffOrDebuff: buffOrDebuff,
+                                             statsDictionary: abilityStatsDictionary,
+                                             buffsDictionary: buffStatsDictionary));
         }
 
         return toPrint;
+    }
+
+    private Dictionary<string, string> GenerateBuffStatsDictionary(CharacterAbilityStats ability)
+    {
+        Dictionary<string, string> buffStatsDictionary = new();
+        IBuffDataSO buff = ability.GetAppliedBuf();
+        if(buff != null)
+            buffStatsDictionary = buff.GetBuffStatsDictionary();
+        return buffStatsDictionary;
+    }
+
+    private Dictionary<string, string> GenerateAbilityStatsDictionary(CharacterAbilityStats ability)
+    {
+        Dictionary<string, string> abilityStatsDictionary = new();
+        string damageOneLiner = Utility.DamageStatsToString(ability.damage, ability.damageIterations, ability.damageType);
+        if (damageOneLiner != "")
+            abilityStatsDictionary.Add("Damage", damageOneLiner);
+
+        string range;
+        if (ability.range == Utility.MAX_DISTANCE_ON_MAP)
+            range = "infinite";
+        else
+            range = !(ability.range > 0) ? "" : ability.range.ToString();
+        if (range != "")
+            abilityStatsDictionary.Add("Range", range);
+
+        string areaOneLiner = IAreaTargeter.GetAreaDescription(ability.areaType, ability.areaScaler);
+        if (areaOneLiner != "")
+            abilityStatsDictionary.Add("Target", areaOneLiner);
+
+        string usesPerRound = ability.usesPerRound == -1 ? "" : string.Format("{0} per round", ability.usesPerRound);
+        if (usesPerRound != "")
+            abilityStatsDictionary.Add("Uses", usesPerRound);
+
+        string cooldownDuration = ability.cooldownDuration == -1 ? "" : ability.cooldownDuration.ToString();
+        if (cooldownDuration != "")
+            abilityStatsDictionary.Add("Cooldown", cooldownDuration);
+
+        return abilityStatsDictionary;
     }
 
     private void RenderFromPrintData(List<AbilityPrintData> printData, bool forLiveCharacter = false)

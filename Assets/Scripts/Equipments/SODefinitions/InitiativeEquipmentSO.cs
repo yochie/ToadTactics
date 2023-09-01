@@ -21,7 +21,7 @@ public class InitiativeEquipmentSO : EquipmentSO, IEquipmentQuality, IInitiative
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, initiative: currentInitiative - this.InitiativeOffset));
     }
 
-    public Dictionary<string, string> GetPrintableStatDictionary()
+    public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string> toPrint = new();
         if(this.InitiativeOffset > 0)

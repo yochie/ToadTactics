@@ -44,8 +44,16 @@ public class KingDamageBuffSO : ScriptableObject, IBuffDataSO, IAttackEnhancer
         return attackToEnhance;
     }
 
-    public string GetDescription()
+    public string GetTooltip()
     {
         return string.Format("+{0} king damage", this.KingDamageBonus);
+    }
+
+    public Dictionary<string, string> GetBuffStatsDictionary()
+    {
+        Dictionary<string, string> statsDictionary = new();
+        statsDictionary.Add("King damage", string.Format("+{0}", this.KingDamageBonus));
+        statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
+        return statsDictionary;
     }
 }
