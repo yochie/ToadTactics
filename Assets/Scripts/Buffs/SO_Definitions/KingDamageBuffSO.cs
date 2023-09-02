@@ -44,7 +44,7 @@ public class KingDamageBuffSO : ScriptableObject, IBuffDataSO, IAttackEnhancer
         return attackToEnhance;
     }
 
-    public string GetTooltip()
+    public string GetTooltipDescription()
     {
         return string.Format("+{0} king damage", this.KingDamageBonus);
     }

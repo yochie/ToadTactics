@@ -229,7 +229,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "ArcherSnipe",
                     interfaceName: "Snipe",
-                    description: "Targets an enemy with a shot that has infinite range that pierces all targets and destroys trees between the target and the Archer. The attack does not require LOS.",
+                    description: "Shot with infinite range that pierces all targets and guarantees critical strike.",
                     damage: 30,
                     damageIterations: 1,
                     damageType: DamageType.physical,
@@ -238,7 +238,9 @@ public class ClassDataSO : ScriptableObject
                     allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle},
                     cooldownDuration: 3,
                     cappedByCooldown: true,
-                    areaType: AreaType.pierce
+                    areaType: AreaType.pierce,
+                    canCrit: true,
+                    critChance: 1f
                 )
             }
             );
@@ -265,7 +267,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "RogueCrit",
                     interfaceName: "Fatal Strike",
-                    description: "Targets an enemy and deals the Rogue's base damage (once) with a guaranteed critical strike that also ignore armor.",
+                    description: "Deals massive damage by hitting with a guaranteed critical strike that ignores armor.",
                     damage: 15,
                     damageIterations: 1,
                     damageType: DamageType.physical,
@@ -306,7 +308,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "WarriorRoot",
                     interfaceName: "Intimidating Shout",
-                    description: "Shouts and scares close enemies, making them cower in fear for a turn.",
+                    description: "Shouts to intimidate nearby enemies, making them cower in fear for a turn.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     areaType: AreaType.radial,
                     areaScaler : 1,
@@ -375,7 +377,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "DruidLava",
                     interfaceName: "Fissure",
-                    description: "Targets a tile and fissures the ground causing lava to erupt onto the battlefield.",
+                    description: "Fissures the ground causing lava to erupt onto the battlefield.",
                     allowedAbilityTargets: Utility.GetAllEnumValues<TargetType>(),
                     cooldownDuration: 3,
                     cappedByCooldown: true,
@@ -416,7 +418,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "NecroDOT",
                     interfaceName: "Rotting Corpse",
-                    description: "Self harms in order to inflict a curse that deals stackable damage over time on an enemy.",
+                    description: "Sacrifice some life to inflict a stackable curse that deals damage over time.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.ennemy_chars },
                     cooldownDuration: 1,
                     cappedByCooldown: true,
@@ -454,7 +456,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "WizardFireball",
                     interfaceName: "Fireball",
-                    description: "Target any tile and throw exploding fireball that deals magic damage in area of effect.",
+                    description: "Throw exploding fireball dealing magic damage to an area.",
                     allowedAbilityTargets: Utility.GetAllEnumValues<TargetType>(),
                     cooldownDuration: 2,
                     cappedByCooldown: true,
@@ -464,6 +466,13 @@ public class ClassDataSO : ScriptableObject
                     damage: 30,
                     damageIterations: 1,
                     damageType: DamageType.magic
+                ),
+                new (
+                    stringID: "WizardMagicArmor",
+                    interfaceName: "Magic armor",
+                    description: "Reduces magic damage taken.",
+                    isPassive: true,
+                    appliesBuffIDOnRoundStart: "WizardPassiveRatioDamageMitigationBuff"
                 )
             }
             );

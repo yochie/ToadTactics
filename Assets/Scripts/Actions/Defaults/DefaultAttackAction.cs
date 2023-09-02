@@ -64,7 +64,7 @@ public class DefaultAttackAction : IAttackAction
         int prevLife = DefenderCharacter.CurrentLife;
         bool isCrit = Utility.RollCrit(this.CritChance);
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
-        DefenderCharacter.TakeDamage(critRolledDamage, this.AttackDamageType, this.PenetratingDamage);
+        DefenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, this.PenetratingDamage));
 
         string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
         this.ActorCharacter.charClass.name,

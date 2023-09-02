@@ -26,7 +26,7 @@ public class StunBuffSO : ScriptableObject, IAppliablBuffDataSO
     [field: SerializeField]
     public bool NeedsToBeReAppliedEachTurn { get; set; }
 
-    public string GetTooltip()
+    public string GetTooltipDescription()
     {
         string durationString = IBuffDataSO.GetDurationDescritpion(this);
 

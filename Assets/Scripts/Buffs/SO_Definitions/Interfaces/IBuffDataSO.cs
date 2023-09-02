@@ -17,7 +17,7 @@ public interface IBuffDataSO
 
     public Sprite Icon { get; set; }
 
-    public string GetTooltip();
+    public string GetTooltipDescription();
 
     Dictionary<string, string> GetBuffStatsDictionary();
 

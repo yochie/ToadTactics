@@ -129,6 +129,21 @@ public class PlayerCharacter : NetworkBehaviour
         this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
         this.ResetTurnState();
     }
+    private List<IMitigationEnhancer> GetOrderedMitigationEnhancers()
+    {
+        List<IMitigationEnhancer> orderedMitigators = new();
+        foreach (IBuffDataSO buff in this.affectedByBuffs.Select(buff => buff.Data))
+        {
+            IMitigationEnhancer mitigationBuff = buff as IMitigationEnhancer;
+            if (mitigationBuff != null)
+            {
+                orderedMitigators.Add(mitigationBuff);
+            }
+        }
+        orderedMitigators.Sort();
+        return orderedMitigators;
+
+    }
 
     //TODO: add check for equipments here eventually once they exist in this category
     internal List<IAttackEnhancer> GetAttackEnhancers()
@@ -271,21 +286,28 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    public void TakeDamage(int damageAmount, DamageType damageType, bool bypassArmor = false)
+    public void TakeDamage(Hit hit)
     {
-        switch (damageType)
+        List<IMitigationEnhancer> orderedMitigationEnhancers = this.GetOrderedMitigationEnhancers();
+
+        foreach (IMitigationEnhancer mitigationEnhancer in orderedMitigationEnhancers)
+        {
+            hit = mitigationEnhancer.MitigateHit(hit);
+        }
+
+        switch (hit.damageType)
         {
             case DamageType.physical:
-                if(!bypassArmor)
-                    this.TakeRawDamage(damageAmount - this.CurrentStats.armor);
+                if(!hit.penetratesArmor)
+                    this.TakeRawDamage(hit.damage - this.CurrentStats.armor);
                 else
-                    this.TakeRawDamage(damageAmount);
+                    this.TakeRawDamage(hit.damage);
                 break;
             case DamageType.magic:
-                this.TakeRawDamage(damageAmount);
+                this.TakeRawDamage(hit.damage);
                 break;
             case DamageType.healing:
-                this.TakeRawDamage(-damageAmount);
+                this.TakeRawDamage(-hit.damage);
                 break;
         }
     }

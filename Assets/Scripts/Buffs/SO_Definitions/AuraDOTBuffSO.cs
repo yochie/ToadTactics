@@ -67,7 +67,7 @@ public class AuraDOTBuffSO : ScriptableObject, IAppliablBuffDataSO, IAreaTargete
                     !ActionExecutor.IsValidTargetType(affectedCharacter, hex, this.AuraAppliesTo))
                     continue;                
                 PlayerCharacter characterInAura = hex.GetHeldCharacterObject();
-                characterInAura.TakeDamage(this.DOTDamage, DOTDamageType);
+                characterInAura.TakeDamage(new Hit(this.DOTDamage, DOTDamageType));
             }            
         }
     }
@@ -78,7 +78,7 @@ public class AuraDOTBuffSO : ScriptableObject, IAppliablBuffDataSO, IAreaTargete
         return;
     }
 
-    public string GetTooltip()
+    public string GetTooltipDescription()
     {
         
         string durationString = IBuffDataSO.GetDurationDescritpion(this);

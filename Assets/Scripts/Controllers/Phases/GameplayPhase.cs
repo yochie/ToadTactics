@@ -101,7 +101,7 @@ public class GameplayPhase : IGamePhase
         {
             int damageTaken = HazardDataSO.Singleton.GetHazardDamage(standingOnHazardType, standingDamage: true);
             DamageType damageTypeTaken = HazardDataSO.Singleton.GetHazardDamageType(standingOnHazardType);
-            lastTurnCharacter.TakeDamage(damageTaken, damageTypeTaken);
+            lastTurnCharacter.TakeDamage(new Hit(damageTaken, damageTypeTaken));
             if (damageTaken > 0)
             {
                 string message = string.Format("{0} takes {1} {2} damage at end of turn for standing on {3} hazard",

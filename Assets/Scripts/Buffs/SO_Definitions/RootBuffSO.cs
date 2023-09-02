@@ -47,7 +47,7 @@ public class RootBuffSO : ScriptableObject, IAppliablBuffDataSO
             appliedTo.SetCanMove(true);
         }
     }
-    public string GetTooltip()
+    public string GetTooltipDescription()
     {
         return string.Format("Afflicted character cannot take move or use movement abilities.");
     }

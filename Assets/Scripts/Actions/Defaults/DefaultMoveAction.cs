@@ -47,7 +47,7 @@ public class DefaultMoveAction : IMoveAction
             int moveDamage = nextHex.DealsDamageWhenMovedInto();
             if (moveDamage > 0)
             {
-                this.ActorCharacter.TakeDamage(moveDamage, nextHex.DealsDamageTypeWhenMovedInto());
+                this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto()));
 
                 string message = string.Format("{0} takes {1} {2} damage for walking on {3} hazard",
                     this.ActorCharacter.charClass.name,

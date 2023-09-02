@@ -55,7 +55,7 @@ public class DOTBuffSO : ScriptableObject, IAppliablBuffDataSO
         foreach (int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
-            affectedCharacter.TakeDamage(DOTDamage, DOTDamageType);
+            affectedCharacter.TakeDamage(new Hit(DOTDamage, DOTDamageType));
         }
     }
 
@@ -65,7 +65,7 @@ public class DOTBuffSO : ScriptableObject, IAppliablBuffDataSO
         return;
     }
 
-    public string GetTooltip()
+    public string GetTooltipDescription()
     {
         
         string durationString = IBuffDataSO.GetDurationDescritpion(this);
