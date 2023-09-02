@@ -89,9 +89,9 @@ public class AuraDOTBuffSO : ScriptableObject, IAppliablBuffDataSO, IAreaTargete
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
         Dictionary<string, string> statsDictionary = new();
-        statsDictionary.Add("Damage", string.Format("{0} {1}", this.DOTDamage, this.DOTDamageType));
+        string healOrDamage = this.DOTDamageType == DamageType.healing ? "Heal" : "Damage";
+        statsDictionary.Add(healOrDamage, string.Format("{0} {1}", this.DOTDamage, this.DOTDamageType));
         statsDictionary.Add("Aura area", IAreaTargeter.GetAreaDescription(this.TargetedAreaType, this.AreaScaler));
-        statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
         return statsDictionary;
     }
 }

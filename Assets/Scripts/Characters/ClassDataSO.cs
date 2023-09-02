@@ -164,8 +164,7 @@ public class ClassDataSO : ScriptableObject
                     interfaceName: "KingSlayer",
                     description: "Grants a bonus to damage when attacking the king.",
                     isPassive: true,
-                    appliesBuffIDOnRoundStart: "BarbPassiveKingDamageBuff",
-                    areaType: AreaType.none
+                    appliesBuffIDOnRoundStart: "BarbPassiveKingDamageBuff"
                 )
             }
         );
@@ -193,7 +192,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "CavalierStun",
                     interfaceName: "Lance Throw",
-                    description: "Throws a lance at an enemy in a 3 tile radius, dealing damage and stunning the target until next turn.",
+                    description: "Throws lance at an enemy dealing damage and stunning the target until next turn.",
                     damage: 20,
                     damageIterations: 1,
                     damageType: DamageType.physical,
@@ -202,6 +201,12 @@ public class ClassDataSO : ScriptableObject
                     cooldownDuration: 3,
                     areaType: AreaType.single,
                     cappedByCooldown: true
+                ),
+                new (
+                    stringID: "CavalierKnobackAtMeleeRange",
+                    interfaceName: "Bucking",
+                    description: "When attacking adjacent enemies, knocks back and inflicts additional damage.",
+                    isPassive: true
                 )
             }
         );
@@ -241,6 +246,12 @@ public class ClassDataSO : ScriptableObject
                     areaType: AreaType.pierce,
                     canCrit: true,
                     critChance: 1f
+                ),
+                new (
+                    stringID: "ArcherPierce",
+                    interfaceName: "Pierce",
+                    description: "Attacks pierce all targets.",
+                    isPassive: true
                 )
             }
             );
@@ -280,6 +291,12 @@ public class ClassDataSO : ScriptableObject
                     critMultiplier: -1f,                                        
                     penetratingDamage: true,
                     areaType: AreaType.single
+                ),
+                new (
+                    stringID: "RogueStealth",
+                    interfaceName: "Stealth",
+                    description: "Is untargetable and has increased speed at start of round until dealing or being dealt damage.",
+                    isPassive: true
                 )
             }
             );
@@ -316,6 +333,12 @@ public class ClassDataSO : ScriptableObject
                     cappedByCooldown: true,
                     cooldownDuration: 5,
                     requiresLOS:false
+                ),
+                new (
+                    stringID: "WarriorCleave",
+                    interfaceName: "Cleave",
+                    description: "Attacks slash in an arc pattern.",
+                    isPassive: true
                 )
             }
             );
@@ -349,6 +372,12 @@ public class ClassDataSO : ScriptableObject
                     range:0,
                     areaType: AreaType.radial,
                     areaScaler: Utility.MAX_DISTANCE_ON_MAP/2
+                ),
+                new (
+                    stringID: "PaladinCrusader",
+                    interfaceName: "Crusader",
+                    description: "Grants bonus damage against faithless characters (berserker, rogue, warrior, wizard, archer, cavalier).",
+                    isPassive: true
                 )
             }
             );
@@ -388,7 +417,14 @@ public class ClassDataSO : ScriptableObject
                     damage: HazardDataSO.Singleton.GetHazardDamage(HazardType.fire),
                     damageIterations: 1,
                     damageType: HazardDataSO.Singleton.GetHazardDamageType(HazardType.fire)
+                ),
+                new (
+                    stringID: "DruidTreePlanter",
+                    interfaceName: "Tree planter",
+                    description: "Leaves trees behind when moving.",
+                    isPassive: true
                 )
+
             }
             ); ;
         classes.Add(druid);
@@ -428,6 +464,12 @@ public class ClassDataSO : ScriptableObject
                     damageIterations: 1,
                     damageType: DamageType.magic,
                     areaType: AreaType.single
+                ),
+                new (
+                    stringID: "NecroMultiAttack",
+                    interfaceName: "Blood for blood",
+                    description: "Can attack multiple times per turn but each attack costs life.",
+                    isPassive: true
                 )
             }
             );
