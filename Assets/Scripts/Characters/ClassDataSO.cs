@@ -165,6 +165,13 @@ public class ClassDataSO : ScriptableObject
                     description: "Grants a bonus to damage when attacking the king.",
                     isPassive: true,
                     appliesBuffIDOnRoundStart: "BarbPassiveKingDamageBuff"
+                ),
+                new (
+                    stringID: "BarbInvulnerableOnDeath",
+                    interfaceName: "Undying Rage",
+                    description: "First death sets to 1 life instead and makes invulnerable until next turn.",
+                    isPassive: true,
+                    appliesBuffIDOnRoundStart: "BarbInvulnerableOnDeathBuff"
                 )
             }
         );

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TimedRuntimeBuff : IRuntimeBuffComponent
+public class RuntimeBuffTimeout : IRuntimeBuffComponent
 {
     public int TurnDurationRemaining { get; set; }
 

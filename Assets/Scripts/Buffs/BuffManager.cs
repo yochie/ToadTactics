@@ -20,14 +20,9 @@ internal class BuffManager : NetworkBehaviour
         BuffManager.Singleton = this;
     }
 
-    private void Start()
-    {
-        //DontDestroyOnLoad(this.gameObject);
-    }
-
     [Server]
     internal RuntimeBuff CreateAbilityBuff(IBuffDataSO buffData, CharacterAbilityStats abilityStats, int applyingCharacterID, List<int> affectedCharacterIDs)
-    {        
+    {
         RuntimeBuff runtimeBuff = new RuntimeBuff();
         runtimeBuff.UniqueID = IDGenerator.GetNewID();
         runtimeBuff.AffectedCharacterIDs = affectedCharacterIDs;
@@ -37,13 +32,13 @@ internal class BuffManager : NetworkBehaviour
         abilityBuffComponent.AppliedByAbility = abilityStats;
         abilityBuffComponent.ApplyingCharacterID = applyingCharacterID;
         runtimeBuff.AddComponent(abilityBuffComponent);
-        
-        if(buffData.DurationType == DurationType.timed)
+
+        if (buffData.DurationType == DurationType.timed)
         {
-            TimedRuntimeBuff timedBuffComponent = new TimedRuntimeBuff();
+            RuntimeBuffTimeout timedBuffComponent = new RuntimeBuffTimeout();
             timedBuffComponent.TurnDurationRemaining = buffData.TurnDuration + 1;
             runtimeBuff.AddComponent(timedBuffComponent);
-        }
+        }         
 
         return runtimeBuff;
     }
@@ -58,6 +53,7 @@ internal class BuffManager : NetworkBehaviour
 
             string message = string.Format("{0} applied to {1}", buff.Data.UIName, affectedCharacter.charClass.name);
             MasterLogger.Singleton.RpcLogMessage(message);
+
         }
 
         RuntimeBuffAbility abilityComponent = buff.GetComponent<RuntimeBuffAbility>();
@@ -78,6 +74,12 @@ internal class BuffManager : NetworkBehaviour
         {
             this.RpcAddBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs, buff.Data.stringID);
         }
+
+        ITriggeredBuff triggeredBuff = buff.Data as ITriggeredBuff;
+        if (triggeredBuff != null)
+        {
+            triggeredBuff.SetupListeners(buff);
+        }
     }
     
     [Server]
@@ -89,7 +91,7 @@ internal class BuffManager : NetworkBehaviour
                 continue;
             foreach(RuntimeBuff ownedBuff in character.ownerOfBuffs.ToArray())
             {
-                TimedRuntimeBuff timedBuffComponent = ownedBuff.GetComponent<TimedRuntimeBuff>();
+                RuntimeBuffTimeout timedBuffComponent = ownedBuff.GetComponent<RuntimeBuffTimeout>();
                 if (timedBuffComponent == null)
                     continue;                
                 timedBuffComponent.TurnDurationRemaining--;

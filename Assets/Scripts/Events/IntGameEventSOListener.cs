@@ -11,14 +11,24 @@ public class IntGameEventSOListener : MonoBehaviour
 
     private void OnEnable()
     {
-        Event.RegisterListener(this);
+        if (this.Event == null)
+            return;
+        this.Event.RegisterListener(this);
     }
 
     private void OnDisable()
     {
+        if (this.Event == null)
+            return; 
         Event.UnregisterListener(this);
     }
 
+    public void RegisterManually()
+    {
+        if (this.Event == null)
+            return;
+        this.Event.RegisterListener(this);
+    }
     public void OnEventRaised(int intArg)
     {
         Response.Invoke(intArg);

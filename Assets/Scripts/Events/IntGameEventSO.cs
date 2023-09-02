@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "On", menuName = "Events/IntGameEventSO", order = 2)]
-public class IntGameEventSO : ScriptableObject
+public class IntGameEventSO : ScriptableObject, IGameEventSO
 {
     private readonly List<IntGameEventSOListener> eventListeners = new();
 
@@ -22,5 +23,10 @@ public class IntGameEventSO : ScriptableObject
     {
         if (eventListeners.Contains(listener))
             eventListeners.Remove(listener);
+    }
+
+    public Type GetListenerType()
+    {
+        return typeof(IntGameEventSOListener);
     }
 }

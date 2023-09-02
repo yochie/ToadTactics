@@ -19,5 +19,5 @@ MonoBehaviour:
   <TurnDuration>k__BackingField: 0
   <Icon>k__BackingField: {fileID: 0}
   <RatioMitigated>k__BackingField: 0.5
-  <AppliesToDamageType>k__BackingField: 1
+  <AppliesToDamageType>k__BackingField: 01000000
   <PriorityOrder>k__BackingField: 0
