@@ -27,7 +27,7 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     private IntGameEventSO onCharacterSheetDisplayed;
 
     [SerializeField]
-    private Image blankImagePrefab;
+    private GameObject blankImagePrefab;
 
     [SerializeField]
     private Image lifebar;
@@ -39,8 +39,8 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     private int holdsCharacterWithClassID = -1;
     public int HoldsCharacterWithClassID { get => this.holdsCharacterWithClassID; set { this.holdsCharacterWithClassID = value; } }
 
-    //unique buffID => image
-    private Dictionary<int, Image> displayedBuffs;
+    //unique buffID => icon object
+    private Dictionary<int, GameObject> displayedBuffs;
 
     public void setHighlight(bool highlighted)
     {
@@ -99,11 +99,15 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     public void AddBuffIcon(int buffID, string buffDataID)
     {
         this.buffList.SetActive(true);        
-        Image buffImage = Instantiate(this.blankImagePrefab, this.buffList.transform);
-        buffImage.sprite = BuffDataSO.Singleton.GetBuffIcon(buffDataID);
+        GameObject buffIcon = Instantiate(this.blankImagePrefab, this.buffList.transform);
+        IBuffDataSO buffData = BuffDataSO.Singleton.GetBuffData(buffDataID);
+        buffIcon.GetComponent<Image>().sprite = buffData.Icon;
+        TooltipContent tooltip = buffIcon.GetComponentInChildren<TooltipContent>(includeInactive: true);        
+        tooltip.SetTitle(buffData.UIName);
+        tooltip.FillWithDictionary(buffData.GetBuffStatsDictionary());
         if (this.displayedBuffs == null)
             this.displayedBuffs = new();
-        this.displayedBuffs.Add(buffID, buffImage);
+        this.displayedBuffs.Add(buffID, buffIcon);
     }
 
     public void RemoveBuffIcon(int buffID)
@@ -111,9 +115,9 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
         if (!this.displayedBuffs.ContainsKey(buffID) || this.displayedBuffs[buffID] == null)
             throw new Exception("Error :Slot asked to remove buff Icon it does not display.");
 
-        Image icon = this.displayedBuffs[buffID];
+        GameObject icon = this.displayedBuffs[buffID];
         this.displayedBuffs.Remove(buffID);
-        Destroy(icon.gameObject);
+        Destroy(icon);
 
         if (this.displayedBuffs.Count == 0)
             this.buffList.SetActive(false);

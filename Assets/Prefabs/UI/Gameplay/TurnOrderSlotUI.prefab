@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 2030279633735216416}
   - component: {fileID: 9034851462250503002}
   m_Layer: 5
-  m_Name: TurnOderSlotUI
+  m_Name: TurnOrderSlotUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   lifeLabel: {fileID: 4199481562651676727}
   crownSpriteImage: {fileID: 7643809803563925950}
   onCharacterSheetDisplayed: {fileID: 11400000, guid: 41dfc3699ccdb3d438c4801410371c4a, type: 2}
-  blankImagePrefab: {fileID: 2926539654037862836, guid: 8e0d6ee08fb321643b74af54b5bd7382, type: 3}
+  blankImagePrefab: {fileID: 8205062690984975221, guid: 054bef353842eb94890676f762962dcc, type: 3}
   lifebar: {fileID: 2920157887502141816}
   highlightScaling: 1.3
 --- !u!114 &2030279633735216416

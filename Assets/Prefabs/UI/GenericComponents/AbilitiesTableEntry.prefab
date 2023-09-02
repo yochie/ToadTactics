@@ -179,9 +179,9 @@ GameObject:
   - component: {fileID: 943087651587238983}
   - component: {fileID: 5849832069656424783}
   - component: {fileID: 7242143591104729766}
-  - component: {fileID: 2110732029140658141}
   - component: {fileID: 6842977373613544228}
   - component: {fileID: 2481409119352138278}
+  - component: {fileID: 7597600764397316352}
   m_Layer: 0
   m_Name: AbilitiesTableEntry
   m_TagString: Untagged
@@ -261,19 +261,6 @@ MonoBehaviour:
   tooltipBuffStats: {fileID: 5889848151413499937}
   tooltipTitle: {fileID: 7552887180734501895}
   buffSectionTitle: {fileID: 5031912860109512137}
---- !u!114 &2110732029140658141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8913944440234321852}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f6ae5082c0e51c449d9e7b5f25661af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tooltipObject: {fileID: 7609598952883595832}
 --- !u!222 &6842977373613544228
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -312,6 +299,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7597600764397316352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8913944440234321852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f6ae5082c0e51c449d9e7b5f25661af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipObject: {fileID: 7609598952883595832}
 --- !u!1001 &3344253531660628846
 PrefabInstance:
   m_ObjectHideFlags: 0
