@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 [CreateAssetMenu(fileName = "InvulnerableOnDeathBuff", menuName = "Buffs/InvulnerableOnDeathBuff")]
 
@@ -32,6 +33,8 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, IIntEventTriggeredBuf
     [field: SerializeField]
     private ScriptableObject AppliesBuff { get; set; }
 
+    [field: SerializeField]
+    public int MaxTriggers { get; set; }
 
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
@@ -43,12 +46,19 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, IIntEventTriggeredBuf
         return "On death, will become invulnerable until next turn.";
     }
 
-    public void OnTrigger(int dyingCharacterID, PlayerCharacter triggeredCharacter, RuntimeBuffAbility sourceAbilityComponent)
+    [Server]
+    public void OnTrigger(int dyingCharacterID, PlayerCharacter triggeredCharacter, RuntimeBuffAbility sourceAbilityComponent, RuntimeBuffTriggerCounter sourceTriggerCounterComponent)
     {
+        Debug.Log("Triggered buff");
+
         if (dyingCharacterID != triggeredCharacter.CharClassID)
             return;
         if (sourceAbilityComponent == null)
             throw new Exception("Barb invulnerability should have an ability buff as source.");
+        if (sourceTriggerCounterComponent.RemainingTriggers > 0)
+            sourceTriggerCounterComponent.RemainingTriggers--;
+        else
+            return;
 
         triggeredCharacter.Resurrect(1);
 
@@ -70,17 +80,31 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, IIntEventTriggeredBuf
         BuffManager.Singleton.ApplyNewBuff(triggeredBuff);
     }
 
+    [Server]
     public void SetupListeners(RuntimeBuff sourceBuff)
     {
         foreach(int characterID in sourceBuff.AffectedCharacterIDs)
         {
             PlayerCharacter triggeredCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
+            
             IntGameEventSOListener listener = triggeredCharacter.gameObject.AddComponent(typeof(IntGameEventSOListener)) as IntGameEventSOListener;
+            triggeredCharacter.AddTriggeredBuffListenerForBuff(sourceBuff, listener);
             listener.Event = this.TriggerEvent;
             listener.RegisterManually();
             RuntimeBuffAbility sourceAbilityComponent = sourceBuff.GetComponent<RuntimeBuffAbility>();
-            listener.Response.AddListener((int dyingCharacter) => this.OnTrigger(dyingCharacter, triggeredCharacter, sourceAbilityComponent));
+            RuntimeBuffTriggerCounter sourceTriggerCounterComponent = sourceBuff.GetComponent<RuntimeBuffTriggerCounter>();
+
+            listener.Response.AddListener((int dyingCharacter) => { this.OnTrigger(dyingCharacter, triggeredCharacter, sourceAbilityComponent, sourceTriggerCounterComponent); });
+        }             
+    }
+
+    [Server]
+    public void RemoveListenersForBuff(RuntimeBuff runtimeBuff) 
+    {
+        foreach (int characterID in runtimeBuff.AffectedCharacterIDs)
+        {
+            PlayerCharacter triggeredCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
+            triggeredCharacter.RemoveTriggeredBuffListenersForBuff(runtimeBuff);
         }
-             
     }
 }

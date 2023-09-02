@@ -38,8 +38,15 @@ internal class BuffManager : NetworkBehaviour
             RuntimeBuffTimeout timedBuffComponent = new RuntimeBuffTimeout();
             timedBuffComponent.TurnDurationRemaining = buffData.TurnDuration + 1;
             runtimeBuff.AddComponent(timedBuffComponent);
-        }         
+        }
 
+        ITriggeredBuff triggeredBuff = buffData as ITriggeredBuff;
+        if (triggeredBuff != null)
+        {
+            RuntimeBuffTriggerCounter triggerCounter = new();
+            triggerCounter.RemainingTriggers = triggeredBuff.MaxTriggers;
+            runtimeBuff.AddComponent(triggerCounter);
+        }
         return runtimeBuff;
     }
 
@@ -149,6 +156,12 @@ internal class BuffManager : NetworkBehaviour
             IAppliablBuffDataSO appliableBuff = buff.Data as IAppliablBuffDataSO;
             if (appliableBuff != null)
                 appliableBuff.UnApply(new List<int> { character.CharClassID });
+
+            ITriggeredBuff triggeredBuff = buff.Data as ITriggeredBuff;
+            if (triggeredBuff != null)
+            {                
+                triggeredBuff.RemoveListenersForBuff(buff);
+            }
             buff.AffectedCharacterIDs.Remove(character.CharClassID);
             character.RemoveAffectingBuff(buff);
             if(buff.Data.Icon != null)

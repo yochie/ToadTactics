@@ -15,8 +15,9 @@ MonoBehaviour:
   <stringID>k__BackingField: BarbInvulnerableOnDeathBuff
   <UIName>k__BackingField: Undying Rage
   <IsPositive>k__BackingField: 1
-  <DurationType>k__BackingField: 2
+  <DurationType>k__BackingField: 3
   <TurnDuration>k__BackingField: 0
   <Icon>k__BackingField: {fileID: 0}
   <TriggerEvent>k__BackingField: {fileID: 11400000, guid: 43f4d8935b6153342bb88096ecec867c, type: 2}
   <AppliesBuff>k__BackingField: {fileID: 11400000, guid: ca42373cbc888fc41b4fc546438c2335, type: 2}
+  <MaxTriggers>k__BackingField: 1

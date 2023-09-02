@@ -83,7 +83,7 @@ public class TurnOrderHUD : MonoBehaviour
 
     public void OnCharacterLifeChanged(int classID, int currentLife, int maxHealth)
     {
-        this.UpdateLifeLabels();
+        this.UpdateLifeLabels(classID, currentLife, maxHealth);
     }
 
     #endregion
@@ -113,27 +113,29 @@ public class TurnOrderHUD : MonoBehaviour
         }
     }
 
-    public void UpdateLifeLabels()
+    public void UpdateLifeLabels(int classToUpdate, int currentLife, int maxHealth)
     {
         //Debug.Log("Resetting life labels");
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
         {
             int classID = slot.HoldsCharacterWithClassID;
+            if (classToUpdate != classID)
+                continue;
 
-            int currentHealth; 
-            int maxHealth;
-            if (!GameController.Singleton.PlayerCharactersByID.ContainsKey(classID) || GameController.Singleton.PlayerCharactersByID[classID] == null)
-            {
-                currentHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
-                maxHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
-            }
-            else
-            {
-                PlayerCharacter currentCharacter = GameController.Singleton.PlayerCharactersByID[classID];
-                currentHealth = currentCharacter.CurrentLife;
-                maxHealth = currentCharacter.CurrentStats.maxHealth;
-            }
-            slot.SetLifeDisplay(currentHealth, maxHealth);
+            //int currentHealth; 
+            //int maxHealth;
+            //if (!GameController.Singleton.PlayerCharactersByID.ContainsKey(classID) || GameController.Singleton.PlayerCharactersByID[classID] == null)
+            //{
+            //    currentHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
+            //    maxHealth = ClassDataSO.Singleton.GetClassByID(classID).stats.maxHealth;
+            //}
+            //else
+            //{
+            //    PlayerCharacter currentCharacter = GameController.Singleton.PlayerCharactersByID[classID];
+            //    currentHealth = currentCharacter.CurrentLife;
+            //    maxHealth = currentCharacter.CurrentStats.maxHealth;
+            //}
+            slot.SetLifeDisplay(currentLife, maxHealth);
         }
     }
 

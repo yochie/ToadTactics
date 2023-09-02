@@ -74,6 +74,7 @@ public class PlayerCharacter : NetworkBehaviour
 
     public List<RuntimeBuff> ownerOfBuffs;
     public List<RuntimeBuff> affectedByBuffs;
+    private Dictionary<RuntimeBuff, Component> triggeredBuffListeners = new();
     #endregion
 
     #region Startup
@@ -129,6 +130,7 @@ public class PlayerCharacter : NetworkBehaviour
         this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
         this.ResetTurnState();
     }
+   
     private List<IMitigationEnhancer> GetOrderedMitigationEnhancers()
     {
         List<IMitigationEnhancer> orderedMitigators = new();
@@ -331,13 +333,17 @@ public class PlayerCharacter : NetworkBehaviour
         this.isDead = true;
         this.currentLife = 0;
         this.ResetCooldownsAndUses();
-        this.RpcOnCharacterDeath();
-        this.RemoveBuffsOnDeath();
-
         string message = string.Format("{0} has died", this.charClass.name);
         MasterLogger.Singleton.RpcLogMessage(message);
 
         Map.Singleton.SetCharacterAliveState(this.charClassID, isDead: true);
+        this.RemoveBuffsOnDeath();
+
+        int remotePlayerID = GameController.Singleton.OtherPlayer(GameController.Singleton.LocalPlayer.playerID);
+        this.TargetRpcOnCharacterDeath(GameController.Singleton.GetConnectionForPlayerID(remotePlayerID));
+        //Need to throw on server syncronously because triggers some game logic stuff (triggered buffs)
+        //TODO : find more elegant solution to having server only events...
+        this.onCharacterDeath.Raise(this.charClassID);
     }
 
     [Server]
@@ -378,6 +384,7 @@ public class PlayerCharacter : NetworkBehaviour
         this.currentLife = Mathf.Clamp(lifeOnResurrection, 0, this.currentStats.maxHealth);
         Map.Singleton.SetCharacterAliveState(this.charClassID, isDead: false);
         this.RpcOnCharacterResurrect();
+        MasterLogger.Singleton.RpcLogMessage(string.Format("{0} has been resurrected.", this.charClass.name));
     }
 
     //update position on all clients
@@ -461,11 +468,24 @@ public class PlayerCharacter : NetworkBehaviour
         this.remainingMoves += movesDelta;
     }
 
+    [Server]
+    internal void AddTriggeredBuffListenerForBuff(RuntimeBuff buff, Component toAdd)
+    {
+        this.triggeredBuffListeners.Add(buff, toAdd);
+    }
+
+    [Server]
+    internal void RemoveTriggeredBuffListenersForBuff(RuntimeBuff buff)
+    {
+            Destroy(this.triggeredBuffListeners[buff]);
+            this.triggeredBuffListeners.Remove(buff);
+    }
+
     #endregion
 
     #region Events
-    [ClientRpc]
-    private void RpcOnCharacterDeath()
+    [TargetRpc]
+    private void TargetRpcOnCharacterDeath(NetworkConnectionToClient target)
     {
         this.onCharacterDeath.Raise(this.CharClassID);
     }
