@@ -66,6 +66,17 @@ public class DefaultAttackAction : IAttackAction
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
         DefenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, this.PenetratingDamage));
 
+        if (this.KnocksBack)
+        {
+            HexCoordinates sourceToTarget = HexCoordinates.Substract(target.coordinates, this.ActorHex.coordinates);
+            if (sourceToTarget.OnSingleAxis())
+            {
+
+                Debug.Log("Knockback should be applied here in AbilityMove");
+                Debug.Log(MapPathfinder.KnockbackAlongAxis(Map.Singleton.hexGrid, this.ActorHex, target, knockbackDistance: 1));
+            }
+        }
+
         string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
         this.ActorCharacter.charClass.name,
         DefenderCharacter.charClass.name,

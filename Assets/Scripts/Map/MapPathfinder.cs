@@ -318,4 +318,17 @@ public static class MapPathfinder
         toReturn.Reverse();
         return toReturn;
     }
+
+    public static Hex KnockbackAlongAxis(Dictionary<Vector2Int, Hex> hexGrid, Hex source, Hex target, int knockbackDistance)
+    {
+        HexCoordinates difference = HexCoordinates.Substract(target.coordinates, source.coordinates);
+
+        if (difference.OnSingleAxis())
+            throw new Exception("Knoback only supported along single axis");
+
+        HexCoordinates knockbackVector = difference.Elongate(knockbackDistance);
+
+        HexCoordinates destination = target.coordinates.Add(knockbackVector);
+        return Map.GetHex(hexGrid, destination);
+    }
 }

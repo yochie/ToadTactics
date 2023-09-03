@@ -81,6 +81,14 @@ public readonly struct HexCoordinates : IEquatable<HexCoordinates>
 		return new HexCoordinates(this.Q + (int)dir.x, this.R + (int)dir.y, this.isFlatTop);
 	}
 
+	public HexCoordinates Add(HexCoordinates dir)
+	{
+		if (this.isFlatTop != dir.isFlatTop)
+			throw new Exception("Trying to add coordinates with different flatTop config");
+		return new HexCoordinates(this.Q + dir.Q, this.R + dir.R, this.isFlatTop);
+	}
+
+
 	public HexCoordinates[] NeighbhouringCoordinates()
 	{
 		HexCoordinates[] toReturn = new HexCoordinates[6];
@@ -117,5 +125,24 @@ public readonly struct HexCoordinates : IEquatable<HexCoordinates>
 			throw new Exception("Attempting to add HexCoordinates with different flat top mode");
 
 		return new HexCoordinates(h1.Q - h2.Q, h1.R - h2.R, h1.isFlatTop);
+	}
+
+    internal HexCoordinates Elongate(int toAdd)
+    {
+		if (this.OnSingleAxis())
+			throw new Exception("elongate only supported along single axis");
+
+		int newQ = this.Q > 0 ? this.Q + toAdd : this.Q - toAdd;
+		int newR = this.R > 0 ? this.R + toAdd : this.R - toAdd;
+
+		return new HexCoordinates(newQ, newR, this.isFlatTop);
+	}
+
+	public bool OnSingleAxis()
+    {
+		if (this.Q != 0 && this.R != 0 && this.S != 0)
+			return false;
+		else
+			return true;
 	}
 }
