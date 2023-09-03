@@ -129,13 +129,21 @@ public readonly struct HexCoordinates : IEquatable<HexCoordinates>
 
     internal HexCoordinates Elongate(int toAdd)
     {
-		if (this.OnSingleAxis())
+		if (!this.OnSingleAxis())
 			throw new Exception("elongate only supported along single axis");
+		List<int> coordinates = new List<int>() { this.Q, this.R };
+        List<int> outputCoordinates = new();
+		foreach(int coordinate in coordinates)
+        {
+			if (coordinate > 0)
+				outputCoordinates.Add(coordinate + toAdd);
+			else if (coordinate < 0)
+				outputCoordinates.Add(coordinate - toAdd);
+			else
+				outputCoordinates.Add(coordinate);
+        }
 
-		int newQ = this.Q > 0 ? this.Q + toAdd : this.Q - toAdd;
-		int newR = this.R > 0 ? this.R + toAdd : this.R - toAdd;
-
-		return new HexCoordinates(newQ, newR, this.isFlatTop);
+		return new HexCoordinates(outputCoordinates[0], outputCoordinates[1], this.isFlatTop);
 	}
 
 	public bool OnSingleAxis()

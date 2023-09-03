@@ -27,6 +27,18 @@ public class ActionExecutor : NetworkBehaviour
         this.TryAction(moveAction, isFullAction: true, startingMode: ControlMode.move);
     }
 
+    internal bool CustomMove(Hex source,
+                           Hex dest,              
+                           NetworkConnectionToClient sender)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        CustomMoveAction moveAction = ActionFactory.CreateCustomMoveAction(sender, playerID, movingCharacter, source, dest);
+        moveAction.SetupPath();
+        bool success = this.TryAction(moveAction, isFullAction: false, startingMode: ControlMode.move);
+        return success;
+    }
+
 
     [Command(requiresAuthority = false)]
     public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
@@ -65,7 +77,8 @@ public class ActionExecutor : NetworkBehaviour
                                                                                    target);
         this.TryAction(abilityAttackAction, isFullAction : false);
     }
-    internal void CustomAttack(Hex source,
+
+    internal bool CustomAttack(Hex source,
                                Hex primaryTarget,
                                AreaType areaType,
                                int areaScaler,
@@ -73,7 +86,7 @@ public class ActionExecutor : NetworkBehaviour
                                DamageType damageType,
                                int damageIterations,
                                bool penetratingDamage,
-                               bool knocksBack,
+                               int knockback,
                                bool canCrit,
                                float critChance,
                                float critMultiplier,
@@ -89,7 +102,7 @@ public class ActionExecutor : NetworkBehaviour
                                                                  damageType,
                                                                  damageIterations,
                                                                  penetratingDamage,
-                                                                 knocksBack,
+                                                                 knockback,
                                                                  canCrit,
                                                                  critChance,
                                                                  critMultiplier,
@@ -97,11 +110,12 @@ public class ActionExecutor : NetworkBehaviour
                                                                  areaScaler,
                                                                  source,
                                                                  primaryTarget);
-        this.TryAction(customAttackAction, isFullAction: false);
+        bool success = this.TryAction(customAttackAction, isFullAction: false);
+        return success;
     }
 
     [Server]
-    private void TryAction(IAction action, bool isFullAction, ControlMode? startingMode = null)
+    private bool TryAction(IAction action, bool isFullAction, ControlMode? startingMode = null)
     {
         bool success;
         if (action.ServerValidate())
@@ -119,8 +133,12 @@ public class ActionExecutor : NetworkBehaviour
         {
             this.FinishAction(action.ActorCharacter, action.RequestingClient, startingMode.GetValueOrDefault());
         }
+
+        return success;
     }
 
+
+    //Updates input state and game progress resulting from action execution
     [Server]
     private void FinishAction(PlayerCharacter actor, NetworkConnectionToClient sender, ControlMode currentControlMode)
     {
@@ -162,7 +180,10 @@ public class ActionExecutor : NetworkBehaviour
                 string abilityID = actor.charClass.abilities[0].stringID;
                 MainHUD.Singleton.TargetRpcUpdateAbilityCooldownIndicator(sender, actor.GetAbilityCooldown(abilityID), actor.GetAbilityUsesRemaining(abilityID));
             }
-                
+
+            //in case action caused character move
+            Hex actorHex = Map.GetHex(Map.Singleton.hexGrid, Map.Singleton.characterPositions[actor.CharClassID]);
+            MapInputHandler.Singleton.TargetRpcSelectHex(sender,actorHex);
         }
     }
 

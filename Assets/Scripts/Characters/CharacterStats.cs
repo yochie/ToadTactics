@@ -35,7 +35,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
 
     public readonly bool hasFaith;
     
-    public readonly bool knocksBack;
+    public readonly int knockback;
 
     public readonly AreaType attackAreaType;
 
@@ -56,7 +56,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                           List<TargetType> allowedAttackTargets = null,
                           bool penetratingDamage = false,
                           bool hasFaith = false,
-                          bool knocksBack = false,
+                          int knocksBack = 0,
                           AreaType attackAreaType = default,
                           int attackAreaScaler = 1)
     {
@@ -82,7 +82,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         }
         this.penetratingDamage = penetratingDamage;
         this.hasFaith = hasFaith;
-        this.knocksBack = knocksBack;
+        this.knockback = knocksBack;
         this.attackAreaType = attackAreaType;
         this.attackAreaScaler = attackAreaScaler;
     }
@@ -103,7 +103,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                       bool? penetratingDamage = null,
                       List<TargetType> allowedAttackTargets = null,
                       bool? hasFaith = null,
-                      bool? knocksBack = null, 
+                      int? knocksBack = null, 
                       int? attackAreaScaler = null, 
                       AreaType? attackAreaType = null)
     {
@@ -122,7 +122,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.penetratingDamage = penetratingDamage == null ? toCopy.penetratingDamage : penetratingDamage.GetValueOrDefault();
         this.allowedAttackTargets = allowedAttackTargets == null ? toCopy.allowedAttackTargets : allowedAttackTargets;
         this.hasFaith = hasFaith == null ? toCopy.hasFaith : hasFaith.GetValueOrDefault();
-        this.knocksBack = knocksBack == null ? toCopy.knocksBack : knocksBack.GetValueOrDefault();
+        this.knockback = knocksBack == null ? toCopy.knockback : knocksBack.GetValueOrDefault();
         this.attackAreaType = attackAreaType == null ? toCopy.attackAreaType : attackAreaType.GetValueOrDefault();
         this.attackAreaScaler = attackAreaScaler == null ? toCopy.attackAreaScaler : attackAreaScaler.GetValueOrDefault();
     }
@@ -146,7 +146,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.penetratingDamage == other.penetratingDamage &&
             this.hasFaith == other.hasFaith &&
             this.attacksPerTurn == other.attacksPerTurn &&
-            this.knocksBack == other.knocksBack
+            this.knockback == other.knockback
             )
         {
             foreach (TargetType t in this.allowedAttackTargets)

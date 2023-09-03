@@ -321,14 +321,26 @@ public static class MapPathfinder
 
     public static Hex KnockbackAlongAxis(Dictionary<Vector2Int, Hex> hexGrid, Hex source, Hex target, int knockbackDistance)
     {
-        HexCoordinates difference = HexCoordinates.Substract(target.coordinates, source.coordinates);
+        Debug.Log("source");
+        Debug.Log(source.coordinates);
+        Debug.Log("target");
+        Debug.Log(target.coordinates);
 
-        if (difference.OnSingleAxis())
+        HexCoordinates difference = HexCoordinates.Substract(target.coordinates, source.coordinates);
+        Debug.Log("diff");
+        Debug.Log(difference);
+
+        if (!difference.OnSingleAxis())
             throw new Exception("Knoback only supported along single axis");
 
         HexCoordinates knockbackVector = difference.Elongate(knockbackDistance);
+        Debug.Log("elongated");
+        Debug.Log(knockbackVector);
 
-        HexCoordinates destination = target.coordinates.Add(knockbackVector);
+        HexCoordinates destination = source.coordinates.Add(knockbackVector);
+
+        Debug.Log("dest");
+        Debug.Log(destination);
         return Map.GetHex(hexGrid, destination);
     }
 }

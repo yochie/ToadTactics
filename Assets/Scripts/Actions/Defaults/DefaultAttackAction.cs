@@ -24,7 +24,7 @@ public class DefaultAttackAction : IAttackAction
     public int DamageIterations { get; set; }
     public DamageType AttackDamageType { get; set; }
     public bool PenetratingDamage { get; set; }
-    public bool KnocksBack { get; set; }
+    public int Knockback { get; set; }
     public float CritChance { get; set; }
     public float CritMultiplier { get; set; }
     public AreaType TargetedAreaType { get; set; }
@@ -66,14 +66,22 @@ public class DefaultAttackAction : IAttackAction
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
         DefenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, this.PenetratingDamage));
 
-        if (this.KnocksBack)
+        if (this.Knockback > 0)
         {
             HexCoordinates sourceToTarget = HexCoordinates.Substract(target.coordinates, this.ActorHex.coordinates);
             if (sourceToTarget.OnSingleAxis())
-            {
+            {                
+                Hex knockbackDestination = MapPathfinder.KnockbackAlongAxis(Map.Singleton.hexGrid, this.ActorHex, target, knockbackDistance: Knockback);
+                bool knockbackSuccess;
+                if (knockbackDestination != null)
+                    knockbackSuccess = ActionExecutor.Singleton.CustomMove(target, knockbackDestination, this.RequestingClient);
+                else
+                    knockbackSuccess = false;
 
-                Debug.Log("Knockback should be applied here in AbilityMove");
-                Debug.Log(MapPathfinder.KnockbackAlongAxis(Map.Singleton.hexGrid, this.ActorHex, target, knockbackDistance: 1));
+                if(knockbackSuccess)
+                    logger.RpcLogMessage(string.Format("{0} knocked back {1}.", this.ActorCharacter.charClass.name, DefenderCharacter.charClass.name));
+                else
+                    logger.RpcLogMessage(string.Format("{0} attempted to knockback {1} but it was blocked.", this.ActorCharacter.charClass.name, DefenderCharacter.charClass.name));
             }
         }
 

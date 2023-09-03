@@ -35,6 +35,28 @@ public class ActionFactory : MonoBehaviour
         return moveAction;
     }
 
+    internal static CustomMoveAction CreateCustomMoveAction(NetworkConnectionToClient sender, int requestingPlayerID, PlayerCharacter moverCharacter, Hex moverHex, Hex targetHex)
+    {
+        CustomMoveAction moveAction = new CustomMoveAction();
+
+        //IAction
+        moveAction.RequestingPlayerID = requestingPlayerID;
+        moveAction.ActorCharacter = moverCharacter;
+        moveAction.ActorHex = moverHex;
+        moveAction.RequestingClient = sender;
+
+        //ITargetedAction
+        moveAction.TargetHex = targetHex;
+        moveAction.AllowedTargetTypes = new List<TargetType> { TargetType.empty_hex };
+        moveAction.RequiresLOS = false;
+        moveAction.Range = Utility.MAX_DISTANCE_ON_MAP;
+
+        //IMoveAction
+        moveAction.MoverStats = moverCharacter.CurrentStats;
+
+        return moveAction;
+    }
+
     //For attacking characters
     public static IAttackAction CreateAttackAction(NetworkConnectionToClient sender,
                                                    int requestingPlayerID,
@@ -63,7 +85,7 @@ public class ActionFactory : MonoBehaviour
         attackAction.DamageIterations = attackerStats.damageIterations;
         attackAction.AttackDamageType = attackerStats.damageType;
         attackAction.PenetratingDamage = attackerStats.penetratingDamage;
-        attackAction.KnocksBack = attackerStats.knocksBack;
+        attackAction.Knockback = attackerStats.knockback;
         attackAction.CritChance = attackerStats.critChance;
         attackAction.CritMultiplier = attackerStats.critMultiplier;
         attackAction.TargetedAreaType = attackerStats.attackAreaType;
@@ -125,7 +147,7 @@ public class ActionFactory : MonoBehaviour
                                                                  DamageType damageType,
                                                                  int damageIterations,
                                                                  bool penetratingDamage,
-                                                                 bool knocksBack,
+                                                                 int knockback,
                                                                  bool canCrit,
                                                                  float critChance,
                                                                  float critMultiplier,
@@ -154,7 +176,7 @@ public class ActionFactory : MonoBehaviour
         customAttackAction.DamageIterations = damageIterations;
         customAttackAction.AttackDamageType = damageType;
         customAttackAction.PenetratingDamage = penetratingDamage;
-        customAttackAction.KnocksBack = knocksBack;
+        customAttackAction.Knockback = knockback;
         //use attack stats if -1 and can crit
         if (canCrit)
         {
@@ -201,7 +223,7 @@ public class ActionFactory : MonoBehaviour
         abilityAttackAction.DamageIterations = abilityStats.damageIterations;
         abilityAttackAction.AttackDamageType = abilityStats.damageType;
         abilityAttackAction.PenetratingDamage = abilityStats.penetratingDamage;
-        abilityAttackAction.KnocksBack = abilityStats.knocksBack;
+        abilityAttackAction.Knockback = abilityStats.knockback;
         //use attack stats if -1 and can crit
         if (abilityStats.canCrit)
         {

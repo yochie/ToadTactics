@@ -12,7 +12,7 @@ public class DruidMoveAction : DefaultMoveAction
         fullMovePath.AddRange(this.movePath);
         foreach(Hex hexWalkedOn in fullMovePath)
         {
-            if (hexWalkedOn == this.interruptedAtHex || hexWalkedOn == this.TargetHex)
+            if (hexWalkedOn == this.InterruptedAtHex || hexWalkedOn == this.TargetHex)
                 return;
             if (hexWalkedOn.IsEmpty())
             {

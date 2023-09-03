@@ -213,7 +213,8 @@ public class ClassDataSO : ScriptableObject
                     stringID: "CavalierKnobackAtMeleeRange",
                     interfaceName: "Bucking",
                     description: "When attacking adjacent enemies, knocks back and inflicts additional damage.",
-                    isPassive: true
+                    isPassive: true,
+                    appliesBuffIDOnRoundStart: "CavalierMeleeAttacksKnockBackBuff"
                 )
             }
         );

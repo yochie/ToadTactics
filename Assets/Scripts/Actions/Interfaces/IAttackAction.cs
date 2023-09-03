@@ -8,7 +8,7 @@ public interface IAttackAction : ITargetedAction, IAreaTargeter
     public int DamageIterations { get; set; }
     public DamageType AttackDamageType { get; set; }
     public bool PenetratingDamage { get; set; }
-    public bool KnocksBack { get; set; }
+    public int Knockback { get; set; }
     public float CritChance { get; set; }
     public float CritMultiplier { get; set; }
 

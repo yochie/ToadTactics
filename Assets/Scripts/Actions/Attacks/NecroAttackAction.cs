@@ -17,7 +17,7 @@ internal class NecroAttackAction : DefaultAttackAction
                                               damageType: NECRO_SELF_DAMAGE_TYPE,
                                               damageIterations: 1,
                                               penetratingDamage: false,
-                                              knocksBack: false,
+                                              knockback: 0,
                                               canCrit: false,
                                               critChance: 0,
                                               critMultiplier: 0, 

@@ -26,7 +26,7 @@ public readonly struct CharacterAbilityStats
     public readonly bool penetratingDamage;
     public readonly bool cappedPerRound;
     public readonly bool cappedByCooldown;
-    public readonly bool knocksBack;
+    public readonly int knockback;
     public readonly string appliesSelfBuffOnRoundStart;
 
     //-1 to crit chance or crit multi means use attacker stats if canCrit
@@ -49,7 +49,7 @@ public readonly struct CharacterAbilityStats
                             bool penetratingDamage = false,
                             bool cappedPerRound = false,
                             bool cappedByCooldown = false,
-                            bool knocksBack = false,
+                            int knocksBack = 0,
                             AreaType areaType = default, 
                             string appliesBuffIDOnRoundStart = null)
     {
@@ -81,7 +81,7 @@ public readonly struct CharacterAbilityStats
         this.penetratingDamage = penetratingDamage;
         this.cappedPerRound = cappedPerRound;
         this.cappedByCooldown = cappedByCooldown;
-        this.knocksBack = knocksBack;
+        this.knockback = knocksBack;
         this.areaType = areaType;
         this.appliesSelfBuffOnRoundStart = appliesBuffIDOnRoundStart;
     }

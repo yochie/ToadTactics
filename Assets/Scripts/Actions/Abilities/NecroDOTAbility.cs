@@ -45,7 +45,7 @@ public class NecroDOTAbility : IAbilityAction, IActivatedBuffSource, ITargetedAc
                                               damageType: this.AbilityStats.damageType,
                                               damageIterations: this.AbilityStats.damageIterations,
                                               penetratingDamage: this.AbilityStats.penetratingDamage,
-                                              knocksBack: false,
+                                              knockback: 0,
                                               canCrit: false,
                                               critChance: 0f,
                                               critMultiplier: 0f,

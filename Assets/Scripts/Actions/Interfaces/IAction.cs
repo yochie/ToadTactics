@@ -17,19 +17,24 @@ public interface IAction
 
     public static bool ValidateBasicAction(IAction action)
     {
-        if (action.ActorCharacter != null &&
+        bool isValid = true;
+        if (!(action is IOutOfControlAction) &&
+            !(action.RequestingPlayerID == action.ActorCharacter.OwnerID &&
+              GameController.Singleton.ItsThisPlayersTurn(action.RequestingPlayerID) &&
+              GameController.Singleton.ItsThisCharactersTurn(action.ActorCharacter.CharClassID)))
+            isValid = false;
+        
+        if (!(action.ActorCharacter != null &&
             action.ActorHex != null &&
             action.RequestingPlayerID != -1 &&
             action.ActorHex.HoldsACharacter() &&
-            action.ActorHex.GetHeldCharacterObject() == action.ActorCharacter &&
-            action.RequestingPlayerID == action.ActorCharacter.OwnerID &&
-            GameController.Singleton.ItsThisPlayersTurn(action.RequestingPlayerID) &&
-            GameController.Singleton.ItsThisCharactersTurn(action.ActorCharacter.CharClassID))
-            return true;
-        else
-        {
+            action.ActorHex.GetHeldCharacterObject() == action.ActorCharacter))            
+            isValid = false;
+
+        if (!isValid) {
             Debug.Log("Basic action validation failed");
-            return false;
         }
+
+        return isValid;
     }
 }
