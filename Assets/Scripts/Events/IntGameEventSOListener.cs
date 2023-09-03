@@ -29,6 +29,7 @@ public class IntGameEventSOListener : MonoBehaviour
             return;
         this.Event.RegisterListener(this);
     }
+
     public void OnEventRaised(int intArg)
     {
         Response.Invoke(intArg);
