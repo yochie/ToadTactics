@@ -15,6 +15,9 @@ public class PlayerCharacter : NetworkBehaviour
     private IntGameEventSO onCharacterDeath;
 
     [SerializeField]
+    private IntGameEventSO onCharacterDeathServerSide;
+
+    [SerializeField]
     private IntGameEventSO onCharacterResurrect;
 
     [SerializeField]
@@ -339,11 +342,10 @@ public class PlayerCharacter : NetworkBehaviour
         Map.Singleton.SetCharacterAliveState(this.charClassID, isDead: true);
         this.RemoveBuffsOnDeath();
 
-        int remotePlayerID = GameController.Singleton.OtherPlayer(GameController.Singleton.LocalPlayer.playerID);
-        this.TargetRpcOnCharacterDeath(GameController.Singleton.GetConnectionForPlayerID(remotePlayerID));
+        this.RpcOnCharacterDeath();
         //Need to throw on server syncronously because triggers some game logic stuff (triggered buffs)
         //TODO : find more elegant solution to having server only events...
-        this.onCharacterDeath.Raise(this.charClassID);
+        this.onCharacterDeathServerSide.Raise(this.charClassID);
     }
 
     [Server]
@@ -484,8 +486,8 @@ public class PlayerCharacter : NetworkBehaviour
     #endregion
 
     #region Events
-    [TargetRpc]
-    private void TargetRpcOnCharacterDeath(NetworkConnectionToClient target)
+    [ClientRpc]
+    private void RpcOnCharacterDeath()
     {
         this.onCharacterDeath.Raise(this.CharClassID);
     }

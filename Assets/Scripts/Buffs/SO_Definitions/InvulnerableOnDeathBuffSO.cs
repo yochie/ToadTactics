@@ -6,7 +6,7 @@ using Mirror;
 
 [CreateAssetMenu(fileName = "InvulnerableOnDeathBuff", menuName = "Buffs/InvulnerableOnDeathBuff")]
 
-public class InvulnerableOnDeathBuffSO : ScriptableObject, IIntEventTriggeredBuff
+public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntEventListener
 {
     [field: SerializeField]
     public string stringID { get; set; }
@@ -28,7 +28,7 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, IIntEventTriggeredBuf
 
     //Should be death event with classID as arg here
     [field: SerializeField]
-    public IntGameEventSO TriggerEvent { get; set; }
+    public IntGameEventSO ListensToEvent { get; set; }
 
     [field: SerializeField]
     private ScriptableObject AppliesBuff { get; set; }
@@ -89,7 +89,7 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, IIntEventTriggeredBuf
             
             IntGameEventSOListener listener = triggeredCharacter.gameObject.AddComponent(typeof(IntGameEventSOListener)) as IntGameEventSOListener;
             triggeredCharacter.AddTriggeredBuffListenerForBuff(sourceBuff, listener);
-            listener.Event = this.TriggerEvent;
+            listener.Event = this.ListensToEvent;
             listener.RegisterManually();
             RuntimeBuffAbility sourceAbilityComponent = sourceBuff.GetComponent<RuntimeBuffAbility>();
             RuntimeBuffTriggerCounter sourceTriggerCounterComponent = sourceBuff.GetComponent<RuntimeBuffTriggerCounter>();
