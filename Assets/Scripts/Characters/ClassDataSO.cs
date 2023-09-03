@@ -368,7 +368,9 @@ public class ClassDataSO : ScriptableObject
                 range: 1,
                 damageIterations: 1,
                 hasFaith: true,
-                attackAreaType: AreaType.single),
+                attackAreaType: AreaType.single
+                ),
+            attackActionID: "PaladinAttackAction",
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "PaladinTeamBuff",
@@ -605,6 +607,7 @@ public class ClassDataSO : ScriptableObject
         Dictionary<string, Type> attackActionsByID = new();
         attackActionsByID.Add("DefaultAttackAction", typeof(DefaultAttackAction));
         attackActionsByID.Add("NecroAttackAction", typeof(NecroAttackAction));
+        attackActionsByID.Add("PaladinAttackAction", typeof(PaladinAttackAction));
         return attackActionsByID;
     }
     #endregion

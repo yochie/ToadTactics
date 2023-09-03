@@ -5,6 +5,7 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 
+//TODO : Delete when confirmed that paladin uses alt attack instead
 [CreateAssetMenu(fileName = "FaithlessDamageBuff", menuName = "Buffs/FaithlessDamageBuff")]
 public class FaithlessDamageBuffSO : ScriptableObject, IBuffDataSO, IAttackEnhancer
 {
