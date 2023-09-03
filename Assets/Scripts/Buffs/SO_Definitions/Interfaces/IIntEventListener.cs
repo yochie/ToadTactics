@@ -5,5 +5,5 @@ using UnityEngine;
 
 public interface IIntEventListener
 {
-    public IntGameEventSO ListensToEvent { get; set; }
+    public IntGameEventSO ListensToIntEvent { get; set; }
 }

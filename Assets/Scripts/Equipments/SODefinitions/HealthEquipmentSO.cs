@@ -17,7 +17,7 @@ public class HealthEquipmentSO : EquipmentSO, IHealthModifier, IEquipmentQuality
         int currentMaxHealth = playerCharacter.CurrentStats.maxHealth;
 
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, maxHealth: currentMaxHealth + this.HealthOffset));
-        playerCharacter.TakeDamage(new Hit(HealthOffset, DamageType.healing));
+        playerCharacter.SetCurrentLife(playerCharacter.CurrentLife + this.HealthOffset);
     }
 
     public Dictionary<string, string> GetStatModificationsDictionnary()

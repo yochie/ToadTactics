@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-[CreateAssetMenu(fileName = "InvulnerableOnDeathBuff", menuName = "Buffs/InvulnerableOnDeathBuff")]
+[CreateAssetMenu(fileName = "StealthBuff", menuName = "Buffs/StealthBuff")]
 
-public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntEventListener
+public class StealthBuffSO : ScriptableObject, IConditionalBuff, IIntEventListener, IIntIntEventListener
 {
     [field: SerializeField]
     public string stringID { get; set; }
@@ -28,13 +28,22 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntE
 
     //Should be death event with classID as arg here
     [field: SerializeField]
-    public IntGameEventSO ListensToIntEvent { get; set; }
+    public IntGameEventSO TriggerEvent { get; set; }
 
     [field: SerializeField]
     private ScriptableObject AppliesBuff { get; set; }
 
     [field: SerializeField]
     public int MaxTriggers { get; set; }
+
+    [field: SerializeField]
+    public string InlineConditionDescription { get; set; }
+
+    [field: SerializeField]
+    public IntGameEventSO ListensToIntEvent { get; set; }
+
+    [field: SerializeField]
+    public IntIntGameEventSO ListensToIntIntEvent { get; set; }
 
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
@@ -43,7 +52,7 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntE
 
     public string GetTooltipDescription()
     {
-        return "On death, will become invulnerable until next turn.";
+        return "Untargetable. Lost on damage taken or attack.";
     }
 
     [Server]
@@ -89,7 +98,7 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntE
             
             IntGameEventSOListener listener = triggeredCharacter.gameObject.AddComponent(typeof(IntGameEventSOListener)) as IntGameEventSOListener;
             triggeredCharacter.AddTriggeredBuffListenerForBuff(sourceBuff, listener);
-            listener.Event = this.ListensToIntEvent;
+            listener.Event = this.TriggerEvent;
             listener.RegisterManually();
             RuntimeBuffAbility sourceAbilityComponent = sourceBuff.GetComponent<RuntimeBuffAbility>();
             RuntimeBuffTriggerCounter sourceTriggerCounterComponent = sourceBuff.GetComponent<RuntimeBuffTriggerCounter>();
@@ -106,5 +115,10 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntE
             PlayerCharacter triggeredCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
             triggeredCharacter.RemoveTriggeredBuffListenersForBuff(runtimeBuff);
         }
+    }
+
+    public void OnEndEvent()
+    {
+        //BuffManager.Singleton.R
     }
 }
