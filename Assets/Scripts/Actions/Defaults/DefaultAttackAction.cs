@@ -60,11 +60,11 @@ public class DefaultAttackAction : IAttackAction
         if (!target.HoldsACharacter())
             return;
 
-        PlayerCharacter DefenderCharacter = target.GetHeldCharacterObject();
-        int prevLife = DefenderCharacter.CurrentLife;
+        PlayerCharacter defenderCharacter = target.GetHeldCharacterObject();
+        int prevLife = defenderCharacter.CurrentLife;
         bool isCrit = Utility.RollCrit(this.CritChance);
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
-        DefenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, this.PenetratingDamage));
+        defenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, this.PenetratingDamage));
 
         if (this.Knockback > 0)
         {
@@ -79,18 +79,18 @@ public class DefaultAttackAction : IAttackAction
                     knockbackSuccess = false;
 
                 if(knockbackSuccess)
-                    logger.RpcLogMessage(string.Format("{0} knocked back {1}.", this.ActorCharacter.charClass.name, DefenderCharacter.charClass.name));
+                    logger.RpcLogMessage(string.Format("{0} knocked back {1}.", this.ActorCharacter.charClass.name, defenderCharacter.charClass.name));
                 else
-                    logger.RpcLogMessage(string.Format("{0} attempted to knockback {1} but it was blocked.", this.ActorCharacter.charClass.name, DefenderCharacter.charClass.name));
+                    logger.RpcLogMessage(string.Format("{0} attempted to knockback {1} but it was blocked.", this.ActorCharacter.charClass.name, defenderCharacter.charClass.name));
             }
         }
 
         string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
         this.ActorCharacter.charClass.name,
-        DefenderCharacter.charClass.name,
+        defenderCharacter.charClass.name,
         critRolledDamage,
         prevLife,
-        DefenderCharacter.CurrentLife,
+        defenderCharacter.CurrentLife,
         isCrit ? "crit" : "",
         this.AttackDamageType,
         this.PenetratingDamage ? " penetrating" : "");
