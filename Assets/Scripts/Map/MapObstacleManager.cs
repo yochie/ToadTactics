@@ -33,8 +33,8 @@ public class MapObstacleManager : MonoBehaviour
         }
 
         Obstacle ObstacleToDestroy = this.spawnedObstacles[coordinates];
-        this.spawnedObstacles.Remove(coordinates);
-        Destroy(ObstacleToDestroy.gameObject);
+        NetworkServer.Destroy(ObstacleToDestroy.gameObject);
+        this.spawnedObstacles.Remove(coordinates);                
         obstacleHex.ClearObstacle();
     }
 

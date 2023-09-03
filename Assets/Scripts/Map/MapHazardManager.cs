@@ -32,8 +32,8 @@ public class MapHazardManager : MonoBehaviour
         }
 
         Hazard hazardToDestroy = this.spawnedHazards[coordinates];
+        NetworkServer.Destroy(hazardToDestroy.gameObject);
         this.spawnedHazards.Remove(coordinates);
-        Destroy(hazardToDestroy.gameObject);
         hazardHex.holdsHazard = HazardType.none;
     }
 }
