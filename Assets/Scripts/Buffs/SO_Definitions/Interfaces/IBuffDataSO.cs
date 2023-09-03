@@ -39,7 +39,7 @@ public interface IBuffDataSO
                 IConditionalBuff conditionalBuff = buffData as IConditionalBuff;
                 if (conditionalBuff == null)
                     throw new Exception("Buff has conditional duration but doesn't implement IConditionalBuff");
-                durationDescription = string.Format("Lasts until {0}.", conditionalBuff.InlineConditionDescription);
+                durationDescription = string.Format("until {0}.", conditionalBuff.InlineConditionDescription);
                 break;
             default:
                 durationDescription = "An undefined amount of time...";
