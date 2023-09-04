@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
@@ -34,6 +35,12 @@ public class HazardDataSO : ScriptableObject
     [SerializeField]
     private int coldHazardMovementPenalty;
 
+    [SerializeField]
+    private int appleHealingAmount;
+
+    [SerializeField]
+    private DamageType appleHealingDamageType;
+
     public GameObject GetHazardPrefab(HazardType typeToGet)
     {
         foreach(GameObject hazardPrefab in this.hazardPrefabs)
@@ -58,6 +65,10 @@ public class HazardDataSO : ScriptableObject
                     return this.fireHazardStandingDamage;
                 else
                     return this.fireHazardDamage;
+
+            case HazardType.apple:
+                return this.appleHealingAmount;
+
             default:
                 return 0;
         }
@@ -70,6 +81,10 @@ public class HazardDataSO : ScriptableObject
         {
             case HazardType.fire:
                 return this.fireHazardDamageType;
+
+            case HazardType.apple:
+                return this.appleHealingDamageType;
+
             default:
                 return DamageType.none;
         }
@@ -77,7 +92,6 @@ public class HazardDataSO : ScriptableObject
 
     public int GetHazardMovementPenalty(HazardType typeToGet)
     {
-
         switch (typeToGet)
         {
             case HazardType.cold:
@@ -85,5 +99,13 @@ public class HazardDataSO : ScriptableObject
             default:
                 return 0;
         }
+    }
+
+    internal bool IsHazardTypeRemovedWhenWalkedUpon(HazardType hazardType)
+    {
+        if (hazardType == HazardType.apple)
+            return true;
+        else
+            return false;
     }
 }

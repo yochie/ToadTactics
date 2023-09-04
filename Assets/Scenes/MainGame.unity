@@ -3792,6 +3792,7 @@ MonoBehaviour:
   inputHandler: {fileID: 1982683013}
   hazardManager: {fileID: 1982683014}
   obstacleManager: {fileID: 1982683019}
+  appleSpawnChance: 0.5
   hexesSpawnedOnClient: 0
 --- !u!4 &1982683009
 Transform:

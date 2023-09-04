@@ -52,7 +52,10 @@ public class DefaultAttackAction : IAttackAction
         {
             //attacking obstacle
             Map.Singleton.obstacleManager.DestroyObstacleAtPosition(Map.Singleton.hexGrid, target.coordinates.OffsetCoordinatesAsVector());
-            string logMessage = string.Format("{0} felled tree", this.ActorCharacter.charClass.name);
+            bool gotAnApple = Utility.RollChance(Map.Singleton.appleSpawnChance);
+            if (gotAnApple)
+                Map.Singleton.hazardManager.SpawnHazardOnMap(Map.Singleton.hexGrid, target.coordinates.OffsetCoordinatesAsVector(), HazardType.apple);
+            string logMessage = string.Format("{0} felled tree{1}", this.ActorCharacter.charClass.name, gotAnApple ? " and it dropped an apple!":"");
             logger.RpcLogMessage(logMessage);
             return;
         }
@@ -62,7 +65,7 @@ public class DefaultAttackAction : IAttackAction
 
         PlayerCharacter defenderCharacter = target.GetHeldCharacterObject();
         int prevLife = defenderCharacter.CurrentLife;
-        bool isCrit = Utility.RollCrit(this.CritChance);
+        bool isCrit = Utility.RollChance(this.CritChance);
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
         defenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, this.PenetratingDamage));
 

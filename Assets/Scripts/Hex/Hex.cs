@@ -207,12 +207,12 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             return false;
         if (this.HoldsACorpse())
             return false;
-        if (this.HolsAHazard())
+        if (this.HoldsAHazard())
             return false;
         return true;
     }
 
-    private bool HolsAHazard()
+    public bool HoldsAHazard()
     {
         if (this.holdsHazard != HazardType.none)
             return true;

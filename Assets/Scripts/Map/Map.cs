@@ -27,6 +27,9 @@ public class Map : NetworkBehaviour
     [SerializeField]
     public MapObstacleManager obstacleManager;
 
+    [SerializeField]
+    internal float appleSpawnChance;
+
     #endregion
 
     #region Synced vars

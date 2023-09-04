@@ -72,9 +72,9 @@ public static class Utility
         return maxHealth + 100;
     }
 
-    internal static bool RollCrit(float critChance)
+    internal static bool RollChance(float chanceForTrue)
     {
-        if (UnityEngine.Random.Range(0f, 0.999f) < critChance)
+        if (UnityEngine.Random.Range(0f, 0.9999999f) < chanceForTrue)
             return true;
         else
             return false;

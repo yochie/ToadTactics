@@ -104,14 +104,28 @@ public class DefaultMoveAction : IMoveAction
         if (moveDamage > 0)
         {
             this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto()));
-
-            string message = string.Format("{0} takes {1} {2} damage for walking on {3} hazard",
+            string message;
+            if (nextHex.DealsDamageTypeWhenMovedInto() == DamageType.healing)
+            {
+                message = string.Format("{0} gains {1} life from {2}",
+                    this.ActorCharacter.charClass.name,
+                    moveDamage,
+                    nextHex.holdsHazard);
+            }
+            else
+            {
+                message = string.Format("{0} takes {1} {2} damage for walking on {3} hazard",
                 this.ActorCharacter.charClass.name,
                 moveDamage,
                 nextHex.DealsDamageTypeWhenMovedInto(),
                 nextHex.holdsHazard);
+            }
             MasterLogger.Singleton.RpcLogMessage(message);
         }
+
+        if (nextHex.HoldsAHazard() && HazardDataSO.Singleton.IsHazardTypeRemovedWhenWalkedUpon(nextHex.holdsHazard))
+            Map.Singleton.hazardManager.DestroyHazardAtPosition(Map.Singleton.hexGrid, nextHex.coordinates.OffsetCoordinatesAsVector());
+
     }
 
     [Server]
