@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class RuntimeBuff
+public class RuntimeBuff : IEquatable<RuntimeBuff>
 {
     public IBuffDataSO Data { get; set; }
     public int UniqueID { get; set; }
@@ -22,5 +22,10 @@ public class RuntimeBuff
     public void AddComponent(IRuntimeBuffComponent component)
     {
         this.buffComponents[component.GetType()] = component;
+    }
+
+    public bool Equals(RuntimeBuff other)
+    {
+        return this.UniqueID == other.UniqueID;
     }
 }

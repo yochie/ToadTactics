@@ -6,7 +6,7 @@ using Mirror;
 
 [CreateAssetMenu(fileName = "StealthBuff", menuName = "Buffs/StealthBuff")]
 
-public class StealthBuffSO : ScriptableObject, IConditionalBuff, IIntEventListener, IIntIntEventListener
+public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifier, IAppliablBuffDataSO
 {
     [field: SerializeField]
     public string stringID { get; set; }
@@ -26,24 +26,20 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IIntEventListen
     [field: SerializeField]
     public Sprite Icon { get; set; }
 
-    //Should be death event with classID as arg here
-    [field: SerializeField]
-    public IntGameEventSO TriggerEvent { get; set; }
-
-    [field: SerializeField]
-    private ScriptableObject AppliesBuff { get; set; }
-
-    [field: SerializeField]
-    public int MaxTriggers { get; set; }
-
     [field: SerializeField]
     public string InlineConditionDescription { get; set; }
 
     [field: SerializeField]
-    public IntGameEventSO ListensToIntEvent { get; set; }
+    public IntGameEventSO HitEvent { get; set; }
 
     [field: SerializeField]
-    public IntIntGameEventSO ListensToIntIntEvent { get; set; }
+    public IntIntGameEventSO AttackEvent { get; set; }
+
+    [field: SerializeField]
+    public bool StealthOffset { get; set; }
+
+    [field: SerializeField]
+    public bool NeedsToBeReAppliedEachTurn { get; set; }
 
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
@@ -56,69 +52,85 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IIntEventListen
     }
 
     [Server]
-    public void OnTrigger(int dyingCharacterID, PlayerCharacter triggeredCharacter, RuntimeBuffAbility sourceAbilityComponent, RuntimeBuffTriggerCounter sourceTriggerCounterComponent)
+    public void OnEndEvent(PlayerCharacter triggeredCharacter, RuntimeBuff buff)
     {
-        Debug.Log("Triggered buff");
+        Debug.Log("Conditional buff end event triggered");
 
-        if (dyingCharacterID != triggeredCharacter.CharClassID)
-            return;
-        if (sourceAbilityComponent == null)
-            throw new Exception("Barb invulnerability should have an ability buff as source.");
-        if (sourceTriggerCounterComponent.RemainingTriggers > 0)
-            sourceTriggerCounterComponent.RemainingTriggers--;
-        else
-            return;
-
-        triggeredCharacter.Resurrect(1);
-
-        IBuffDataSO triggeredBuffData = this.AppliesBuff as IBuffDataSO;
-        if (triggeredBuffData == null)
-            throw new Exception("Triggered buff in buff data does not implement IBuffDataSO as expected.");
-
-        RuntimeBuff triggeredBuff = BuffManager.Singleton.CreateAbilityBuff(triggeredBuffData, sourceAbilityComponent.AppliedByAbility, sourceAbilityComponent.ApplyingCharacterID, new() { dyingCharacterID });
-        RuntimeBuffTimeout timedComponent = triggeredBuff.GetComponent<RuntimeBuffTimeout>();
-        if (timedComponent != null)
-        {
-            //Since buff durations are usually increased to ignore turn they are applied (because they are usually applied during by a character during his own turn)
-            //we need to decrement remaining turns if its not currently applying characters turn to actually expire buff on next turn if its duration is 1
-            if (!GameController.Singleton.ItsThisCharactersTurn(dyingCharacterID))
-            {
-                timedComponent.TurnDurationRemaining--;
-            }
-        }
-        BuffManager.Singleton.ApplyNewBuff(triggeredBuff);
+        BuffManager.Singleton.RemoveConditionalBuffFromCharacter(triggeredCharacter, buff);
     }
 
     [Server]
-    public void SetupListeners(RuntimeBuff sourceBuff)
+    public void SetupConditionListeners(RuntimeBuff buff)
     {
-        foreach(int characterID in sourceBuff.AffectedCharacterIDs)
+        foreach(int characterID in buff.AffectedCharacterIDs)
         {
-            PlayerCharacter triggeredCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
-            
-            IntGameEventSOListener listener = triggeredCharacter.gameObject.AddComponent(typeof(IntGameEventSOListener)) as IntGameEventSOListener;
-            triggeredCharacter.AddTriggeredBuffListenerForBuff(sourceBuff, listener);
-            listener.Event = this.TriggerEvent;
-            listener.RegisterManually();
-            RuntimeBuffAbility sourceAbilityComponent = sourceBuff.GetComponent<RuntimeBuffAbility>();
-            RuntimeBuffTriggerCounter sourceTriggerCounterComponent = sourceBuff.GetComponent<RuntimeBuffTriggerCounter>();
+            PlayerCharacter listeningCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
 
-            listener.Response.AddListener((int dyingCharacter) => { this.OnTrigger(dyingCharacter, triggeredCharacter, sourceAbilityComponent, sourceTriggerCounterComponent); });
-        }             
-    }
+            //Hit listener
+            IntGameEventSOListener hitListener = listeningCharacter.gameObject.AddComponent(typeof(IntGameEventSOListener)) as IntGameEventSOListener;
+            listeningCharacter.AddListenerForBuff(buff, hitListener);
+            hitListener.Event = this.HitEvent;
+            hitListener.RegisterManually();
+            hitListener.Response.AddListener(
+                (int hitCharacterID) => { 
+                    if(hitCharacterID == listeningCharacter.CharClassID)
+                        this.OnEndEvent(listeningCharacter, buff); 
+                });
 
-    [Server]
-    public void RemoveListenersForBuff(RuntimeBuff runtimeBuff) 
-    {
-        foreach (int characterID in runtimeBuff.AffectedCharacterIDs)
-        {
-            PlayerCharacter triggeredCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
-            triggeredCharacter.RemoveTriggeredBuffListenersForBuff(runtimeBuff);
+            //Attack listener
+            IntIntGameEventSOListener attackListener = listeningCharacter.gameObject.AddComponent(typeof(IntIntGameEventSOListener)) as IntIntGameEventSOListener;
+            listeningCharacter.AddListenerForBuff(buff, attackListener);
+            attackListener.Event = this.AttackEvent;
+            attackListener.RegisterManually();
+            attackListener.Response.AddListener(
+                (int attackingCharacter, int defenderCharacter) => {
+                    if (attackingCharacter == listeningCharacter.CharClassID)
+                        this.OnEndEvent(listeningCharacter, buff);
+                });
         }
     }
 
-    public void OnEndEvent()
+
+    [Server]
+    public void RemoveConditionListenersForBuff(RuntimeBuff runtimeBuff, List<int> removeFromCharacters) 
     {
-        //BuffManager.Singleton.R
+        foreach (int characterID in removeFromCharacters)
+        {
+            PlayerCharacter triggeredCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
+            triggeredCharacter.RemoveListenersForBuff(runtimeBuff);
+        }
+    }
+
+    public Dictionary<string, string> GetStatModificationsDictionnary()
+    {
+        return new Dictionary<string, string> { { "Stealthy", "yes" } };
+    }
+
+    public void ApplyStatModification(PlayerCharacter playerCharacter)
+    {
+        playerCharacter.SetStealthy(true);
+    }
+
+    public void RemoveStatModification(PlayerCharacter playerCharacter)
+    {
+        playerCharacter.SetStealthy(false);
+    }
+
+    public void Apply(List<int> applyToCharacterIDs, bool isReapplication)
+    {
+        foreach (int affectedCharacterID in applyToCharacterIDs)
+        {
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
+            this.ApplyStatModification(affectedCharacter);
+        }
+    }
+
+    public void UnApply(List<int> unApplyFromCharacterIDs)
+    {
+        foreach (int affectedCharacterID in unApplyFromCharacterIDs)
+        {
+            PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
+            this.RemoveStatModification(affectedCharacter);
+        }
     }
 }

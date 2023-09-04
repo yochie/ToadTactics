@@ -9,6 +9,9 @@ public class ActionExecutor : NetworkBehaviour
 {
     private INetworkedLogger logger;
 
+    [SerializeField]
+    private IntIntGameEventSO OnCharacterAttacksServerSide;
+
     public static ActionExecutor Singleton { get; private set; }
 
     public void Awake()
@@ -48,6 +51,10 @@ public class ActionExecutor : NetworkBehaviour
         IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
         this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.attack);
 
+        int attackedCharacterId = -1;
+        if (target.HoldsACharacter())
+            attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+        OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
     }
 
 
@@ -76,6 +83,11 @@ public class ActionExecutor : NetworkBehaviour
                                                                                    source,
                                                                                    target);
         this.TryAction(abilityAttackAction, isFullAction : false);
+
+        int attackedCharacterId = -1;
+        if (target.HoldsACharacter())
+            attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+        OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
     }
 
     internal bool CustomAttack(Hex source,
@@ -193,17 +205,25 @@ public class ActionExecutor : NetworkBehaviour
         bool selfTarget = false;
         bool friendlyTarget = false;
         bool ennemyTarget = false;
+        bool untargetable = false;
         if (targetedHex.HoldsACharacter() || targetedHex.HoldsACorpse())
         {
             PlayerCharacter targetedCharacter = targetedHex.HoldsACharacter() ? targetedHex.GetHeldCharacterObject() : targetedHex.GetHeldCorpseCharacterObject();
             selfTarget = (actor.CharClassID == targetedCharacter.CharClassID);
             friendlyTarget = (actor.OwnerID == targetedCharacter.OwnerID);
             ennemyTarget = !friendlyTarget;
+            untargetable = targetedCharacter.CurrentStats.isStealthy;
         }
         bool liveTarget = targetedHex.HoldsACharacter();
         bool corpseTarget = targetedHex.HoldsACorpse();
         bool emptyTarget = !targetedHex.HoldsACharacter() && !targetedHex.HoldsACorpse() && !targetedHex.HoldsAnObstacle();
         bool obstacleTarget = targetedHex.HoldsAnObstacle();
+
+        if (!allowedTargets.Contains(TargetType.untargetable_ennemy) && (ennemyTarget && liveTarget && untargetable))
+            return false;
+
+        if (!allowedTargets.Contains(TargetType.untargetable_ally) && (friendlyTarget && liveTarget && untargetable))
+            return false;
 
         if (!allowedTargets.Contains(TargetType.ennemy_chars) && (ennemyTarget && liveTarget))
             return false;

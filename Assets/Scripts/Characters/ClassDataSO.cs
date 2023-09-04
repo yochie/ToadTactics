@@ -204,7 +204,6 @@ public class ClassDataSO : ScriptableObject
                     damageIterations: 1,
                     damageType: DamageType.physical,
                     range: 3,
-                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
                     cooldownDuration: 3,
                     areaType: AreaType.single,
                     cappedByCooldown: true
@@ -248,7 +247,6 @@ public class ClassDataSO : ScriptableObject
                     damageType: DamageType.physical,
                     range: Utility.MAX_DISTANCE_ON_MAP,
                     requiresLOS: false,
-                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle},
                     cooldownDuration: 3,
                     cappedByCooldown: true,
                     areaType: AreaType.pierce,
@@ -291,7 +289,6 @@ public class ClassDataSO : ScriptableObject
                     damageIterations: 1,
                     damageType: DamageType.physical,
                     range: 1,
-                    allowedAbilityTargets: new List<TargetType>(){TargetType.ennemy_chars, TargetType.obstacle },
                     cooldownDuration: 3,
                     cappedByCooldown: true,
                     canCrit: true,
@@ -304,7 +301,8 @@ public class ClassDataSO : ScriptableObject
                     stringID: "RogueStealth",
                     interfaceName: "Stealth",
                     description: "Is untargetable and has increased speed at start of round until dealing or being dealt damage.",
-                    isPassive: true
+                    isPassive: true,
+                    appliesBuffIDOnRoundStart: "RogueStealthBuff"
                 )
             }
             );

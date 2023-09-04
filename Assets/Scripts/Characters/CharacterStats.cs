@@ -41,6 +41,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
 
     public readonly int attackAreaScaler;
 
+    public readonly bool isStealthy;
+
     public CharacterStats(int maxHealth,
                           int armor,
                           int damage,
@@ -58,7 +60,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                           bool hasFaith = false,
                           int knocksBack = 0,
                           AreaType attackAreaType = default,
-                          int attackAreaScaler = 1)
+                          int attackAreaScaler = 1, 
+                          bool isStealthy = false)
     {
         this.maxHealth = maxHealth;
         this.armor = armor;
@@ -85,6 +88,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.knockback = knocksBack;
         this.attackAreaType = attackAreaType;
         this.attackAreaScaler = attackAreaScaler;
+        this.isStealthy = isStealthy;
     }
 
     public CharacterStats(CharacterStats toCopy,
@@ -105,7 +109,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
                       bool? hasFaith = null,
                       int? knocksBack = null, 
                       int? attackAreaScaler = null, 
-                      AreaType? attackAreaType = null)
+                      AreaType? attackAreaType = null,
+                      bool? isStealthy = null)
     {
         this.maxHealth = maxHealth == null ? toCopy.maxHealth : maxHealth.GetValueOrDefault();
         this.armor = armor == null ? toCopy.armor : armor.GetValueOrDefault();
@@ -125,6 +130,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         this.knockback = knocksBack == null ? toCopy.knockback : knocksBack.GetValueOrDefault();
         this.attackAreaType = attackAreaType == null ? toCopy.attackAreaType : attackAreaType.GetValueOrDefault();
         this.attackAreaScaler = attackAreaScaler == null ? toCopy.attackAreaScaler : attackAreaScaler.GetValueOrDefault();
+        this.isStealthy = isStealthy == null ? toCopy.isStealthy : isStealthy.GetValueOrDefault();
     }
 
     public bool Equals(CharacterStats other)
@@ -146,7 +152,8 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
             this.penetratingDamage == other.penetratingDamage &&
             this.hasFaith == other.hasFaith &&
             this.attacksPerTurn == other.attacksPerTurn &&
-            this.knockback == other.knockback
+            this.knockback == other.knockback &&
+            this.isStealthy == other.isStealthy
             )
         {
             foreach (TargetType t in this.allowedAttackTargets)

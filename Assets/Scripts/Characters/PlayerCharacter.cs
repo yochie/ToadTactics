@@ -18,6 +18,9 @@ public class PlayerCharacter : NetworkBehaviour
     private IntGameEventSO onCharacterDeathServerSide;
 
     [SerializeField]
+    private IntGameEventSO onCharacterHitServerSide;
+
+    [SerializeField]
     private IntGameEventSO onCharacterResurrect;
 
     [SerializeField]
@@ -77,7 +80,7 @@ public class PlayerCharacter : NetworkBehaviour
 
     public List<RuntimeBuff> ownerOfBuffs;
     public List<RuntimeBuff> affectedByBuffs;
-    private Dictionary<RuntimeBuff, Component> triggeredBuffListeners = new();
+    private ListWithDuplicates<RuntimeBuff, Component> buffListeners = new();
     #endregion
 
     #region Startup
@@ -132,56 +135,6 @@ public class PlayerCharacter : NetworkBehaviour
             
         this.RpcOnCharacterLifeChanged(this.CurrentLife, this.CurrentStats.maxHealth);
         this.ResetTurnState();
-    }
-   
-    private List<IMitigationEnhancer> GetOrderedMitigationEnhancers()
-    {
-        List<IMitigationEnhancer> orderedMitigators = new();
-        foreach (IBuffDataSO buff in this.affectedByBuffs.Select(buff => buff.Data))
-        {
-            IMitigationEnhancer mitigationBuff = buff as IMitigationEnhancer;
-            if (mitigationBuff != null)
-            {
-                orderedMitigators.Add(mitigationBuff);
-            }
-        }
-        orderedMitigators.Sort();
-        return orderedMitigators;
-
-    }
-
-    //TODO: add check for equipments here eventually once they exist in this category
-    internal List<IAttackEnhancer> GetAttackEnhancers()
-    {
-        List<IAttackEnhancer> toReturn = new();
-        foreach(IBuffDataSO buff in this.affectedByBuffs.Select(buff => buff.Data))
-        {
-            IAttackEnhancer attackEnhancer = buff as IAttackEnhancer;
-            if (attackEnhancer != null)
-                toReturn.Add(attackEnhancer);
-        }
-        return toReturn;
-    }
-
-    internal Dictionary<int, string> GetAffectingBuffDataIDs()
-    {
-        Dictionary<int, string> buffIDs = new();
-        foreach(RuntimeBuff buff in this.affectedByBuffs)
-        {            
-            if(buff.Data.Icon != null)
-                buffIDs[buff.UniqueID] = buff.Data.stringID;
-        }
-        return buffIDs;
-    }
-
-    internal void SetCurrentLife(int value)
-    {
-        int previousHealth = this.CurrentLife;
-        this.currentLife = Mathf.Clamp(value, 0, this.currentStats.maxHealth);
-        if (previousHealth > 0 && this.CurrentLife <= 0 && !this.isDead)
-        {
-            this.Die();
-        }
     }
 
     #endregion
@@ -315,6 +268,8 @@ public class PlayerCharacter : NetworkBehaviour
                 this.TakeRawDamage(-hit.damage);
                 break;
         }
+
+        this.onCharacterHitServerSide.Raise(this.charClassID);
     }
 
     [Server]
@@ -471,16 +426,37 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
-    internal void AddTriggeredBuffListenerForBuff(RuntimeBuff buff, Component toAdd)
+    internal void AddListenerForBuff(RuntimeBuff buff, Component toAdd)
     {
-        this.triggeredBuffListeners.Add(buff, toAdd);
+        this.buffListeners.Add(buff, toAdd);
     }
 
     [Server]
-    internal void RemoveTriggeredBuffListenersForBuff(RuntimeBuff buff)
+    internal void RemoveListenersForBuff(RuntimeBuff buff)
     {
-            Destroy(this.triggeredBuffListeners[buff]);
-            this.triggeredBuffListeners.Remove(buff);
+        List<Component> toDestroy = this.buffListeners.GetValues(buff);
+        for(int i = toDestroy.Count - 1; i >= 0; i--)
+        {
+            Destroy(toDestroy[i]);
+        }
+        this.buffListeners.RemoveAllValuesForKey(buff);
+    }
+
+    [Server]
+    internal void SetCurrentLife(int value)
+    {
+        int previousHealth = this.CurrentLife;
+        this.currentLife = Mathf.Clamp(value, 0, this.currentStats.maxHealth);
+        if (previousHealth > 0 && this.CurrentLife <= 0 && !this.isDead)
+        {
+            this.Die();
+        }
+    }
+
+    [Server]
+    internal void SetStealthy(bool state)
+    {
+        this.currentStats = new CharacterStats(this.CurrentStats, isStealthy: state);
     }
 
     #endregion
@@ -641,6 +617,46 @@ public class PlayerCharacter : NetworkBehaviour
                 return true;
         }
         return false;
+    }
+
+    private List<IMitigationEnhancer> GetOrderedMitigationEnhancers()
+    {
+        List<IMitigationEnhancer> orderedMitigators = new();
+        foreach (IBuffDataSO buff in this.affectedByBuffs.Select(buff => buff.Data))
+        {
+            IMitigationEnhancer mitigationBuff = buff as IMitigationEnhancer;
+            if (mitigationBuff != null)
+            {
+                orderedMitigators.Add(mitigationBuff);
+            }
+        }
+        orderedMitigators.Sort();
+        return orderedMitigators;
+
+    }
+
+    //TODO: add check for equipments here eventually once they exist in this category
+    internal List<IAttackEnhancer> GetAttackEnhancers()
+    {
+        List<IAttackEnhancer> toReturn = new();
+        foreach (IBuffDataSO buff in this.affectedByBuffs.Select(buff => buff.Data))
+        {
+            IAttackEnhancer attackEnhancer = buff as IAttackEnhancer;
+            if (attackEnhancer != null)
+                toReturn.Add(attackEnhancer);
+        }
+        return toReturn;
+    }
+
+    internal Dictionary<int, string> GetAffectingBuffDataIDs()
+    {
+        Dictionary<int, string> buffIDs = new();
+        foreach (RuntimeBuff buff in this.affectedByBuffs)
+        {
+            if (buff.Data.Icon != null)
+                buffIDs[buff.UniqueID] = buff.Data.stringID;
+        }
+        return buffIDs;
     }
     #endregion
 }

@@ -65,7 +65,7 @@ public readonly struct CharacterAbilityStats
 
         if (allowedAbilityTargets == null)
         {
-            this.allowedAbilityTargets = new();
+            this.allowedAbilityTargets = new() { TargetType.ennemy_chars, TargetType.obstacle};
         }
         else
         {

@@ -47,6 +47,14 @@ internal class BuffManager : NetworkBehaviour
             triggerCounter.RemainingTriggers = triggeredBuff.MaxTriggers;
             runtimeBuff.AddComponent(triggerCounter);
         }
+
+        IConditionalBuff conditionalBuff = buffData as IConditionalBuff;
+        if (conditionalBuff != null)
+        {
+            if (conditionalBuff.DurationType != DurationType.conditional)
+                throw new Exception("Conditional buff does not have duration in data set to conditional");
+        }
+
         return runtimeBuff;
     }
 
@@ -85,8 +93,15 @@ internal class BuffManager : NetworkBehaviour
         ITriggeredBuff triggeredBuff = buff.Data as ITriggeredBuff;
         if (triggeredBuff != null)
         {
-            triggeredBuff.SetupListeners(buff);
+            triggeredBuff.SetupTriggerListeners(buff);
         }
+
+        IConditionalBuff conditionalBuff = buff.Data as IConditionalBuff;
+        if (conditionalBuff != null)
+        {
+            conditionalBuff.SetupConditionListeners(buff);
+        }
+
     }
     
     [Server]
@@ -104,7 +119,7 @@ internal class BuffManager : NetworkBehaviour
                 timedBuffComponent.TurnDurationRemaining--;
                 if (timedBuffComponent.TurnDurationRemaining == 0)
                 {
-                    this.RemoveBuff(ownedBuff);
+                    this.RemoveBuffFromCharacters(ownedBuff, ownedBuff.AffectedCharacterIDs);
                 }
             }
 
@@ -123,25 +138,45 @@ internal class BuffManager : NetworkBehaviour
     }
 
     [Server]
-    private void RemoveBuff(RuntimeBuff buff)
+    private void RemoveBuffFromCharacters(RuntimeBuff buff, List<int> removeFromCharacters)
     {
         IAppliablBuffDataSO appliedBuff = buff.Data as IAppliablBuffDataSO;
         if(appliedBuff != null)
-            appliedBuff.UnApply(buff.AffectedCharacterIDs);
+            appliedBuff.UnApply(removeFromCharacters);
 
-        foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
+        foreach(int affectedCharacterID in removeFromCharacters)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.RemoveAffectingBuff(buff);
+            buff.AffectedCharacterIDs.Remove(affectedCharacterID);
         }
 
         Sprite buffIcon = buff.Data.Icon;
         if (buffIcon != null)            
-            this.RpcRemoveBuffIconFromCharacters(buff.UniqueID, buff.AffectedCharacterIDs);
+            this.RpcRemoveBuffIconFromCharacters(buff.UniqueID, removeFromCharacters);
 
+        ITriggeredBuff triggeredBuff = buff.Data as ITriggeredBuff;
+        if (triggeredBuff != null)
+        {
+            triggeredBuff.RemoveTriggerListenersForBuff(buff, removeFromCharacters);
+        }
+
+        IConditionalBuff conditionalBuff = buff.Data as IConditionalBuff;
+        if (conditionalBuff != null)
+        {
+            conditionalBuff.RemoveConditionListenersForBuff(buff, removeFromCharacters);
+        }
+
+        bool removingFromAllAffected = (removeFromCharacters == buff.AffectedCharacterIDs);
         RuntimeBuffAbility abilityBuff = buff.GetComponent<RuntimeBuffAbility>();
-        if (abilityBuff != null)
+        if (abilityBuff != null && removingFromAllAffected)
             GameController.Singleton.PlayerCharactersByID[abilityBuff.ApplyingCharacterID].RemoveOwnedBuff(buff);
+    }
+
+    [Server]
+    internal void RemoveConditionalBuffFromCharacter(PlayerCharacter triggeredCharacter, RuntimeBuff buff)
+    {
+        this.RemoveBuffFromCharacters(buff, new List<int>() { triggeredCharacter.CharClassID });
     }
 
     [Server]
@@ -153,19 +188,8 @@ internal class BuffManager : NetworkBehaviour
             {
                 continue;
             }
-            IAppliablBuffDataSO appliableBuff = buff.Data as IAppliablBuffDataSO;
-            if (appliableBuff != null)
-                appliableBuff.UnApply(new List<int> { character.CharClassID });
 
-            ITriggeredBuff triggeredBuff = buff.Data as ITriggeredBuff;
-            if (triggeredBuff != null)
-            {                
-                triggeredBuff.RemoveListenersForBuff(buff);
-            }
-            buff.AffectedCharacterIDs.Remove(character.CharClassID);
-            character.RemoveAffectingBuff(buff);
-            if(buff.Data.Icon != null)
-                this.RpcRemoveBuffIconFromCharacters(buff.UniqueID, new List<int> { character.CharClassID });
+            this.RemoveBuffFromCharacters(buff, new List<int> { character.CharClassID });
         }
     }
 

@@ -54,6 +54,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 3809699183538865181}
   onCharacterDeath: {fileID: 11400000, guid: 43f4d8935b6153342bb88096ecec867c, type: 2}
   onCharacterDeathServerSide: {fileID: 11400000, guid: d8ea1f8bf83f42f4e920e30a2bed8052, type: 2}
+  onCharacterHitServerSide: {fileID: 11400000, guid: 725c7e032fc1d154b8a55be7d56604c4, type: 2}
   onCharacterResurrect: {fileID: 11400000, guid: ce14ce51e13a37648b544348ae2596f0, type: 2}
   onCharacterLifeChanged: {fileID: 11400000, guid: 9af4cc90318dd6d4eb3f53de4a099d53, type: 2}
   kingColor: {r: 0.85882354, g: 0.7607843, b: 0, a: 1}

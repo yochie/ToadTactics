@@ -2172,6 +2172,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  OnCharacterAttacksServerSide: {fileID: 11400000, guid: c81aaa52127777342b12f2fc7322bb6b, type: 2}
 --- !u!114 &846746701
 MonoBehaviour:
   m_ObjectHideFlags: 0

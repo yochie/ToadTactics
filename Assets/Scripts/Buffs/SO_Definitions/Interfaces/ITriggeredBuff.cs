@@ -1,9 +1,11 @@
 
+using System.Collections.Generic;
+
 public interface ITriggeredBuff : IBuffDataSO
 {
-    void SetupListeners(RuntimeBuff runtimeBuff);
+    void SetupTriggerListeners(RuntimeBuff runtimeBuff);
 
-    void RemoveListenersForBuff(RuntimeBuff runtimeBuff);
+    void RemoveTriggerListenersForBuff(RuntimeBuff runtimeBuff, List<int> removeFromCharacters);
 
     public int MaxTriggers { get; set; }
 }

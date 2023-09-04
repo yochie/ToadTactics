@@ -6,7 +6,7 @@ using Mirror;
 
 [CreateAssetMenu(fileName = "InvulnerableOnDeathBuff", menuName = "Buffs/InvulnerableOnDeathBuff")]
 
-public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntEventListener
+public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff
 {
     [field: SerializeField]
     public string stringID { get; set; }
@@ -28,7 +28,7 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntE
 
     //Should be death event with classID as arg here
     [field: SerializeField]
-    public IntGameEventSO ListensToIntEvent { get; set; }
+    public IntGameEventSO DeathEvent { get; set; }
 
     [field: SerializeField]
     private ScriptableObject AppliesBuff { get; set; }
@@ -81,15 +81,15 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntE
     }
 
     [Server]
-    public void SetupListeners(RuntimeBuff sourceBuff)
+    public void SetupTriggerListeners(RuntimeBuff sourceBuff)
     {
         foreach(int characterID in sourceBuff.AffectedCharacterIDs)
         {
             PlayerCharacter triggeredCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
             
             IntGameEventSOListener listener = triggeredCharacter.gameObject.AddComponent(typeof(IntGameEventSOListener)) as IntGameEventSOListener;
-            triggeredCharacter.AddTriggeredBuffListenerForBuff(sourceBuff, listener);
-            listener.Event = this.ListensToIntEvent;
+            triggeredCharacter.AddListenerForBuff(sourceBuff, listener);
+            listener.Event = this.DeathEvent;
             listener.RegisterManually();
             RuntimeBuffAbility sourceAbilityComponent = sourceBuff.GetComponent<RuntimeBuffAbility>();
             RuntimeBuffTriggerCounter sourceTriggerCounterComponent = sourceBuff.GetComponent<RuntimeBuffTriggerCounter>();
@@ -99,12 +99,12 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff, IIntE
     }
 
     [Server]
-    public void RemoveListenersForBuff(RuntimeBuff runtimeBuff) 
+    public void RemoveTriggerListenersForBuff(RuntimeBuff runtimeBuff, List<int> removeFromCharacters) 
     {
-        foreach (int characterID in runtimeBuff.AffectedCharacterIDs)
+        foreach (int characterID in removeFromCharacters)
         {
             PlayerCharacter triggeredCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
-            triggeredCharacter.RemoveTriggeredBuffListenersForBuff(runtimeBuff);
+            triggeredCharacter.RemoveListenersForBuff(runtimeBuff);
         }
     }
 }
