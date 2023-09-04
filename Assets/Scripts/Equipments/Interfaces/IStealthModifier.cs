@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IStealthModifier : IStatModifier
 {
-    public bool StealthOffset { get; set; }
+    public int StealthLayersOffset { get; set; }
 }

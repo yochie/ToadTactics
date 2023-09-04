@@ -6,7 +6,7 @@ using Mirror;
 
 [CreateAssetMenu(fileName = "StealthBuff", menuName = "Buffs/StealthBuff")]
 
-public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifier, IAppliablBuffDataSO
+public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifier, IMovementModifier, IAppliablBuffDataSO
 {
     [field: SerializeField]
     public string stringID { get; set; }
@@ -36,25 +36,28 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
     public IntIntGameEventSO AttackEvent { get; set; }
 
     [field: SerializeField]
-    public bool StealthOffset { get; set; }
+    public int StealthLayersOffset { get; set; }
+
+    [field: SerializeField]
+    public int MovementOffset { get; set; }
 
     [field: SerializeField]
     public bool NeedsToBeReAppliedEachTurn { get; set; }
 
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
-        return new();
+        return this.GetStatModificationsDictionnary();
     }
 
     public string GetTooltipDescription()
     {
-        return "Untargetable. Lost on damage taken or attack.";
+        return "Untargetable and increased movement. Lost on damage taken or attack.";
     }
 
     [Server]
     public void OnEndEvent(PlayerCharacter triggeredCharacter, RuntimeBuff buff)
     {
-        Debug.Log("Conditional buff end event triggered");
+        //Debug.Log("Conditional buff end event triggered");
 
         BuffManager.Singleton.RemoveConditionalBuffFromCharacter(triggeredCharacter, buff);
     }
@@ -103,17 +106,26 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
 
     public Dictionary<string, string> GetStatModificationsDictionnary()
     {
-        return new Dictionary<string, string> { { "Stealthy", "yes" } };
+        Dictionary<string, string>  stats = new();
+        stats.Add("Stealthy", "yes");
+        stats.Add("Movement", string.Format("+{0}", this.MovementOffset));
+        return stats;
     }
 
     public void ApplyStatModification(PlayerCharacter playerCharacter)
     {
-        playerCharacter.SetStealthy(true);
+        CharacterStats newStats = new CharacterStats(playerCharacter.CurrentStats, 
+            moveSpeed: playerCharacter.CurrentStats.moveSpeed + this.MovementOffset,
+            stealthLayers: playerCharacter.CurrentStats.stealthLayers + this.StealthLayersOffset);
+        playerCharacter.SetCurrentStats(newStats);
     }
 
     public void RemoveStatModification(PlayerCharacter playerCharacter)
     {
-        playerCharacter.SetStealthy(false);
+        CharacterStats newStats = new CharacterStats(playerCharacter.CurrentStats,
+            moveSpeed: playerCharacter.CurrentStats.moveSpeed - this.MovementOffset,
+            stealthLayers: playerCharacter.CurrentStats.stealthLayers - this.StealthLayersOffset);
+        playerCharacter.SetCurrentStats(newStats);
     }
 
     public void Apply(List<int> applyToCharacterIDs, bool isReapplication)

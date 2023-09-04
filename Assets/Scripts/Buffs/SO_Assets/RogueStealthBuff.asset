@@ -21,5 +21,6 @@ MonoBehaviour:
   <InlineConditionDescription>k__BackingField: deals or takes damage
   <HitEvent>k__BackingField: {fileID: 11400000, guid: 725c7e032fc1d154b8a55be7d56604c4, type: 2}
   <AttackEvent>k__BackingField: {fileID: 11400000, guid: c81aaa52127777342b12f2fc7322bb6b, type: 2}
-  <StealthOffset>k__BackingField: 1
+  <StealthLayersOffset>k__BackingField: 1
+  <MovementOffset>k__BackingField: 1
   <NeedsToBeReAppliedEachTurn>k__BackingField: 0

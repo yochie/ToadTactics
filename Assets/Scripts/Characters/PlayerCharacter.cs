@@ -453,12 +453,6 @@ public class PlayerCharacter : NetworkBehaviour
         }
     }
 
-    [Server]
-    internal void SetStealthy(bool state)
-    {
-        this.currentStats = new CharacterStats(this.CurrentStats, isStealthy: state);
-    }
-
     #endregion
 
     #region Events

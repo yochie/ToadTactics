@@ -212,7 +212,7 @@ public class ActionExecutor : NetworkBehaviour
             selfTarget = (actor.CharClassID == targetedCharacter.CharClassID);
             friendlyTarget = (actor.OwnerID == targetedCharacter.OwnerID);
             ennemyTarget = !friendlyTarget;
-            untargetable = targetedCharacter.CurrentStats.isStealthy;
+            untargetable = targetedCharacter.CurrentStats.stealthLayers > 0;
         }
         bool liveTarget = targetedHex.HoldsACharacter();
         bool corpseTarget = targetedHex.HoldsACorpse();
