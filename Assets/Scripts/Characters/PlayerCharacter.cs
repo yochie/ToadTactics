@@ -269,7 +269,8 @@ public class PlayerCharacter : NetworkBehaviour
                 break;
         }
 
-        this.onCharacterHitServerSide.Raise(this.charClassID);
+        if(hit.damageType != DamageType.healing)
+            this.onCharacterHitServerSide.Raise(this.charClassID);
     }
 
     [Server]
