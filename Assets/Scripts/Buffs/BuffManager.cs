@@ -115,11 +115,14 @@ internal class BuffManager : NetworkBehaviour
             {
                 RuntimeBuffTimeout timedBuffComponent = ownedBuff.GetComponent<RuntimeBuffTimeout>();
                 if (timedBuffComponent == null)
-                    continue;                
+                    continue;
                 timedBuffComponent.TurnDurationRemaining--;
                 if (timedBuffComponent.TurnDurationRemaining == 0)
                 {
-                    this.RemoveBuffFromCharacters(ownedBuff, ownedBuff.AffectedCharacterIDs);
+                    //need to copy since otherwise removing affected characters empties list before icons are removed
+                    List<int> copyOfAffectedCharacters = new();
+                    ownedBuff.AffectedCharacterIDs.CopyTo(copyOfAffectedCharacters);
+                    this.RemoveBuffFromCharacters(ownedBuff, copyOfAffectedCharacters);
                 }
             }
 
@@ -144,7 +147,7 @@ internal class BuffManager : NetworkBehaviour
         if(appliedBuff != null)
             appliedBuff.UnApply(removeFromCharacters);
 
-        foreach(int affectedCharacterID in removeFromCharacters)
+        foreach(int affectedCharacterID in removeFromCharacters.ToArray())
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
             affectedCharacter.RemoveAffectingBuff(buff);
