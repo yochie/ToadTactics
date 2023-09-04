@@ -9,6 +9,8 @@ public class IntIntIntGameEventSO : ScriptableObject, IGameEventSO
 
     public void Raise(int intArg1, int intArg2, int intArg3)
     {
+        string message = string.Format("{0} raised", this.name);
+        Debug.Log(message);
         for (int i = eventListeners.Count - 1; i >= 0; i--)
             eventListeners[i].OnEventRaised(intArg1, intArg2, intArg3);
     }
