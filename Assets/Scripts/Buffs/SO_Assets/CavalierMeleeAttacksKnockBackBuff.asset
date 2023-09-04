@@ -20,3 +20,4 @@ MonoBehaviour:
   <Icon>k__BackingField: {fileID: 0}
   <MaxAttackRange>k__BackingField: 1
   <KnockbackDistance>k__BackingField: 1
+  <BonusDamage>k__BackingField: 10

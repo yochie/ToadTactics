@@ -32,17 +32,17 @@ public class AttacksKnockBackBuffSO : ScriptableObject, IBuffDataSO, IAttackEnha
     [field: SerializeField]
     private int KnockbackDistance { get; set; }
 
+    [field: SerializeField]
+    private int BonusDamage { get; set; }
+
     [Server]
     public IAttackAction EnhanceAttack(IAttackAction attackToEnhance)
     {
-
-        if (!attackToEnhance.TargetHex.HoldsACharacter())
-            return attackToEnhance;
-
         //only checking primary target..
         if(MapPathfinder.HexDistance(attackToEnhance.ActorHex, attackToEnhance.TargetHex) <= this.MaxAttackRange)
         {            
             attackToEnhance.Knockback += this.KnockbackDistance;
+            attackToEnhance.Damage += this.BonusDamage;
         }
         return attackToEnhance;
     }
