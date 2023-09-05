@@ -177,9 +177,9 @@ internal class BuffManager : NetworkBehaviour
     }
 
     [Server]
-    internal void RemoveConditionalBuffFromCharacter(PlayerCharacter triggeredCharacter, RuntimeBuff buff)
+    internal void RemoveConditionalBuffFromCharacter(int triggeredCharacterID, RuntimeBuff buff)
     {
-        this.RemoveBuffFromCharacters(buff, new List<int>() { triggeredCharacter.CharClassID });
+        this.RemoveBuffFromCharacters(buff, new List<int>() { triggeredCharacterID });
     }
 
     [Server]

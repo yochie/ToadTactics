@@ -55,11 +55,11 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
     }
 
     [Server]
-    public void OnEndEvent(PlayerCharacter triggeredCharacter, RuntimeBuff buff)
+    public void OnEndEvent(int triggeredCharacterID, RuntimeBuff buff)
     {
         //Debug.Log("Conditional buff end event triggered");
 
-        BuffManager.Singleton.RemoveConditionalBuffFromCharacter(triggeredCharacter, buff);
+        BuffManager.Singleton.RemoveConditionalBuffFromCharacter(triggeredCharacterID, buff);
     }
 
     [Server]
@@ -68,6 +68,7 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
         foreach(int characterID in buff.AffectedCharacterIDs)
         {
             PlayerCharacter listeningCharacter = GameController.Singleton.PlayerCharactersByID[characterID];
+            int listeningCharacterID = listeningCharacter.CharClassID;
 
             //Hit listener
             IntGameEventSOListener hitListener = listeningCharacter.gameObject.AddComponent(typeof(IntGameEventSOListener)) as IntGameEventSOListener;
@@ -76,8 +77,8 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
             hitListener.RegisterManually();
             hitListener.Response.AddListener(
                 (int hitCharacterID) => { 
-                    if(hitCharacterID == listeningCharacter.CharClassID)
-                        this.OnEndEvent(listeningCharacter, buff); 
+                    if(hitCharacterID == listeningCharacterID)
+                        this.OnEndEvent(listeningCharacterID, buff); 
                 });
 
             //Attack listener
@@ -87,8 +88,8 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
             attackListener.RegisterManually();
             attackListener.Response.AddListener(
                 (int attackingCharacter, int defenderCharacter) => {
-                    if (attackingCharacter == listeningCharacter.CharClassID)
-                        this.OnEndEvent(listeningCharacter, buff);
+                    if (attackingCharacter == listeningCharacterID)
+                        this.OnEndEvent(listeningCharacterID, buff);
                 });
         }
     }
