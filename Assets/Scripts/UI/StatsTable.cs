@@ -29,13 +29,13 @@ public class StatsTable : MonoBehaviour
     public void RenderForInactiveCharacterStats(CharacterStats stats, bool isAKing)
     {
         var toPrint = stats.GetPrintableStatsDictionary();
-        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing : isAKing, forActiveCharacter: true);
+        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing : isAKing, forActiveCharacter: false);
     }
 
     public void RenderForActiveCharacterStats(CharacterStats stats, bool isAKing)
     {
         var toPrint = stats.GetPrintableStatsDictionary();
-        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing: isAKing, forActiveCharacter: false);
+        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing: isAKing, forActiveCharacter: true);
     }
 
     internal void RenderFromDictionaryForCharacter(Dictionary<string, string> stats, bool isAKing, bool forActiveCharacter)
