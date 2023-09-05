@@ -57,8 +57,9 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
     [Server]
     public void OnEndEvent(int triggeredCharacterID, RuntimeBuff buff)
     {
-        //Debug.Log("Conditional buff end event triggered");
-
+        string characterName = GameController.Singleton.PlayerCharactersByID[triggeredCharacterID].charClass.name;
+        string message = string.Format("Conditional buff end event triggered on {0} for {1}", characterName, buff.Data.stringID);
+        Debug.Log(message);
         BuffManager.Singleton.RemoveConditionalBuffFromCharacter(triggeredCharacterID, buff);
     }
 
@@ -88,7 +89,7 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
             attackListener.RegisterManually();
             attackListener.Response.AddListener(
                 (int attackingCharacter, int defenderCharacter) => {
-                    if (attackingCharacter == listeningCharacterID)
+                    if(attackingCharacter == listeningCharacterID)
                         this.OnEndEvent(listeningCharacterID, buff);
                 });
         }
