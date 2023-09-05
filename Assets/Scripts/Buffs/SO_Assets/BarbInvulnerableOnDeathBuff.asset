@@ -18,6 +18,6 @@ MonoBehaviour:
   <DurationType>k__BackingField: 3
   <TurnDuration>k__BackingField: 0
   <Icon>k__BackingField: {fileID: 0}
-  <ListensToEvent>k__BackingField: {fileID: 11400000, guid: d8ea1f8bf83f42f4e920e30a2bed8052, type: 2}
+  <DeathEvent>k__BackingField: {fileID: 11400000, guid: d8ea1f8bf83f42f4e920e30a2bed8052, type: 2}
   <AppliesBuff>k__BackingField: {fileID: 11400000, guid: ca42373cbc888fc41b4fc546438c2335, type: 2}
   <MaxTriggers>k__BackingField: 1
