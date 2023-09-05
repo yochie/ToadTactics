@@ -82,7 +82,7 @@ public static class Utility
 
     internal static int CalculateCritDamage(int damage, float critMultiplier)
     {
-        return Convert.ToInt32(damage * critMultiplier);
+        return (int) Math.Round(damage * critMultiplier);
     }
 
     internal static List<T> GetAllEnumValues<T> ()
