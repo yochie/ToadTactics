@@ -69,7 +69,12 @@ public class RatioDamageMitigationBuffSO : ScriptableObject, IBuffDataSO, IMitig
         if (!(this.AppliesToDamageType.Contains(hitToMitigate.damageType)))
             return hitToMitigate;
 
-        return new Hit(hitToMitigate.damage - ((int) Math.Round((hitToMitigate.damage * this.RatioMitigated))), hitToMitigate.damageType, hitToMitigate.penetratesArmor);
+        int mitigatedDamage = hitToMitigate.damage - ((int)Math.Round(hitToMitigate.damage * this.RatioMitigated));
+
+        //make sure damage isnt negative
+        mitigatedDamage = Math.Max(mitigatedDamage, 0);
+
+        return new Hit(mitigatedDamage, hitToMitigate.damageType, hitToMitigate.penetratesArmor);
     }
 
     public int CompareTo(IMitigationEnhancer other)

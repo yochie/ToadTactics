@@ -256,8 +256,12 @@ public class PlayerCharacter : NetworkBehaviour
         switch (hit.damageType)
         {
             case DamageType.physical:
-                if(!hit.penetratesArmor)
-                    this.TakeRawDamage(hit.damage - this.CurrentStats.armor);
+                if (!hit.penetratesArmor)
+                {
+                    int mitigatedDamage = Math.Max(hit.damage - this.CurrentStats.armor, 0);
+                    this.TakeRawDamage(mitigatedDamage);
+                }
+                    
                 else
                     this.TakeRawDamage(hit.damage);
                 break;
