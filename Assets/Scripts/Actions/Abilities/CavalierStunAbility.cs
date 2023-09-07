@@ -23,8 +23,8 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IActivatedBu
     public List<TargetType> AllowedTargetTypes { get; set; }
     public bool RequiresLOS { get; set; }
     public int Range { get; set; }
-    
-    //IBuffSource
+
+    //ITargetedAction
     public IBuffDataSO AppliesBuffOnActivation { get => BuffDataSO.Singleton.GetBuffData("CavalierStunBuff"); }
 
     //IAreaTargeter

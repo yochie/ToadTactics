@@ -17,8 +17,9 @@ struct AbilityPrintData
     public readonly Dictionary<string, string> abilityStatsDictionary;
 
     //buff stats table
-    public readonly Dictionary<string, string> buffStatsDictionary;
+    public readonly string appliedBuffName;
     public readonly string buffOrDebuff;
+    public readonly Dictionary<string, string> buffStatsDictionary;    
 
     public AbilityPrintData (string name,
                             string description,
@@ -27,8 +28,8 @@ struct AbilityPrintData
                             string passiveOrActive = "",
                             string buffOrDebuff = "",
                             Dictionary<string, string> statsDictionary  = null,
-                            Dictionary<string, string> buffsDictionary = null
-                            )
+                            Dictionary<string, string> buffsDictionary = null,
+                            string appliedBuffName = null)
     {
         this.name = name;
         this.description = description;
@@ -38,6 +39,7 @@ struct AbilityPrintData
         this.buffOrDebuff = buffOrDebuff;
         this.abilityStatsDictionary = statsDictionary;
         this.buffStatsDictionary = buffsDictionary;
+        this.appliedBuffName = appliedBuffName;
 
     }
 }

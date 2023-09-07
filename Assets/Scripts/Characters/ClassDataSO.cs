@@ -171,7 +171,8 @@ public class ClassDataSO : ScriptableObject
                     interfaceName: "Undying Rage",
                     description: "First death sets to 1 life instead and makes invulnerable until next turn.",
                     isPassive: true,
-                    appliesBuffIDOnRoundStart: "BarbInvulnerableOnDeathBuff"
+                    appliesBuffIDOnRoundStart: "BarbInvulnerableOnDeathBuff",
+                    passiveCanCauseBuff: "InvulnerabilityRatioDamageMitigationBuff"
                 )
             }
         );
@@ -237,6 +238,7 @@ public class ClassDataSO : ScriptableObject
                 attackAreaType: AreaType.pierce,
                 attacksRequireLOS: false,
                 hasFaith: false),
+            attackActionID: "ArcherAttackAction",
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "ArcherSnipe",
@@ -257,7 +259,8 @@ public class ClassDataSO : ScriptableObject
                     stringID: "ArcherPierce",
                     interfaceName: "Pierce",
                     description: "Attacks pierce all targets.",
-                    isPassive: true
+                    isPassive: true,
+                    passiveGrantsAltAttack: "ArcherAttackAction"
                 )
             }
             );
@@ -327,6 +330,7 @@ public class ClassDataSO : ScriptableObject
                 range: 1,
                 damageIterations: 1,
                 hasFaith: false),
+            attackActionID: "WarriorAttackAction",
             abilities: new List<CharacterAbilityStats> {
                 new (
                     stringID: "WarriorRoot",
@@ -344,7 +348,8 @@ public class ClassDataSO : ScriptableObject
                     stringID: "WarriorCleave",
                     interfaceName: "Cleave",
                     description: "Attacks slash in an arc pattern.",
-                    isPassive: true
+                    isPassive: true,
+                    passiveGrantsAltAttack: "WarriorAttackAction"
                 )
             }
             );
@@ -384,8 +389,9 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "PaladinCrusader",
                     interfaceName: "Crusader",
-                    description: "Grants bonus damage against faithless characters (berserker, rogue, warrior, wizard, archer, cavalier).",
-                    isPassive: true
+                    description: "Grants bonus damage against faithless characters (barbarian, rogue, warrior, wizard, archer, cavalier).",
+                    isPassive: true,
+                    passiveGrantsAltAttack: "PaladinAttackAction"
                 )
             }
             );
@@ -430,7 +436,8 @@ public class ClassDataSO : ScriptableObject
                     stringID: "DruidTreePlanter",
                     interfaceName: "Tree planter",
                     description: "Leaves trees behind when moving.",
-                    isPassive: true
+                    isPassive: true,
+                    passiveGrantsAltMove: "DruidMoveAction"
                 )
 
             }
@@ -468,16 +475,18 @@ public class ClassDataSO : ScriptableObject
                     cappedByCooldown: true,
                     range: 3,
                     requiresLOS: true,
-                    damage: 10, //this is for self damage, debuff damage defined in buff effect class
+                    areaType: AreaType.single,
+                    damage: 10,
                     damageIterations: 1,
-                    damageType: DamageType.magic,
-                    areaType: AreaType.single
+                    damageType: DamageType.magic
+
                 ),
                 new (
                     stringID: "NecroMultiAttack",
                     interfaceName: "Blood for blood",
                     description: "Can attack multiple times per turn but each attack costs life.",
-                    isPassive: true
+                    isPassive: true,
+                    passiveGrantsAltAttack: "NecroAttackAction"
                 )
             }
             );
@@ -606,6 +615,8 @@ public class ClassDataSO : ScriptableObject
         attackActionsByID.Add("DefaultAttackAction", typeof(DefaultAttackAction));
         attackActionsByID.Add("NecroAttackAction", typeof(NecroAttackAction));
         attackActionsByID.Add("PaladinAttackAction", typeof(PaladinAttackAction));
+        attackActionsByID.Add("WarriorAttackAction", typeof(WarriorAttackAction));
+        attackActionsByID.Add("ArcherAttackAction", typeof(ArcherAttackAction));
         return attackActionsByID;
     }
     #endregion

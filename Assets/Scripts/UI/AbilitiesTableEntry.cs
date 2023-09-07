@@ -80,7 +80,7 @@ public class AbilitiesTableEntry : MonoBehaviour
         {
             this.tooltipBuffStats.gameObject.SetActive(true);
             this.buffSectionTitle.gameObject.SetActive(true);
-            this.buffSectionTitle.text = string.Format("{0} stats",abilityPrintData.buffOrDebuff);
+            this.buffSectionTitle.text = string.Format("{1} {0}",abilityPrintData.buffOrDebuff, abilityPrintData.appliedBuffName);
             this.tooltipBuffStats.RenderFromDictionary(abilityPrintData.buffStatsDictionary);
         }
     }

@@ -49,13 +49,14 @@ public class AttacksKnockBackBuffSO : ScriptableObject, IBuffDataSO, IAttackEnha
 
     public string GetTooltipDescription()
     {
-        return string.Format("+{0} knockback at {1} range", this.KnockbackDistance, this.MaxAttackRange);
+        return string.Format("{0} knockback at {1} range", this.KnockbackDistance, this.MaxAttackRange);
     }
 
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
         Dictionary<string, string> statsDictionary = new();
-        statsDictionary.Add("Knockback", string.Format("+{0}", this.KnockbackDistance));
+        statsDictionary.Add("Knockback", string.Format("{0}", this.KnockbackDistance));
+        statsDictionary.Add("Damage", string.Format("+{0}", this.BonusDamage));
         statsDictionary.Add("At range", string.Format("{0}", this.MaxAttackRange));
         return statsDictionary;
     }

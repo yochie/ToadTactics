@@ -1,9 +1,17 @@
 ﻿using Mirror;
+using System.Collections.Generic;
 
-internal class PaladinAttackAction : DefaultAttackAction
+internal class PaladinAttackAction : DefaultAttackAction, IPrintableStats
 {
-    const int PALADIN_FAITHLESS_BONUS_DAMAGE = 20;
-    const DamageType PALADIN_FAITHLESS_BONUS_DAMAGE_TYPE = DamageType.magic;    
+    static readonly int PALADIN_FAITHLESS_BONUS_DAMAGE = 20;
+    static readonly DamageType PALADIN_FAITHLESS_BONUS_DAMAGE_TYPE = DamageType.magic;
+    
+    public Dictionary<string, string> GetStatsDictionary()
+    {
+        var toReturn = new Dictionary<string, string>();
+        toReturn.Add("Bonus damage vs faithless", Utility.DamageStatsToString(PALADIN_FAITHLESS_BONUS_DAMAGE, 1, PALADIN_FAITHLESS_BONUS_DAMAGE_TYPE));
+        return toReturn;
+    }
 
     [Server]
     public override void ServerUse(INetworkedLogger logger)

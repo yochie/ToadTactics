@@ -1,9 +1,22 @@
 ﻿using Mirror;
+using System.Collections.Generic;
 
-internal class NecroAttackAction : DefaultAttackAction
+internal class NecroAttackAction : DefaultAttackAction, IPrintableStats
 {
     const int NECRO_SELF_DAMAGE = 10;
     const DamageType NECRO_SELF_DAMAGE_TYPE = DamageType.magic;
+
+    //Need this to grab attacks per turn
+    //very ugly but hopefully can be removed once abilities are setup as SO that can define their own printouts
+    const int NECRO_CLASS_ID = 7;
+
+    public Dictionary<string, string> GetStatsDictionary()
+    {
+        Dictionary<string, string> toReturn = new();
+        toReturn.Add("Self damage", Utility.DamageStatsToString(NECRO_SELF_DAMAGE, 1, NECRO_SELF_DAMAGE_TYPE));
+        toReturn.Add("Attacks/turn", ClassDataSO.Singleton.GetClassByID(NECRO_CLASS_ID).stats.attacksPerTurn.ToString());
+        return toReturn;
+    }
 
     [Server]
     public override void ServerUse(INetworkedLogger logger)

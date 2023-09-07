@@ -61,6 +61,8 @@ public class RatioDamageMitigationBuffSO : ScriptableObject, IBuffDataSO, IMitig
         Dictionary<string, string> statsDictionary = new();
         statsDictionary.Add("Mitigates", string.Format("{0}%", this.RatioMitigated*100));
         statsDictionary.Add("Damage type", string.Format("{0}", damageTypeString));
+        if(this.DurationType != DurationType.eternal)
+            statsDictionary.Add("Duration",IBuffDataSO.GetDurationDescritpion(this));
         return statsDictionary;
     }
 

@@ -53,7 +53,8 @@ public class KingDamageBuffSO : ScriptableObject, IBuffDataSO, IAttackEnhancer
     {
         Dictionary<string, string> statsDictionary = new();
         statsDictionary.Add("King damage", string.Format("+{0}", this.KingDamageBonus));
-        statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
+        if(this.DurationType != DurationType.eternal)
+            statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
         return statsDictionary;
     }
 }

@@ -28,6 +28,10 @@ public readonly struct CharacterAbilityStats
     public readonly bool cappedByCooldown;
     public readonly int knockback;
     public readonly string appliesSelfBuffOnRoundStart;
+    public readonly string passiveGrantsAltAttack;
+    public readonly string passiveGrantsAltMove;
+    public readonly string passiveCanCauseBuff;
+
 
     //-1 to crit chance or crit multi means use attacker stats if canCrit
     public CharacterAbilityStats(string stringID,
@@ -50,8 +54,11 @@ public readonly struct CharacterAbilityStats
                             bool cappedPerRound = false,
                             bool cappedByCooldown = false,
                             int knocksBack = 0,
-                            AreaType areaType = default, 
-                            string appliesBuffIDOnRoundStart = null)
+                            AreaType areaType = default,
+                            string appliesBuffIDOnRoundStart = null,
+                            string passiveGrantsAltAttack = null, 
+                            string passiveGrantsAltMove = null, 
+                            string passiveCanCauseBuff = null)
     {
         this.stringID = stringID;
         this.interfaceName = interfaceName;
@@ -65,7 +72,7 @@ public readonly struct CharacterAbilityStats
 
         if (allowedAbilityTargets == null)
         {
-            this.allowedAbilityTargets = new() { TargetType.ennemy_chars, TargetType.obstacle};
+            this.allowedAbilityTargets = new() { TargetType.ennemy_chars, TargetType.obstacle };
         }
         else
         {
@@ -84,16 +91,15 @@ public readonly struct CharacterAbilityStats
         this.knockback = knocksBack;
         this.areaType = areaType;
         this.appliesSelfBuffOnRoundStart = appliesBuffIDOnRoundStart;
+        this.passiveGrantsAltAttack = passiveGrantsAltAttack;
+        this.passiveGrantsAltMove = passiveGrantsAltMove;
+        this.passiveCanCauseBuff = passiveCanCauseBuff;
     }
 
-    public IBuffDataSO GetAppliedBuf()
+    public IBuffDataSO GetActivatedBuff()
     {
         IBuffDataSO buff = null;
-        if (this.isPassive && this.appliesSelfBuffOnRoundStart != null)
-        {
-            buff = BuffDataSO.Singleton.GetBuffData(this.appliesSelfBuffOnRoundStart);
-        }
-        else if (!this.isPassive)
+        if (!this.isPassive)
         {
             Type abilityType = ClassDataSO.Singleton.GetAbilityActionTypeByID(this.stringID);
 
@@ -104,8 +110,21 @@ public readonly struct CharacterAbilityStats
             {
                 buff = buffingAction.AppliesBuffOnActivation;
             }
+        } else if (passiveCanCauseBuff != null)
+        {
+            buff = BuffDataSO.Singleton.GetBuffData(this.passiveCanCauseBuff);
         }
 
+        return buff;
+    }
+
+    public IBuffDataSO GetPassiveBuff()
+    {
+        IBuffDataSO buff = null;
+        if (this.isPassive && this.appliesSelfBuffOnRoundStart != null)
+        {
+            buff = BuffDataSO.Singleton.GetBuffData(this.appliesSelfBuffOnRoundStart);
+        }
         return buff;
     }
 }

@@ -16,10 +16,13 @@
                 areaString = string.Format("line to target");
                 break;
             case AreaType.radial:
-                areaString = string.Format("{0} tile radius", areaScaler);
+                if (areaScaler >= Utility.MAX_DISTANCE_ON_MAP / 2)
+                    areaString = "whole board";
+                else
+                    areaString = string.Format("{0} tile radius", areaScaler);
                 break;
             case AreaType.single:
-                areaString = string.Format("single target");
+                areaString = string.Format("single tile");
                 break;
             case AreaType.none:
                 areaString = string.Format("");

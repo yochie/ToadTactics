@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Linq;
 
 public class AbilitiesTable : MonoBehaviour
 {
@@ -61,38 +62,87 @@ public class AbilitiesTable : MonoBehaviour
                 }
             }
             
-            Dictionary<string, string> abilityStatsDictionary = this.GenerateAbilityStatsDictionary(ability);
-            
-            Dictionary<string, string> buffStatsDictionary = this.GenerateBuffStatsDictionary(ability);
+            Dictionary<string, string> mainStatsDictionary = this.GenerateAbilityMainStatsDictionary(ability);
+            Dictionary<string, string> passiveStatsDictionary = this.GeneratePassiveStatsDictionary(ability);
+            //merge passive stats to main stats
+            //will throw error if common keys, so make sure you define printables with unique fiels keys
+            //would be confusing to read otherwise
+            passiveStatsDictionary.ToList().ForEach(entry => mainStatsDictionary.Add(entry.Key, entry.Value));
 
-            IBuffDataSO buff = ability.GetAppliedBuf();
+            Dictionary<string, string> buffStatsDictionary = this.GenerateAppliedBuffStatsDictionary(ability);
+
+
+            IBuffDataSO buff = ability.GetActivatedBuff();
             string buffOrDebuff = "";
+            string appliedBuffName = "";
             if (buff != null)
+            {
                 buffOrDebuff = buff.IsPositive ? "Buff" : "Debuff";
-
+                appliedBuffName = buff.UIName;
+            }
+           
             toPrint.Add(new AbilityPrintData(name: name,
                                              description: description,
                                              passiveOrActive: passiveOrActive,
                                              currentCooldown: currentCooldownString,                                           
                                              currentRemainingUses: remainingUsesString,
                                              buffOrDebuff: buffOrDebuff,
-                                             statsDictionary: abilityStatsDictionary,
+                                             statsDictionary: mainStatsDictionary,
+                                             appliedBuffName: appliedBuffName,
                                              buffsDictionary: buffStatsDictionary));
         }
 
         return toPrint;
     }
 
-    private Dictionary<string, string> GenerateBuffStatsDictionary(CharacterAbilityStats ability)
+    //for passives, we want to include either self buff stats or alt attack/move stats to main tooltip
+    //we dont actually want the difference to be displayed as its irrelevant to user
+    private Dictionary<string, string> GeneratePassiveStatsDictionary(CharacterAbilityStats ability)
+    {
+        Dictionary<string, string> toReturn = new();
+
+        if (!ability.isPassive)
+            return toReturn;
+
+        if (ability.appliesSelfBuffOnRoundStart != null)
+        {
+            var buffStats = ability.GetPassiveBuff().GetBuffStatsDictionary();
+            buffStats.ToList().ForEach(entry => toReturn.Add(entry.Key, entry.Value));
+        } 
+        
+        if (ability.passiveGrantsAltAttack != null)
+        {
+            Type actionType = ClassDataSO.Singleton.GetAttackActionTypeByID(ability.passiveGrantsAltAttack);
+            IPrintableStats printableAttack = Activator.CreateInstance(actionType) as IPrintableStats;
+            if (printableAttack == null)
+                throw new Exception("alt attack doesn't implement IPrintable. This is required for tooltips.");
+            var attackStats = printableAttack.GetStatsDictionary();
+            attackStats.ToList().ForEach(entry => toReturn.Add(entry.Key, entry.Value));
+        }
+
+        if (ability.passiveGrantsAltMove != null)
+        {
+            Type actionType = ClassDataSO.Singleton.GetMoveActionTypeByID(ability.passiveGrantsAltMove);
+            IPrintableStats printableMove = Activator.CreateInstance(actionType) as IPrintableStats;
+            if (printableMove == null)
+                throw new Exception("alt move doesn't implement IPrintable. This is required for tooltips.");
+            var moveStats = printableMove.GetStatsDictionary();
+            moveStats.ToList().ForEach(entry => toReturn.Add(entry.Key, entry.Value));
+        }
+
+        return toReturn;
+    }
+
+    private Dictionary<string, string> GenerateAppliedBuffStatsDictionary(CharacterAbilityStats ability)
     {
         Dictionary<string, string> buffStatsDictionary = new();
-        IBuffDataSO buff = ability.GetAppliedBuf();
+        IBuffDataSO buff = ability.GetActivatedBuff();
         if(buff != null)
             buffStatsDictionary = buff.GetBuffStatsDictionary();
         return buffStatsDictionary;
     }
 
-    private Dictionary<string, string> GenerateAbilityStatsDictionary(CharacterAbilityStats ability)
+    private Dictionary<string, string> GenerateAbilityMainStatsDictionary(CharacterAbilityStats ability)
     {
         Dictionary<string, string> abilityStatsDictionary = new();
         string damageOneLiner = Utility.DamageStatsToString(ability.damage, ability.damageIterations, ability.damageType);
@@ -111,13 +161,13 @@ public class AbilitiesTable : MonoBehaviour
         if (areaOneLiner != "")
             abilityStatsDictionary.Add("Target", areaOneLiner);
 
-        string usesPerRound = ability.usesPerRound == -1 ? "" : string.Format("{0} per round", ability.usesPerRound);
+        string usesPerRound = ability.usesPerRound == -1 ? "" : string.Format("{0}/round", ability.usesPerRound);
         if (usesPerRound != "")
             abilityStatsDictionary.Add("Uses", usesPerRound);
 
         string cooldownDuration = ability.cooldownDuration == -1 ? "" : ability.cooldownDuration.ToString();
         if (cooldownDuration != "")
-            abilityStatsDictionary.Add("Cooldown", cooldownDuration);
+            abilityStatsDictionary.Add("Cooldown", string.Format("{0} turns",cooldownDuration));
 
         return abilityStatsDictionary;
     }

@@ -38,7 +38,10 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff
 
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
-        return new();
+        var toReturn = new Dictionary<string, string>();
+        toReturn.Add("Trigger", string.Format("death"));
+        toReturn.Add("# triggers", string.Format("{0}/round",this.MaxTriggers.ToString()));
+        return toReturn;
     }
 
     public string GetTooltipDescription()

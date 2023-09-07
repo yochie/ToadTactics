@@ -109,7 +109,6 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
     public Dictionary<string, string> GetStatModificationsDictionnary()
     {
         Dictionary<string, string>  stats = new();
-        stats.Add("Stealthy", "yes");
         stats.Add("Movement", string.Format("+{0}", this.MovementOffset));
         return stats;
     }

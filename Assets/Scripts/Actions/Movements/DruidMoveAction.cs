@@ -2,8 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DruidMoveAction : DefaultMoveAction
+public class DruidMoveAction : DefaultMoveAction, IPrintableStats
 {
+    private static readonly ObstacleType SPAWNED_OBSTACLE_TYPE = ObstacleType.tree;
+
+    public Dictionary<string, string> GetStatsDictionary()
+    {
+        return new() { { "Spawned obstacle", string.Format("{0}", SPAWNED_OBSTACLE_TYPE) } };
+    }
+
     public override void ServerUse(INetworkedLogger logger)
     {
         base.ServerUse(logger);
@@ -16,7 +23,7 @@ public class DruidMoveAction : DefaultMoveAction
                 return;
             if (hexWalkedOn.IsEmpty())
             {
-                Map.Singleton.obstacleManager.SpawnObstacleOnMap(Map.Singleton.hexGrid, hexWalkedOn.coordinates.OffsetCoordinatesAsVector(), ObstacleType.tree);
+                Map.Singleton.obstacleManager.SpawnObstacleOnMap(Map.Singleton.hexGrid, hexWalkedOn.coordinates.OffsetCoordinatesAsVector(), SPAWNED_OBSTACLE_TYPE);
             }
         }
     }
