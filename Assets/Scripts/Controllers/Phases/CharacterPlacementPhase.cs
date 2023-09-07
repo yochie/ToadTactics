@@ -70,7 +70,16 @@ public class CharacterPlacementPhase : IGamePhase
             bool itsHisTurn = GameController.Singleton.ItsThisCharactersTurn(character.CharClassID);
             int maxHealth = character.CurrentStats.maxHealth;
             Dictionary<int, string> characterBuffDataIDs = character.GetAffectingBuffDataIDs();
-            TurnOrderSlotInitData slotData = new(character.CharClassID, isAKing, itsHisTurn, maxHealth, characterBuffDataIDs);
+            Dictionary<int, int> buffDurationsByUniqueID = new();
+            foreach (RuntimeBuff buff in character.affectedByBuffs)
+            {
+                RuntimeBuffTimeout timerComponent = buff.GetComponent<RuntimeBuffTimeout>();
+                int remainingDuration = -1;
+                if (timerComponent != null)
+                    remainingDuration = timerComponent.TurnDurationRemaining;
+                buffDurationsByUniqueID.Add(buff.UniqueID, remainingDuration);
+            }
+            TurnOrderSlotInitData slotData = new(character.CharClassID, isAKing, itsHisTurn, maxHealth, characterBuffDataIDs, buffDurationsByUniqueID);
             slotDataList.Add(slotData);
         }
 

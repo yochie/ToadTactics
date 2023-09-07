@@ -13,8 +13,9 @@ public readonly struct TurnOrderSlotInitData
     //Implementing serialization manually could be a more reliable solution but I think its essentially equivalent...    
     public readonly List<int> orderedBuffIDs;
     public readonly List<string> orderedBuffDataIDs;
+    public readonly List<int> orderedBuffDurations;
 
-    public TurnOrderSlotInitData(int classID, bool isAKing, bool itsHisTurn, int maxHealth, Dictionary<int, string> buffDataIDByUniqueID)
+    public TurnOrderSlotInitData(int classID, bool isAKing, bool itsHisTurn, int maxHealth, Dictionary<int, string> buffDataIDByUniqueID, Dictionary<int, int> buffDurationByUniqueID)
     {
         this.classID = classID;
         this.isAKing = isAKing;
@@ -22,6 +23,11 @@ public readonly struct TurnOrderSlotInitData
         this.maxHealth = maxHealth;
         this.orderedBuffIDs = buffDataIDByUniqueID.Keys.ToList();
         this.orderedBuffDataIDs = buffDataIDByUniqueID.Values.ToList();
+        this.orderedBuffDurations = new();
+        foreach(int orderedBuffID in orderedBuffIDs)
+        {
+            this.orderedBuffDurations.Add(buffDurationByUniqueID[orderedBuffID]);
+        }
     }
 }
 

@@ -96,7 +96,7 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
         this.onCharacterSheetDisplayed.Raise(this.HoldsCharacterWithClassID);
     }
 
-    public void AddBuffIcon(int buffID, string buffDataID)
+    public void AddBuffIcon(int buffUniqueID, string buffDataID, int remainingDuration)
     {
         this.buffList.SetActive(true);        
         GameObject buffIcon = Instantiate(this.blankImagePrefab, this.buffList.transform);
@@ -104,10 +104,31 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
         buffIcon.GetComponent<Image>().sprite = buffData.Icon;
         TooltipContent tooltip = buffIcon.GetComponentInChildren<TooltipContent>(includeInactive: true);        
         tooltip.SetTitle(buffData.UIName);
-        tooltip.FillWithDictionary(buffData.GetBuffStatsDictionary());
+        Dictionary<string, string> statsDict = buffData.GetBuffStatsDictionary();
+        if (remainingDuration != -1)
+            statsDict.Add("Remaining", string.Format("{0} turns",remainingDuration));
+        tooltip.FillWithDictionary(statsDict);
         if (this.displayedBuffs == null)
             this.displayedBuffs = new();
-        this.displayedBuffs.Add(buffID, buffIcon);
+        this.displayedBuffs.Add(buffUniqueID, buffIcon);
+    }
+
+    public void UpdateBuffIconDuration(int buffUniqueID, string buffDataID, int remainingDuration)
+    {
+        if (remainingDuration == -1)
+            return;
+
+        if (!this.displayedBuffs.ContainsKey(buffUniqueID))
+            return;
+
+        GameObject buffIcon = this.displayedBuffs[buffUniqueID];
+        //for sake of prefab simplicity, just regenerate whole tooltip from data instead of only changing duration...
+        IBuffDataSO buffData = BuffDataSO.Singleton.GetBuffData(buffDataID);
+        TooltipContent tooltip = buffIcon.GetComponentInChildren<TooltipContent>(includeInactive: true);
+        Dictionary<string, string> statsDict = buffData.GetBuffStatsDictionary();
+        if (remainingDuration != -1)
+            statsDict.Add("Remaining", string.Format("{0} turns", remainingDuration));
+        tooltip.FillWithDictionary(statsDict);
     }
 
     public void RemoveBuffIcon(int buffID)
