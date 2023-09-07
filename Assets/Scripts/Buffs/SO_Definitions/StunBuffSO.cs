@@ -30,7 +30,7 @@ public class StunBuffSO : ScriptableObject, IAppliablBuffDataSO
     {
         string durationString = IBuffDataSO.GetDurationDescritpion(this);
 
-        return string.Format("Afflicted character cannot take any actions during his turn. {0}", durationString);
+        return string.Format("Causes character to skip his turn.");
     }
 
     public void Apply(List<int> applyToCharacterIDs, bool isReapplication = false)

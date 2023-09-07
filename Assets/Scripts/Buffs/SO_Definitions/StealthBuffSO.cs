@@ -51,7 +51,7 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
 
     public string GetTooltipDescription()
     {
-        return "Untargetable and increased movement. Lost on damage taken or attack.";
+        return "Makes character untargetable and grants increased movement.\nLost on damage taken or attack.";
     }
 
     [Server]

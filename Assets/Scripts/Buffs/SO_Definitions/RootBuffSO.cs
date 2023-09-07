@@ -49,7 +49,7 @@ public class RootBuffSO : ScriptableObject, IAppliablBuffDataSO
     }
     public string GetTooltipDescription()
     {
-        return string.Format("Afflicted character cannot take move or use movement abilities.");
+        return string.Format("Prevents movement and use of movement abilities.");
     }
 
     public Dictionary<string, string> GetBuffStatsDictionary()

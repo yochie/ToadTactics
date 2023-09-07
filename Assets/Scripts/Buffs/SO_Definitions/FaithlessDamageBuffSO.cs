@@ -50,7 +50,7 @@ public class FaithlessDamageBuffSO : ScriptableObject, IBuffDataSO, IAttackEnhan
 
     public string GetTooltipDescription()
     {
-        return string.Format("+{0} damage to faithless characters.", this.FaithlessDamageBonus);
+        return string.Format("Grants bonus damage against faithless characters.");
     }
     public Dictionary<string, string> GetBuffStatsDictionary()
     {

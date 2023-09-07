@@ -46,7 +46,7 @@ public class InvulnerableOnDeathBuffSO : ScriptableObject, ITriggeredBuff
 
     public string GetTooltipDescription()
     {
-        return "On death, will become invulnerable until next turn.";
+        return "On death, will grant temporary invulnerability instead.";
     }
 
     [Server]

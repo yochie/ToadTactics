@@ -101,7 +101,7 @@ public class DefensiveStatBuffSO : ScriptableObject, IAppliablBuffDataSO, IHealt
 
     public string GetTooltipDescription()
     {
-        return IBuffDataSO.GetDurationDescritpion(this);
+        return "Grants defensive buff to whole team.";
     }
 
     public Dictionary<string, string> GetStatModificationsDictionnary()

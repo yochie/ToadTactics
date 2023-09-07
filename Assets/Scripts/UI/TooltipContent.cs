@@ -9,11 +9,21 @@ public class TooltipContent : MonoBehaviour
     private TextMeshProUGUI title;
 
     [SerializeField]
+    private TextMeshProUGUI description;
+
+    [SerializeField]
     private StatsTable statsTable;
+
 
     public void SetTitle(string text)
     {
         this.title.text = text;
+    }
+
+    public void SetDescription(string text)
+    {
+        this.description.gameObject.SetActive(true);
+        this.description.text = text;
     }
 
     public void FillWithDictionary(Dictionary<string, string> fillWith)

@@ -70,7 +70,7 @@ public class DOTBuffSO : ScriptableObject, IAppliablBuffDataSO
         
         string durationString = IBuffDataSO.GetDurationDescritpion(this);
         
-        return string.Format("Afflicted character takes {0} {1} damage at the end of their turn. {2}", this.DOTDamage, this.DOTDamageType, durationString);
+        return string.Format("Deals damage at the end of each turn.");
     }
     public Dictionary<string, string> GetBuffStatsDictionary()
     {

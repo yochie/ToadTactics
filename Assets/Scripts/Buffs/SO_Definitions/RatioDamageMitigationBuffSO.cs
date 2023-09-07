@@ -39,7 +39,7 @@ public class RatioDamageMitigationBuffSO : ScriptableObject, IBuffDataSO, IMitig
 
     public string GetTooltipDescription()
     {
-        return "Reduces damage taken by some %.";
+        return "Reduces damage taken.";
     }
 
     public Dictionary<string, string> GetBuffStatsDictionary()

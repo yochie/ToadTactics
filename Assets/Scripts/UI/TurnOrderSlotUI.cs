@@ -104,6 +104,7 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
         buffIcon.GetComponent<Image>().sprite = buffData.Icon;
         TooltipContent tooltip = buffIcon.GetComponentInChildren<TooltipContent>(includeInactive: true);        
         tooltip.SetTitle(buffData.UIName);
+        tooltip.SetDescription(buffData.GetTooltipDescription());
         Dictionary<string, string> statsDict = buffData.GetBuffStatsDictionary();
         if (remainingDuration != -1)
             statsDict.Add("Remaining", string.Format("{0} turns",remainingDuration));
