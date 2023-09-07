@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f579e4323bf9e1a47922db4b0715efe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nameLabelPrefab: {fileID: 3982768867530893486, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
+  nameLabelPrefab: {fileID: 6552452772968980882, guid: fc63eb49e3ff4094482296a60a701753, type: 3}
   descriptionLabelPrefab: {fileID: 3982768867530893486, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
   cooldownIndicatorPrefab: {fileID: 4862818225539058355, guid: 85bf70f24bc46194aaa7231f2f82b403, type: 3}
   nameColumn: {fileID: 8377820449604545105}
@@ -289,8 +289,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -298,7 +298,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 0.6
 --- !u!114 &7597600764397316352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,6 +312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipObject: {fileID: 7609598952883595832}
+  highlight: {fileID: 2481409119352138278}
 --- !u!1001 &3344253531660628846
 PrefabInstance:
   m_ObjectHideFlags: 0

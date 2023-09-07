@@ -10,13 +10,20 @@ public class TooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [SerializeField]
     private GameObject tooltipObject;
 
+    [SerializeField]
+    private Image highlight;
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         this.tooltipObject.SetActive(true);
+        if (highlight != null)
+            highlight.color = Utility.SetAlpha(highlight.color, 0.2f);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         this.tooltipObject.SetActive(false);
+        if (highlight != null)
+            highlight.color = Utility.SetAlpha(highlight.color, 0f);
     }
 }
