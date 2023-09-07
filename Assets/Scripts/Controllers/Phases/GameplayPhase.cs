@@ -87,8 +87,12 @@ public class GameplayPhase : IGamePhase
             return;
         }
 
-        //update life because it might have been changed by buffs of standing in hazards
-        lastTurnCharacter.RpcOnCharacterLifeChanged(lastTurnCharacter.CurrentLife, lastTurnCharacter.CurrentStats.maxHealth);
+        //update life on all chars because it might have been changed by buffs or hazards
+        //execution order of RPCs is undetermined but should not matter since they are independent from eachother
+        foreach(PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
+        {
+            character.RpcOnCharacterLifeChanged(character.CurrentLife, character.CurrentStats.maxHealth);
+        }
     }
 
     private void ApplyHazardDamageForTurnEnd(PlayerCharacter lastTurnCharacter)
