@@ -554,7 +554,7 @@ public class ClassDataSO : ScriptableObject
                 initiative: 10,
                 range: 3,
                 damageIterations: 1,
-                allowedAttackTargets: new List<TargetType> { TargetType.other_friendly_chars, TargetType.self },
+                allowedAttackTargets: new List<TargetType> { TargetType.other_friendly_chars, TargetType.self, TargetType.ennemy_chars },
                 hasFaith: true,
                 attackAreaType: AreaType.single),
             abilities: new List<CharacterAbilityStats> {
@@ -575,6 +575,14 @@ public class ClassDataSO : ScriptableObject
                     description: "Heals nearby allies at end of his turn.",
                     isPassive: true,
                     appliesBuffIDOnRoundStart: "PriestPassiveAuraDOTBuff",
+                    areaType: AreaType.none
+                ),
+                new (
+                    stringID: "PriestAdaptiveHealingAttacks",
+                    interfaceName: "Adaptive attacks",
+                    description: "Attacks heal allies but damage enemies.",
+                    isPassive: true,
+                    appliesBuffIDOnRoundStart: "PriestAdaptiveHealingAttacksBuff",
                     areaType: AreaType.none
                 )
             }

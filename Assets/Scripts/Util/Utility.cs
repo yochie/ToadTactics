@@ -30,6 +30,14 @@ public static class Utility
         if (damage == -1)
             return "";
 
+        string formattedDamageType = Utility.FormattedDamageType(damageType);
+
+        return String.Format("{0} x {1} ({2})", damage, damageIterations, formattedDamageType);
+
+    }
+
+    internal static string FormattedDamageType(DamageType damageType)
+    {
         string formattedDamageType;
         switch (damageType)
         {
@@ -46,8 +54,8 @@ public static class Utility
                 formattedDamageType = damageType.ToString();
                 break;
         }
-        return String.Format("{0} x {1} ({2})", damage, damageIterations, formattedDamageType);
 
+        return formattedDamageType;
     }
 
     internal static Color SetAlpha(Color oldColor, float alpha)
