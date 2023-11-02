@@ -212,7 +212,16 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             return false;
         if (this.HoldsAHazard())
             return false;
+        if (this.HoldsABallista())
+            return false;
+        if (this.HoldsATreasure())
+            return false;
         return true;
+    }
+
+    public bool HoldsABallista()
+    {
+        return this.holdsBallista;
     }
 
     public bool HoldsAHazard()
@@ -221,6 +230,11 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
             return true;
         else
             return false;
+    }
+
+    public bool HoldsATreasure()
+    {
+        return this.holdsTreasure;
     }
     #endregion
 }

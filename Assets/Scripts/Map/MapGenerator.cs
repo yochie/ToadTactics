@@ -126,7 +126,7 @@ public class MapGenerator : MonoBehaviour
             for (int y = -this.ySize + 1; y < this.ySize; y++)
             {
                 Hex h = Map.GetHex(this.generatedHexes, x, y);
-                if (h != null && !h.isStartingZone && !h.holdsTreasure && h.holdsHazard == HazardType.none)
+                if (h != null && !h.isStartingZone && h.IsEmpty())
                 {
                     if (UnityEngine.Random.Range(0, 100) < this.obstacleSpawnPercent)
                     {
