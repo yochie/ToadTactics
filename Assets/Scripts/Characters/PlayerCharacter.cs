@@ -50,6 +50,9 @@ public class PlayerCharacter : NetworkBehaviour
     private int attackCountThisTurn;
     public int AttackCountThisTurn => this.attackCountThisTurn;
     [SyncVar]
+    private int ballistaUseCountThisTurn;
+    public int BallistaUseCountThisTurn => this.ballistaUseCountThisTurn;
+    [SyncVar]
     private int remainingMoves;
     public int RemainingMoves => this.remainingMoves;
     [SyncVar]
@@ -57,7 +60,6 @@ public class PlayerCharacter : NetworkBehaviour
     public int OwnerID => this.ownerID;
     [SyncVar]
     private bool isKing;
-
     public bool IsKing { get => this.isKing;}
     [SyncVar]
     private bool isDead;
@@ -216,6 +218,18 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Server]
+    internal void UsedBallista()
+    {
+        if (!this.HasAvailableBallista())
+        {
+            Debug.LogFormat("Attempting to use ballista with {0} while it isn't available. You should validate attack beforehand.", this.charClass.name);
+            return;
+        }
+
+        this.ballistaUseCountThisTurn++;
+    }
+
+    [Server]
     public void UsedAbility(string abilityID)
     {
         CharacterAbilityStats ability = this.GetAbilityWithID(abilityID);
@@ -240,6 +254,7 @@ public class PlayerCharacter : NetworkBehaviour
     public void ResetTurnState()
     {
         this.attackCountThisTurn = 0;
+        this.ballistaUseCountThisTurn = 0;
         this.remainingMoves = this.CurrentStats.moveSpeed;
     }
 
@@ -551,7 +566,7 @@ public class PlayerCharacter : NetworkBehaviour
 
     internal bool HasAvailableAttacks()
     {
-        if (this.AttackCountThisTurn >= this.currentStats.attacksPerTurn)
+        if (this.AttackCountThisTurn >= this.currentStats.attacksPerTurn || this.BallistaUseCountThisTurn > 0)
             return false;
         else
             return true;
@@ -560,7 +575,10 @@ public class PlayerCharacter : NetworkBehaviour
     internal bool HasAvailableBallista()
     {
         //TODO: add check for ballista loading
-        return Map.Singleton.IsCharacterOnBallista(this.charClassID);
+        if (!Map.Singleton.IsCharacterOnBallista(this.charClassID) || this.AttackCountThisTurn >= this.currentStats.attacksPerTurn || this.BallistaUseCountThisTurn > 0)
+            return false;
+        else
+            return true;
     }
 
 

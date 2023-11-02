@@ -2615,6 +2615,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   OnCharacterAttacksServerSide: {fileID: 11400000, guid: c81aaa52127777342b12f2fc7322bb6b, type: 2}
+  ballistaPrefab: {fileID: 2802014603081656047, guid: 73f7682b66d4d024f9a64a1e5dcb99bc, type: 3}
 --- !u!114 &846746701
 MonoBehaviour:
   m_ObjectHideFlags: 0

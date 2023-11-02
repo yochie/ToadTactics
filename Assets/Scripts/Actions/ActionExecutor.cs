@@ -12,6 +12,11 @@ public class ActionExecutor : NetworkBehaviour
     [SerializeField]
     private IntIntGameEventSO OnCharacterAttacksServerSide;
 
+
+    [SerializeField]
+    private Ballista ballistaPrefab;
+
+
     public static ActionExecutor Singleton { get; private set; }
 
     public void Awake()
@@ -57,9 +62,33 @@ public class ActionExecutor : NetworkBehaviour
         OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
     }
 
-    internal void CmdUseBallista(Hex selectedHex, Hex clickedHex)
+    [Command(requiresAuthority = false)]
+    internal void CmdUseBallista(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
-        throw new NotImplementedException();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        IAttackAction attackAction = ActionFactory.CreateBallistaAttackAction(sender,
+                                                                            playerID,
+                                                                            attackingCharacter,
+                                                                            this.ballistaPrefab.damage,
+                                                                            this.ballistaPrefab.damageType,
+                                                                            this.ballistaPrefab.damageIterations,
+                                                                            this.ballistaPrefab.penetratingDamage,
+                                                                            this.ballistaPrefab.knockback,
+                                                                            this.ballistaPrefab.critChance > 0,
+                                                                            this.ballistaPrefab.critChance,
+                                                                            this.ballistaPrefab.critMultiplier,
+                                                                            this.ballistaPrefab.attackAreaType,
+                                                                            this.ballistaPrefab.attackAreaScaler,
+                                                                            source,
+                                                                            target);
+        this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.useBallista);
+
+        int attackedCharacterId = -1;
+        if (target.HoldsACharacter())
+            attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+
+        OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
     }
 
     [Command(requiresAuthority = false)]
@@ -93,7 +122,7 @@ public class ActionExecutor : NetworkBehaviour
         OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
     }
 
-    internal bool CustomAttack(Hex source,
+    internal void CustomAttack(Hex source,
                                Hex primaryTarget,
                                AreaType areaType,
                                int areaScaler,
@@ -125,8 +154,7 @@ public class ActionExecutor : NetworkBehaviour
                                                                  areaScaler,
                                                                  source,
                                                                  primaryTarget);
-        bool success = this.TryAction(customAttackAction, isFullAction: false);
-        return success;
+        this.TryAction(customAttackAction, isFullAction: false);
     }
 
     [Server]
@@ -184,11 +212,11 @@ public class ActionExecutor : NetworkBehaviour
             if (!activeControlModes.Contains(currentControlMode))
             {
                 //switch to next available control mode
-                MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, activeControlModes[0], actor.HasAvailableBallista());
+                MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, activeControlModes[0], Map.Singleton.IsCharacterOnBallista(actor.CharClassID));
                 MapInputHandler.Singleton.TargetRpcSetControlMode(sender, activeControlModes[0]);
             }
             else
-                MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, currentControlMode, actor.HasAvailableBallista());
+                MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, currentControlMode, Map.Singleton.IsCharacterOnBallista(actor.CharClassID));
 
             if (actor.HasActiveAbility())
             {

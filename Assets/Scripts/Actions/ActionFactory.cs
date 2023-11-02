@@ -171,7 +171,6 @@ public class ActionFactory : MonoBehaviour
         customAttackAction.RequiresLOS = false;
         customAttackAction.Range = 99;
 
-        //IAttackAction from ability stats
         customAttackAction.Damage = damage;
         customAttackAction.DamageIterations = damageIterations;
         customAttackAction.AttackDamageType = damageType;
@@ -194,6 +193,61 @@ public class ActionFactory : MonoBehaviour
 
         return customAttackAction;
     }
+
+    internal static BallistaAttackAction CreateBallistaAttackAction(NetworkConnectionToClient sender,
+                                                             int requestingPlayerID,
+                                                             PlayerCharacter attackingCharacter,
+                                                             int damage,
+                                                             DamageType damageType,
+                                                             int damageIterations,
+                                                             bool penetratingDamage,
+                                                             int knockback,
+                                                             bool canCrit,
+                                                             float critChance,
+                                                             float critMultiplier,
+                                                             AreaType areaType,
+                                                             int areaScaler,
+                                                             Hex source,
+                                                             Hex primaryTarget)
+    {
+        BallistaAttackAction customAttackAction = new BallistaAttackAction();
+
+        //IAction
+        customAttackAction.RequestingPlayerID = requestingPlayerID;
+        customAttackAction.ActorCharacter = attackingCharacter;
+        customAttackAction.ActorHex = source;
+        customAttackAction.RequestingClient = sender;
+
+        //ITargetedAction
+        //We are trusting main ability to assign valid targets to these sub actions since we might want to use different criteria than those main action
+        customAttackAction.TargetHex = primaryTarget;
+        customAttackAction.AllowedTargetTypes = Utility.GetAllEnumValues<TargetType>();
+        customAttackAction.RequiresLOS = false;
+        customAttackAction.Range = 99;
+
+        customAttackAction.Damage = damage;
+        customAttackAction.DamageIterations = damageIterations;
+        customAttackAction.AttackDamageType = damageType;
+        customAttackAction.PenetratingDamage = penetratingDamage;
+        customAttackAction.Knockback = knockback;
+        //use attack stats if -1 and can crit
+        if (canCrit)
+        {
+            customAttackAction.CritChance = critChance;
+            customAttackAction.CritMultiplier = critMultiplier;
+        }
+        else
+        {
+            customAttackAction.CritChance = 0f;
+            customAttackAction.CritMultiplier = 1f;
+        }
+
+        customAttackAction.TargetedAreaType = areaType;
+        customAttackAction.AreaScaler = areaScaler;
+
+        return customAttackAction;
+    }
+
 
     public static CustomAttackAction CreateAbilityAttackAction(NetworkConnectionToClient sender,
                                                                 int requestingPlayerID,
