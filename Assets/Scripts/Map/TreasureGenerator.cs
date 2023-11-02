@@ -32,15 +32,25 @@ public class TreasureGenerator : NetworkBehaviour
         //choose location at random
         TreasureSpawnLocation chosenSpawnLocation = spawnLocations[Random.Range(0, spawnLocations.Count)];
 
-        Hex treasureHex = Map.GetHex(grid, chosenSpawnLocation.treasureCoordinate.x, chosenSpawnLocation.treasureCoordinate.y);
-        GameObject treasureObject = Instantiate(this.treasurePrefab, treasureHex.transform.position, Quaternion.identity);
-        NetworkServer.Spawn(treasureObject);
-        treasureHex.holdsTreasure = true;
-
         Hex ballistaHex = Map.GetHex(grid, chosenSpawnLocation.ballistaCoordinate.x, chosenSpawnLocation.ballistaCoordinate.y);
         GameObject ballistaObject = Instantiate(this.ballistaPrefab, ballistaHex.transform.position, Quaternion.identity);
         NetworkServer.Spawn(ballistaObject);
         ballistaHex.holdsBallista = true;
+
+        Hex treasureHex = Map.GetHex(grid, chosenSpawnLocation.treasureCoordinate.x, chosenSpawnLocation.treasureCoordinate.y);
+        if (GameController.Singleton.CurrentRound < 2)
+        {
+            GameObject treasureObject = Instantiate(this.treasurePrefab, treasureHex.transform.position, Quaternion.identity);
+            NetworkServer.Spawn(treasureObject);
+            treasureHex.holdsTreasure = true;
+            Map.Singleton.Treasure = treasureObject;
+        }
+        else
+        {
+            GameObject secondBallistaObject = Instantiate(this.ballistaPrefab, treasureHex.transform.position, Quaternion.identity);
+            NetworkServer.Spawn(secondBallistaObject);
+            treasureHex.holdsBallista = true;
+        }        
 
         //choose hazard type at random
         HazardType rolledHazardType = spawnedHazardTypes[Random.Range(0, spawnedHazardTypes.Count)];        
@@ -55,6 +65,5 @@ public class TreasureGenerator : NetworkBehaviour
             this.obstacleManager.SpawnObstacleOnMap(grid, obstacleCoordinate, this.obstacleType);
         }
 
-        Map.Singleton.Treasure = treasureObject;
     }
 }
