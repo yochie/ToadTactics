@@ -478,6 +478,8 @@ public class PlayerCharacter : NetworkBehaviour
             activeControlModes.Add(ControlMode.useAbility);
         if (this.HasAvailableActivatedEquipments())
             activeControlModes.Add(ControlMode.useEquipment);
+        if (this.HasAvailableBallista())
+            activeControlModes.Add(ControlMode.useBallista);
 
         return activeControlModes;
     }
@@ -520,7 +522,7 @@ public class PlayerCharacter : NetworkBehaviour
     #region Utility
     public bool HasRemainingActions()
     {
-        if (this.HasAvailableMoves() || this.HasAvailableAttacks() || this.HasAvailableAbilities() || this.HasAvailableActivatedEquipments())
+        if (this.HasAvailableMoves() || this.HasAvailableAttacks() || this.HasAvailableAbilities() || this.HasAvailableActivatedEquipments() || this.HasAvailableBallista())
             return true;
         else
             return false;
@@ -553,6 +555,12 @@ public class PlayerCharacter : NetworkBehaviour
             return false;
         else
             return true;
+    }
+
+    internal bool HasAvailableBallista()
+    {
+        //TODO: add check for ballista loading
+        return Map.Singleton.IsCharacterOnBallista(this.charClassID);
     }
 
 

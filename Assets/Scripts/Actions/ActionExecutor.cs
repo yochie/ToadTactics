@@ -181,11 +181,11 @@ public class ActionExecutor : NetworkBehaviour
             if (!activeControlModes.Contains(currentControlMode))
             {
                 //switch to next available control mode
-                MainHUD.Singleton.TargetRpcToggleInteractableButtons(sender, activeControlModes, activeControlModes[0]);
+                MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, activeControlModes[0], actor.HasAvailableBallista());
                 MapInputHandler.Singleton.TargetRpcSetControlMode(sender, activeControlModes[0]);
             }
             else
-                MainHUD.Singleton.TargetRpcToggleInteractableButtons(sender, activeControlModes, currentControlMode);
+                MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, currentControlMode, actor.HasAvailableBallista());
 
             if (actor.HasActiveAbility())
             {

@@ -51,9 +51,13 @@ public class MainHUD : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcToggleInteractableButtons(NetworkConnectionToClient target, List<ControlMode> interactableButtons, ControlMode toHighlight)
+    public void TargetRpcUpdateButtonsAfterAction(NetworkConnectionToClient target, List<ControlMode> interactableButtons, ControlMode toHighlight, bool onBallista)
     {
+
         this.ToggleInteractableButtons(interactableButtons, toHighlight);
+
+        this.ballistaButton.SetActive(onBallista);
+
     }
 
     [TargetRpc]
@@ -70,10 +74,7 @@ public class MainHUD : NetworkBehaviour
             this.UpdateAbilityCooldownIndicator(abilityCooldown, usesRemaining);
         }
 
-        if (!onBallista)
-        {
-            this.ballistaButton.SetActive(false);
-        }
+        this.ballistaButton.SetActive(onBallista);
     }
 
     [TargetRpc]
