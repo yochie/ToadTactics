@@ -130,7 +130,47 @@ public class MapRangeDisplayer : MonoBehaviour
             }
         }
     }
-    
+
+    internal void DisplayBallistaRange(Hex source, Ballista ballista, PlayerCharacter attacker)
+    {
+        List<TargetType> allowedTargets = ballista.allowedAttackTargets;
+        bool requiresLOS = ballista.attacksRequireLOS;
+        Dictionary<Hex, LOSTargetType> attackRange = MapPathfinder.FindActionRange(this.map.hexGrid, source, ballista.range, allowedTargets, attacker, requiresLOS);
+        this.displayedActionRange = attackRange;
+        foreach (Hex h in attackRange.Keys)
+        {
+            //selected hex stays at selected color state
+            if (h != source)
+            {
+                if (attackRange[h] == LOSTargetType.inRange)
+                    h.drawer.DisplayInAttackRange(true);
+                else if (attackRange[h] == LOSTargetType.targetable)
+                    h.drawer.DisplayAttackTargetable(true);
+                else if (attackRange[h] == LOSTargetType.outOfRange)
+                {
+                    h.drawer.DisplayOutOfActionRange(true);
+                }
+            }
+        }
+    }
+
+    public void HideBallistaRange()
+    {
+        foreach (Hex h in this.displayedActionRange.Keys)
+        {
+            if (this.displayedActionRange[h] == LOSTargetType.inRange)
+                h.drawer.DisplayInAttackRange(false);
+            else if (this.displayedActionRange[h] == LOSTargetType.targetable)
+            {
+                h.drawer.DisplayAttackTargetable(false);
+            }
+            else if (this.displayedActionRange[h] == LOSTargetType.outOfRange)
+            {
+                h.drawer.DisplayOutOfActionRange(false);
+            }
+        }
+    }
+
     public void HideAbilityRange()
     {
         foreach (Hex h in this.displayedActionRange.Keys)

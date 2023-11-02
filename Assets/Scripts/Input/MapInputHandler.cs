@@ -10,6 +10,9 @@ public class MapInputHandler : NetworkBehaviour
     [SerializeField]
     private MapRangeDisplayer rangeDisplayer;
 
+    [SerializeField]
+    private Ballista ballistaPrefab;
+
     public static MapInputHandler Singleton { get; private set; }
 
     private PlayerCharacter playingCharacter;
@@ -68,6 +71,10 @@ public class MapInputHandler : NetworkBehaviour
                     return;
                 ActionExecutor.Singleton.CmdUseAbility(this.SelectedHex, clickedHex, this.currentActivatedAbilityStats);
                 break;
+
+            case ControlMode.useBallista:
+                ActionExecutor.Singleton.CmdUseBallista(this.SelectedHex, clickedHex);
+                break;
         }
     }
 
@@ -103,6 +110,9 @@ public class MapInputHandler : NetworkBehaviour
                 this.rangeDisplayer.DisplayAbilityRange(h, currentActivatedAbilityStats, heldCharacter);
                 //Debug.Log("Trying to select hex while control mode is useAbility (currently unsupported).");
                 break;
+            case ControlMode.useBallista:
+                this.rangeDisplayer.DisplayBallistaRange(h, this.ballistaPrefab, heldCharacter);
+                break;
             case ControlMode.useEquipment:
                 Debug.Log("Trying to select hex while control mode is useTreasure(currently unsupported).");
                 break;
@@ -120,6 +130,7 @@ public class MapInputHandler : NetworkBehaviour
         this.rangeDisplayer.HidePath();
         this.rangeDisplayer.HideMovementRange();
         this.rangeDisplayer.HideAttackRange();
+        this.rangeDisplayer.HideBallistaRange();
         this.rangeDisplayer.HideAbilityRange();
         this.rangeDisplayer.UnHighlightTargetedArea();
     }
@@ -168,6 +179,14 @@ public class MapInputHandler : NetworkBehaviour
                 bool abilityRequiresLOS = currentActivatedAbilityStats.requiresLOS;
                 this.rangeDisplayer.HighlightTargetedArea(userHex, hoveredHex, abilityAreaType, abilityAreaScaler, abilityRequiresLOS);
                 break;
+            case ControlMode.useBallista:
+                Hex ballistaHex = this.SelectedHex;
+                CharacterStats ballistaAttackerStats = this.playingCharacter.CurrentStats;
+                AreaType ballistaAreaType = this.ballistaPrefab.attackAreaType;
+                int ballistaAreaScaler = this.ballistaPrefab.attackAreaScaler;
+                bool ballistaRequiresLOS = this.ballistaPrefab.attacksRequireLOS;
+                this.rangeDisplayer.HighlightTargetedArea(ballistaHex, hoveredHex, ballistaAreaType, ballistaAreaScaler, ballistaRequiresLOS);
+                break;
         }
     }
 
@@ -195,6 +214,9 @@ public class MapInputHandler : NetworkBehaviour
                 this.rangeDisplayer.UnHighlightTargetedArea();
                 break;
             case ControlMode.useAbility:
+                this.rangeDisplayer.UnHighlightTargetedArea();
+                break;
+            case ControlMode.useBallista:
                 this.rangeDisplayer.UnHighlightTargetedArea();
                 break;
         }
@@ -257,6 +279,7 @@ public class MapInputHandler : NetworkBehaviour
             (mode == ControlMode.move
             || mode == ControlMode.attack
             || mode == ControlMode.useAbility
+            || mode == ControlMode.useBallista
             || mode == ControlMode.useEquipment
             || mode == ControlMode.none))
         {

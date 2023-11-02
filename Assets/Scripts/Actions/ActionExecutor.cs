@@ -57,7 +57,10 @@ public class ActionExecutor : NetworkBehaviour
         OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
     }
 
-
+    internal void CmdUseBallista(Hex selectedHex, Hex clickedHex)
+    {
+        throw new NotImplementedException();
+    }
 
     [Command(requiresAuthority = false)]
     internal void CmdUseAbility(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
