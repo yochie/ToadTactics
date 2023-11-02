@@ -49,14 +49,6 @@ public class Map : NetworkBehaviour
 
     //Server only, used for destroying on pickup
     public GameObject Treasure { get; set; }
-
-    internal void MoveCharacter(int classID, Hex fromHex, Hex toHex)
-    {
-        fromHex.ClearCharacter();
-        toHex.holdsCharacterWithClassID = classID;
-        this.characterPositions[classID] = toHex.coordinates;
-    }
-
     #endregion
 
     #region Startup
@@ -69,8 +61,6 @@ public class Map : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-
-
 
         hexGridNetIDs.Callback += OnHexGridNetIdsChange;
         // Process initial SyncDictionary payload
@@ -126,13 +116,6 @@ public class Map : NetworkBehaviour
                 // Dictionary was cleared
                 break;
         }
-    }
-
-    internal HazardType CharacterStandingOnHazard(int classID)
-    {
-        HexCoordinates characterPosition = this.characterPositions[classID];
-        Hex hex = Map.GetHex(this.hexGrid, characterPosition);
-        return hex.holdsHazard;
     }
 
     //coroutine to finish matching netids
@@ -197,7 +180,6 @@ public class Map : NetworkBehaviour
         toDelete.Delete();
         grid.Remove(new Vector2Int(x, y));
     }
-
     #endregion
 
     public void Update()
@@ -231,5 +213,28 @@ public class Map : NetworkBehaviour
             charHex.ClearCorpse();
             charHex.holdsCharacterWithClassID = charClassID;
         }            
+    }
+
+    [Server]
+    internal bool IsCharacterOnBallista(int classID)
+    {
+        HexCoordinates characterPosition = this.characterPositions[classID];
+        Hex hex = Map.GetHex(this.hexGrid, characterPosition);
+        return hex.holdsBallista;
+    }
+
+    internal HazardType IsCharacterStandingOnHazard(int classID)
+    {
+        HexCoordinates characterPosition = this.characterPositions[classID];
+        Hex hex = Map.GetHex(this.hexGrid, characterPosition);
+        return hex.holdsHazard;
+    }
+
+    [Server]
+    internal void MoveCharacter(int classID, Hex fromHex, Hex toHex)
+    {
+        fromHex.ClearCharacter();
+        toHex.holdsCharacterWithClassID = classID;
+        this.characterPositions[classID] = toHex.coordinates;
     }
 }

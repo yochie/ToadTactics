@@ -218,6 +218,12 @@ public class MapInputHandler : NetworkBehaviour
         this.SetControlMode(ControlMode.useAbility);
     }
 
+    //Used by button
+    public void SetControlModeBallista()
+    {
+        this.SetControlMode(ControlMode.useBallista);
+    }
+
     public void SetControlMode(ControlMode mode)
     {
         MainHUD.Singleton.HighlightGameplayButton(mode);

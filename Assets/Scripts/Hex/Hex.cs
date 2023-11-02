@@ -34,6 +34,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     [SyncVar]
     public bool holdsTreasure;
 
+    [SyncVar]
+    public bool holdsBallista;
+
     //0 is host
     //1 is client
     [SyncVar]

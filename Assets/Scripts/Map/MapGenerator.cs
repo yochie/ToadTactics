@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -62,7 +63,7 @@ public class MapGenerator : MonoBehaviour
             this.startingZones[i].SetStartingZone(this.generatedHexes, this.xSize, this.ySize);
         }
 
-        this.treasureGenerator.GenerateTreasure(this.generatedHexes);
+        this.treasureGenerator.GenerateTreasureAndBallista(this.generatedHexes);
 
         this.GenerateTrees();
 

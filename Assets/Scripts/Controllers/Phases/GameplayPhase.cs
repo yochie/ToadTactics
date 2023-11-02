@@ -100,7 +100,7 @@ public class GameplayPhase : IGamePhase
         if (lastTurnCharacter.IsDead)
             return;
 
-        HazardType standingOnHazardType = Map.Singleton.CharacterStandingOnHazard(lastTurnCharacter.CharClassID);
+        HazardType standingOnHazardType = Map.Singleton.IsCharacterStandingOnHazard(lastTurnCharacter.CharClassID);
         if (standingOnHazardType != HazardType.none)
         {
             int damageTaken = HazardDataSO.Singleton.GetHazardDamage(standingOnHazardType, standingDamage: true);
@@ -164,11 +164,16 @@ public class GameplayPhase : IGamePhase
         this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, startingMode);
 
         NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
+
+        bool characterOnBallista = Map.Singleton.IsCharacterOnBallista(currentCharacter.CharClassID);
+
+        //TODO: fix to better determine whether a character has active abilities
+        //right now it just assumes that any active ability will be the first one listed... pretty horrible
         CharacterAbilityStats abilityStats = currentCharacter.charClass.abilities[0];
         if (abilityStats.isPassive)
         {
             //passing in empty strings since RPC cannot have optional arguments
-            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeButtons: activeControlModes, toHighlight: startingMode, abilityName: "", abilityCooldown: -1, usesRemaining: -1, hasActiveAbility:false);
+            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, interactableButtons: activeControlModes, toHighlight: startingMode, abilityName: "", abilityCooldown: -1, usesRemaining: -1, hasActiveAbility:false, onBallista: characterOnBallista);
         }
         else
         {
@@ -177,7 +182,7 @@ public class GameplayPhase : IGamePhase
             int abilityCooldown = currentCharacter.GetAbilityCooldown(abilityID);
             int remainingUses = currentCharacter.GetAbilityUsesRemaining(abilityID);
 
-            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown, remainingUses, hasActiveAbility: true);
+            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown, remainingUses, hasActiveAbility: true, onBallista: characterOnBallista);
         }
     }
 

@@ -24,6 +24,9 @@ public class MainHUD : NetworkBehaviour
     private GameObject abilityButton;
 
     [SerializeField]
+    private GameObject ballistaButton;
+
+    [SerializeField]
     private TextMeshProUGUI abilityButtonText;
 
     [SerializeField]
@@ -44,21 +47,20 @@ public class MainHUD : NetworkBehaviour
         this.gameplayButtons.Add(ControlMode.move, this.moveButton);
         this.gameplayButtons.Add(ControlMode.attack, this.attackButton);
         this.gameplayButtons.Add(ControlMode.useAbility, this.abilityButton);
-    }
-
-
-    //Call with empty ability name to only toggle buttons
-    [TargetRpc]
-    public void TargetRpcToggleActiveButtons(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight)
-    {
-        this.ToggleActiveButtons(activeButtons, toHighlight);
+        this.gameplayButtons.Add(ControlMode.useBallista, this.ballistaButton);
     }
 
     [TargetRpc]
-    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> activeButtons, ControlMode toHighlight, string abilityName, int abilityCooldown, int usesRemaining, bool hasActiveAbility)
+    public void TargetRpcToggleInteractableButtons(NetworkConnectionToClient target, List<ControlMode> interactableButtons, ControlMode toHighlight)
     {
-        this.SetActiveGameplayButtons(true);
-        this.ToggleActiveButtons(activeButtons, toHighlight);
+        this.ToggleInteractableButtons(interactableButtons, toHighlight);
+    }
+
+    [TargetRpc]
+    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> interactableButtons, ControlMode toHighlight, string abilityName, int abilityCooldown, int usesRemaining, bool hasActiveAbility, bool onBallista)
+    {
+        this.ActivateGameplayButtons(true);
+        this.ToggleInteractableButtons(interactableButtons, toHighlight);
         if (!hasActiveAbility)
         {
             this.abilityButton.SetActive(false);
@@ -66,6 +68,11 @@ public class MainHUD : NetworkBehaviour
         {
             this.abilityButtonText.text = String.Format("{0}", abilityName);
             this.UpdateAbilityCooldownIndicator(abilityCooldown, usesRemaining);
+        }
+
+        if (!onBallista)
+        {
+            this.ballistaButton.SetActive(false);
         }
     }
 
@@ -143,7 +150,7 @@ public class MainHUD : NetworkBehaviour
         }
     }
 
-    public void ToggleActiveButtons(List<ControlMode> activeButtons, ControlMode toHighlight)
+    public void ToggleInteractableButtons(List<ControlMode> activeButtons, ControlMode toHighlight)
     {
         foreach (KeyValuePair<ControlMode, GameObject> buttonByMode in this.gameplayButtons)
         {
@@ -176,7 +183,7 @@ public class MainHUD : NetworkBehaviour
     }
 
     [Client]
-    private void SetActiveGameplayButtons(bool state)
+    private void ActivateGameplayButtons(bool state)
     {
         foreach (GameObject buttonObject in this.gameplayButtons.Values)
         {
@@ -213,7 +220,7 @@ public class MainHUD : NetworkBehaviour
         this.endTurnButton.SetActive(false);
         if (GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
         {
-            this.SetActiveGameplayButtons(false);
+            this.ActivateGameplayButtons(false);
         }
     }
 

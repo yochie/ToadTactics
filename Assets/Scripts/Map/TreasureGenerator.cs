@@ -15,6 +15,9 @@ public class TreasureGenerator : NetworkBehaviour
     private GameObject treasurePrefab;
 
     [SerializeField]
+    private GameObject ballistaPrefab;
+
+    [SerializeField]
     private ObstacleType obstacleType;
 
     [SerializeField]
@@ -22,9 +25,9 @@ public class TreasureGenerator : NetworkBehaviour
 
     [SerializeField]
     private MapObstacleManager obstacleManager;
-    
+
     [Server]
-    public void GenerateTreasure(Dictionary<Vector2Int, Hex> grid)
+    public void GenerateTreasureAndBallista(Dictionary<Vector2Int, Hex> grid)
     {
         //choose location at random
         TreasureSpawnLocation chosenSpawnLocation = spawnLocations[Random.Range(0, spawnLocations.Count)];
@@ -33,6 +36,11 @@ public class TreasureGenerator : NetworkBehaviour
         GameObject treasureObject = Instantiate(this.treasurePrefab, treasureHex.transform.position, Quaternion.identity);
         NetworkServer.Spawn(treasureObject);
         treasureHex.holdsTreasure = true;
+
+        Hex ballistaHex = Map.GetHex(grid, chosenSpawnLocation.ballistaCoordinate.x, chosenSpawnLocation.ballistaCoordinate.y);
+        GameObject ballistaObject = Instantiate(this.ballistaPrefab, ballistaHex.transform.position, Quaternion.identity);
+        NetworkServer.Spawn(ballistaObject);
+        ballistaHex.holdsBallista = true;
 
         //choose hazard type at random
         HazardType rolledHazardType = spawnedHazardTypes[Random.Range(0, spawnedHazardTypes.Count)];        
