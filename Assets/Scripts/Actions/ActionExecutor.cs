@@ -12,10 +12,11 @@ public class ActionExecutor : NetworkBehaviour
     [SerializeField]
     private IntIntGameEventSO OnCharacterAttacksServerSide;
 
-
     [SerializeField]
     private Ballista ballistaPrefab;
 
+    [SerializeField]
+    private IntGameEventSO onCharacterAttacks;
 
     public static ActionExecutor Singleton { get; private set; }
 
@@ -54,12 +55,22 @@ public class ActionExecutor : NetworkBehaviour
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
         IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
-        this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.attack);
+        bool actionSuccess = this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.attack);
 
-        int attackedCharacterId = -1;
-        if (target.HoldsACharacter())
-            attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
-        OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
+        if (actionSuccess)
+        {
+            int attackedCharacterId = -1;
+            if (target.HoldsACharacter())
+                attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+            OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
+            this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcOnCharacterAttacks(int charClassID)
+    {
+        this.onCharacterAttacks.Raise(charClassID);
     }
 
     [Command(requiresAuthority = false)]

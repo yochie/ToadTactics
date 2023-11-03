@@ -28,6 +28,7 @@ public class PlayerCharacter : NetworkBehaviour
 
     [SerializeField]
     private Color kingColor;
+
     #endregion
 
     #region Sync vars
@@ -288,8 +289,10 @@ public class PlayerCharacter : NetworkBehaviour
                 break;
         }
 
-        if(hit.damageType != DamageType.healing)
-            this.onCharacterHitServerSide.Raise(this.charClassID);
+        if (hit.damageType != DamageType.healing)
+        {
+            this.onCharacterHitServerSide.Raise(this.charClassID);           
+        }
     }
 
     [Server]
