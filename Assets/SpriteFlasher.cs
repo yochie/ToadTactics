@@ -17,7 +17,11 @@ public class SpriteFlasher : MonoBehaviour
     {
         if (classID != this.forCharacter.CharClassID)
             return;
+
         Color flashColor = Color.red;
+        if (hit.damageType == DamageType.healing)
+            flashColor = Color.green;
+        
         this.StartCoroutine(FlashCoroutine(flashColor, this.flashDurationSeconds));
     }
 
