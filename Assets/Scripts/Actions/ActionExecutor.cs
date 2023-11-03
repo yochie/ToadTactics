@@ -67,12 +67,6 @@ public class ActionExecutor : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    private void RpcOnCharacterAttacks(int charClassID)
-    {
-        this.onCharacterAttacks.Raise(charClassID);
-    }
-
     [Command(requiresAuthority = false)]
     internal void CmdUseBallista(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
@@ -93,13 +87,18 @@ public class ActionExecutor : NetworkBehaviour
                                                                             this.ballistaPrefab.attackAreaScaler,
                                                                             source,
                                                                             target);
-        this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.useBallista);
+        bool actionSuccess = this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.useBallista);
 
-        int attackedCharacterId = -1;
-        if (target.HoldsACharacter())
-            attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+        if (actionSuccess)
+        {
+            int attackedCharacterId = -1;
+            if (target.HoldsACharacter())
+                attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
 
-        OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
+            OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
+            this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
+
+        }
     }
 
     [Command(requiresAuthority = false)]
@@ -111,7 +110,7 @@ public class ActionExecutor : NetworkBehaviour
         this.TryAction(abilityAction, isFullAction: true, startingMode: ControlMode.useAbility);
     }
 
-    //should only be used from abilities to handle their attack portions
+    //should only be used from abilities that have a damaging effect defined in their stats
     //since called within another action, dont call FinishAction(), parent action will take care of that
     [Server]
     public void AbilityAttack(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender)
@@ -125,14 +124,18 @@ public class ActionExecutor : NetworkBehaviour
                                                                                    abilityStats,
                                                                                    source,
                                                                                    target);
-        this.TryAction(abilityAttackAction, isFullAction : false);
-
-        int attackedCharacterId = -1;
-        if (target.HoldsACharacter())
-            attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
-        OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
+        bool actionSuccess = this.TryAction(abilityAttackAction, isFullAction : false);
+        if (actionSuccess)
+        {
+            int attackedCharacterId = -1;
+            if (target.HoldsACharacter())
+                attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+            OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
+            this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
+        }
     }
 
+    //Used by actions that have a secondary damage effect that is not defined by ability stats
     internal void CustomAttack(Hex source,
                                Hex primaryTarget,
                                AreaType areaType,
@@ -289,5 +292,12 @@ public class ActionExecutor : NetworkBehaviour
             return false;
 
         return true;
+    }
+
+
+    [ClientRpc]
+    private void RpcOnCharacterAttacks(int charClassID)
+    {
+        this.onCharacterAttacks.Raise(charClassID);
     }
 }
