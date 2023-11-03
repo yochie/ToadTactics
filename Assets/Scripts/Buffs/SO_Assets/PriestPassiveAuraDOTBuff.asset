@@ -17,7 +17,7 @@ MonoBehaviour:
   <DOTDamage>k__BackingField: 10
   <DOTDamageType>k__BackingField: 2
   <TargetedAreaType>k__BackingField: 3
-  <AuraAppliesTo>k__BackingField: 01000000
+  <AuraAppliesTo>k__BackingField: 0100000008000000
   <AreaScaler>k__BackingField: 1
   <NeedsToBeReAppliedEachTurn>k__BackingField: 1
   <IsPositive>k__BackingField: 1
