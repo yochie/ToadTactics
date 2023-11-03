@@ -1,4 +1,4 @@
-﻿public struct Hit
+﻿public readonly struct Hit
 {
     public readonly int damage;
     public readonly DamageType damageType;

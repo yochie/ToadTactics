@@ -21,6 +21,9 @@ public class PlayerCharacter : NetworkBehaviour
     private IntGameEventSO onCharacterHitServerSide;
 
     [SerializeField]
+    private HitIntGameEventSO onCharacterTakesHit;
+
+    [SerializeField]
     private IntGameEventSO onCharacterResurrect;
 
     [SerializeField]
@@ -293,6 +296,8 @@ public class PlayerCharacter : NetworkBehaviour
         {
             this.onCharacterHitServerSide.Raise(this.charClassID);           
         }
+
+        this.RpcOnCharacterTakesHit(hit, this.charClassID);
     }
 
     [Server]
@@ -485,31 +490,6 @@ public class PlayerCharacter : NetworkBehaviour
         this.onCharacterDeath.Raise(this.CharClassID);
     }
 
-    internal List<ControlMode> GetRemainingActions()
-    {
-        List<ControlMode> activeControlModes = new();
-        if (this.HasAvailableMoves())
-            activeControlModes.Add(ControlMode.move);
-        if (this.HasAvailableAttacks())
-            activeControlModes.Add(ControlMode.attack);
-        if (this.HasAvailableAbilities())
-            activeControlModes.Add(ControlMode.useAbility);
-        if (this.HasAvailableActivatedEquipments())
-            activeControlModes.Add(ControlMode.useEquipment);
-        if (this.HasAvailableBallista())
-            activeControlModes.Add(ControlMode.useBallista);
-
-        return activeControlModes;
-    }
-
-    public bool HasAvailableMoves()
-    {
-        if (this.RemainingMoves > 0 && this.canMove)
-            return true;
-        else
-            return false;
-    }
-
     [ClientRpc]
     private void RpcOnCharacterResurrect()
     {
@@ -535,9 +515,47 @@ public class PlayerCharacter : NetworkBehaviour
     {
         this.onCharacterLifeChanged.Raise(this.CharClassID, currentLife, maxHealth);
     }
+
+    [ClientRpc]
+    private void RpcOnCharacterTakesHit(Hit hit, int charClassID)
+    {
+        this.onCharacterTakesHit.Raise(hit, charClassID);
+    }
+
+    //handles character flashing effect
+    public void OnCharactacterTakesHit(Hit hit, int charClassID)
+    {
+
+    }
+
     #endregion
 
     #region Utility
+
+    internal List<ControlMode> GetRemainingActions()
+    {
+        List<ControlMode> activeControlModes = new();
+        if (this.HasAvailableMoves())
+            activeControlModes.Add(ControlMode.move);
+        if (this.HasAvailableAttacks())
+            activeControlModes.Add(ControlMode.attack);
+        if (this.HasAvailableAbilities())
+            activeControlModes.Add(ControlMode.useAbility);
+        if (this.HasAvailableActivatedEquipments())
+            activeControlModes.Add(ControlMode.useEquipment);
+        if (this.HasAvailableBallista())
+            activeControlModes.Add(ControlMode.useBallista);
+
+        return activeControlModes;
+    }
+
+    public bool HasAvailableMoves()
+    {
+        if (this.RemainingMoves > 0 && this.canMove)
+            return true;
+        else
+            return false;
+    }
     public bool HasRemainingActions()
     {
         if (this.HasAvailableMoves() || this.HasAvailableAttacks() || this.HasAvailableAbilities() || this.HasAvailableActivatedEquipments() || this.HasAvailableBallista())

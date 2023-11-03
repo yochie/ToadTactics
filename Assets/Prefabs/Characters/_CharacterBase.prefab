@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 5095712497880910576}
   - component: {fileID: -2725998545482753901}
   - component: {fileID: -4663713169142118353}
+  - component: {fileID: 1985281056760997285}
+  - component: {fileID: -5941218895401009648}
   m_Layer: 0
   m_Name: _CharacterBase
   m_TagString: Untagged
@@ -55,6 +57,7 @@ MonoBehaviour:
   onCharacterDeath: {fileID: 11400000, guid: 43f4d8935b6153342bb88096ecec867c, type: 2}
   onCharacterDeathServerSide: {fileID: 11400000, guid: d8ea1f8bf83f42f4e920e30a2bed8052, type: 2}
   onCharacterHitServerSide: {fileID: 11400000, guid: 725c7e032fc1d154b8a55be7d56604c4, type: 2}
+  onCharacterTakesHit: {fileID: 11400000, guid: af90923df34637449b77e21c838ba0c2, type: 2}
   onCharacterResurrect: {fileID: 11400000, guid: ce14ce51e13a37648b544348ae2596f0, type: 2}
   onCharacterLifeChanged: {fileID: 11400000, guid: 9af4cc90318dd6d4eb3f53de4a099d53, type: 2}
   kingColor: {r: 0.85882354, g: 0.7607843, b: 0, a: 1}
@@ -184,3 +187,87 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1985281056760997285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd63dab17343607469ba735e9c478d6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: af90923df34637449b77e21c838ba0c2, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -5941218895401009648}
+        m_TargetAssemblyTypeName: SpriteFlasher, Assembly-CSharp
+        m_MethodName: FlashOnCharacterTakesHit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &-5941218895401009648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420689804627dee489b0345d964f29b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 7.907746
+      outSlope: 7.907746
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.08829736
+      value: 0.69823307
+      inSlope: 4.110419
+      outSlope: 4.110419
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5048214
+      value: 0.82864344
+      inSlope: -0.68016565
+      outSlope: -0.68016565
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1.6734234
+      outSlope: -1.6734234
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  flashDurationSeconds: 2
+  forCharacter: {fileID: 1350857231127888729}
