@@ -28,7 +28,8 @@ public class SpriteFlasher : MonoBehaviour
     IEnumerator FlashCoroutine(Color flashColor, float flashDuration)
     {
         SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
-        Color startColor = renderer.color;
+        Color startColor = this.forCharacter.BaseColor;
+
         float elapsedSeconds = 0f;
 
         while (elapsedSeconds < flashDuration)

@@ -89,6 +89,12 @@ public class PlayerCharacter : NetworkBehaviour
     private ListWithDuplicates<RuntimeBuff, Component> buffListeners = new();
     #endregion
 
+    #region Clienside vars
+    //used to restore color after animations
+    private Color baseColor;
+    public Color BaseColor => this.baseColor;
+    #endregion
+
     #region Startup
 
     public override void OnStartServer()
@@ -388,6 +394,7 @@ public class PlayerCharacter : NetworkBehaviour
             this.spriteRenderer.color = this.kingColor;
         }
         this.transform.position = position;
+        this.baseColor = this.spriteRenderer.color;
     }
 
     [Server]
