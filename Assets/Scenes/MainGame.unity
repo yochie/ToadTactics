@@ -4248,8 +4248,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  shakeDuration: 0.7
-  shakeStrength: 3
+  shakeDuration: 0.5
+  shakeStrength: 4
 --- !u!114 &1915035258
 MonoBehaviour:
   m_ObjectHideFlags: 0
