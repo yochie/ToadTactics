@@ -316,3 +316,5 @@ MonoBehaviour:
   effectAnimation: {fileID: 1784937098078928453, guid: af62510a403ad4f42b15d178a4f9d6c9, type: 3}
   spawnLocation: {fileID: 50511358748113857}
   forCharacter: {fileID: 1350857231127888729}
+  spawnOffsets: {x: 2.68, y: 8.85, z: 0}
+  spawnRotation: 180
