@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: -4663713169142118353}
   - component: {fileID: 1985281056760997285}
   - component: {fileID: -5941218895401009648}
+  - component: {fileID: 5785813856046365177}
+  - component: {fileID: 4457027579579390453}
   m_Layer: 0
   m_Name: _CharacterBase
   m_TagString: Untagged
@@ -108,7 +110,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 5.12, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -270,4 +272,47 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   flashDurationSeconds: 2
+  forCharacter: {fileID: 1350857231127888729}
+--- !u!114 &5785813856046365177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca3c739417bcc0a4ab5e6853da8f87e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 7389d4c1489f6b24b9b1713cd9146e18, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4457027579579390453}
+        m_TargetAssemblyTypeName: AttackEffectSpawner, Assembly-CSharp
+        m_MethodName: OnCharacterAttacks
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &4457027579579390453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ad4d573b8b2f9041a80445999f9aec8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effectAnimation: {fileID: 1784937098078928453, guid: af62510a403ad4f42b15d178a4f9d6c9, type: 3}
+  spawnLocation: {fileID: 50511358748113857}
   forCharacter: {fileID: 1350857231127888729}
