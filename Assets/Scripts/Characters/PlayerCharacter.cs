@@ -271,6 +271,20 @@ public class PlayerCharacter : NetworkBehaviour
     [Server]
     public void TakeDamage(Hit hit)
     {
+        int rawDamage = this.CalculateDamageFromHit(hit);
+        this.TakeRawDamage(rawDamage);
+
+        if (hit.damageType != DamageType.healing)
+        {
+            this.onCharacterHitServerSide.Raise(this.charClassID);           
+        }
+
+        this.RpcOnCharacterTakesHit(hit, this.charClassID);
+    }
+
+    [Server]
+    public int CalculateDamageFromHit(Hit hit)
+    {
         List<IMitigationEnhancer> orderedMitigationEnhancers = this.GetOrderedMitigationEnhancers();
 
         foreach (IMitigationEnhancer mitigationEnhancer in orderedMitigationEnhancers)
@@ -284,26 +298,17 @@ public class PlayerCharacter : NetworkBehaviour
                 if (!hit.penetratesArmor)
                 {
                     int mitigatedDamage = Math.Max(hit.damage - this.CurrentStats.armor, 0);
-                    this.TakeRawDamage(mitigatedDamage);
-                }
-                    
-                else
-                    this.TakeRawDamage(hit.damage);
-                break;
+                    return mitigatedDamage;
+                } else
+                    return hit.damage;
             case DamageType.magic:
-                this.TakeRawDamage(hit.damage);
-                break;
+                return hit.damage;
             case DamageType.healing:
-                this.TakeRawDamage(-hit.damage);
-                break;
+                return -hit.damage;
+            default:
+                throw new Exception("Unexpected damage type.");
         }
 
-        if (hit.damageType != DamageType.healing)
-        {
-            this.onCharacterHitServerSide.Raise(this.charClassID);           
-        }
-
-        this.RpcOnCharacterTakesHit(hit, this.charClassID);
     }
 
     [Server]

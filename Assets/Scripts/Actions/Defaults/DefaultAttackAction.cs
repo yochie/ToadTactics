@@ -43,7 +43,7 @@ public class DefaultAttackAction : IAttackAction
         }
 
         //PlayerCharacter state updated to track that attack was used
-        this.ActorCharacter.UsedAttack();
+        this.ActorCharacter.UsedAttack();        
     }
 
     protected void HitTarget(Hex target, INetworkedLogger logger)

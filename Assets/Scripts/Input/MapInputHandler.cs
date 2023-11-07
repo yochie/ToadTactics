@@ -141,7 +141,7 @@ public class MapInputHandler : NetworkBehaviour
             return;
 
         this.HoveredHex = hoveredHex;
-
+        List<Hex> targetedHexes;
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -170,14 +170,29 @@ public class MapInputHandler : NetworkBehaviour
                 AreaType attackAreaType = attackerStats.attackAreaType;
                 int attackAreaScaler = attackerStats.attackAreaScaler;
                 bool attackRequiresLOS = attackerStats.attacksRequireLOS;
-                this.rangeDisplayer.HighlightTargetedArea(attackerHex, hoveredHex, attackAreaType, attackAreaScaler, attackRequiresLOS);
+                targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, attackAreaType, attackerHex, hoveredHex, attackAreaScaler);
+                this.rangeDisplayer.HighlightTargetedArea(attackerHex, hoveredHex, attackAreaType, attackAreaScaler, attackRequiresLOS, targetedHexes);
+                //foreach(Hex h in targetedHexes)
+                //{
+                //    if (!h.HoldsACharacter())
+                //        continue;
+                //    PlayerCharacter hitCharacter = h.GetHeldCharacterObject();
+                //    hitCharacter.EstimateDamageFromAttack(attack)
+
+                //}
+                //TODO : request action effect estimate from action class
+                //should include Dict of chars to damage, chars to tile after movement (if knockbacked)
+                //preview could assume no crits
+                //supposes action is created previously (when changing to mode) and paramatrised + validated upon hovering potential target
+                //if action is valid, do the previous highlighting + effect preview, otherwise just display default highlight
                 break;
             case ControlMode.useAbility:
                 Hex userHex = this.SelectedHex;
                 AreaType abilityAreaType = currentActivatedAbilityStats.areaType;
                 int abilityAreaScaler = currentActivatedAbilityStats.areaScaler;
                 bool abilityRequiresLOS = currentActivatedAbilityStats.requiresLOS;
-                this.rangeDisplayer.HighlightTargetedArea(userHex, hoveredHex, abilityAreaType, abilityAreaScaler, abilityRequiresLOS);
+                targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, abilityAreaType, userHex, hoveredHex, abilityAreaScaler);
+                this.rangeDisplayer.HighlightTargetedArea(userHex, hoveredHex, abilityAreaType, abilityAreaScaler, abilityRequiresLOS, targetedHexes);
                 break;
             case ControlMode.useBallista:
                 Hex ballistaHex = this.SelectedHex;
@@ -185,7 +200,8 @@ public class MapInputHandler : NetworkBehaviour
                 AreaType ballistaAreaType = this.ballistaPrefab.attackAreaType;
                 int ballistaAreaScaler = this.ballistaPrefab.attackAreaScaler;
                 bool ballistaRequiresLOS = this.ballistaPrefab.attacksRequireLOS;
-                this.rangeDisplayer.HighlightTargetedArea(ballistaHex, hoveredHex, ballistaAreaType, ballistaAreaScaler, ballistaRequiresLOS);
+                targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, ballistaAreaType, ballistaHex, hoveredHex, ballistaAreaScaler);
+                this.rangeDisplayer.HighlightTargetedArea(ballistaHex, hoveredHex, ballistaAreaType, ballistaAreaScaler, ballistaRequiresLOS, targetedHexes);
                 break;
         }
     }

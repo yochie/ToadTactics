@@ -197,9 +197,8 @@ public class MapRangeDisplayer : MonoBehaviour
         this.MapLOSDisplayer.HideLOS();
     }
 
-    internal void HighlightTargetedArea(Hex sourceHex, Hex primaryTargetHex, AreaType areaType, int areaScaler, bool requiresLOS)
+    internal void HighlightTargetedArea(Hex sourceHex, Hex primaryTargetHex, AreaType areaType, int areaScaler, bool requiresLOS, List<Hex> targetedHexes)
     {
-        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, areaType, sourceHex, primaryTargetHex, areaScaler);
 
         foreach (Hex targetedHex in targetedHexes)
         {
