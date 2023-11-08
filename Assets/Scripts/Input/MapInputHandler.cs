@@ -181,7 +181,7 @@ public class MapInputHandler : NetworkBehaviour
 
                 //}
                 //TODO : request action effect estimate from action class
-                //should include Dict of chars to damage, chars to tile after movement (if knockbacked)
+                //should include Dict of chars to damage (negative for heal), chars to tile after knockback, destroyed and created obstacles (red for destroyed, green for created) + and destroyed/created hazards
                 //preview could assume no crits
                 //supposes action is created previously (when changing to mode) and paramatrised + validated upon hovering potential target
                 //if action is valid, do the previous highlighting + effect preview, otherwise just display default highlight
