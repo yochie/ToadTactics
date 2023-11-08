@@ -24,6 +24,7 @@ public class DefaultMoveAction : IMoveAction
     protected List<Hex> movePath;
     protected Hex InterruptedAtHex;
 
+
     [Server]
     public virtual void ServerUse(INetworkedLogger logger)
     {
@@ -58,7 +59,6 @@ public class DefaultMoveAction : IMoveAction
         }
     }
 
-    [Server]
     public virtual bool ServerValidate()
     {
         if (IAction.ValidateBasicAction(this) &&
@@ -128,10 +128,44 @@ public class DefaultMoveAction : IMoveAction
 
     }
 
-    [Server]
+    private int PreviewMoveToTileDamage(Hex previousHex, Hex nextHex)
+    {
+        int tileDamage = nextHex.DealsDamageWhenMovedInto();
+        int resultingDamage = 0;
+        if (tileDamage > 0)
+        {
+             resultingDamage = this.ActorCharacter.CalculateDamageFromHit(new Hit(tileDamage, nextHex.DealsDamageTypeWhenMovedInto()));
+        }
+        return resultingDamage;
+    }
+
     public virtual void SetupPath()
     {
         this.movePath = MapPathfinder.FindMovementPath(this.ActorHex, this.TargetHex, Map.Singleton.hexGrid);
         this.moveCost = MapPathfinder.PathCost(this.movePath);
+    }
+
+    public ActionEffectPreview PreviewEffect()
+    {
+        //move one hex at a time to ensure we die on correct tile
+        Hex previousHex = this.ActorHex;
+        Hex diedOnHex = null;
+        int totalMovementDamage = 0;
+        foreach (Hex nextHex in this.movePath)
+        {
+            totalMovementDamage += this.PreviewMoveToTileDamage(previousHex, nextHex);
+
+            if (totalMovementDamage >= this.ActorCharacter.CurrentLife)
+            {
+                diedOnHex = nextHex;
+                break;
+            }
+
+            previousHex = nextHex;
+        }
+
+        EffectOnCharacter effectOnCharacter = new EffectOnCharacter(this.ActorCharacter.CharClassID, diedOnHex != null ? diedOnHex.coordinates : this.TargetHex.coordinates, totalMovementDamage, totalMovementDamage);
+        ActionEffectPreview effectPreview = new(new EffectOnCharacter[] { effectOnCharacter });
+        return effectPreview;
     }
 }

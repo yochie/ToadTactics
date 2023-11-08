@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5113863107863018862}
   - component: {fileID: 5578585063754766124}
   - component: {fileID: 1486875214903682006}
-  - component: {fileID: 4951790296318671557}
+  - component: {fileID: 5582286016466537598}
   m_Layer: 5
   m_Name: DmgPreview
   m_TagString: Untagged
@@ -76,24 +76,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1818360610 &4951790296318671557
-ScaleConstraint:
+--- !u!114 &5582286016466537598
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 33601270536581326}
   m_Enabled: 1
-  serializedVersion: 2
-  m_Weight: 1
-  m_ScaleAtRest: {x: 1, y: 1, z: 1}
-  m_ScaleOffset: {x: 1, y: 1, z: 1}
-  m_AffectScalingX: 1
-  m_AffectScalingY: 1
-  m_AffectScalingZ: 1
-  m_Active: 0
-  m_IsLocked: 0
-  m_Sources: []
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd47b600cce1204aa9f3690495b6d1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 1486875214903682006}
 --- !u!1 &1393907914496104511
 GameObject:
   m_ObjectHideFlags: 0
@@ -241,6 +236,8 @@ MonoBehaviour:
   onCharacterSheetDisplayed: {fileID: 11400000, guid: 41dfc3699ccdb3d438c4801410371c4a, type: 2}
   blankImagePrefab: {fileID: 8205062690984975221, guid: 054bef353842eb94890676f762962dcc, type: 3}
   lifebar: {fileID: 2920157887502141816}
+  healPreview: {fileID: 5730361197111557511}
+  damagePreview: {fileID: 5582286016466537598}
   highlightScaling: 1.3
 --- !u!114 &2030279633735216416
 MonoBehaviour:
@@ -535,7 +532,7 @@ GameObject:
   - component: {fileID: 7761656049759007852}
   - component: {fileID: 1045951639216929907}
   - component: {fileID: 4549083809670779587}
-  - component: {fileID: 7007983206160647015}
+  - component: {fileID: 5730361197111557511}
   m_Layer: 5
   m_Name: HealPreview
   m_TagString: Untagged
@@ -600,24 +597,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1818360610 &7007983206160647015
-ScaleConstraint:
+--- !u!114 &5730361197111557511
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7629297142981468077}
   m_Enabled: 1
-  serializedVersion: 2
-  m_Weight: 1
-  m_ScaleAtRest: {x: 1, y: 1, z: 1}
-  m_ScaleOffset: {x: 1, y: 1, z: 1}
-  m_AffectScalingX: 1
-  m_AffectScalingY: 1
-  m_AffectScalingZ: 1
-  m_Active: 0
-  m_IsLocked: 0
-  m_Sources: []
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 463662847d9341c45a0fa7a627d5c61a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 4549083809670779587}
 --- !u!1 &7851991642720666812
 GameObject:
   m_ObjectHideFlags: 0

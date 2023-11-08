@@ -20,6 +20,10 @@ public class ActionExecutor : NetworkBehaviour
 
     public static ActionExecutor Singleton { get; private set; }
 
+    private IAction preparedAction;
+    [SerializeField]
+    private ActionPreviewer actionPreviewer;
+
     public void Awake()
     {
         ActionExecutor.Singleton = this;
@@ -36,6 +40,44 @@ public class ActionExecutor : NetworkBehaviour
         this.TryAction(moveAction, isFullAction: true, startingMode: ControlMode.move);
     }
 
+    [Command(requiresAuthority = false)]
+    public void CmdPrepareMove(Hex source, NetworkConnectionToClient sender = null)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, null);
+        this.preparedAction = moveAction;
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdPreviewMoveTo(Hex destination, NetworkConnectionToClient sender = null)
+    {
+        IMoveAction preparedMove = this.preparedAction as IMoveAction;
+        if (preparedMove == null)
+        {
+            throw new Exception("Prepared action does not correspond to previewed action type");
+        }
+
+        preparedMove.TargetHex = destination;
+        preparedMove.SetupPath();
+        if (!preparedMove.ServerValidate())
+            return;        
+        ActionEffectPreview actionEffect = preparedMove.PreviewEffect();
+        this.TargetRpcPreviewActionEffect(sender, actionEffect);
+    }
+
+    [TargetRpc]
+    private void TargetRpcPreviewActionEffect(NetworkConnectionToClient target, ActionEffectPreview actionEffect)
+    {
+        this.actionPreviewer.PreviewActionEffect(actionEffect);
+    }
+
+    public void RemoveActionPreview()
+    {
+        this.actionPreviewer.RemoveActionPreview();
+    }
+
+    [Server]
     internal bool CustomMove(Hex source,
                            Hex dest,              
                            NetworkConnectionToClient sender)
@@ -222,7 +264,7 @@ public class ActionExecutor : NetworkBehaviour
         }
         else
         {
-            List<ControlMode> activeControlModes = actor.GetRemainingActions();            
+            List<ControlMode> activeControlModes = actor.GetRemainingActions();
             if (!activeControlModes.Contains(currentControlMode))
             {
                 //switch to next available control mode
@@ -230,7 +272,10 @@ public class ActionExecutor : NetworkBehaviour
                 MapInputHandler.Singleton.TargetRpcSetControlMode(sender, activeControlModes[0]);
             }
             else
+            {
                 MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, currentControlMode, Map.Singleton.IsCharacterOnBallista(actor.CharClassID));
+                MapInputHandler.Singleton.TargetRpcSetControlMode(sender, currentControlMode);
+            }
 
             if (actor.HasActiveAbility())
             {

@@ -163,6 +163,7 @@ public class MapInputHandler : NetworkBehaviour
                         this.rangeDisplayer.DisplayPath(path);
                     }
                 }
+                ActionExecutor.Singleton.CmdPreviewMoveTo(hoveredHex);
                 break;
             case ControlMode.attack:
                 Hex attackerHex = this.SelectedHex;
@@ -213,6 +214,8 @@ public class MapInputHandler : NetworkBehaviour
         {
             this.HoveredHex = null;
         }
+
+        ActionExecutor.Singleton.RemoveActionPreview();
 
         switch (this.CurrentControlMode)
         {
@@ -300,6 +303,13 @@ public class MapInputHandler : NetworkBehaviour
             || mode == ControlMode.none))
         {
             this.SelectHexForPlayingCharacter();
+        }
+
+        switch (mode)
+        {
+            case ControlMode.move:
+                ActionExecutor.Singleton.CmdPrepareMove(this.SelectedHex);
+                break;
         }
     }
 

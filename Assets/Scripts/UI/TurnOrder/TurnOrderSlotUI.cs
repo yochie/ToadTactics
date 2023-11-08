@@ -33,6 +33,12 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     private Image lifebar;
 
     [SerializeField]
+    private HealPreview healPreview;
+
+    [SerializeField]
+    private DamagePreview damagePreview;
+
+    [SerializeField]
     private float highlightScaling;
 
 
@@ -143,5 +149,23 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
 
         if (this.displayedBuffs.Count == 0)
             this.buffList.SetActive(false);
+    }
+
+    internal void DisplayDamagePreview(int damage, int currentLife, int maxLife)
+    {
+        if (damage > 0)
+        {
+            this.damagePreview.Display(true, (float) damage/ (float) currentLife);
+        }
+        else
+        {
+            this.healPreview.Display(true,  (float) (currentLife + Math.Abs(damage)) / (float) maxLife);
+        }
+    }
+
+    internal void HideDamagePreview()
+    {
+        this.damagePreview.Display(false, 0);
+        this.healPreview.Display(false, 0);
     }
 }

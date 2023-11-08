@@ -158,5 +158,24 @@ public class TurnOrderHUD : MonoBehaviour
             slot.setHighlight(slot.HoldsCharacterWithClassID == classID);
         }
     }
+
+    public void DisplayDamagePreview(int classID, int damage, int currentLife, int maxLife)
+    {
+        foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
+        {
+            if (classID == slot.HoldsCharacterWithClassID)
+            {
+                slot.DisplayDamagePreview(damage, currentLife, maxLife);
+            }
+        }
+    }
+
+    public void HideAllDamagePreviews()
+    {
+        foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
+        {
+            slot.HideDamagePreview();
+        }
+    }
     #endregion
 }
