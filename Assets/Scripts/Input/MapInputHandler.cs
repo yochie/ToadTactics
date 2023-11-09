@@ -204,6 +204,7 @@ public class MapInputHandler : NetworkBehaviour
                 bool ballistaRequiresLOS = this.ballistaPrefab.attacksRequireLOS;
                 targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, ballistaAreaType, ballistaHex, hoveredHex, ballistaAreaScaler);
                 this.rangeDisplayer.HighlightTargetedArea(ballistaHex, hoveredHex, ballistaAreaType, ballistaAreaScaler, ballistaRequiresLOS, targetedHexes);
+                ActionExecutor.Singleton.CmdPreviewUseBallista(this.SelectedHex, hoveredHex);
                 break;
         }
     }
@@ -305,16 +306,6 @@ public class MapInputHandler : NetworkBehaviour
         {
             this.SelectHexForPlayingCharacter();
         }
-
-        //switch (mode)
-        //{
-        //    case ControlMode.move:
-        //        ActionExecutor.Singleton.CmdPrepareMove(this.SelectedHex);
-        //        break;
-        //    case ControlMode.attack:
-        //        ActionExecutor.Singleton.CmdPrepareAttack(this.SelectedHex);
-        //        break;
-        //}
     }
 
     private void SelectHexForPlayingCharacter()

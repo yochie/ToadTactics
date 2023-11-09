@@ -133,6 +133,7 @@ public class ActionExecutor : NetworkBehaviour
                                                                             this.ballistaPrefab.damage,
                                                                             this.ballistaPrefab.damageType,
                                                                             this.ballistaPrefab.damageIterations,
+                                                                            this.ballistaPrefab.range,
                                                                             this.ballistaPrefab.penetratingDamage,
                                                                             this.ballistaPrefab.knockback,
                                                                             this.ballistaPrefab.critChance > 0,
@@ -157,6 +158,34 @@ public class ActionExecutor : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
+    public void CmdPreviewUseBallista(Hex source, Hex target, NetworkConnectionToClient sender = null)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        IAttackAction attackAction = ActionFactory.CreateBallistaAttackAction(sender,
+                                                                                    playerID,
+                                                                                    attackingCharacter,
+                                                                                    this.ballistaPrefab.damage,
+                                                                                    this.ballistaPrefab.damageType,
+                                                                                    this.ballistaPrefab.damageIterations,
+                                                                                    this.ballistaPrefab.range,
+                                                                                    this.ballistaPrefab.penetratingDamage,
+                                                                                    this.ballistaPrefab.knockback,
+                                                                                    this.ballistaPrefab.critChance > 0,
+                                                                                    this.ballistaPrefab.critChance,
+                                                                                    this.ballistaPrefab.critMultiplier,
+                                                                                    this.ballistaPrefab.attackAreaType,
+                                                                                    this.ballistaPrefab.attackAreaScaler,
+                                                                                    source,
+                                                                                    target);
+
+        if (!attackAction.ServerValidate())
+            return;
+        ActionEffectPreview actionEffect = attackAction.PreviewEffect();
+        this.TargetRpcPreviewActionEffect(sender, actionEffect);
+    }
+
+    [Command(requiresAuthority = false)]
     internal void CmdUseAbility(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
@@ -164,6 +193,8 @@ public class ActionExecutor : NetworkBehaviour
         IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, playerID, usingCharacter, abilityStats, source, target);
         this.TryAction(abilityAction, isFullAction: true, startingMode: ControlMode.useAbility);
     }
+
+
 
     //should only be used from abilities that have a damaging effect defined in their stats
     //since called within another action, dont call FinishAction(), parent action will take care of that

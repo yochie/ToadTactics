@@ -194,6 +194,7 @@ public class ActionFactory : MonoBehaviour
                                                              int damage,
                                                              DamageType damageType,
                                                              int damageIterations,
+                                                             int range,
                                                              bool penetratingDamage,
                                                              int knockback,
                                                              bool canCrit,
@@ -217,7 +218,7 @@ public class ActionFactory : MonoBehaviour
         customAttackAction.TargetHex = primaryTarget;
         customAttackAction.AllowedTargetTypes = Utility.GetAllEnumValues<TargetType>();
         customAttackAction.RequiresLOS = false;
-        customAttackAction.Range = 99;
+        customAttackAction.Range = range;
 
         customAttackAction.Damage = damage;
         customAttackAction.DamageIterations = damageIterations;
