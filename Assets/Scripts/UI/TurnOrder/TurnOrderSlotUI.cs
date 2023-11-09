@@ -155,11 +155,15 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     {
         if (damage > 0)
         {
-            this.damagePreview.Display(true, (float) damage/ (float) currentLife);
+            float damageAsPortionOfRemainingLife = (float)damage / (float) currentLife;
+            damageAsPortionOfRemainingLife = Math.Clamp(damageAsPortionOfRemainingLife, 0, 1);
+            this.damagePreview.Display(true, damageAsPortionOfRemainingLife);
         }
         else
         {
-            this.healPreview.Display(true,  (float) (currentLife + Math.Abs(damage)) / (float) maxLife);
+            float remainingPortionOfMaxLifeAfterHeal = (float)(currentLife + Math.Abs(damage)) / (float)maxLife;
+            remainingPortionOfMaxLifeAfterHeal = Math.Clamp(remainingPortionOfMaxLifeAfterHeal, 0, 1);
+            this.healPreview.Display(true, remainingPortionOfMaxLifeAfterHeal);
         }
     }
 

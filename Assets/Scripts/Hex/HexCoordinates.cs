@@ -46,6 +46,11 @@ public readonly struct HexCoordinates : IEquatable<HexCoordinates>
 		this.isFlatTop = isFlatTop;
 	}
 
+	public static HexCoordinates None()
+	{
+		return new HexCoordinates(-1, -1, false);
+	}
+
 	public static HexCoordinates FromOffsetCoordinates(int x, int y, bool isFlatTop)
 	{
         if (isFlatTop)

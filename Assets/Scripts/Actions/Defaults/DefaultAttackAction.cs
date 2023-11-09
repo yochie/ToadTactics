@@ -101,7 +101,38 @@ public class DefaultAttackAction : IAttackAction
         logger.RpcLogMessage(message);
     }
 
-    [Server]
+    private EffectOnCharacter PreviewHitTargetEffect(Hex target)
+    {
+        if (!target.HoldsACharacter())
+            return EffectOnCharacter.None();
+
+        PlayerCharacter defenderCharacter = target.GetHeldCharacterObject();
+        int prevLife = defenderCharacter.CurrentLife;
+        int damage = defenderCharacter.CalculateDamageFromHit(new Hit(this.Damage, this.AttackDamageType, this.PenetratingDamage));
+
+        EffectOnCharacter effect = new(defenderCharacter.CharClassID, target.coordinates, damage, damage);
+        return effect;
+
+        //TODO : enable knockback previews
+        //if (this.Knockback > 0)
+        //{
+        //    HexCoordinates sourceToTarget = HexCoordinates.Substract(target.coordinates, this.ActorHex.coordinates);
+        //    if (sourceToTarget.OnSingleAxis())
+        //    {
+        //        Hex knockbackDestination = MapPathfinder.KnockbackAlongAxis(Map.Singleton.hexGrid, this.ActorHex, target, knockbackDistance: Knockback);
+
+
+        //        bool knockbackSuccess;
+        //        if (knockbackDestination != null)
+        //            knockbackSuccess = ActionExecutor.Singleton.CustomMove(target, knockbackDestination, this.RequestingClient);
+        //        else
+        //            knockbackSuccess = false;               
+        //    }
+        //}
+    }
+
+
+[Server]
     public virtual bool ServerValidate()
     {
         if (IAction.ValidateBasicAction(this) &&
@@ -112,4 +143,24 @@ public class DefaultAttackAction : IAttackAction
         else
             return false;
     }
+
+    public ActionEffectPreview PreviewEffect()
+    {
+        ActionEffectPreview effectPreview = ActionEffectPreview.None();
+
+        List<Hex> allTargets = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
+       
+        for (int i = 0; i < this.DamageIterations; i++)
+        {
+            foreach (Hex target in allTargets)
+            {
+                EffectOnCharacter effectOnCharacter = this.PreviewHitTargetEffect(target);
+                if(effectOnCharacter.classID != -1)
+                    effectPreview = effectPreview.AddEffect(effectOnCharacter);
+            }
+        }
+
+        return effectPreview;
+    }
 }
+

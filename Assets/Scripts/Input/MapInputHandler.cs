@@ -173,6 +173,7 @@ public class MapInputHandler : NetworkBehaviour
                 bool attackRequiresLOS = attackerStats.attacksRequireLOS;
                 targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, attackAreaType, attackerHex, hoveredHex, attackAreaScaler);
                 this.rangeDisplayer.HighlightTargetedArea(attackerHex, hoveredHex, attackAreaType, attackAreaScaler, attackRequiresLOS, targetedHexes);
+                ActionExecutor.Singleton.CmdPreviewAttackAt(hoveredHex);
                 //foreach(Hex h in targetedHexes)
                 //{
                 //    if (!h.HoldsACharacter())
@@ -309,6 +310,9 @@ public class MapInputHandler : NetworkBehaviour
         {
             case ControlMode.move:
                 ActionExecutor.Singleton.CmdPrepareMove(this.SelectedHex);
+                break;
+            case ControlMode.attack:
+                ActionExecutor.Singleton.CmdPrepareAttack(this.SelectedHex);
                 break;
         }
     }

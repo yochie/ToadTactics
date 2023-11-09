@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 
-public interface IAttackAction : ITargetedAction, IAreaTargeter
+public interface IAttackAction : ITargetedAction, IAreaTargeter, IPreviewedAction
 { 
     //public CharacterStats AttackerStats { get; set; }
     public int Damage { get; set; }

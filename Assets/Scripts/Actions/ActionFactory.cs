@@ -91,12 +91,6 @@ public class ActionFactory : MonoBehaviour
         attackAction.TargetedAreaType = attackerStats.attackAreaType;
         attackAction.AreaScaler = attackerStats.attackAreaScaler;
 
-        List<IAttackEnhancer> attackEnhancers = attackerCharacter.GetAttackEnhancers();
-        foreach(IAttackEnhancer attackEnhancer in attackEnhancers)
-        {
-            attackAction = attackEnhancer.EnhanceAttack(attackAction);
-        }
-
         return attackAction;
     }
 

@@ -66,17 +66,6 @@ public class ActionExecutor : NetworkBehaviour
         this.TargetRpcPreviewActionEffect(sender, actionEffect);
     }
 
-    [TargetRpc]
-    private void TargetRpcPreviewActionEffect(NetworkConnectionToClient target, ActionEffectPreview actionEffect)
-    {
-        this.actionPreviewer.PreviewActionEffect(actionEffect);
-    }
-
-    public void RemoveActionPreview()
-    {
-        this.actionPreviewer.RemoveActionPreview();
-    }
-
     [Server]
     internal bool CustomMove(Hex source,
                            Hex dest,              
@@ -97,6 +86,11 @@ public class ActionExecutor : NetworkBehaviour
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
         IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
+        List<IAttackEnhancer> attackEnhancers = preparedAction.ActorCharacter.GetAttackEnhancers();
+        foreach (IAttackEnhancer attackEnhancer in attackEnhancers)
+        {
+            attackAction = attackEnhancer.EnhanceAttack(attackAction);
+        }
         bool actionSuccess = this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.attack);
 
         if (actionSuccess)
@@ -108,6 +102,39 @@ public class ActionExecutor : NetworkBehaviour
             this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
         }
     }
+
+    [Command(requiresAuthority = false)]
+    public void CmdPrepareAttack(Hex source, NetworkConnectionToClient sender = null)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, null);
+        this.preparedAction = attackAction;
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdPreviewAttackAt(Hex destination, NetworkConnectionToClient sender = null)
+    {
+        IAttackAction preparedAction = this.preparedAction as IAttackAction;
+        if (preparedAction == null)
+        {
+            throw new Exception("Prepared action does not correspond to previewed action type");
+        }
+
+        preparedAction.TargetHex = destination;
+
+        List<IAttackEnhancer> attackEnhancers = preparedAction.ActorCharacter.GetAttackEnhancers();
+        foreach (IAttackEnhancer attackEnhancer in attackEnhancers)
+        {
+            preparedAction = attackEnhancer.EnhanceAttack(preparedAction);
+        }
+
+        if (!preparedAction.ServerValidate())
+            return;
+        ActionEffectPreview actionEffect = preparedAction.PreviewEffect();
+        this.TargetRpcPreviewActionEffect(sender, actionEffect);
+    }
+
 
     [Command(requiresAuthority = false)]
     internal void CmdUseBallista(Hex source, Hex target, NetworkConnectionToClient sender = null)
@@ -287,6 +314,17 @@ public class ActionExecutor : NetworkBehaviour
             Hex actorHex = Map.GetHex(Map.Singleton.hexGrid, Map.Singleton.characterPositions[actor.CharClassID]);
             MapInputHandler.Singleton.TargetRpcSelectHex(sender,actorHex);
         }
+    }
+
+    [TargetRpc]
+    private void TargetRpcPreviewActionEffect(NetworkConnectionToClient target, ActionEffectPreview actionEffect)
+    {
+        this.actionPreviewer.PreviewActionEffect(actionEffect);
+    }
+
+    public void RemoveActionPreview()
+    {
+        this.actionPreviewer.RemoveActionPreview();
     }
 
     //Utility for validation of ITargetedActions and to find attack range in MapPathFinder
