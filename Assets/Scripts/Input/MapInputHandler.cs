@@ -163,7 +163,7 @@ public class MapInputHandler : NetworkBehaviour
                         this.rangeDisplayer.DisplayPath(path);
                     }
                 }
-                ActionExecutor.Singleton.CmdPreviewMoveTo(hoveredHex);
+                ActionExecutor.Singleton.CmdPreviewMoveTo(this.SelectedHex, hoveredHex);
                 break;
             case ControlMode.attack:
                 Hex attackerHex = this.SelectedHex;
@@ -173,7 +173,7 @@ public class MapInputHandler : NetworkBehaviour
                 bool attackRequiresLOS = attackerStats.attacksRequireLOS;
                 targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, attackAreaType, attackerHex, hoveredHex, attackAreaScaler);
                 this.rangeDisplayer.HighlightTargetedArea(attackerHex, hoveredHex, attackAreaType, attackAreaScaler, attackRequiresLOS, targetedHexes);
-                ActionExecutor.Singleton.CmdPreviewAttackAt(hoveredHex);
+                ActionExecutor.Singleton.CmdPreviewAttackAt(this.SelectedHex, hoveredHex);
                 //foreach(Hex h in targetedHexes)
                 //{
                 //    if (!h.HoldsACharacter())
@@ -306,15 +306,15 @@ public class MapInputHandler : NetworkBehaviour
             this.SelectHexForPlayingCharacter();
         }
 
-        switch (mode)
-        {
-            case ControlMode.move:
-                ActionExecutor.Singleton.CmdPrepareMove(this.SelectedHex);
-                break;
-            case ControlMode.attack:
-                ActionExecutor.Singleton.CmdPrepareAttack(this.SelectedHex);
-                break;
-        }
+        //switch (mode)
+        //{
+        //    case ControlMode.move:
+        //        ActionExecutor.Singleton.CmdPrepareMove(this.SelectedHex);
+        //        break;
+        //    case ControlMode.attack:
+        //        ActionExecutor.Singleton.CmdPrepareAttack(this.SelectedHex);
+        //        break;
+        //}
     }
 
     private void SelectHexForPlayingCharacter()

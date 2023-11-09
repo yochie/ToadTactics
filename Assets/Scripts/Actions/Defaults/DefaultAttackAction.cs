@@ -46,6 +46,7 @@ public class DefaultAttackAction : IAttackAction
         this.ActorCharacter.UsedAttack();        
     }
 
+    [Server]
     protected void HitTarget(Hex target, INetworkedLogger logger)
     {
         if (target.HoldsAnObstacle())
@@ -101,13 +102,13 @@ public class DefaultAttackAction : IAttackAction
         logger.RpcLogMessage(message);
     }
 
+    [Server]
     private EffectOnCharacter PreviewHitTargetEffect(Hex target)
     {
         if (!target.HoldsACharacter())
             return EffectOnCharacter.None();
 
         PlayerCharacter defenderCharacter = target.GetHeldCharacterObject();
-        int prevLife = defenderCharacter.CurrentLife;
         int damage = defenderCharacter.CalculateDamageFromHit(new Hit(this.Damage, this.AttackDamageType, this.PenetratingDamage));
 
         EffectOnCharacter effect = new(defenderCharacter.CharClassID, target.coordinates, damage, damage);
@@ -132,7 +133,7 @@ public class DefaultAttackAction : IAttackAction
     }
 
 
-[Server]
+    [Server]
     public virtual bool ServerValidate()
     {
         if (IAction.ValidateBasicAction(this) &&
@@ -144,7 +145,8 @@ public class DefaultAttackAction : IAttackAction
             return false;
     }
 
-    public ActionEffectPreview PreviewEffect()
+    [Server]
+    public virtual ActionEffectPreview PreviewEffect()
     {
         ActionEffectPreview effectPreview = ActionEffectPreview.None();
 

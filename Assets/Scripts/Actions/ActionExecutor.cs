@@ -20,7 +20,6 @@ public class ActionExecutor : NetworkBehaviour
 
     public static ActionExecutor Singleton { get; private set; }
 
-    private IAction preparedAction;
     [SerializeField]
     private ActionPreviewer actionPreviewer;
 
@@ -41,28 +40,16 @@ public class ActionExecutor : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdPrepareMove(Hex source, NetworkConnectionToClient sender = null)
+    public void CmdPreviewMoveTo(Hex source, Hex destination, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
-        IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, null);
-        this.preparedAction = moveAction;
-    }
+        IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, destination);
 
-    [Command(requiresAuthority = false)]
-    public void CmdPreviewMoveTo(Hex destination, NetworkConnectionToClient sender = null)
-    {
-        IMoveAction preparedMove = this.preparedAction as IMoveAction;
-        if (preparedMove == null)
-        {
-            throw new Exception("Prepared action does not correspond to previewed action type");
-        }
-
-        preparedMove.TargetHex = destination;
-        preparedMove.SetupPath();
-        if (!preparedMove.ServerValidate())
+        moveAction.SetupPath();
+        if (!moveAction.ServerValidate())
             return;        
-        ActionEffectPreview actionEffect = preparedMove.PreviewEffect();
+        ActionEffectPreview actionEffect = moveAction.PreviewEffect();
         this.TargetRpcPreviewActionEffect(sender, actionEffect);
     }
 
@@ -86,7 +73,7 @@ public class ActionExecutor : NetworkBehaviour
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
         IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
-        List<IAttackEnhancer> attackEnhancers = preparedAction.ActorCharacter.GetAttackEnhancers();
+        List<IAttackEnhancer> attackEnhancers = attackAction.ActorCharacter.GetAttackEnhancers();
         foreach (IAttackEnhancer attackEnhancer in attackEnhancers)
         {
             attackAction = attackEnhancer.EnhanceAttack(attackAction);
@@ -104,34 +91,21 @@ public class ActionExecutor : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdPrepareAttack(Hex source, NetworkConnectionToClient sender = null)
+    public void CmdPreviewAttackAt(Hex source, Hex destination, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, null);
-        this.preparedAction = attackAction;
-    }
+        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, destination);
 
-    [Command(requiresAuthority = false)]
-    public void CmdPreviewAttackAt(Hex destination, NetworkConnectionToClient sender = null)
-    {
-        IAttackAction preparedAction = this.preparedAction as IAttackAction;
-        if (preparedAction == null)
-        {
-            throw new Exception("Prepared action does not correspond to previewed action type");
-        }
-
-        preparedAction.TargetHex = destination;
-
-        List<IAttackEnhancer> attackEnhancers = preparedAction.ActorCharacter.GetAttackEnhancers();
+        List<IAttackEnhancer> attackEnhancers = attackAction.ActorCharacter.GetAttackEnhancers();
         foreach (IAttackEnhancer attackEnhancer in attackEnhancers)
         {
-            preparedAction = attackEnhancer.EnhanceAttack(preparedAction);
+            attackAction = attackEnhancer.EnhanceAttack(attackAction);
         }
 
-        if (!preparedAction.ServerValidate())
+        if (!attackAction.ServerValidate())
             return;
-        ActionEffectPreview actionEffect = preparedAction.PreviewEffect();
+        ActionEffectPreview actionEffect = attackAction.PreviewEffect();
         this.TargetRpcPreviewActionEffect(sender, actionEffect);
     }
 
