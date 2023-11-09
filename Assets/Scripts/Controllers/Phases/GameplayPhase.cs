@@ -105,6 +105,8 @@ public class GameplayPhase : IGamePhase
         {
             int damageTaken = HazardDataSO.Singleton.GetHazardDamage(standingOnHazardType, standingDamage: true);
             DamageType damageTypeTaken = HazardDataSO.Singleton.GetHazardDamageType(standingOnHazardType);
+            if (damageTypeTaken == DamageType.none || damageTaken == 0)
+                return;
             lastTurnCharacter.TakeDamage(new Hit(damageTaken, damageTypeTaken));
             if (damageTaken > 0)
             {
