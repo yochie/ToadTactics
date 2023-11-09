@@ -39,4 +39,33 @@ internal class PaladinAttackAction : DefaultAttackAction, IPrintableStats
         }
     }
 
+    [Server]
+    public override ActionEffectPreview PreviewEffect()
+    {
+        ActionEffectPreview basePreview = base.PreviewEffect();
+        PlayerCharacter defender = this.TargetHex.GetHeldCharacterObject();
+        if (!defender.CurrentStats.hasFaith)
+        {
+            ActionEffectPreview customPortionPreview = ActionExecutor.Singleton.GetCustomAttackPreview(source: this.ActorHex,
+                                              primaryTarget: this.TargetHex,
+                                              areaType: AreaType.single,
+                                              areaScaler: 1,
+                                              damage: PALADIN_FAITHLESS_BONUS_DAMAGE,
+                                              damageType: PALADIN_FAITHLESS_BONUS_DAMAGE_TYPE,
+                                              damageIterations: 1,
+                                              penetratingDamage: false,
+                                              knockback: 0,
+                                              canCrit: false,
+                                              critChance: 0,
+                                              critMultiplier: 0,
+                                              sender: this.RequestingClient);
+
+            return basePreview.MergeWithPreview(customPortionPreview);
+        } else
+        {
+            return basePreview;
+        }
+
+    }
+
 }

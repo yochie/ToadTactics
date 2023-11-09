@@ -39,7 +39,7 @@ internal class NecroAttackAction : DefaultAttackAction, IPrintableStats
 
     [Server]
     public override ActionEffectPreview PreviewEffect() {
-        ActionEffectPreview preview = base.PreviewEffect();
+        ActionEffectPreview basePreview = base.PreviewEffect();
         ActionEffectPreview customPortionPreview = ActionExecutor.Singleton.GetCustomAttackPreview(source: this.ActorHex,
                                               primaryTarget: this.ActorHex,
                                               areaType: AreaType.single,
@@ -54,6 +54,6 @@ internal class NecroAttackAction : DefaultAttackAction, IPrintableStats
                                               critMultiplier: 0,
                                               sender: this.RequestingClient);
         
-        return preview.MergeWithPreview(customPortionPreview);
+        return basePreview.MergeWithPreview(customPortionPreview);
     }
 }
