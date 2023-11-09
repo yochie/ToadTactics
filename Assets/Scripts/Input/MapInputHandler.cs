@@ -11,6 +11,9 @@ public class MapInputHandler : NetworkBehaviour
     private MapRangeDisplayer rangeDisplayer;
 
     [SerializeField]
+    private ActionPreviewer actionPreviewer;
+
+    [SerializeField]
     private Ballista ballistaPrefab;
 
     public static MapInputHandler Singleton { get; private set; }
@@ -133,6 +136,8 @@ public class MapInputHandler : NetworkBehaviour
         this.rangeDisplayer.HideBallistaRange();
         this.rangeDisplayer.HideAbilityRange();
         this.rangeDisplayer.UnHighlightTargetedArea();
+
+        this.actionPreviewer.RemoveActionPreview();
     }
 
     public void HoverHex(Hex hoveredHex)
@@ -217,7 +222,7 @@ public class MapInputHandler : NetworkBehaviour
             this.HoveredHex = null;
         }
 
-        ActionExecutor.Singleton.RemoveActionPreview();
+        this.actionPreviewer.RemoveActionPreview();
 
         switch (this.CurrentControlMode)
         {

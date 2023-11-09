@@ -375,11 +375,6 @@ public class ActionExecutor : NetworkBehaviour
         this.actionPreviewer.PreviewActionEffect(actionEffect);
     }
 
-    public void RemoveActionPreview()
-    {
-        this.actionPreviewer.RemoveActionPreview();
-    }
-
     //Utility for validation of ITargetedActions and to find attack range in MapPathFinder
     public static bool IsValidTargetType(PlayerCharacter actor, Hex targetedHex, List<TargetType> allowedTargets)
     {
