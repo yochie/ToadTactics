@@ -66,6 +66,18 @@ public class ActionExecutor : NetworkBehaviour
         return success;
     }
 
+    [Server]
+    internal ActionEffectPreview GetCustomMovePreview(Hex source,
+                           Hex dest,
+                           NetworkConnectionToClient sender)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        CustomMoveAction moveAction = ActionFactory.CreateCustomMoveAction(sender, playerID, movingCharacter, source, dest);
+        moveAction.SetupPath();
+        return moveAction.PreviewEffect();
+    }
+
 
     [Command(requiresAuthority = false)]
     public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
