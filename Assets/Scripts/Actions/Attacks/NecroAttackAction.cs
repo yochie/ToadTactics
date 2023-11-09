@@ -37,4 +37,23 @@ internal class NecroAttackAction : DefaultAttackAction, IPrintableStats
                                               sender: this.RequestingClient);
     }
 
+    [Server]
+    public override ActionEffectPreview PreviewEffect() {
+        ActionEffectPreview preview = base.PreviewEffect();
+        ActionEffectPreview customPortionPreview = ActionExecutor.Singleton.GetCustomAttackPreview(source: this.ActorHex,
+                                              primaryTarget: this.ActorHex,
+                                              areaType: AreaType.single,
+                                              areaScaler: 1,
+                                              damage: NECRO_SELF_DAMAGE,
+                                              damageType: NECRO_SELF_DAMAGE_TYPE,
+                                              damageIterations: 1,
+                                              penetratingDamage: false,
+                                              knockback: 0,
+                                              canCrit: false,
+                                              critChance: 0,
+                                              critMultiplier: 0,
+                                              sender: this.RequestingClient);
+        
+        return preview.MergeWithPreview(customPortionPreview);
+    }
 }

@@ -214,6 +214,42 @@ public class ActionExecutor : NetworkBehaviour
         this.TryAction(customAttackAction, isFullAction: false);
     }
 
+    internal ActionEffectPreview GetCustomAttackPreview(Hex source,
+                               Hex primaryTarget,
+                               AreaType areaType,
+                               int areaScaler,
+                               int damage,
+                               DamageType damageType,
+                               int damageIterations,
+                               bool penetratingDamage,
+                               int knockback,
+                               bool canCrit,
+                               float critChance,
+                               float critMultiplier,
+                               NetworkConnectionToClient sender)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        CustomAttackAction customAttackAction = ActionFactory.CreateCustomAttackAction(
+                                                                 sender,
+                                                                 playerID,
+                                                                 attackingCharacter,
+                                                                 damage,
+                                                                 damageType,
+                                                                 damageIterations,
+                                                                 penetratingDamage,
+                                                                 knockback,
+                                                                 canCrit,
+                                                                 critChance,
+                                                                 critMultiplier,
+                                                                 areaType,
+                                                                 areaScaler,
+                                                                 source,
+                                                                 primaryTarget);
+
+        return customAttackAction.PreviewEffect();
+    }
+
     [Server]
     private bool TryAction(IAction action, bool isFullAction, ControlMode? startingMode = null)
     {

@@ -53,4 +53,14 @@ public readonly struct ActionEffectPreview
 
         return new ActionEffectPreview(newEffects);
     }
+
+    internal ActionEffectPreview MergeWithPreview(ActionEffectPreview toMerge)
+    {
+        ActionEffectPreview newPreview = this;
+        foreach(EffectOnCharacter effect in toMerge.effectOnCharacters)
+        {
+            newPreview = this.AddEffect(effect);
+        }
+        return newPreview;
+    }
 }
