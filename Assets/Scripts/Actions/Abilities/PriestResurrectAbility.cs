@@ -53,8 +53,6 @@ public class PriestResurrectAbility : IAbilityAction, ITargetedAction
     public bool ServerValidate()
     {
 
-        //TODO check for individual ability uses instead of single hasUsedAbility to allow multiple abilities
-
         if (IAction.ValidateBasicAction(this) &&
             ITargetedAction.ValidateTarget(this) &&
             IAbilityAction.ValidateCooldowns(this)
@@ -62,5 +60,25 @@ public class PriestResurrectAbility : IAbilityAction, ITargetedAction
             return true;
         else
             return false;
+    }
+
+    public ActionEffectPreview PreviewEffect()
+    {
+        ActionEffectPreview baseEffectPreview = ActionEffectPreview.None();
+        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
+        foreach (Hex targetedHex in targetedHexes)
+        {
+            //this is hacky, we're using primary target validation on secondary targets... 
+            //allows priest to have all resurrected characters validated by single setting
+            //to do properly would mean to implement validation on secondary targets, which isn't needed anywhere else yet...
+            if (!targetedHex.HoldsACorpse() || !ActionExecutor.IsValidTargetType(this.ActorCharacter, targetedHex, this.AllowedTargetTypes))
+                continue;
+            PlayerCharacter toResurrect = targetedHex.GetHeldCorpseCharacterObject();
+            int lifeOnResurrection = toResurrect.CurrentStats.maxHealth / 2;
+            EffectOnCharacter effect = new EffectOnCharacter(toResurrect.CharClassID, targetedHex.coordinates, -lifeOnResurrection, -lifeOnResurrection);
+            baseEffectPreview.MergeWithPreview(new ActionEffectPreview(new EffectOnCharacter [] { effect }));
+        }
+
+        return baseEffectPreview;
     }
 }

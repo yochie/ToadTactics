@@ -43,6 +43,8 @@ internal class PaladinAttackAction : DefaultAttackAction, IPrintableStats
     public override ActionEffectPreview PreviewEffect()
     {
         ActionEffectPreview basePreview = base.PreviewEffect();
+        if (!this.TargetHex.HoldsACharacter())
+            return basePreview;
         PlayerCharacter defender = this.TargetHex.GetHeldCharacterObject();
         if (!defender.CurrentStats.hasFaith)
         {

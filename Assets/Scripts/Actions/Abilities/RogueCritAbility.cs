@@ -48,4 +48,12 @@ public class RogueCritAbility : IAbilityAction, ITargetedAction
         else
             return false;
     }
+
+    public ActionEffectPreview PreviewEffect()
+    {
+        ActionEffectPreview baseEffectPreview = ActionEffectPreview.None();
+        ActionEffectPreview attackPortionPreview = ActionExecutor.Singleton.GetAbilityAttackPreview(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
+
+        return baseEffectPreview.MergeWithPreview(attackPortionPreview);
+    }
 }

@@ -72,4 +72,24 @@ public class NecroDOTAbility : IAbilityAction, IActivatedBuffSource, ITargetedAc
         else
             return false;
     }
+
+    public ActionEffectPreview PreviewEffect()
+    {
+        ActionEffectPreview baseEffectPreview = ActionEffectPreview.None();
+        ActionEffectPreview attackPortionPreview = ActionExecutor.Singleton.GetCustomAttackPreview(source: this.ActorHex,
+                                              primaryTarget: this.ActorHex,
+                                              areaType: AreaType.single,
+                                              areaScaler: 1,
+                                              damage: this.AbilityStats.damage,
+                                              damageType: this.AbilityStats.damageType,
+                                              damageIterations: this.AbilityStats.damageIterations,
+                                              penetratingDamage: this.AbilityStats.penetratingDamage,
+                                              knockback: 0,
+                                              canCrit: false,
+                                              critChance: 0f,
+                                              critMultiplier: 0f,
+                                              sender: this.RequestingClient);
+
+        return baseEffectPreview.MergeWithPreview(attackPortionPreview);
+    }
 }

@@ -64,4 +64,9 @@ public class PaladinTeamBuffAbility : IAbilityAction, IActivatedBuffSource, ICoo
         else
             return false;
     }
+
+    public ActionEffectPreview PreviewEffect()
+    {
+        return ActionEffectPreview.None();
+    }
 }

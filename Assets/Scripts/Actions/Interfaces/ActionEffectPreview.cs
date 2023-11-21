@@ -59,7 +59,7 @@ public readonly struct ActionEffectPreview
         ActionEffectPreview newPreview = this;
         foreach(EffectOnCharacter effect in toMerge.effectOnCharacters)
         {
-            newPreview = this.AddEffect(effect);
+            newPreview = newPreview.AddEffect(effect);
         }
         return newPreview;
     }

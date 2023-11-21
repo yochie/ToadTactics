@@ -194,6 +194,17 @@ public class ActionExecutor : NetworkBehaviour
         this.TryAction(abilityAction, isFullAction: true, startingMode: ControlMode.useAbility);
     }
 
+    [Command(requiresAuthority = false)]
+    internal void CmdPreviewAbilityAt(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
+        IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, playerID, usingCharacter, abilityStats, source, target);
+        if (!abilityAction.ServerValidate())
+            return;
+        ActionEffectPreview actionEffect = abilityAction.PreviewEffect();
+        this.TargetRpcPreviewActionEffect(sender, actionEffect);
+    }
 
 
     //should only be used from abilities that have a damaging effect defined in their stats
@@ -219,6 +230,23 @@ public class ActionExecutor : NetworkBehaviour
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
             this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
         }
+    }
+
+
+    internal ActionEffectPreview GetAbilityAttackPreview(Hex source, Hex primaryTarget, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender)
+    {
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        CustomAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(
+                                                                 sender,
+                                                                 playerID,
+                                                                 attackingCharacter,
+                                                                 attackingCharacter.CurrentStats,
+                                                                 abilityStats,
+                                                                 source,
+                                                                 primaryTarget);
+
+        return abilityAttackAction.PreviewEffect();
     }
 
     //Used by actions that have a secondary damage effect that is not defined by ability stats

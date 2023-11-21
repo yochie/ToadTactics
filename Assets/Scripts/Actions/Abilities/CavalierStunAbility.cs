@@ -54,8 +54,6 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IActivatedBu
     public bool ServerValidate()
     {
 
-        //TODO check for individual ability uses instead of single hasUsedAbility to allow multiple abilities
-
         if (IAction.ValidateBasicAction(this) &&
             ITargetedAction.ValidateTarget(this) &&
             IAbilityAction.ValidateCooldowns(this)
@@ -63,5 +61,14 @@ public class CavalierStunAbility : IAbilityAction, ITargetedAction, IActivatedBu
             return true;
         else
             return false;
+    }
+
+
+    public ActionEffectPreview PreviewEffect()
+    {
+        ActionEffectPreview baseEffectPreview = ActionEffectPreview.None();
+        ActionEffectPreview attackPortionPreview = ActionExecutor.Singleton.GetAbilityAttackPreview(this.ActorHex, this.TargetHex, this.AbilityStats, this.RequestingClient);
+
+        return baseEffectPreview.MergeWithPreview(attackPortionPreview);
     }
 }

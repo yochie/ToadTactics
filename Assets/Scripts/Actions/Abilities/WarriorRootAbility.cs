@@ -61,4 +61,10 @@ public class WarriorRootAbility : IAbilityAction, ITargetedAction, IActivatedBuf
         else
             return false;
     }
+
+    public ActionEffectPreview PreviewEffect()
+    {
+
+        return ActionEffectPreview.None();
+    }
 }
