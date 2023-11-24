@@ -158,10 +158,10 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
             float damageAsPortionOfRemainingLife = (float)damage / (float) currentLife;
             damageAsPortionOfRemainingLife = Math.Clamp(damageAsPortionOfRemainingLife, 0, 1);
             this.damagePreview.Display(true, damageAsPortionOfRemainingLife);
-            Debug.Log(damage);
-            Debug.Log(currentLife);
-            Debug.Log(maxLife);
-            Debug.Log(damageAsPortionOfRemainingLife);
+            //Debug.Log(damage);
+            //Debug.Log(currentLife);
+            //Debug.Log(maxLife);
+            //Debug.Log(damageAsPortionOfRemainingLife);
         }
         else
         {
