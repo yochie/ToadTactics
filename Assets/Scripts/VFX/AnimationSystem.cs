@@ -20,8 +20,8 @@ public class AnimationSystem : MonoBehaviour
         this.queue = new CoroutineQueue(1, StartCoroutine);
     }
 
-    public void Queue(IEnumerator coroutine)
+    public void Queue(IList<IEnumerator> coroutineBatch)
     {
-        this.queue.Run(coroutine);
+        this.queue.Run(coroutineBatch);
     }
 }

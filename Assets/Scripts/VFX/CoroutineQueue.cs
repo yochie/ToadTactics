@@ -25,12 +25,16 @@ public class CoroutineQueue
 	/// <summary>
 	/// Queue of coroutines waiting to start
 	/// </summary>
-	private readonly Queue<IEnumerator> queue;
+	private readonly Queue<IList<IEnumerator>> queue;
 
 	/// <summary>
 	/// Number of currently active coroutines
 	/// </summary>
 	private uint numActive;
+
+	private int numCompletedInBatch;
+	private int numInCurrentBatch;
+
 
 	/// <summary>
 	/// Create the queue, initially with no coroutines
@@ -52,8 +56,10 @@ public class CoroutineQueue
 			throw new ArgumentException("Must be at least one", "maxActive");
 		}
 		this.maxActive = maxActive;
+		this.numCompletedInBatch = 0;
+		this.numInCurrentBatch = 0;
 		this.coroutineStarter = coroutineStarter;
-		queue = new Queue<IEnumerator>();
+		queue = new();
 	}
 
 	/// <summary>
@@ -61,17 +67,42 @@ public class CoroutineQueue
 	/// given coroutine. Otherwise, queue it to be run when other coroutines finish.
 	/// </summary>
 	/// <param name="coroutine">Coroutine to run or queue</param>
-	public void Run(IEnumerator coroutine)
+	public void Run(IList<IEnumerator> coroutineBatch)
 	{
 		if (numActive < maxActive)
+		{
+			this.coroutineStarter(this.CoroutineBatchRunner(coroutineBatch));
+		}
+		else
+		{
+			queue.Enqueue(coroutineBatch);
+		}
+	}
+
+	private IEnumerator CoroutineBatchRunner(IList<IEnumerator> coroutineBatch)
+    {
+		this.numInCurrentBatch = coroutineBatch.Count;
+		this.numCompletedInBatch = 0;
+		numActive++;
+
+		foreach (IEnumerator coroutine in coroutineBatch)
 		{
 			var runner = CoroutineRunner(coroutine);
 			coroutineStarter(runner);
 		}
-		else
+
+		while(this.numCompletedInBatch < this.numInCurrentBatch)
+        {
+			yield return null;
+        }
+		numActive--;
+
+		if (queue.Count > 0)
 		{
-			queue.Enqueue(coroutine);
+			var next = queue.Dequeue();
+			Run(next);
 		}
+
 	}
 
 	/// <summary>
@@ -82,16 +113,10 @@ public class CoroutineQueue
 	/// <param name="coroutine">Coroutine to run</param>
 	private IEnumerator CoroutineRunner(IEnumerator coroutine)
 	{
-		numActive++;
 		while (coroutine.MoveNext())
 		{
 			yield return coroutine.Current;
 		}
-		numActive--;
-		if (queue.Count > 0)
-		{
-			var next = queue.Dequeue();
-			Run(next);
-		}
+		this.numCompletedInBatch++;
 	}
 }
