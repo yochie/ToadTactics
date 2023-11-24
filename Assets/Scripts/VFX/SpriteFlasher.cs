@@ -22,7 +22,7 @@ public class SpriteFlasher : MonoBehaviour
         if (hit.damageType == DamageType.healing)
             flashColor = Color.green;
         
-        this.StartCoroutine(FlashCoroutine(flashColor, this.flashDurationSeconds));
+        AnimationSystem.Singleton.Queue(FlashCoroutine(flashColor, this.flashDurationSeconds));
     }
 
     IEnumerator FlashCoroutine(Color flashColor, float flashDuration)
