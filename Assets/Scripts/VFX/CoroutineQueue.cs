@@ -35,6 +35,8 @@ public class CoroutineQueue
 	private int numCompletedInBatch;
 	private int numInCurrentBatch;
 
+	private MapInputHandler inputHandler;
+
 
 	/// <summary>
 	/// Create the queue, initially with no coroutines
@@ -49,7 +51,7 @@ public class CoroutineQueue
 	/// <exception cref="ArgumentException">
 	/// If maxActive is zero.
 	/// </exception>
-	public CoroutineQueue(uint maxActive, Func<IEnumerator, Coroutine> coroutineStarter)
+	public CoroutineQueue(uint maxActive, Func<IEnumerator, Coroutine> coroutineStarter, MapInputHandler inputHandler)
 	{
 		if (maxActive == 0)
 		{
@@ -59,6 +61,7 @@ public class CoroutineQueue
 		this.numCompletedInBatch = 0;
 		this.numInCurrentBatch = 0;
 		this.coroutineStarter = coroutineStarter;
+		this.inputHandler = inputHandler;
 		queue = new();
 	}
 
@@ -69,6 +72,7 @@ public class CoroutineQueue
 	/// <param name="coroutine">Coroutine to run or queue</param>
 	public void Run(IList<IEnumerator> coroutineBatch)
 	{
+		this.inputHandler.SetInputAllowed(false);
 		if (numActive < maxActive)
 		{
 			this.coroutineStarter(this.CoroutineBatchRunner(coroutineBatch));
@@ -101,6 +105,9 @@ public class CoroutineQueue
 		{
 			var next = queue.Dequeue();
 			Run(next);
+		} else
+        {
+			this.inputHandler.SetInputAllowed(true);
 		}
 
 	}

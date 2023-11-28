@@ -336,4 +336,8 @@ public class MapInputHandler : NetworkBehaviour
         this.allowInput = true;
     }
 
+    public void SetInputAllowed(bool value)
+    {
+        this.allowInput = value;
+    }
 }

@@ -6,7 +6,8 @@ public class AnimationSystem : MonoBehaviour
 {
     public static AnimationSystem Singleton { get; private set; }
     private CoroutineQueue queue;
-
+    [SerializeField]
+    private MapInputHandler inputHandler;
 
     public void Awake()
     {
@@ -17,7 +18,7 @@ public class AnimationSystem : MonoBehaviour
     void Start()
     {
         // Create a coroutine queue that can run up to two coroutines at once
-        this.queue = new CoroutineQueue(1, StartCoroutine);
+        this.queue = new CoroutineQueue(1, StartCoroutine, this.inputHandler);
     }
 
     public void Queue(IList<IEnumerator> coroutineBatch)
