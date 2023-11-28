@@ -23,7 +23,10 @@ public class AttackEffectSpawner : MonoBehaviour
     {
         if (classID != forCharacter.CharClassID)
             return;
-        Instantiate(effectAnimation, this.spawnLocation.position + spawnOffsets, Quaternion.AngleAxis(spawnRotation, Vector3.forward), forCharacter.transform);
+        GameObject effect = Instantiate(effectAnimation, this.spawnLocation.position + spawnOffsets, Quaternion.AngleAxis(spawnRotation, Vector3.forward), forCharacter.transform);
+        SlashEffect slashEffect = effect.GetComponent<SlashEffect>();
+        AnimationSystem.Singleton.Queue(slashEffect.RunAnimation());
+
     }
 
 }

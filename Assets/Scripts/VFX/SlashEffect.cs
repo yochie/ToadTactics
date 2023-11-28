@@ -4,8 +4,24 @@ using UnityEngine;
 
 public class SlashEffect : MonoBehaviour
 {
+    private bool isRunning;    
+    [SerializeField]
+    private Animator animator;
+
     public void DestroyMe()
     {
+        this.isRunning = false;
         Destroy(gameObject);
     }
+
+    public IEnumerator RunAnimation()
+    {
+        this.isRunning = true;
+        this.animator.SetBool("Started", true);
+        while (this.isRunning)
+        {
+            yield return null;
+        }
+    }
+
 }

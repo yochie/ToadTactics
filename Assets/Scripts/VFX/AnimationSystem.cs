@@ -25,4 +25,9 @@ public class AnimationSystem : MonoBehaviour
     {
         this.queue.Run(coroutineBatch);
     }
+
+    public void Queue(IEnumerator coroutine)
+    {
+        this.queue.Run(new List<IEnumerator> { coroutine });
+    }
 }

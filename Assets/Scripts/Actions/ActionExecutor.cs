@@ -43,6 +43,11 @@ public class ActionExecutor : NetworkBehaviour
     public void CmdPreviewMoveTo(Hex source, Hex destination, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        if (!source.HoldsACharacter())
+        {
+            Debug.Log("Previewing move from source without character... should not happen.");
+            return;
+        }
         PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
         IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, destination);
 
@@ -90,9 +95,9 @@ public class ActionExecutor : NetworkBehaviour
         {
             attackAction = attackEnhancer.EnhanceAttack(attackAction);
         }
-        bool actionSuccess = this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.attack);
-
-        if (actionSuccess)
+        //TODO : fix to avoid double validation
+        //I guess I should just remove TryAction to allow sending custom events between validation and use
+        if (attackAction.ServerValidate())
         {
             int attackedCharacterId = -1;
             if (target.HoldsACharacter())
@@ -100,6 +105,7 @@ public class ActionExecutor : NetworkBehaviour
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
             this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
         }
+        bool actionSuccess = this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.attack);
     }
 
     [Command(requiresAuthority = false)]
@@ -143,9 +149,8 @@ public class ActionExecutor : NetworkBehaviour
                                                                             this.ballistaPrefab.attackAreaScaler,
                                                                             source,
                                                                             target);
-        bool actionSuccess = this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.useBallista);
 
-        if (actionSuccess)
+        if (attackAction.ServerValidate())
         {
             int attackedCharacterId = -1;
             if (target.HoldsACharacter())
@@ -155,6 +160,7 @@ public class ActionExecutor : NetworkBehaviour
             this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
 
         }
+        bool actionSuccess = this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.useBallista);
     }
 
     [Command(requiresAuthority = false)]
@@ -221,8 +227,8 @@ public class ActionExecutor : NetworkBehaviour
                                                                                    abilityStats,
                                                                                    source,
                                                                                    target);
-        bool actionSuccess = this.TryAction(abilityAttackAction, isFullAction : false);
-        if (actionSuccess)
+        //TODO : fix double validation
+        if (abilityAttackAction.ServerValidate())
         {
             int attackedCharacterId = -1;
             if (target.HoldsACharacter())
@@ -230,6 +236,8 @@ public class ActionExecutor : NetworkBehaviour
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
             this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
         }
+        bool actionSuccess = this.TryAction(abilityAttackAction, isFullAction : false);
+
     }
 
 
