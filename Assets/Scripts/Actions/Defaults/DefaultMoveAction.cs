@@ -32,9 +32,11 @@ public class DefaultMoveAction : IMoveAction
         //still need to call rpcs after loop to avoid race conditions
         Hex previousHex = this.ActorHex;
         Hex diedOnHex = null;
-        foreach(Hex nextHex in this.movePath)
+
+        foreach (Hex nextHex in this.movePath)
         {
             ActorCharacter.UsedMoves(nextHex.MoveCost());
+            this.ActorCharacter.RpcPlaceCharSprite(nextHex.transform.position, true);
             this.MoveToTile(previousHex, nextHex, logger);
 
             if (this.ActorCharacter.IsDead)
@@ -50,11 +52,9 @@ public class DefaultMoveAction : IMoveAction
         {
             //in case sub classes need to do stuff on pathed hexes
             this.InterruptedAtHex = diedOnHex;
-            this.ActorCharacter.RpcPlaceCharSprite(diedOnHex.transform.position);
         }
         else
         {
-            this.ActorCharacter.RpcPlaceCharSprite(this.TargetHex.transform.position);
             //MapInputHandler.Singleton.TargetRpcSelectHex(this.RequestingClient, this.TargetHex);
         }
     }

@@ -383,11 +383,30 @@ public class PlayerCharacter : NetworkBehaviour
         MasterLogger.Singleton.RpcLogMessage(string.Format("{0} has been resurrected.", this.charClass.name));
     }
 
+    public void PlaceCharSprite(Vector3 position, bool slide)
+    {
+        if (slide)
+            AnimationSystem.Singleton.Queue(this.SlideToPosition(position));
+        else
+            this.transform.position = position;
+    }
+
+    private IEnumerator SlideToPosition(Vector3 position)
+    {
+        while(this.transform.position != position)
+        {
+            this.transform.position = Vector3.Lerp(this.transform.position, position, 0.1f);
+            yield return null;
+        }
+    }
+
     //update position on all clients
     [ClientRpc]
-    public void RpcPlaceCharSprite(Vector3 position)
+    public void RpcPlaceCharSprite(Vector3 position, bool slide)
     {
-        this.transform.position = position;
+
+        this.PlaceCharSprite(position, slide);
+        
     }
 
     [ClientRpc]

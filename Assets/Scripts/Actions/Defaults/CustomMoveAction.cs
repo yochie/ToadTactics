@@ -16,6 +16,8 @@ public class CustomMoveAction : DefaultMoveAction, IOutOfControlAction
         Hex diedOnHex = null;
         foreach (Hex nextHex in this.movePath)
         {
+            this.ActorCharacter.RpcPlaceCharSprite(nextHex.transform.position, true);
+
             this.MoveToTile(previousHex, nextHex, logger);
 
             if (this.ActorCharacter.IsDead)
@@ -31,11 +33,9 @@ public class CustomMoveAction : DefaultMoveAction, IOutOfControlAction
         {
             //in case sub classes need to do stuff on pathed hexes
             this.InterruptedAtHex = diedOnHex;
-            this.ActorCharacter.RpcPlaceCharSprite(diedOnHex.transform.position);
         }
         else
         {
-            this.ActorCharacter.RpcPlaceCharSprite(this.TargetHex.transform.position);
         }
     }
 
