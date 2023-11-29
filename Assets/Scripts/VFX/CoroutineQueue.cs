@@ -124,7 +124,7 @@ public class CoroutineQueue
 
 		while (coroutine.MoveNext())
 		{
-			Debug.Log("Running coroutine");
+			//Debug.Log("Running coroutine");
 			yield return coroutine.Current;
 		}
 		
