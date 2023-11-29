@@ -206,8 +206,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: -5941218895401009648}
-        m_TargetAssemblyTypeName: SpriteFlasher, Assembly-CSharp
-        m_MethodName: FlashOnCharacterTakesHit
+        m_TargetAssemblyTypeName: DamageTakenEffect, Assembly-CSharp
+        m_MethodName: OnCharacterTakesHit
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -235,44 +235,46 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 7.907746
-      outSlope: 7.907746
-      tangentMode: 34
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0
     - serializedVersion: 3
-      time: 0.08829736
-      value: 0.69823307
-      inSlope: 4.110419
-      outSlope: 4.110419
-      tangentMode: 34
+      time: 0.078203976
+      value: 0.9999238
+      inSlope: 0.36886138
+      outSlope: 0.36886138
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.5048214
-      value: 0.82864344
-      inSlope: -0.68016565
-      outSlope: -0.68016565
-      tangentMode: 34
+      time: 0.85621035
+      value: 0.44704098
+      inSlope: -1.683029
+      outSlope: -1.683029
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: -1.6734234
-      outSlope: -1.6734234
-      tangentMode: 34
+      value: -0.00015258789
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  flashDurationSeconds: 2
+  flashDurationSeconds: 1.5
   forCharacter: {fileID: 1350857231127888729}
+  damageTakenColor: {r: 0.9056604, g: 0.33663222, b: 0.34256223, a: 1}
+  healTakenColor: {r: 0.45854396, g: 0.8773585, b: 0.56225044, a: 1}
 --- !u!114 &5785813856046365177
 MonoBehaviour:
   m_ObjectHideFlags: 0
