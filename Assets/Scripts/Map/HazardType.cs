@@ -4,5 +4,5 @@ using UnityEngine;
 
 public enum HazardType
 {
-    cold, fire, none, apple
+    cold, fire, none, apple, cookedApple
 }

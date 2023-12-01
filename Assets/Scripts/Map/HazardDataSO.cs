@@ -28,7 +28,6 @@ public class HazardDataSO : ScriptableObject
     [SerializeField]
     private int fireHazardStandingDamage;
 
-
     [SerializeField]
     private DamageType fireHazardDamageType;
 
@@ -39,7 +38,7 @@ public class HazardDataSO : ScriptableObject
     private int appleHealingAmount;
 
     [SerializeField]
-    private DamageType appleHealingDamageType;
+    private int cookedAppleHealingAmount;
 
     public GameObject GetHazardPrefab(HazardType typeToGet)
     {
@@ -69,6 +68,9 @@ public class HazardDataSO : ScriptableObject
             case HazardType.apple:
                 return this.appleHealingAmount;
 
+            case HazardType.cookedApple:
+                return this.cookedAppleHealingAmount;
+
             default:
                 return 0;
         }
@@ -83,7 +85,8 @@ public class HazardDataSO : ScriptableObject
                 return this.fireHazardDamageType;
 
             case HazardType.apple:
-                return this.appleHealingDamageType;
+            case HazardType.cookedApple:
+                return DamageType.healing;
 
             default:
                 return DamageType.none;
@@ -103,9 +106,13 @@ public class HazardDataSO : ScriptableObject
 
     internal bool IsHazardTypeRemovedWhenWalkedUpon(HazardType hazardType)
     {
-        if (hazardType == HazardType.apple)
-            return true;
-        else
-            return false;
+        switch (hazardType)
+        {
+            case HazardType.apple:
+            case HazardType.cookedApple:
+                return true;
+            default:
+                return false;
+        }
     }
 }

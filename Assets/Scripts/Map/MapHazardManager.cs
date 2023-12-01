@@ -11,14 +11,38 @@ public class MapHazardManager : MonoBehaviour
     private Dictionary<Vector2Int, Hazard> spawnedHazards = new();
 
     [Server]
-    internal void SpawnHazardOnMap(Dictionary<Vector2Int, Hex> grid, Vector2Int hazardCoordinate, HazardType hazardType)
+    internal void SpawnHazardOnMap(Dictionary<Vector2Int, Hex> grid, Vector2Int spawnedHazardCoordinate, HazardType spawnedHazardType)
     {
-        Hex hazardHex = Map.GetHex(grid, hazardCoordinate.x, hazardCoordinate.y);
-        Hazard hazardTypePrefab = HazardDataSO.Singleton.GetHazardPrefab(hazardType).GetComponent<Hazard>();
+        Hex hazardHex = Map.GetHex(grid, spawnedHazardCoordinate.x, spawnedHazardCoordinate.y);
+
+
+        if (hazardHex.HoldsAHazard())
+        {
+            HazardType previousHazard = hazardHex.holdsHazard;
+            //fire + apple = cooked apple
+            if ((previousHazard == HazardType.apple && spawnedHazardType == HazardType.fire) ||
+                (spawnedHazardType == HazardType.apple && previousHazard == HazardType.fire))
+            {
+                DestroyHazardAtPosition(grid, spawnedHazardCoordinate);
+                spawnedHazardType = HazardType.cookedApple;
+            //fire + ice = none
+            } else if ((previousHazard == HazardType.cold && spawnedHazardType == HazardType.fire) ||
+                (previousHazard == HazardType.fire && spawnedHazardType == HazardType.cold))
+            {
+                DestroyHazardAtPosition(grid, spawnedHazardCoordinate);
+                return;
+            //by default, replace previous hazard 
+            } else
+            {
+                DestroyHazardAtPosition(grid, spawnedHazardCoordinate);
+            }
+        }
+
+        Hazard hazardTypePrefab = HazardDataSO.Singleton.GetHazardPrefab(spawnedHazardType).GetComponent<Hazard>();
         GameObject hazardObject = Instantiate(hazardTypePrefab.gameObject, hazardHex.transform.position, Quaternion.identity);
         NetworkServer.Spawn(hazardObject);
-        hazardHex.holdsHazard = hazardType;
-        this.spawnedHazards[hazardCoordinate] = hazardObject.GetComponent<Hazard>();
+        hazardHex.holdsHazard = spawnedHazardType;
+        this.spawnedHazards[spawnedHazardCoordinate] = hazardObject.GetComponent<Hazard>();
     }
 
     [Server]
