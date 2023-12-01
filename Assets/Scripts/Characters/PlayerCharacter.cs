@@ -31,6 +31,10 @@ public class PlayerCharacter : NetworkBehaviour
 
     [SerializeField]
     private Color kingColor;
+    
+    [SerializeField]
+    private float movementAnimationDurationSeconds;
+
 
     #endregion
 
@@ -386,16 +390,19 @@ public class PlayerCharacter : NetworkBehaviour
     public void PlaceCharSprite(Vector3 position, bool slide)
     {
         if (slide)
-            AnimationSystem.Singleton.Queue(this.SlideToPosition(position));
+            AnimationSystem.Singleton.Queue(this.SlideToPosition(position, this.movementAnimationDurationSeconds));
         else
             this.transform.position = position;
     }
 
-    private IEnumerator SlideToPosition(Vector3 position)
+    private IEnumerator SlideToPosition(Vector3 position, float animationDurationSeconds)
     {
-        while(this.transform.position != position)
+        float elapsedSeconds = 0f;
+
+        while (elapsedSeconds < animationDurationSeconds)
         {
-            this.transform.position = Vector3.Lerp(this.transform.position, position, 0.1f);
+            elapsedSeconds += Time.deltaTime;
+            this.transform.position = Vector3.Lerp(this.transform.position, position, elapsedSeconds / animationDurationSeconds);
             yield return null;
         }
     }

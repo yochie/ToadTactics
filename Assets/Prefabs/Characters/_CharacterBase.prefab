@@ -63,6 +63,7 @@ MonoBehaviour:
   onCharacterResurrect: {fileID: 11400000, guid: ce14ce51e13a37648b544348ae2596f0, type: 2}
   onCharacterLifeChanged: {fileID: 11400000, guid: 9af4cc90318dd6d4eb3f53de4a099d53, type: 2}
   kingColor: {r: 0.85882354, g: 0.7607843, b: 0, a: 1}
+  movementAnimationDurationSeconds: 0.35
   charClassID: -1
 --- !u!212 &3809699183538865181
 SpriteRenderer:
