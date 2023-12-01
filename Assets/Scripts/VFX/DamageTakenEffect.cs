@@ -46,6 +46,12 @@ public class DamageTakenEffect : MonoBehaviour
 
     [SerializeField]
     private AudioClip appleSoundEffect;
+    
+    [SerializeField]
+    private AudioClip hurtSoundEffect;
+
+    [SerializeField]
+    private AudioClip healSoundEffect;
 
     public void OnCharacterTakesHit(Hit hit, int classID)
     {
@@ -61,7 +67,7 @@ public class DamageTakenEffect : MonoBehaviour
                 AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
                     this.FlashCoroutine(flashColor, this.flashDurationSeconds),
                     this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
-                    this.PlayCrunchSoundCoroutine()
+                    this.PlaySoundCoroutine(this.appleSoundEffect)
                 });
             } else
             {
@@ -69,6 +75,7 @@ public class DamageTakenEffect : MonoBehaviour
                 AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
                 this.FlashCoroutine(flashColor, this.flashDurationSeconds),
                 this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
+                this.PlaySoundCoroutine(this.healSoundEffect)
             });
             }
 
@@ -77,7 +84,8 @@ public class DamageTakenEffect : MonoBehaviour
             AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
                 this.FlashCoroutine(flashColor, this.flashDurationSeconds),
                 this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
-                this.ShakeCoroutine(this.shakeDuration, this.shakeStrength)
+                this.ShakeCoroutine(this.shakeDuration, this.shakeStrength),
+                this.PlaySoundCoroutine(this.hurtSoundEffect)
             });
         }
     }
@@ -153,9 +161,9 @@ public class DamageTakenEffect : MonoBehaviour
         gameObject.transform.position = startPosition;
     }
 
-    private IEnumerator PlayCrunchSoundCoroutine()
+    private IEnumerator PlaySoundCoroutine(AudioClip soundEffect)
     {
-        AudioManager.Singleton.PlaySoundEffect(this.appleSoundEffect);
-        yield return new WaitForSeconds(this.appleSoundEffect.length - 0.25f);
+        AudioManager.Singleton.PlaySoundEffect(soundEffect);
+        yield return new WaitForSeconds(soundEffect.length - 0.25f);
     }
 }

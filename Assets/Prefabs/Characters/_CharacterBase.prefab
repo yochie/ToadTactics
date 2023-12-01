@@ -325,6 +325,8 @@ MonoBehaviour:
   shakeDuration: 0.25
   shakeStrength: 3
   appleSoundEffect: {fileID: 8300000, guid: ef6f50e88d3b17648b6da2474861754a, type: 3}
+  hurtSoundEffect: {fileID: 8300000, guid: aaee06d5a5227bc4680507dddac2cf61, type: 3}
+  healSoundEffect: {fileID: 8300000, guid: a81c090231e6b88438627b19a46f533c, type: 3}
 --- !u!114 &5785813856046365177
 MonoBehaviour:
   m_ObjectHideFlags: 0
