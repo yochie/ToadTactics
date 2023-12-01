@@ -67,7 +67,8 @@ public class AuraDOTBuffSO : ScriptableObject, IAppliablBuffDataSO, IAreaTargete
                     !ActionExecutor.IsValidTargetType(affectedCharacter, hex, this.AuraAppliesTo))
                     continue;                
                 PlayerCharacter characterInAura = hex.GetHeldCharacterObject();
-                characterInAura.TakeDamage(new Hit(this.DOTDamage, DOTDamageType));
+                HitSource hitSource = DOTDamageType == DamageType.healing ? HitSource.Buff : HitSource.Debuff;
+                characterInAura.TakeDamage(new Hit(this.DOTDamage, DOTDamageType, hitSource));
             }            
         }
     }

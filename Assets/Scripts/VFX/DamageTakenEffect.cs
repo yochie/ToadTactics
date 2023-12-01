@@ -35,6 +35,18 @@ public class DamageTakenEffect : MonoBehaviour
     [SerializeField]
     private Vector3 damagePopupOffset;
 
+    [SerializeField]
+    private AnimationCurve shakeStrengthCurve;
+
+    [SerializeField]
+    private float shakeDuration;
+
+    [SerializeField]
+    private float shakeStrength;
+
+    [SerializeField]
+    private AudioClip appleSoundEffect;
+
     public void OnCharacterTakesHit(Hit hit, int classID)
     {
         if (classID != this.forCharacter.CharClassID)
@@ -42,9 +54,32 @@ public class DamageTakenEffect : MonoBehaviour
 
         Color flashColor = this.damageTakenColor;
         if (hit.damageType == DamageType.healing)
+        {
             flashColor = this.healTakenColor;
-        
-        AnimationSystem.Singleton.Queue(new List<IEnumerator>() { this.FlashCoroutine(flashColor, this.flashDurationSeconds), this.DamagePopupCoroutine(hit, this.flashDurationSeconds) });
+            if (hit.hitSource == HitSource.Apple)
+            {
+                AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
+                    this.FlashCoroutine(flashColor, this.flashDurationSeconds),
+                    this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
+                    this.PlayCrunchSoundCoroutine()
+                });
+            } else
+            {
+                //TODO: add healing sound effect
+                AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
+                this.FlashCoroutine(flashColor, this.flashDurationSeconds),
+                this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
+            });
+            }
+
+        } else
+        {
+            AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
+                this.FlashCoroutine(flashColor, this.flashDurationSeconds),
+                this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
+                this.ShakeCoroutine(this.shakeDuration, this.shakeStrength)
+            });
+        }
     }
 
     private IEnumerator DamagePopupCoroutine(Hit hit, float popupDurationSeconds )
@@ -101,4 +136,26 @@ public class DamageTakenEffect : MonoBehaviour
         renderer.color = startColor;
     }
 
+    private IEnumerator ShakeCoroutine(float durationSeconds, float strengthMultiplier)
+    {
+
+        Vector3 startPosition = gameObject.transform.position;
+        float elapsedSeconds = 0f;
+
+        while (elapsedSeconds < durationSeconds)
+        {
+            elapsedSeconds += Time.deltaTime;
+            float currentStrength = shakeStrengthCurve.Evaluate(elapsedSeconds / durationSeconds) * strengthMultiplier;
+            gameObject.transform.position = startPosition + (UnityEngine.Random.insideUnitSphere * currentStrength);
+            yield return null;
+        }
+
+        gameObject.transform.position = startPosition;
+    }
+
+    private IEnumerator PlayCrunchSoundCoroutine()
+    {
+        AudioManager.Singleton.PlaySoundEffect(this.appleSoundEffect);
+        yield return new WaitForSeconds(this.appleSoundEffect.length - 0.25f);
+    }
 }

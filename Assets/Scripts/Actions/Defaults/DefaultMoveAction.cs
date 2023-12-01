@@ -103,10 +103,11 @@ public class DefaultMoveAction : IMoveAction
         int moveDamage = nextHex.DealsDamageWhenMovedInto();
         if (moveDamage > 0)
         {
-            this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto()));
             string message;
             if (nextHex.DealsDamageTypeWhenMovedInto() == DamageType.healing)
             {
+                this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto(), HitSource.Apple));
+
                 message = string.Format("{0} gains {1} life from {2}",
                     this.ActorCharacter.charClass.name,
                     moveDamage,
@@ -114,6 +115,7 @@ public class DefaultMoveAction : IMoveAction
             }
             else
             {
+                this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto(), HitSource.FireHazard));
                 message = string.Format("{0} takes {1} {2} damage for walking on {3} hazard",
                 this.ActorCharacter.charClass.name,
                 moveDamage,
@@ -134,7 +136,13 @@ public class DefaultMoveAction : IMoveAction
         int resultingDamage = 0;
         if (tileDamage > 0)
         {
-             resultingDamage = this.ActorCharacter.CalculateDamageFromHit(new Hit(tileDamage, nextHex.DealsDamageTypeWhenMovedInto()));
+            HitSource hitsource;
+            if (nextHex.DealsDamageTypeWhenMovedInto() == DamageType.healing)
+                hitsource = HitSource.Apple;
+            else
+                hitsource = HitSource.FireHazard;
+            
+             resultingDamage = this.ActorCharacter.CalculateDamageFromHit(new Hit(tileDamage, nextHex.DealsDamageTypeWhenMovedInto(), hitsource));
         }
         return resultingDamage;
     }

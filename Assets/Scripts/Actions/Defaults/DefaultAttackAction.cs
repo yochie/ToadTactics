@@ -68,7 +68,7 @@ public class DefaultAttackAction : IAttackAction
         int prevLife = defenderCharacter.CurrentLife;
         bool isCrit = Utility.RollChance(this.CritChance);
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
-        defenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, this.PenetratingDamage));
+        defenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, HitSource.CharacterAttack, this.PenetratingDamage));
 
         if (this.Knockback > 0)
         {
@@ -109,7 +109,7 @@ public class DefaultAttackAction : IAttackAction
             return EffectOnCharacter.None();
 
         PlayerCharacter defenderCharacter = target.GetHeldCharacterObject();
-        int damage = defenderCharacter.CalculateDamageFromHit(new Hit(this.Damage, this.AttackDamageType, this.PenetratingDamage));
+        int damage = defenderCharacter.CalculateDamageFromHit(new Hit(this.Damage, this.AttackDamageType, HitSource.CharacterAttack, this.PenetratingDamage));
 
         EffectOnCharacter effect = new(defenderCharacter.CharClassID, target.coordinates, damage, damage);
         return effect;
