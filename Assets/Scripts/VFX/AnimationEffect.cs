@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlashEffect : MonoBehaviour
+public class AnimationEffect : MonoBehaviour
 {
     private bool isRunning;    
     [SerializeField]
@@ -11,7 +11,7 @@ public class SlashEffect : MonoBehaviour
     public void DestroyMe()
     {
         this.isRunning = false;
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     public IEnumerator RunAnimation()

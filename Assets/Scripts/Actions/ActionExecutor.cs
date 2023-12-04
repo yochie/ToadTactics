@@ -17,6 +17,9 @@ public class ActionExecutor : NetworkBehaviour
 
     [SerializeField]
     private IntGameEventSO onCharacterAttacks;
+    
+    [SerializeField]
+    private StringIntGameEventSO OnCharacterUsedAbility;
 
     public static ActionExecutor Singleton { get; private set; }
 
@@ -197,7 +200,15 @@ public class ActionExecutor : NetworkBehaviour
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
         IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, playerID, usingCharacter, abilityStats, source, target);
+        //TODO : fix double validation
+        //required to trigger ability animation before targets take damage animation
+        if (abilityAction.ServerValidate())
+        {
+            this.RpcOnCharacterUsedAbility(abilityStats.stringID, usingCharacter.CharClassID);
+        }
         this.TryAction(abilityAction, isFullAction: true, startingMode: ControlMode.useAbility);
+
+
     }
 
     [Command(requiresAuthority = false)]
@@ -234,7 +245,7 @@ public class ActionExecutor : NetworkBehaviour
             if (target.HoldsACharacter())
                 attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
-            this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
+            //this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
         }
         bool actionSuccess = this.TryAction(abilityAttackAction, isFullAction : false);
 
@@ -466,5 +477,11 @@ public class ActionExecutor : NetworkBehaviour
     private void RpcOnCharacterAttacks(int charClassID)
     {
         this.onCharacterAttacks.Raise(charClassID);
+    }
+    
+    [ClientRpc]
+    private void RpcOnCharacterUsedAbility(string abilityID, int charClassID)
+    {
+        this.OnCharacterUsedAbility.Raise(abilityID, charClassID);
     }
 }

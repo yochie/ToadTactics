@@ -2617,6 +2617,7 @@ MonoBehaviour:
   OnCharacterAttacksServerSide: {fileID: 11400000, guid: c81aaa52127777342b12f2fc7322bb6b, type: 2}
   ballistaPrefab: {fileID: 2802014603081656047, guid: 73f7682b66d4d024f9a64a1e5dcb99bc, type: 3}
   onCharacterAttacks: {fileID: 11400000, guid: 7389d4c1489f6b24b9b1713cd9146e18, type: 2}
+  OnCharacterUsedAbility: {fileID: 11400000, guid: 0f9ce75f64fce5b40b5d751f6810d304, type: 2}
   actionPreviewer: {fileID: 1809464646}
 --- !u!114 &846746701
 MonoBehaviour:

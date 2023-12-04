@@ -123,7 +123,7 @@ public class DamageTakenEffect : MonoBehaviour
             yield return null;
         }
 
-        Destroy(popup);
+        Destroy(popup.gameObject);
     }
 
     IEnumerator FlashCoroutine(Color flashColor, float flashDurationSeconds)
