@@ -35,6 +35,8 @@ public class PlayerCharacter : NetworkBehaviour
     [SerializeField]
     private float movementAnimationDurationSeconds;
 
+    [SerializeField]
+    private BuffAccruedEffect buffAccruedEffect;    
 
     #endregion
 
@@ -452,6 +454,14 @@ public class PlayerCharacter : NetworkBehaviour
     internal void AddAffectingBuff(RuntimeBuff buff)
     {
         this.affectedByBuffs.Add(buff);
+        if(GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
+            this.RpcTriggerBuffAccruedEffect(buff.Data.IsPositive, buff.Data.stringID);
+    }
+
+    [ClientRpc]
+    private void RpcTriggerBuffAccruedEffect(bool isPositive, string buffDataID)
+    {
+        this.buffAccruedEffect.TriggerBuffEffect(isPositive, buffDataID);
     }
 
     [Server]

@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 4457027579579390453}
   - component: {fileID: 1634723521688495905}
   - component: {fileID: 1190896658792918362}
+  - component: {fileID: 3671175868099292624}
   m_Layer: 0
   m_Name: _CharacterBase
   m_TagString: Untagged
@@ -66,6 +67,7 @@ MonoBehaviour:
   onCharacterLifeChanged: {fileID: 11400000, guid: 9af4cc90318dd6d4eb3f53de4a099d53, type: 2}
   kingColor: {r: 0.85882354, g: 0.7607843, b: 0, a: 1}
   movementAnimationDurationSeconds: 0.35
+  buffAccruedEffect: {fileID: 3671175868099292624}
   charClassID: -1
 --- !u!212 &3809699183538865181
 SpriteRenderer:
@@ -422,3 +424,109 @@ MonoBehaviour:
   spawnOffsets: {x: 3.6, y: 6.3, z: 0}
   spawnRotation: 0
   shakeScreen: 0
+--- !u!114 &3671175868099292624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8f8ef6e0d9e2cf4fa0629b6442ea361, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.078203976
+      value: 0.9999238
+      inSlope: 0.36886138
+      outSlope: 0.36886138
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.85621035
+      value: 0.44704098
+      inSlope: -1.683029
+      outSlope: -1.683029
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: -0.00015258789
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  flashDurationSeconds: 1.5
+  forCharacter: {fileID: 1350857231127888729}
+  positiveColor: {r: 0, g: 1, b: 0.059348106, a: 0}
+  negativeColor: {r: 1, g: 0, b: 0, a: 1}
+  buffPopupPrefab: {fileID: 4083549547845802038, guid: db84bac081f9dea40ad7f5f266dfa6c0, type: 3}
+  buffPopupOffset: {x: 2, y: 5, z: 0}
+  shakeStrengthCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 3.9185483
+      outSlope: 3.9185483
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.12331511
+      value: 0.48321623
+      inSlope: 1.4683617
+      outSlope: 1.4683617
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.46665227
+      value: 0.14611924
+      inSlope: -0.64476186
+      outSlope: -0.64476186
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0073853
+      value: -0.020263672
+      inSlope: -0.30769885
+      outSlope: -0.30769885
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  shakeDuration: 0.25
+  shakeStrength: 3
+  positiveSoundEffect: {fileID: 8300000, guid: d95a9528e7c87e346a619da60a5adf60, type: 3}
+  negativeSoundEffect: {fileID: 8300000, guid: d95a9528e7c87e346a619da60a5adf60, type: 3}
