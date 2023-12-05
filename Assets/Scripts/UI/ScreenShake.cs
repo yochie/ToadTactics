@@ -12,9 +12,9 @@ public class ScreenShake : MonoBehaviour
     [SerializeField]
     private float shakeStrength;
 
-    public void ShakeOnCharacterAttack(int classID)
+    public IEnumerator TriggerScreenShake()
     {
-        this.StartCoroutine(ShakeCoroutine(shakeDuration, shakeStrength));
+        return this.ShakeCoroutine(this.shakeDuration, this.shakeStrength);
     }
 
     private IEnumerator ShakeCoroutine(float durationSeconds, float strengthMultiplier)

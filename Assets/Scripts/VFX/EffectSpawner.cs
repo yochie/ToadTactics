@@ -19,6 +19,9 @@ public class EffectSpawner : MonoBehaviour
     [SerializeField]
     private float spawnRotation;
 
+    [SerializeField]
+    private bool shakeScreen;
+
     public void OnCharacterAttacks(int classID)
     {
         if (classID != forCharacter.CharClassID)
@@ -36,8 +39,14 @@ public class EffectSpawner : MonoBehaviour
     private void QueueEffect()
     {
         GameObject effectObject = Instantiate(effectAnimation, this.spawnLocation.position + spawnOffsets, Quaternion.AngleAxis(spawnRotation, Vector3.forward), forCharacter.transform);
-        AnimationEffect effect = effectObject.GetComponent<AnimationEffect>();
-        AnimationSystem.Singleton.Queue(effect.RunAnimation());
+        AnimationEffect animationEffect = effectObject.GetComponent<AnimationEffect>();
+        List<IEnumerator> effectBatch = new List<IEnumerator> { animationEffect.RunAnimation() };
+
+        if (this.shakeScreen)
+        {
+            effectBatch.Add(Camera.main.GetComponent<ScreenShake>().TriggerScreenShake());
+        }
+        AnimationSystem.Singleton.Queue(effectBatch);
     }
 
 }

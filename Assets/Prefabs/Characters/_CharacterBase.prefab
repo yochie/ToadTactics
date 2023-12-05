@@ -375,6 +375,7 @@ MonoBehaviour:
   forCharacter: {fileID: 1350857231127888729}
   spawnOffsets: {x: 2.68, y: 8.85, z: 0}
   spawnRotation: 180
+  shakeScreen: 1
 --- !u!114 &1634723521688495905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,3 +421,4 @@ MonoBehaviour:
   forCharacter: {fileID: 1350857231127888729}
   spawnOffsets: {x: 3.6, y: 6.3, z: 0}
   spawnRotation: 0
+  shakeScreen: 0

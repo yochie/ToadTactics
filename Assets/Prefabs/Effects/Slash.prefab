@@ -120,3 +120,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 5825337347418685167}
+  soundEffect: {fileID: 8300000, guid: a219f6d0e97186f40ab81cfe7aa39682, type: 3}
