@@ -5,48 +5,45 @@ using UnityEngine;
 using Mirror;
 using System.Linq;
 
-public class MapHazardManager : MonoBehaviour
+public class MapHazardManager : NetworkBehaviour
 {
-    //Server only
-    private Dictionary<Vector2Int, Hazard> spawnedHazards = new();
+    //tracked on each client
+    private Dictionary<Vector2Int, Hazard> spawnedHazardSprites = new();
 
     [Server]
-    internal void SpawnHazardOnMap(Dictionary<Vector2Int, Hex> grid, Vector2Int spawnedHazardCoordinate, HazardType spawnedHazardType)
+    internal void SpawnHazardOnMap(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates, HazardType type)
     {
-        Hex hazardHex = Map.GetHex(grid, spawnedHazardCoordinate.x, spawnedHazardCoordinate.y);
-
+        Hex hazardHex = Map.GetHex(grid, coordinates.x, coordinates.y);
 
         if (hazardHex.HoldsAHazard())
         {
             HazardType previousHazard = hazardHex.holdsHazard;
             //fire + apple = cooked apple
-            if ((previousHazard == HazardType.apple && spawnedHazardType == HazardType.fire) ||
-                (spawnedHazardType == HazardType.apple && previousHazard == HazardType.fire))
+            if ((previousHazard == HazardType.apple && type == HazardType.fire) ||
+                (type == HazardType.apple && previousHazard == HazardType.fire))
             {
-                DestroyHazardAtPosition(grid, spawnedHazardCoordinate);
-                spawnedHazardType = HazardType.cookedApple;
+                RemoveHazardAtPosition(grid, coordinates);
+                type = HazardType.cookedApple;
             //fire + ice = none
-            } else if ((previousHazard == HazardType.cold && spawnedHazardType == HazardType.fire) ||
-                (previousHazard == HazardType.fire && spawnedHazardType == HazardType.cold))
+            } else if ((previousHazard == HazardType.cold && type == HazardType.fire) ||
+                (previousHazard == HazardType.fire && type == HazardType.cold))
             {
-                DestroyHazardAtPosition(grid, spawnedHazardCoordinate);
+                RemoveHazardAtPosition(grid, coordinates);
                 return;
             //by default, replace previous hazard 
             } else
             {
-                DestroyHazardAtPosition(grid, spawnedHazardCoordinate);
+                RemoveHazardAtPosition(grid, coordinates);
             }
         }
 
-        Hazard hazardTypePrefab = HazardDataSO.Singleton.GetHazardPrefab(spawnedHazardType).GetComponent<Hazard>();
-        GameObject hazardObject = Instantiate(hazardTypePrefab.gameObject, hazardHex.transform.position, Quaternion.identity);
-        NetworkServer.Spawn(hazardObject);
-        hazardHex.holdsHazard = spawnedHazardType;
-        this.spawnedHazards[spawnedHazardCoordinate] = hazardObject.GetComponent<Hazard>();
+        hazardHex.holdsHazard = type;
+
+        this.RpcDisplayHazardSprite(coordinates, type);
     }
 
     [Server]
-    public void DestroyHazardAtPosition(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates)
+    public void RemoveHazardAtPosition(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates)
     {
         Hex hazardHex = Map.GetHex(grid, coordinates.x, coordinates.y);
         if(hazardHex.holdsHazard == HazardType.none)
@@ -54,10 +51,39 @@ public class MapHazardManager : MonoBehaviour
             Debug.Log("Trying to destroy hazard at hex that doesn't contain one. Probably an error somewhere.");
             return;
         }
-
-        Hazard hazardToDestroy = this.spawnedHazards[coordinates];
-        NetworkServer.Destroy(hazardToDestroy.gameObject);
-        this.spawnedHazards.Remove(coordinates);
         hazardHex.holdsHazard = HazardType.none;
+        RpcDestroyHazardSprite(coordinates);
     }
+
+    [ClientRpc]
+    private void RpcDisplayHazardSprite(Vector2Int coordinates, HazardType type)
+    {
+        AnimationSystem.Singleton.Queue(this.DisplayHazardCoroutine(coordinates, type));
+    }
+
+    private IEnumerator DisplayHazardCoroutine(Vector2Int coordinates, HazardType type)
+    {
+        Dictionary<Vector2Int, Hex> grid = Map.Singleton.hexGrid;
+        Hex hazardHex = Map.GetHex(grid, coordinates.x, coordinates.y);
+
+        Hazard hazardTypePrefab = HazardDataSO.Singleton.GetHazardPrefab(type).GetComponent<Hazard>();
+        GameObject hazardObject = Instantiate(hazardTypePrefab.gameObject, hazardHex.transform.position, Quaternion.identity);
+        this.spawnedHazardSprites[coordinates] = hazardObject.GetComponent<Hazard>();
+        yield break;
+    }
+
+    [ClientRpc]
+    private void RpcDestroyHazardSprite(Vector2Int coordinates)
+    {
+        AnimationSystem.Singleton.Queue(this.DestroyHazardSpriteCoroutine(coordinates));
+    }
+
+    private IEnumerator DestroyHazardSpriteCoroutine(Vector2Int coordinates)
+    {
+        Hazard hazardToDestroy = this.spawnedHazardSprites[coordinates];
+        Destroy(hazardToDestroy.gameObject);
+        this.spawnedHazardSprites.Remove(coordinates);
+        yield break;
+    }
+
 }

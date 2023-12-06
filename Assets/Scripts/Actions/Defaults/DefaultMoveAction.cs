@@ -123,8 +123,7 @@ public class DefaultMoveAction : IMoveAction
         }
 
         if (nextHex.HoldsAHazard() && HazardDataSO.Singleton.IsHazardTypeRemovedWhenWalkedUpon(nextHex.holdsHazard))
-            Map.Singleton.hazardManager.DestroyHazardAtPosition(Map.Singleton.hexGrid, nextHex.coordinates.OffsetCoordinatesAsVector());
-
+            Map.Singleton.hazardManager.RemoveHazardAtPosition(Map.Singleton.hexGrid, nextHex.coordinates.OffsetCoordinatesAsVector());
     }
 
     private int PreviewMoveToTileDamage(Hex previousHex, Hex nextHex)

@@ -47,7 +47,7 @@ public class DruidLavaAbility : IAbilityAction, ITargetedAction
             MapHazardManager hazardManager = Map.Singleton.hazardManager;
             if (hex.holdsHazard == HazardType.cold)
             {
-                hazardManager.DestroyHazardAtPosition(Map.Singleton.hexGrid, hex.coordinates.OffsetCoordinatesAsVector());
+                hazardManager.RemoveHazardAtPosition(Map.Singleton.hexGrid, hex.coordinates.OffsetCoordinatesAsVector());
             }
 
             hazardManager.SpawnHazardOnMap(Map.Singleton.hexGrid, hex.coordinates.OffsetCoordinatesAsVector(), HazardType.fire);
