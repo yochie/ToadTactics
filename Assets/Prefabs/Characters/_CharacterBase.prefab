@@ -107,8 +107,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1258294933
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -528,5 +528,5 @@ MonoBehaviour:
     m_RotationOrder: 4
   shakeDuration: 0.25
   shakeStrength: 3
-  positiveSoundEffect: {fileID: 8300000, guid: d95a9528e7c87e346a619da60a5adf60, type: 3}
-  negativeSoundEffect: {fileID: 8300000, guid: d95a9528e7c87e346a619da60a5adf60, type: 3}
+  positiveSoundEffect: {fileID: 8300000, guid: b923aaf13931a3d4dac944d0b0fdd260, type: 3}
+  negativeSoundEffect: {fileID: 8300000, guid: 3fa1204bb9549ad4db61f56b4a7a92cf, type: 3}
