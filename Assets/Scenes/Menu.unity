@@ -871,13 +871,9 @@ MonoBehaviour:
   - {fileID: 3992557619016265118, guid: eea7c55b289ec3347960a6f9de269dfb, type: 3}
   - {fileID: 1311420710301116983, guid: c119e9c976a8f524d81ffd579ae5063c, type: 3}
   - {fileID: 6196915132452724319, guid: 3f7607b4dff716845914240a21818a89, type: 3}
-  - {fileID: 4066588543361744108, guid: 01536a0e1528faa4d89ccdf907dc8658, type: 3}
-  - {fileID: 1425512457202989034, guid: a472cd4c2cb296f4fb179cd4515a1506, type: 3}
-  - {fileID: 1425512457202989034, guid: ddc697a54680982449c5533f0b8583d5, type: 3}
   - {fileID: 8248381651605195454, guid: 7c03064db92ff5646b6e531a6ffc31ea, type: 3}
   - {fileID: 1272550272468175798, guid: c24a3302ce735a44bbeda460d4cffa4b, type: 3}
   - {fileID: 8248381651605195454, guid: 73f7682b66d4d024f9a64a1e5dcb99bc, type: 3}
-  - {fileID: 1425512457202989034, guid: 467d928d4f8f2334180d0c60b359bc3e, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     catchupNegativeThreshold: -1
