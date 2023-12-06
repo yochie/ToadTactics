@@ -53,10 +53,6 @@ public class DefaultMoveAction : IMoveAction
             //in case sub classes need to do stuff on pathed hexes
             this.InterruptedAtHex = diedOnHex;
         }
-        else
-        {
-            //MapInputHandler.Singleton.TargetRpcSelectHex(this.RequestingClient, this.TargetHex);
-        }
     }
 
     public virtual bool ServerValidate()

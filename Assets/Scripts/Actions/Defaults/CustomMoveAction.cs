@@ -34,9 +34,6 @@ public class CustomMoveAction : DefaultMoveAction, IOutOfControlAction
             //in case sub classes need to do stuff on pathed hexes
             this.InterruptedAtHex = diedOnHex;
         }
-        else
-        {
-        }
     }
 
     //Same as default but skip on checking if character has available moves, can move and movecost
