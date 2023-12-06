@@ -138,6 +138,11 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.holdsTreasure = val;
     }
 
+    [Server]
+    public void SetHazard(HazardType type)
+    {
+        this.holdsHazard = type;
+    }
 
     #endregion
 

@@ -37,7 +37,7 @@ public class MapHazardManager : NetworkBehaviour
             }
         }
 
-        hazardHex.holdsHazard = type;
+        hazardHex.SetHazard(type);
 
         this.RpcDisplayHazardSprite(coordinates, type);
     }
@@ -46,12 +46,12 @@ public class MapHazardManager : NetworkBehaviour
     public void RemoveHazardAtPosition(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates)
     {
         Hex hazardHex = Map.GetHex(grid, coordinates.x, coordinates.y);
-        if(hazardHex.holdsHazard == HazardType.none)
+        if(!hazardHex.HoldsAHazard())
         {
             Debug.Log("Trying to destroy hazard at hex that doesn't contain one. Probably an error somewhere.");
             return;
         }
-        hazardHex.holdsHazard = HazardType.none;
+        hazardHex.SetHazard(HazardType.none);
         RpcDestroyHazardSprite(coordinates);
     }
 

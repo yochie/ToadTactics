@@ -52,7 +52,7 @@ public class DefaultAttackAction : IAttackAction
         if (target.HoldsAnObstacle())
         {
             //attacking obstacle
-            Map.Singleton.obstacleManager.DestroyObstacleAtPosition(Map.Singleton.hexGrid, target.coordinates.OffsetCoordinatesAsVector());
+            Map.Singleton.obstacleManager.RemoveObstacleAtPosition(Map.Singleton.hexGrid, target.coordinates.OffsetCoordinatesAsVector());
             bool gotAnApple = Utility.RollChance(Map.Singleton.appleSpawnChance);
             if (gotAnApple)
                 Map.Singleton.hazardManager.SpawnHazardOnMap(Map.Singleton.hexGrid, target.coordinates.OffsetCoordinatesAsVector(), HazardType.apple);

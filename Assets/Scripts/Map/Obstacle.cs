@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class Obstacle : NetworkBehaviour
+public class Obstacle : MonoBehaviour
 {
-    [SyncVar]
     public ObstacleType type;
-
-    [SyncVar]
-    public HexCoordinates hexPosition;
 }
