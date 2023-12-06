@@ -80,7 +80,12 @@ public class Map : NetworkBehaviour
 
     #endregion
 
-    #region Commands
+    #region State
+
+    public void QueueTreasureOpenAnimation()
+    {
+        this.Treasure.GetComponent<MapTreasure>().RpcSetVisible(false);
+    }
 
     #endregion
 

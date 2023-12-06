@@ -32,7 +32,7 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     public HazardType holdsHazard;
 
     [SyncVar]
-    public bool holdsTreasure;
+    private bool holdsTreasure;
 
     [SyncVar]
     public bool holdsBallista;
@@ -130,6 +130,12 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     internal void SetObstacle(ObstacleType obstacle)
     {
         this.holdsObstacle = obstacle;
+    }
+
+    [Server]
+    public void SetTreasure(bool val)
+    {
+        this.holdsTreasure = val;
     }
 
 

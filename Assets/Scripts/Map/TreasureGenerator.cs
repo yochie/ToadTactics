@@ -42,7 +42,7 @@ public class TreasureGenerator : NetworkBehaviour
         {
             GameObject treasureObject = Instantiate(this.treasurePrefab, treasureHex.transform.position, Quaternion.identity);
             NetworkServer.Spawn(treasureObject);
-            treasureHex.holdsTreasure = true;
+            treasureHex.SetTreasure(true);
             Map.Singleton.Treasure = treasureObject;
         }
         else

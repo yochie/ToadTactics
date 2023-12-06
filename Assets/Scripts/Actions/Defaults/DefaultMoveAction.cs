@@ -88,12 +88,13 @@ public class DefaultMoveAction : IMoveAction
     {
         Map.Singleton.MoveCharacter(this.ActorCharacter.CharClassID, previousHex, nextHex);
 
-        if (nextHex.holdsTreasure)
+        if (nextHex.HoldsATreasure())
         {
             string message = string.Format("{0} has collected treasure.", this.ActorCharacter.charClass.name);
             logger.RpcLogMessage(message);
-            Object.Destroy(Map.Singleton.Treasure);
+            Map.Singleton.QueueTreasureOpenAnimation();
             GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);
+            nextHex.SetTreasure(false);
         }
 
         int moveDamage = nextHex.DealsDamageWhenMovedInto();
