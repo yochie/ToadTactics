@@ -36,7 +36,6 @@ public class DefaultMoveAction : IMoveAction
         foreach (Hex nextHex in this.movePath)
         {
             ActorCharacter.UsedMoves(nextHex.MoveCost());
-            this.ActorCharacter.RpcPlaceCharSprite(nextHex.transform.position, true);
             this.MoveToTile(previousHex, nextHex, logger);
 
             if (this.ActorCharacter.IsDead)
@@ -86,6 +85,8 @@ public class DefaultMoveAction : IMoveAction
 
     protected void MoveToTile(Hex previousHex, Hex nextHex, INetworkedLogger logger)
     {
+        this.ActorCharacter.RpcPlaceCharSprite(nextHex.transform.position, true);
+
         Map.Singleton.MoveCharacter(this.ActorCharacter.CharClassID, previousHex, nextHex);
 
         if (nextHex.HoldsATreasure())
@@ -96,6 +97,9 @@ public class DefaultMoveAction : IMoveAction
             GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);
             nextHex.SetTreasure(false);
         }
+
+        if (nextHex.HoldsAHazard() && HazardDataSO.Singleton.IsHazardTypeRemovedWhenWalkedUpon(nextHex.holdsHazard))
+            Map.Singleton.hazardManager.RpcDestroyHazardSprite(nextHex.coordinates.OffsetCoordinatesAsVector());        
 
         int moveDamage = nextHex.DealsDamageWhenMovedInto();
         if (moveDamage > 0)
@@ -123,7 +127,7 @@ public class DefaultMoveAction : IMoveAction
         }
 
         if (nextHex.HoldsAHazard() && HazardDataSO.Singleton.IsHazardTypeRemovedWhenWalkedUpon(nextHex.holdsHazard))
-            Map.Singleton.hazardManager.RemoveHazardAtPosition(Map.Singleton.hexGrid, nextHex.coordinates.OffsetCoordinatesAsVector());
+            Map.Singleton.hazardManager.RemoveHazardAtPosition(Map.Singleton.hexGrid, nextHex.coordinates.OffsetCoordinatesAsVector(), alsoDestroySprite: false);
     }
 
     private int PreviewMoveToTileDamage(Hex previousHex, Hex nextHex)

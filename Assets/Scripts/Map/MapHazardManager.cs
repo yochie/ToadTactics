@@ -11,7 +11,7 @@ public class MapHazardManager : NetworkBehaviour
     private Dictionary<Vector2Int, Hazard> spawnedHazardSprites = new();
 
     [Server]
-    internal void SpawnHazardOnMap(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates, HazardType type)
+    internal void SpawnHazardOnMap(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates, HazardType type, bool alsoDisplaySprite = true)
     {
         Hex hazardHex = Map.GetHex(grid, coordinates.x, coordinates.y);
 
@@ -39,11 +39,12 @@ public class MapHazardManager : NetworkBehaviour
 
         hazardHex.SetHazard(type);
 
-        this.RpcDisplayHazardSprite(coordinates, type);
+        if(alsoDisplaySprite)
+            this.RpcDisplayHazardSprite(coordinates, type);
     }
 
     [Server]
-    public void RemoveHazardAtPosition(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates)
+    public void RemoveHazardAtPosition(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates, bool alsoDestroySprite = true)
     {
         Hex hazardHex = Map.GetHex(grid, coordinates.x, coordinates.y);
         if(!hazardHex.HoldsAHazard())
@@ -52,17 +53,25 @@ public class MapHazardManager : NetworkBehaviour
             return;
         }
         hazardHex.SetHazard(HazardType.none);
-        RpcDestroyHazardSprite(coordinates);
+
+        if(alsoDestroySprite)
+            RpcDestroyHazardSprite(coordinates);
     }
 
     [ClientRpc]
-    private void RpcDisplayHazardSprite(Vector2Int coordinates, HazardType type)
+    public void RpcDisplayHazardSprite(Vector2Int coordinates, HazardType type)
     {
-        AnimationSystem.Singleton.Queue(this.DisplayHazardCoroutine(coordinates, type));
+            AnimationSystem.Singleton.Queue(this.DisplayHazardCoroutine(coordinates, type));
     }
 
     private IEnumerator DisplayHazardCoroutine(Vector2Int coordinates, HazardType type)
     {
+        if (this.spawnedHazardSprites.ContainsKey(coordinates))
+        {
+            Debug.Log("Warning: attempting to create hazard sprite at position that already contains one. Perhaps you forgot to remove it beforehand?");
+            yield break;
+        }
+
         Dictionary<Vector2Int, Hex> grid = Map.Singleton.hexGrid;
         Hex hazardHex = Map.GetHex(grid, coordinates.x, coordinates.y);
 
@@ -73,13 +82,20 @@ public class MapHazardManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcDestroyHazardSprite(Vector2Int coordinates)
+    public void RpcDestroyHazardSprite(Vector2Int coordinates)
     {
-        AnimationSystem.Singleton.Queue(this.DestroyHazardSpriteCoroutine(coordinates));
+            AnimationSystem.Singleton.Queue(this.DestroyHazardSpriteCoroutine(coordinates));
+
     }
 
     private IEnumerator DestroyHazardSpriteCoroutine(Vector2Int coordinates)
     {
+        if (!this.spawnedHazardSprites.ContainsKey(coordinates))
+        {
+            Debug.Log("Warning: attempting to destroy hazard sprite at position that has no record of it. Perhaps it was already destroyed?");
+            yield break;
+        }
+
         Hazard hazardToDestroy = this.spawnedHazardSprites[coordinates];
         Destroy(hazardToDestroy.gameObject);
         this.spawnedHazardSprites.Remove(coordinates);
