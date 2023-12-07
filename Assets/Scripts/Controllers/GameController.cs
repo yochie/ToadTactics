@@ -351,7 +351,7 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
-    public void AssignControlModesForNewTurn(int playerTurn, ControlMode activePlayerMode)
+    public void AssignControlModesForNewTurn(int playerTurn, ControlMode activePlayerMode, int activeCharacterID)
     {
         List<NetworkConnectionToClient> connections = new();
         NetworkServer.connections.Values.CopyTo(connections);
@@ -377,8 +377,9 @@ public class GameController : NetworkBehaviour
         if (excessClients)
             Debug.Log("Watch out, it would appear there are more than 2 connected clients...");
 
-        this.mapInputHandler.TargetRpcSetControlMode(playingClient, activePlayerMode);
-        this.mapInputHandler.TargetRpcSetControlMode(idleClient, ControlMode.none);
+        Hex activeCharacterHex = Map.GetHex(Map.Singleton.hexGrid, Map.Singleton.characterPositions[activeCharacterID]);
+        this.mapInputHandler.TargetRpcSetControlMode(playingClient, activePlayerMode, activeCharacterHex);
+        this.mapInputHandler.TargetRpcSetControlMode(idleClient, ControlMode.none, null);
     }
 
     [Server]

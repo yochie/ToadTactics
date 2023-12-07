@@ -260,7 +260,9 @@ public class MapInputHandler : NetworkBehaviour
         this.SetControlMode(ControlMode.useBallista);
     }
 
-    public void SetControlMode(ControlMode mode)
+    //toSelect allows forcing selecting specific hex in case local info might not be updated yet
+    //e.g. right after a move has been done
+    public void SetControlMode(ControlMode mode, Hex toSelect = null)
     {
         MainHUD.Singleton.HighlightGameplayButton(mode);
         this.UnselectHex();
@@ -297,7 +299,10 @@ public class MapInputHandler : NetworkBehaviour
             || mode == ControlMode.useEquipment
             || mode == ControlMode.none))
         {
-            this.SelectHexForPlayingCharacter();
+            if (toSelect == null)
+                this.SelectHexForPlayingCharacter();
+            else
+                this.SelectHex(toSelect);
         }
     }
 
@@ -315,15 +320,15 @@ public class MapInputHandler : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcSetControlMode(NetworkConnectionToClient target, ControlMode mode)
+    public void TargetRpcSetControlMode(NetworkConnectionToClient target, ControlMode mode, Hex toSelect)
     {
-        this.SetControlMode(mode);
+        this.SetControlMode(mode, toSelect);
     }
 
     [ClientRpc]
     public void RpcSetControlModeOnAllClients(ControlMode mode)
     {
-        this.SetControlMode(mode);
+        this.SetControlMode(mode, null);
     }
 
     public void OnCharacterSheetDisplayed(int classID)

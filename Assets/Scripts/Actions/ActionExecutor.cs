@@ -391,20 +391,22 @@ public class ActionExecutor : NetworkBehaviour
         }
         else
         {
+            //in case action caused character move, send updated position along with control mode change
+            //rather than rely on updated syncvar client side
+            Hex actorHex = Map.GetHex(Map.Singleton.hexGrid, Map.Singleton.characterPositions[actor.CharClassID]);
+
             List<ControlMode> activeControlModes = actor.GetRemainingActions();
             ControlMode nextControlMode = activeControlModes.Contains(currentControlMode) ? currentControlMode : activeControlModes[0];
             MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, nextControlMode, Map.Singleton.IsCharacterOnBallista(actor.CharClassID));
-            MapInputHandler.Singleton.TargetRpcSetControlMode(sender, nextControlMode);           
+            MapInputHandler.Singleton.TargetRpcSetControlMode(sender, nextControlMode, actorHex);           
 
             if (actor.HasActiveAbility())
             {
+                //assumes active ability is first listed... horrible
+                //TODO : have better setup that supports multiple active abilities/allows for selecting them
                 string abilityID = actor.charClass.abilities[0].stringID;
                 MainHUD.Singleton.TargetRpcUpdateAbilityCooldownIndicator(sender, actor.GetAbilityCooldown(abilityID), actor.GetAbilityUsesRemaining(abilityID));
             }
-
-            //in case action caused character move
-            Hex actorHex = Map.GetHex(Map.Singleton.hexGrid, Map.Singleton.characterPositions[actor.CharClassID]);
-            MapInputHandler.Singleton.TargetRpcSelectHex(sender,actorHex);
         }
     }
 

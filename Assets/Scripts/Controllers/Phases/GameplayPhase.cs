@@ -163,7 +163,7 @@ public class GameplayPhase : IGamePhase
 
         ControlMode startingMode = activeControlModes.Contains(ControlMode.move) ? ControlMode.move : ControlMode.none;
 
-        this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, startingMode);
+        this.Controller.AssignControlModesForNewTurn(this.Controller.PlayerTurn, startingMode, currentCharacter.CharClassID);
 
         NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
 
