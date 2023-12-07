@@ -161,10 +161,10 @@ public class MapInputHandler : NetworkBehaviour
 
     public void HoverHex(Hex hoveredHex)
     {
-        if (!this.allowInput)
-            return;
 
         this.HoveredHex = hoveredHex;
+        if (!this.allowInput)
+            return;
         List<Hex> targetedHexes;
         this.SetCursor(this.CurrentControlMode);
         switch (this.CurrentControlMode)
@@ -252,7 +252,7 @@ public class MapInputHandler : NetworkBehaviour
 
     public void UnhoverHex(Hex unhoveredHex)
     {
-        //in case we somehow unhover a hex AFTER we starting hovering another        
+        //in case we somehow unhover a hex AFTER we starting hovering another, make sure we are unhovering correct hex      
         if (this.HoveredHex == unhoveredHex)
         {
             this.HoveredHex = null;
@@ -394,5 +394,7 @@ public class MapInputHandler : NetworkBehaviour
     public void SetInputAllowed(bool value)
     {
         this.allowInput = value;
+        if(this.HoveredHex != null)
+            this.HoverHex(this.HoveredHex);
     }
 }
