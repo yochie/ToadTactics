@@ -16,6 +16,18 @@ public class MapInputHandler : NetworkBehaviour
     [SerializeField]
     private Ballista ballistaPrefab;
 
+    [SerializeField]
+    private Texture2D attackCursorTexture;
+    
+    [SerializeField] 
+    private Texture2D moveCursorTexture;
+
+    [SerializeField] 
+    private Texture2D abilityCursorTexture;
+    
+    [SerializeField] 
+    private Texture2D ballistaCursorTexture;
+
     public static MapInputHandler Singleton { get; private set; }
 
     private PlayerCharacter playingCharacter;
@@ -32,7 +44,7 @@ public class MapInputHandler : NetworkBehaviour
     private EquipmentSO currentActivedEquipmentStats;
 
     private bool allowInput = true;
-    
+
     private void Awake()
     {
         if (MapInputHandler.Singleton == null)
@@ -154,6 +166,7 @@ public class MapInputHandler : NetworkBehaviour
 
         this.HoveredHex = hoveredHex;
         List<Hex> targetedHexes;
+        this.SetCursor(this.CurrentControlMode);
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -209,6 +222,34 @@ public class MapInputHandler : NetworkBehaviour
         }
     }
 
+    private void SetCursor(ControlMode controlMode)
+    {
+        Texture2D cursorTexture = this.GetCursorTextureForMode(controlMode);
+        Cursor.SetCursor(cursorTexture, Vector2.zero, CursorMode.Auto);
+    }
+
+    private void SetCursorToDefault()
+    {        
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+    }
+
+    private Texture2D GetCursorTextureForMode(ControlMode controlMode)
+    {
+        switch (controlMode)
+        {
+            case ControlMode.attack:
+                return this.attackCursorTexture;
+            case ControlMode.move:
+                return this.moveCursorTexture;
+            case ControlMode.useAbility:
+                return this.abilityCursorTexture;
+            case ControlMode.useBallista:
+                return this.ballistaCursorTexture;
+            default:
+                return null;
+        }    
+    }
+
     public void UnhoverHex(Hex unhoveredHex)
     {
         //in case we somehow unhover a hex AFTER we starting hovering another        
@@ -216,6 +257,8 @@ public class MapInputHandler : NetworkBehaviour
         {
             this.HoveredHex = null;
         }
+
+        this.SetCursorToDefault();
 
         this.actionPreviewer.RemoveActionPreview();
 

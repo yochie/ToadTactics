@@ -4623,6 +4623,10 @@ MonoBehaviour:
   rangeDisplayer: {fileID: 1982683012}
   actionPreviewer: {fileID: 1809464646}
   ballistaPrefab: {fileID: 2802014603081656047, guid: 73f7682b66d4d024f9a64a1e5dcb99bc, type: 3}
+  attackCursorTexture: {fileID: 2800000, guid: a5c75c571a44c734a9f259a136958252, type: 3}
+  moveCursorTexture: {fileID: 2800000, guid: 31c542ee40a073048a45fa4a0f691aff, type: 3}
+  abilityCursorTexture: {fileID: 2800000, guid: edb71be7700e548439dd30a00635a8d0, type: 3}
+  ballistaCursorTexture: {fileID: 2800000, guid: 2330ec6bd2188ae4380d1be80722503f, type: 3}
 --- !u!114 &1982683014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4635,6 +4639,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec5f1e4abd83bf64cb7a735b903135c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!114 &1982683015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4820,6 +4827,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efedd29c76efed742a92c5dea8d87e7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   obstaclePrefabs:
   - {fileID: 673971393749392676, guid: 3f7607b4dff716845914240a21818a89, type: 3}
 --- !u!1001 &2115037215
