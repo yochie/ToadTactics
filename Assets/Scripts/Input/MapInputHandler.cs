@@ -87,7 +87,6 @@ public class MapInputHandler : NetworkBehaviour
     {
         this.UnselectHex();
         this.SelectedHex = h;
-        h.drawer.Select(true);
 
         if (!h.HoldsACharacter())
             throw new System.Exception("Selecting hex without character is currently unsupported. Programmer should fix.");
@@ -95,6 +94,13 @@ public class MapInputHandler : NetworkBehaviour
         int heldCharacterID = h.holdsCharacterWithClassID;
         PlayerCharacter heldCharacter = GameController.Singleton.PlayerCharactersByID[heldCharacterID];
         this.SetPlayingCharacter(heldCharacter);
+
+        AnimationSystem.Singleton.Queue(this.DisplaySelectionState(h, heldCharacter));
+    }
+
+    private IEnumerator DisplaySelectionState(Hex h, PlayerCharacter heldCharacter)
+    {
+        h.drawer.Select(true);
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -120,6 +126,7 @@ public class MapInputHandler : NetworkBehaviour
                 Debug.Log("Trying to select hex while control mode is useTreasure(currently unsupported).");
                 break;
         }
+        yield break;
     }
 
     public void UnselectHex()
