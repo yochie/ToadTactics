@@ -84,7 +84,7 @@ public class Map : NetworkBehaviour
 
     public void QueueTreasureOpenAnimation()
     {
-        this.Treasure.GetComponent<MapTreasure>().RpcSetVisible(false);
+        this.Treasure.GetComponent<MapTreasure>().RpcOpenAnimation(false);
     }
 
     #endregion

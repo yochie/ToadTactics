@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4083549547845802038}
   - component: {fileID: 3009328504152173398}
   m_Layer: 5
-  m_Name: BuffPopup
+  m_Name: IconPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6086068130521551484}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e1b3b8d807e36845bf4a686f7409b15, type: 3}
+  m_Script: {fileID: 11500000, guid: f5ef1419024ee984789627ab8bc8b29c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   render: {fileID: 3009328504152173398}

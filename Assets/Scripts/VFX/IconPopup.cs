@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuffPopup : MonoBehaviour
+public class IconPopup : MonoBehaviour
 {
     [SerializeField]
     private SpriteRenderer render;

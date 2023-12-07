@@ -482,8 +482,8 @@ MonoBehaviour:
   forCharacter: {fileID: 1350857231127888729}
   positiveColor: {r: 0.42607686, g: 0.9528302, b: 0.45759198, a: 1}
   negativeColor: {r: 0.5660378, g: 0, b: 0, a: 1}
-  buffPopupPrefab: {fileID: 4083549547845802038, guid: db84bac081f9dea40ad7f5f266dfa6c0, type: 3}
-  buffPopupOffset: {x: 2, y: 5, z: 0}
+  iconPopupPrefab: {fileID: 4083549547845802038, guid: db84bac081f9dea40ad7f5f266dfa6c0, type: 3}
+  iconPopupOffset: {x: 2, y: 5, z: 0}
   shakeStrengthCurve:
     serializedVersion: 2
     m_Curve:

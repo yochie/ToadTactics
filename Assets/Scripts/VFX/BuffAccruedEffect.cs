@@ -20,10 +20,10 @@ public class BuffAccruedEffect : MonoBehaviour
     private Color negativeColor;
 
     [SerializeField]
-    private BuffPopup buffPopupPrefab;
+    private IconPopup iconPopupPrefab;
 
     [SerializeField]
-    private Vector3 buffPopupOffset;
+    private Vector3 iconPopupOffset;
 
     [SerializeField]
     private AnimationCurve shakeStrengthCurve;
@@ -61,7 +61,7 @@ public class BuffAccruedEffect : MonoBehaviour
 
     private IEnumerator BuffPopupCoroutine(Sprite icon, float popupDurationSeconds, Color color)
     {
-        BuffPopup popup = Instantiate(this.buffPopupPrefab, gameObject.transform.position + this.buffPopupOffset, Quaternion.identity);
+        IconPopup popup = Instantiate(this.iconPopupPrefab, gameObject.transform.position + this.iconPopupOffset, Quaternion.identity);
 
         popup.Init(icon, color);
 

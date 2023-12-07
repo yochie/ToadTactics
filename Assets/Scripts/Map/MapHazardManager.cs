@@ -40,7 +40,7 @@ public class MapHazardManager : NetworkBehaviour
         hazardHex.SetHazard(type);
 
         if(alsoDisplaySprite)
-            this.RpcDisplayHazardSprite(coordinates, type);
+            this.RpcDisplayHazardSprite(coordinates, type, hazardHex.transform.position);
     }
 
     [Server]
@@ -59,12 +59,12 @@ public class MapHazardManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcDisplayHazardSprite(Vector2Int coordinates, HazardType type)
+    public void RpcDisplayHazardSprite(Vector2Int coordinates, HazardType type, Vector3 position)
     {
-            AnimationSystem.Singleton.Queue(this.DisplayHazardCoroutine(coordinates, type));
+            AnimationSystem.Singleton.Queue(this.DisplayHazardCoroutine(coordinates, type, position));
     }
 
-    private IEnumerator DisplayHazardCoroutine(Vector2Int coordinates, HazardType type)
+    private IEnumerator DisplayHazardCoroutine(Vector2Int coordinates, HazardType type, Vector3 position)
     {
         if (this.spawnedHazardSprites.ContainsKey(coordinates))
         {
@@ -72,11 +72,8 @@ public class MapHazardManager : NetworkBehaviour
             yield break;
         }
 
-        Dictionary<Vector2Int, Hex> grid = Map.Singleton.hexGrid;
-        Hex hazardHex = Map.GetHex(grid, coordinates.x, coordinates.y);
-
-        Hazard hazardTypePrefab = HazardDataSO.Singleton.GetHazardPrefab(type).GetComponent<Hazard>();
-        GameObject hazardObject = Instantiate(hazardTypePrefab.gameObject, hazardHex.transform.position, Quaternion.identity);
+        GameObject hazardPrefab = HazardDataSO.Singleton.GetHazardPrefab(type);
+        GameObject hazardObject = Instantiate(hazardPrefab, position, Quaternion.identity);
         this.spawnedHazardSprites[coordinates] = hazardObject.GetComponent<Hazard>();
         yield break;
     }
@@ -85,7 +82,6 @@ public class MapHazardManager : NetworkBehaviour
     public void RpcDestroyHazardSprite(Vector2Int coordinates)
     {
             AnimationSystem.Singleton.Queue(this.DestroyHazardSpriteCoroutine(coordinates));
-
     }
 
     private IEnumerator DestroyHazardSpriteCoroutine(Vector2Int coordinates)

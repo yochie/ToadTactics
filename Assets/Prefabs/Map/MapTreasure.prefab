@@ -154,3 +154,50 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   render: {fileID: 4482400478367115830}
+  iconPopupPrefab: {fileID: 4083549547845802038, guid: db84bac081f9dea40ad7f5f266dfa6c0, type: 3}
+  iconPopupOffset: {x: 2, y: 5, z: 0}
+  popupIcon: {fileID: 21300000, guid: 59646ff9a221897498ba0dc31f7cd571, type: 3}
+  flashCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.078203976
+      value: 0.9999238
+      inSlope: 0.36886138
+      outSlope: 0.36886138
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.85621035
+      value: 0.44704098
+      inSlope: -1.683029
+      outSlope: -1.683029
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: -0.00015258789
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  flashDurationSeconds: 1.5
+  soundEffect: {fileID: 8300000, guid: f82f179d1e4063247a497e28571f0da4, type: 3}
