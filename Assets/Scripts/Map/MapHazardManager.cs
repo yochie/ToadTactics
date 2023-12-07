@@ -97,5 +97,4 @@ public class MapHazardManager : NetworkBehaviour
         this.spawnedHazardSprites.Remove(coordinates);
         yield break;
     }
-
 }
