@@ -205,7 +205,10 @@ public class MapInputHandler : NetworkBehaviour
                 AreaType abilityAreaType = currentActivatedAbilityStats.areaType;
                 int abilityAreaScaler = currentActivatedAbilityStats.areaScaler;
                 bool abilityRequiresLOS = currentActivatedAbilityStats.requiresLOS;
-                targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, abilityAreaType, userHex, hoveredHex, abilityAreaScaler);
+                if (abilityAreaType != AreaType.ownTeam && abilityAreaType != AreaType.enemyTeam)
+                    targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, abilityAreaType, userHex, hoveredHex, abilityAreaScaler);
+                else
+                    targetedHexes = AreaGenerator.GetHexesForTeam(Map.Singleton.hexGrid, Map.Singleton.characterPositions, GameController.Singleton.DraftedCharacterOwners, abilityAreaType, userHex);
                 this.rangeDisplayer.HighlightTargetedArea(userHex, hoveredHex, abilityAreaType, abilityAreaScaler, abilityRequiresLOS, targetedHexes);
                 ActionExecutor.Singleton.CmdPreviewAbilityAt(this.SelectedHex, hoveredHex, this.currentActivatedAbilityStats);
                 break;

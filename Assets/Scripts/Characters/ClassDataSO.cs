@@ -381,10 +381,10 @@ public class ClassDataSO : ScriptableObject
                     description: "Grants a bonus to health, armor and movement to all allies.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     cooldownDuration: 4,
+                    range: 0,
                     cappedByCooldown: true,
-                    range:0,
-                    areaType: AreaType.radial,
-                    areaScaler: Utility.MAX_DISTANCE_ON_MAP/2
+                    requiresLOS: false,
+                    areaType: AreaType.ownTeam
                 ),
                 new (
                     stringID: "PaladinCrusader",

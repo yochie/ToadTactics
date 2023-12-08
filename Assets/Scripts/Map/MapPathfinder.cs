@@ -110,7 +110,7 @@ public static class MapPathfinder
             for (int r = Mathf.Max(-distance, -distance - q); r <= Mathf.Min(distance, -q + distance); r++)
             {
                 HexCoordinates destCoords = HexCoordinates.Add(start.coordinates, new HexCoordinates(q, r, start.coordinates.isFlatTop));
-                Hex destHex = Map.GetHex(hexGrid, destCoords.X, destCoords.Y);
+                Hex destHex = Map.GetHex(hexGrid, destCoords);
                 if (destHex != null)
                     toReturn.Add(destHex);
             }

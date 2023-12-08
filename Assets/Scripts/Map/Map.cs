@@ -166,7 +166,6 @@ public class Map : NetworkBehaviour
         }
     }
 
-
     public static Hex GetHex(Dictionary<Vector2Int, Hex> grid, HexCoordinates hexCoordinates)
     {
         if (grid.TryGetValue(hexCoordinates.OffsetCoordinatesAsVector(), out Hex toReturn))
@@ -228,6 +227,7 @@ public class Map : NetworkBehaviour
         return hex.holdsBallista;
     }
 
+    [Server]
     internal HazardType IsCharacterStandingOnHazard(int classID)
     {
         HexCoordinates characterPosition = this.characterPositions[classID];

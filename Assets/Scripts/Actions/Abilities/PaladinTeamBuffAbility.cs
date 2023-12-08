@@ -36,8 +36,7 @@ public class PaladinTeamBuffAbility : IAbilityAction, IActivatedBuffSource, ICoo
         
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
 
-        List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
-
+        List<Hex> targetedHexes = AreaGenerator.GetHexesForTeam(Map.Singleton.hexGrid, Map.Singleton.characterPositions, GameController.Singleton.DraftedCharacterOwners, this.AbilityStats.areaType, this.ActorHex);
         List<int> affectedCharacterIDs = new();
         foreach(PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
         {
