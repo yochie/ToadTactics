@@ -21,7 +21,7 @@ public class MapObstacleManager : NetworkBehaviour
             this.RemoveObstacleAtPosition(grid, coordinates);
         }
         targetHex.SetObstacle(type);
-        this.RpcDisplayObstacleSprite(coordinates, type);
+        this.RpcDisplayObstacleSprite(coordinates, type, targetHex.transform.position);
     }
 
     [Server]
@@ -43,18 +43,15 @@ public class MapObstacleManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcDisplayObstacleSprite(Vector2Int coordinates, ObstacleType type)
+    private void RpcDisplayObstacleSprite(Vector2Int coordinates, ObstacleType type, Vector3 position)
     {
-        AnimationSystem.Singleton.Queue(this.DisplayObstacleCoroutine(coordinates, type));
+        AnimationSystem.Singleton.Queue(this.DisplayObstacleCoroutine(coordinates, type, position));
     }
 
-    private IEnumerator DisplayObstacleCoroutine(Vector2Int coordinates, ObstacleType type)
+    private IEnumerator DisplayObstacleCoroutine(Vector2Int coordinates, ObstacleType type, Vector3 position)
     {
-        Dictionary<Vector2Int, Hex> grid = Map.Singleton.hexGrid;
-        Hex obstacleHex = Map.GetHex(grid, coordinates.x, coordinates.y);
-
         Obstacle obstacleTypePrefab = this.GetPrefabForType(type);
-        GameObject obstaceObject = Instantiate(obstacleTypePrefab.gameObject, obstacleHex.transform.position, Quaternion.identity);
+        GameObject obstaceObject = Instantiate(obstacleTypePrefab.gameObject, position, Quaternion.identity);
         this.spawnedObstacles[coordinates] = obstaceObject.GetComponent<Obstacle>();
         yield break;
     }
