@@ -6,8 +6,21 @@ internal class AreaGenerator
 {
     internal static List<Hex> GetHexesInArea(Dictionary<Vector2Int, Hex> hexGrid, AreaType areaType, Hex sourceHex, Hex primaryTargetHex, int scale)
     {
+        switch (areaType)
+        {
+            case AreaType.ownTeam:
+            case AreaType.enemyTeam:
+                return AreaGenerator.GetHexesForTeam(hexGrid, areaType, sourceHex);
+            default:
+                return AreaGenerator.GetHexesForGeometricArea(hexGrid, areaType, sourceHex,primaryTargetHex, scale);
+        }
+    }
+
+    private static List<Hex> GetHexesForGeometricArea(Dictionary<Vector2Int, Hex> hexGrid, AreaType areaType, Hex sourceHex, Hex primaryTargetHex, int scale)
+    {
         List<Hex> hitHexes = new();
-        switch (areaType) {
+        switch (areaType)
+        {
             case AreaType.single:
                 hitHexes.Add(primaryTargetHex);
                 break;
@@ -23,20 +36,21 @@ internal class AreaGenerator
             case AreaType.ownTeam:
             case AreaType.enemyTeam:
                 throw new Exception("Team area types should not use AreaGenerator.");
-            default :
+            default:
                 hitHexes.Add(primaryTargetHex);
                 break;
         }
         return hitHexes;
     }
 
-    internal static List<Hex> GetHexesForTeam(Dictionary<Vector2Int, Hex> hexGrid,
-                                              Mirror.SyncDictionary<int, HexCoordinates> characterPositions,
-                                              Mirror.SyncDictionary<int, int> draftedCharacterOwners,
+    private static List<Hex> GetHexesForTeam(Dictionary<Vector2Int, Hex> hexGrid,
                                               AreaType abilityAreaType,
-                                              Hex targetHex)
+                                              Hex sourceHex)
     {
-        if (!targetHex.HoldsACharacter())
+
+        Mirror.SyncDictionary<int, HexCoordinates> characterPositions = Map.Singleton.characterPositions;
+        Mirror.SyncDictionary<int, int>  draftedCharacterOwners = GameController.Singleton.DraftedCharacterOwners;
+        if (!sourceHex.HoldsACharacter())
         {
             Debug.Log("Getting hexes for team of of char at hex that contains no char...0");
             return null;
@@ -47,7 +61,7 @@ internal class AreaGenerator
             throw new Exception("GetHexesForTeam is being used with invalid area type");
         }
 
-        int ownPlayerID = targetHex.GetHeldCharacterObject().OwnerID;
+        int ownPlayerID = sourceHex.GetHeldCharacterObject().OwnerID;
         int teamToTarget = abilityAreaType == AreaType.ownTeam ? ownPlayerID : GameController.Singleton.OtherPlayer(ownPlayerID);
         List<Hex> teamHexes = new();
         foreach(var (charID, ownerID) in draftedCharacterOwners)
