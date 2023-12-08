@@ -107,11 +107,17 @@ public class MapInputHandler : NetworkBehaviour
         PlayerCharacter heldCharacter = GameController.Singleton.PlayerCharactersByID[heldCharacterID];
         this.SetPlayingCharacter(heldCharacter);
 
-        AnimationSystem.Singleton.Queue(this.DisplaySelectionState(h, heldCharacter));
+        AnimationSystem.Singleton.Queue(this.DisplaySelection(h, heldCharacter));
     }
 
-    private IEnumerator DisplaySelectionState(Hex h, PlayerCharacter heldCharacter)
+    private IEnumerator DisplaySelection(Hex h, PlayerCharacter heldCharacter)
     {
+        //if the selected hex is no longer up to date, abort
+        if(this.SelectedHex != h)
+        {
+            yield break;
+        }
+
         h.drawer.Select(true);
         switch (this.CurrentControlMode)
         {
@@ -143,21 +149,40 @@ public class MapInputHandler : NetworkBehaviour
 
     public void UnselectHex()
     {
-        if (this.SelectedHex != null)
-        {
-            this.SelectedHex.drawer.Select(false);
-        }
+        Hex previouslySelected = this.SelectedHex;
+        if (previouslySelected == null)
+            return;
+        
+        //update state
         this.SelectedHex = null;
 
+        //immediately remove any current selection display, though the previous selection might not actually be displayed yet (in which case this does nothing)
+        if (previouslySelected != null)
+        {
+            DisplayUnselection(previouslySelected);
+        }
+
+        //also queue an unselection display in case previous selection hadn't been displayed yet
+        AnimationSystem.Singleton.Queue(this.DisplayUnselectionCoroutine(previouslySelected));
+    }
+
+    private void DisplayUnselection(Hex h)
+    {
+        h.drawer.Select(false);
         this.rangeDisplayer.HidePath();
         this.rangeDisplayer.HideMovementRange();
         this.rangeDisplayer.HideAttackRange();
         this.rangeDisplayer.HideBallistaRange();
         this.rangeDisplayer.HideAbilityRange();
         this.rangeDisplayer.UnHighlightTargetedArea();
-
         this.actionPreviewer.RemoveActionPreview();
     }
+
+    private IEnumerator DisplayUnselectionCoroutine(Hex h)
+    {
+        this.DisplayUnselection(h);
+        yield break;
+    }    
 
     public void HoverHex(Hex hoveredHex)
     {
