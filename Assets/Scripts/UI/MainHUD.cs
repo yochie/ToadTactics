@@ -9,7 +9,10 @@ using System;
 public class MainHUD : NetworkBehaviour
 {
     [SerializeField]
-    private TextMeshProUGUI instructionLabel;
+    private TextMeshProUGUI turnInstructionLabel;
+
+    [SerializeField]
+    private TextMeshProUGUI placementInstructionLabel;
 
     [SerializeField]
     private GameObject endTurnButton;
@@ -210,19 +213,44 @@ public class MainHUD : NetworkBehaviour
     [Client]
     public void OnLocalPlayerTurnStart()
     {        
-        this.instructionLabel.text = "Your turn";
+        this.turnInstructionLabel.text = "Your turn";
+        if (GameController.Singleton.CurrentPhaseID == GamePhaseID.characterPlacement)
+            this.SetPlacementInstuctionState(yourTurn: true);
         this.endTurnButton.SetActive(true);
     }
 
     [Client]
     public void OnLocalPlayerTurnEnd()
     {
-        this.instructionLabel.text = "Waiting...";
+        this.turnInstructionLabel.text = "Opponent turn";
+        if (GameController.Singleton.CurrentPhaseID == GamePhaseID.characterPlacement)
+            this.SetPlacementInstuctionState(yourTurn: false);
         this.endTurnButton.SetActive(false);
         if (GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
         {
             this.ActivateGameplayButtons(false);
         }
+    }
+
+    [TargetRpc]
+    public void TargetRpcEnablePlacementInstruction(NetworkConnectionToClient target, bool yourTurn)
+    {
+        this.placementInstructionLabel.gameObject.SetActive(true);
+        this.SetPlacementInstuctionState(yourTurn);
+    }
+
+    [ClientRpc]
+    public void RpcDisablePlacementInstruction()
+    {
+        this.placementInstructionLabel.gameObject.SetActive(false);
+    }
+
+    private void SetPlacementInstuctionState(bool yourTurn)
+    {
+        if(yourTurn)
+            this.placementInstructionLabel.text = "Drag character onto map";
+        else
+            this.placementInstructionLabel.text = "Opponent is placing character";
     }
 
     //TODO : Remove, its called by RPC/syncvar hook and checks recently set syncvar, big nono

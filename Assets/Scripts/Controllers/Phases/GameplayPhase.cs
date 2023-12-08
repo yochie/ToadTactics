@@ -19,7 +19,10 @@ public class GameplayPhase : IGamePhase
 
         this.Name = name;
         this.Controller = controller;
-
+        foreach (PlayerController player in Controller.playerControllers)
+        {
+            MainHUD.Singleton.RpcDisablePlacementInstruction();
+        }
         //TODO : fix bug here caused by race condition : need to either wait for this to resolve on all clients OR integrate to initial character selection.....
         this.Controller.LocalPlayer.RpcClearStartZones();
 

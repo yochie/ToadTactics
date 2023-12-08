@@ -94,6 +94,9 @@ public class CharacterPlacementPhase : IGamePhase
                 .Select(character => character.CharClassID).ToList();
             player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
             player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);
+            //TODO: change once starting player is actually random
+            bool isStartingPlayer = player.playerID == 0 ? true : false;
+            MainHUD.Singleton.TargetRpcEnablePlacementInstruction(player.connectionToClient, yourTurn: isStartingPlayer);
         }
 
         //do an artificial setting to trigger new player turn event even if he was last to play during draft
