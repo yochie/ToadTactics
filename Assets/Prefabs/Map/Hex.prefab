@@ -30,13 +30,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1311420710301116983}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &40805712028485642
 SpriteRenderer:
@@ -77,9 +77,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1635455935
-  m_SortingLayer: -1
+  m_SortingLayer: -3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 2747690628134850419, guid: 83a7df5cd6994034485e9df4fe8dff97, type: 3}
+  m_Sprite: {fileID: -164394668, guid: 9c3ea7b5b7ef4fc44a2da560737d41de, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -109,11 +109,11 @@ MonoBehaviour:
   inputHandler: {fileID: 0}
   isStartingZone: 0
   holdsCharacterWithClassID: 0
-  holdsObstacle: 0
   holdsHazard: 0
-  holdsTreasure: 0
+  holdsBallista: 0
   startZoneForPlayerIndex: 0
   hasBeenSpawnedOnClient: 0
+  holdsCorpseWithClassID: 0
 --- !u!114 &75037190221671252
 MonoBehaviour:
   m_ObjectHideFlags: 0
