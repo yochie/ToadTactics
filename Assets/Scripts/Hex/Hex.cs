@@ -8,13 +8,24 @@ using UnityEngine.EventSystems;
 
 public class Hex : NetworkBehaviour, IEquatable<Hex>
 {
+    //TODO: make all these private serialized fields
     #region Component vars
 
     public HexDrawer drawer;
 
     public HexMouseEventTracker inputHandler;
+    
+    [SerializeField]
+    private SpriteRenderer mainSprite;
+
+    [SerializeField]
+    private SpriteRenderer outline1;
+    
+    [SerializeField]
+    private SpriteRenderer outline2;   
     #endregion
 
+    //TODO : make these private and add get/setters
     #region Sync vars
     [SyncVar]
     public HexCoordinates coordinates;
@@ -79,11 +90,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     {
         base.OnStartClient();
 
-        this.drawer = this.GetComponent<HexDrawer>();
         bool isLocalStartingZone = (this.isServer && this.startZoneForPlayerIndex == 0) || (!this.isServer && this.startZoneForPlayerIndex == 1);
-        this.drawer.Init(this.isStartingZone, isLocalStartingZone, this.coordinates);
+        this.drawer.Init(this.isStartingZone, isLocalStartingZone, this.coordinates,this.mainSprite, this.outline1, this.outline2);
 
-        this.inputHandler = this.GetComponent<HexMouseEventTracker>();
         this.inputHandler.Master = this;
 
         if (isClientOnly)

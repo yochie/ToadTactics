@@ -27,8 +27,6 @@ public class HexDrawer : MonoBehaviour
 
     #region State vars
 
-    private SpriteRenderer sprite;
-
     private Color baseColor = HexDrawer.HEX_DEFAULT_COLOR;
     private Color unHoveredColor = HexDrawer.HEX_DEFAULT_COLOR;
     private Color hexColor = HexDrawer.HEX_DEFAULT_COLOR;
@@ -57,13 +55,23 @@ public class HexDrawer : MonoBehaviour
 
     #endregion
 
+    #region Pointers
+    private SpriteRenderer sprite;
+    private SpriteRenderer outline1;
+    private SpriteRenderer outline2;
+
+    #endregion
+
+
     #region Startup
 
-    public void Init(bool isStartingZone, bool isLocalStartingZone, HexCoordinates coordinates)
+    public void Init(bool isStartingZone, bool isLocalStartingZone, HexCoordinates coordinates, SpriteRenderer mainSprite, SpriteRenderer outline1, SpriteRenderer outline2)
     {
 
         //Debug.LogFormat("Creating hex on client {0} {1} {2}",this.coordinates, this.coordinates.X, this.coordinates.Y);
-        this.sprite = this.GetComponent<SpriteRenderer>();
+        this.sprite = mainSprite;
+        this.outline1 = outline1;
+        this.outline2 = outline2;
 
         //labels to display single number during navigation (range, etc)
         TextMeshProUGUI numLabel = Instantiate<TextMeshProUGUI>(labelPrefab);
@@ -109,6 +117,16 @@ public class HexDrawer : MonoBehaviour
     public void HideLabel()
     {
         this.labelTextMesh.alpha = 0;
+    }
+
+    public void SetOutline1(bool state)
+    {
+        this.outline1.color = Utility.SetAlpha(this.outline1.color, state ? 1 : 0);
+    }
+
+    public void SetOutline2(bool state)
+    {
+        this.outline2.color = Utility.SetAlpha(this.outline1.color, state ? 1 : 0);
     }
 
     public void Select(bool mode)
