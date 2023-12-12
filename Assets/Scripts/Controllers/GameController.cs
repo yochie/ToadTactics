@@ -810,6 +810,17 @@ public class GameController : NetworkBehaviour
         return ownedCharacters;
     }
 
+    public List<int> GetCharacterIDsOwnedByPlayer(int playerID)
+    {
+        List<int> ownedCharacterIDs = new();
+        foreach (var (charID, ownedByplayerID) in this.draftedCharacterOwners)
+        {
+            if (ownedByplayerID == playerID)
+                ownedCharacterIDs.Add(charID);
+        }
+        return ownedCharacterIDs;
+    }
+
     //returns owner ID
     //returns -1 if none
     internal int AKingIsDead()

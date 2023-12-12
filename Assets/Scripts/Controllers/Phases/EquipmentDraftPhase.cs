@@ -72,16 +72,25 @@ public class EquipmentDraftPhase : IGamePhase
         //will init slots using Rpcs (careful, async, need to set all state before)
         this.Controller.equipmentDraftUI.InitSlotsForDraft(rolledIDs);
 
+        //create characters anew to display correct stats
+        this.Controller.ClearPlayerCharacters();
+        foreach (PlayerController player in this.Controller.playerControllers)
+        {
+            foreach (KeyValuePair<int, int> characterToOwner in this.Controller.DraftedCharacterOwners)
+            {
+                if (characterToOwner.Value == player.playerID)
+                    player.CreateCharacter(characterToOwner.Key);
+            }
+        }
+
         foreach (PlayerController player in Controller.playerControllers)
         {
-            List<int> ownedCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(player.playerID)
-                .Select(character => character.CharClassID).ToList();
-
-            List<int> opponentCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(this.Controller.OtherPlayer(player.playerID))
-                .Select(character => character.CharClassID).ToList();
+            List<int> ownedCharacterIDs = this.Controller.GetCharacterIDsOwnedByPlayer(player.playerID);
+            List<int> opponentCharacterIDs = this.Controller.GetCharacterIDsOwnedByPlayer(this.Controller.OtherPlayer(player.playerID));
             player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
             player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);
         }
+
     }
 
     [Server]
@@ -102,7 +111,7 @@ public class EquipmentDraftPhase : IGamePhase
 
             this.SetupEquipmentAssignment();
         }
-        else if (assigningEquipments && this.AllEquipmentsAssigned())
+        else if (this.assigningEquipments && this.AllEquipmentsAssigned())
         {
             //Should be called once both players tick after havin assigned all their own equipments
             Debug.Log("All equipments assigned. Starting new round.");
@@ -132,9 +141,13 @@ public class EquipmentDraftPhase : IGamePhase
             string firstEquipmentToAssign = player.GetUnassignedEquipmentID();
             List<int> characterIDs = new();
             this.Controller.DraftedCharacterOwners.Keys.CopyTo(characterIDs);
-            List<int> characterIDsForPlayer = characterIDs.Where(characterID => GameController.Singleton.HeOwnsThisCharacter(player.playerID, characterID)).ToList();
-
-            this.Controller.equipmentDraftUI.TargetRpcSetupEquipmentAssignment(client, firstEquipmentToAssign, characterIDsForPlayer);
+            List<int> characterIDsForTeam = characterIDs.Where(characterID => GameController.Singleton.HeOwnsThisCharacter(player.playerID, characterID)).ToList();
+            List<CharacterStats> statsForTeam = new();
+            foreach(int charID in characterIDsForTeam)
+            {
+                statsForTeam.Add(this.Controller.PlayerCharactersByID[charID].CurrentStats);
+            }
+            this.Controller.equipmentDraftUI.TargetRpcSetupEquipmentAssignment(client, firstEquipmentToAssign, characterIDsForTeam, statsForTeam);
         }
     }
 

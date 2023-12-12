@@ -11,7 +11,7 @@ public class AbilitiesTable : MonoBehaviour
     [SerializeField]
     private GameObject abilityTableEntryPrefab;
 
-    public void RenderForClassDefaults(CharacterClass charClass)
+    public void RenderWithoutCooldowns(CharacterClass charClass)
     {
         var toPrint = this.GetAbilityPrintData(charClass);
         this.RenderFromPrintData(toPrint);

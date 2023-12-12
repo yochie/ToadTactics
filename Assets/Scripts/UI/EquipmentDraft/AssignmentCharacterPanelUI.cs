@@ -33,7 +33,7 @@ public class AssignmentCharacterPanelUI : MonoBehaviour
 
     #region Startup
 
-    public void Init(int classID, List<string> previouslyAssignedEquipmentIDs, bool asKing = false)
+    public void Init(int classID, List<string> previouslyAssignedEquipmentIDs, CharacterStats statsWithPreviousEquipments, bool asKing = false)
     {
         this.holdsClassID = classID;
 
@@ -43,8 +43,9 @@ public class AssignmentCharacterPanelUI : MonoBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderForClassDefaults(classData);
-        this.statsTable.RenderForInactiveCharacterStats(classData.stats, asKing);
+        this.abilitiesTable.RenderWithoutCooldowns(classData);
+        this.statsTable.RenderForActiveCharacterStats(statsWithPreviousEquipments, asKing);
+        //this.statsTable.RenderForInactiveCharacterStats(classData.stats, asKing);
         GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
         equipmentRow.SetActive(previouslyAssignedEquipmentIDs.Count > 0);
         this.equipmentTable.SetupWithEquipments(previouslyAssignedEquipmentIDs);

@@ -97,7 +97,7 @@ public class EquipmentDraftUI : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcSetupEquipmentAssignment(NetworkConnectionToClient target, string firstEquipmentID, List<int> charactersToAssignTo)
+    public void TargetRpcSetupEquipmentAssignment(NetworkConnectionToClient target, string firstEquipmentID, List<int> teamIDs, List<CharacterStats> teamStats)
     {
         this.DraftContainer.SetActive(false);
         this.AssignmentContainer.SetActive(true);
@@ -106,7 +106,13 @@ public class EquipmentDraftUI : NetworkBehaviour
         this.instructionLabel.text = "Assign your equipments";
 
         this.GenerateAssignmentEquipmentPanel(firstEquipmentID);
-        this.GenerateAssignmentCharacterPanels(charactersToAssignTo);
+        Dictionary<int, CharacterStats> teamStatsByID = new();
+        int i = 0;
+        foreach(int charID in teamIDs)
+        {
+            teamStatsByID.Add(charID, teamStats[i++]);
+        }
+        this.GenerateAssignmentCharacterPanels(teamStatsByID);
     }
 
     private void GenerateAssignmentEquipmentPanel(string firstEquipmentID)
@@ -117,11 +123,11 @@ public class EquipmentDraftUI : NetworkBehaviour
         assignmentEquipmentPanel.FillWithEquipmentData(firstEquipmentID);
     }
 
-    private void GenerateAssignmentCharacterPanels(List<int> classIDs)
+    private void GenerateAssignmentCharacterPanels(Dictionary<int, CharacterStats> teamStats)
     {
         this.assignmentCharacterPanels = new();
         Dictionary<string, int> localPlayerAssignedEquipments = GameController.Singleton.LocalPlayer.AssignedEquipmentsCopy;
-        foreach (int panelForClassID in classIDs)
+        foreach (int panelForClassID in teamStats.Keys)
         {
             GameObject slotObject = Instantiate(this.assignmentCharacterPanelPrefab, this.AssignmentCharacterPanelsRow.transform);
             AssignmentCharacterPanelUI assignmentCharacterPanel = slotObject.GetComponent<AssignmentCharacterPanelUI>();
@@ -129,7 +135,7 @@ public class EquipmentDraftUI : NetworkBehaviour
             List<string> previouslyAssignedEquipments = localPlayerAssignedEquipments
                 .Where(assignedEquipment => assignedEquipment.Value == panelForClassID)
                 .Select(assignedEquipment => assignedEquipment.Key).ToList<string>();
-            assignmentCharacterPanel.Init(panelForClassID, previouslyAssignedEquipments, GameController.Singleton.IsAKing(panelForClassID));
+            assignmentCharacterPanel.Init(panelForClassID, previouslyAssignedEquipments, teamStats[panelForClassID], GameController.Singleton.IsAKing(panelForClassID));
         }
     }
 

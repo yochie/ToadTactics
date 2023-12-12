@@ -87,11 +87,8 @@ public class CharacterPlacementPhase : IGamePhase
 
         foreach(PlayerController player in Controller.playerControllers)
         {
-            List<int> ownedCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(player.playerID)
-                .Select(character => character.CharClassID).ToList();
-
-            List<int> opponentCharacterIDs = this.Controller.GetCharactersOwnedByPlayer(this.Controller.OtherPlayer(player.playerID))
-                .Select(character => character.CharClassID).ToList();
+            List<int> ownedCharacterIDs = this.Controller.GetCharacterIDsOwnedByPlayer(player.playerID);
+            List<int> opponentCharacterIDs = this.Controller.GetCharacterIDsOwnedByPlayer(this.Controller.OtherPlayer(player.playerID));
             player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
             player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);
             //TODO: change once starting player is actually random

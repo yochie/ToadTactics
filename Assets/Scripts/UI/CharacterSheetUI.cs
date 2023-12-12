@@ -49,7 +49,7 @@ public class CharacterSheetUI : MonoBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderForClassDefaults(classData);
+        this.abilitiesTable.RenderWithoutCooldowns(classData);
         this.statsTable.RenderForInactiveCharacterStats(classData.stats, isAKing);
     }
 
