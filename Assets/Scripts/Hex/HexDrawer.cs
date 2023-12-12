@@ -119,14 +119,15 @@ public class HexDrawer : MonoBehaviour
         this.labelTextMesh.alpha = 0;
     }
 
-    public void SetOutline1(bool state)
+    public void SetOutline1(bool state, Color color)
     {
-        this.outline1.color = Utility.SetAlpha(this.outline1.color, state ? 1 : 0);
+
+        this.outline1.color = Utility.SetAlpha(color, state ? 1 : 0);
     }
 
-    public void SetOutline2(bool state)
+    public void SetOutline2(bool state, Color color)
     {
-        this.outline2.color = Utility.SetAlpha(this.outline1.color, state ? 1 : 0);
+        this.outline2.color = Utility.SetAlpha(color, state ? 1 : 0);
     }
 
     public void Select(bool mode)
@@ -134,6 +135,18 @@ public class HexDrawer : MonoBehaviour
         this.unHoveredColor = mode ? HexDrawer.HEX_SELECT_COLOR : this.baseColor;
         this.currentColor = mode ? HexDrawer.HEX_SELECT_COLOR : this.baseColor;
     }
+
+    public void DefaultHover(bool mode)
+    {
+        if (mode) { 
+            this.unHoveredColor = this.currentColor;
+            this.currentColor = HexDrawer.HEX_HOVER_COLOR;
+        } else
+        {
+            this.currentColor = this.unHoveredColor;
+        }       
+    }
+
 
     public void MoveHover(bool mode)
     {
