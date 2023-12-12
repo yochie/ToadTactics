@@ -152,6 +152,14 @@ public class EquipmentDraftUI : NetworkBehaviour
     {
         this.instructionLabel.text = "Pick an equipment";
     }
+
+    [TargetRpc]
+    internal void TargetRPCUpdateCharacterStats(NetworkConnectionToClient sender, int classID, CharacterStats currentStats, bool isKing)
+    {
+        AssignmentCharacterPanelUI panel = this.assignmentCharacterPanels.Single(panel => panel.IsForCharID(classID));
+        panel.UpdateStats(currentStats, isKing);
+    }
+
     public void OnLocalPlayerTurnEnd()
     {
         this.instructionLabel.text = "Waiting for other player to choose";

@@ -81,5 +81,14 @@ public class AssignmentCharacterPanelUI : MonoBehaviour
     {
         this.assignEquipmentButton.SetActive(state);
     }
-    
+
+    public bool IsForCharID(int classID)
+    {
+        return this.holdsClassID == classID;
+    }
+
+    internal void UpdateStats(CharacterStats currentStats, bool asKing)
+    {
+        this.statsTable.RenderForActiveCharacterStats(currentStats, asKing);
+    }
 }
