@@ -191,7 +191,7 @@ public class PlayerController : NetworkBehaviour
         Debug.LogFormat("Assigning equipment {0} to {1} for player {2}", equipmentID, ClassDataSO.Singleton.GetClassByID(classID).name, sender.identity.GetComponent<PlayerController>().playerID);
         this.assignedEquipments.Add(equipmentID, classID);
        
-        //Updates UI stuff hooked onto this event
+        //Updates UI stuff hooked onto this event (display icon in character panel)
         this.TargetRpcOnEquipmentAssigned(sender, equipmentID, this.playerID, classID);
 
         string nextToAssign = this.GetUnassignedEquipmentID();
