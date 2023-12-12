@@ -90,7 +90,6 @@ public class EquipmentDraftPhase : IGamePhase
             player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
             player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);
         }
-
     }
 
     [Server]
