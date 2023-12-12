@@ -192,7 +192,7 @@ public class MapRangeDisplayer : MonoBehaviour
     {
         foreach (Hex h in this.highlightedArea)
         {
-            h.drawer.defaultHover(false);
+            h.drawer.DefaultHover(false);
         }
         this.MapLOSDisplayer.HideLOS();
     }
@@ -203,10 +203,22 @@ public class MapRangeDisplayer : MonoBehaviour
         foreach (Hex targetedHex in targetedHexes)
         {
             this.highlightedArea.Add(targetedHex);
-            targetedHex.drawer.defaultHover(true);
+            targetedHex.drawer.DefaultHover(true);
         }
 
         if (requiresLOS || areaType == AreaType.pierce)
             this.MapLOSDisplayer.DisplayLOS(source: sourceHex, destination: primaryTargetHex, highlightPath: false);
+    }
+
+    public bool IsHexInActionRange(Hex candidateHex, bool isMoveAction)
+    {
+        if (isMoveAction)
+        {
+            return this.displayedMoveRange.Contains(candidateHex);
+        }
+        else
+        {
+            return this.displayedActionRange[candidateHex] == LOSTargetType.targetable;
+        }
     }
 }

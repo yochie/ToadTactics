@@ -33,7 +33,7 @@ public class MapLOSDisplayer : MonoBehaviour
             this.highlightedPath = MapPathfinder.HexesOnLine(source, destination, excludeStart: true, excludeDestination: true);
             foreach(Hex hex in this.highlightedPath)
             {
-                hex.drawer.defaultHover(true);
+                hex.drawer.DefaultHover(true);
             }
 
         }
@@ -44,7 +44,7 @@ public class MapLOSDisplayer : MonoBehaviour
         this.lineRenderer.enabled = false;
         foreach(Hex hex in this.highlightedPath)
         {
-            hex.drawer.defaultHover(false);
+            hex.drawer.DefaultHover(false);
         }
         this.highlightedPath.Clear();
     }

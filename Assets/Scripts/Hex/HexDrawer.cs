@@ -18,6 +18,10 @@ public class HexDrawer : MonoBehaviour
     public static readonly Color HEX_IN_ABILITY_RANGE_COLOR = new(189 / 255f, 111f / 255f, 221f / 255f);
     public static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.gray;
     public static readonly Color HEX_ABILITY_HOVER_COLOR = Color.cyan;
+
+    public static readonly Color OUTLINE_VALID_TARGET_COLOR = Color.green;
+    public static readonly Color OUTLINE_INVALID_TARGET_COLOR = Color.gray;
+
     #endregion
 
     #region Editor vars
@@ -147,11 +151,15 @@ public class HexDrawer : MonoBehaviour
         }       
     }
 
-
-    public void MoveHover(bool mode)
+    public void MoveHover(bool mode, bool isValidTarget = true)
     {
-        if (mode) { this.unHoveredColor = this.currentColor; }
-        this.currentColor = mode ? HexDrawer.HEX_HOVER_COLOR : this.unHoveredColor;
+        if (mode) { 
+            this.unHoveredColor = this.currentColor;
+            this.currentColor = HexDrawer.HEX_HOVER_COLOR;
+        } else
+            this.currentColor = this.unHoveredColor;
+
+        this.SetOutline1(mode, isValidTarget ? HexDrawer.OUTLINE_VALID_TARGET_COLOR : HexDrawer.OUTLINE_INVALID_TARGET_COLOR);
     }
 
     public void DisplayInMoveRange(bool mode)
@@ -188,12 +196,6 @@ public class HexDrawer : MonoBehaviour
     {
         this.unHoveredColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
         this.currentColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
-    }
-
-    internal void defaultHover(bool mode)
-    {
-        if (mode) { this.unHoveredColor = this.currentColor; }
-        this.currentColor = mode ? HexDrawer.HEX_ABILITY_HOVER_COLOR : this.unHoveredColor;
     }
 
     public void AttackHover(bool mode)

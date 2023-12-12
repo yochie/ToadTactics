@@ -186,22 +186,25 @@ public class MapInputHandler : NetworkBehaviour
 
     public void HoverHex(Hex hoveredHex)
     {
-
         this.HoveredHex = hoveredHex;
+        Debug.Log("Setting hoveredHex");
         if (!this.allowInput)
             return;
+
+        Debug.Log("Actually hovering hex with coloring.");
+
         List<Hex> targetedHexes;
         this.SetCursor(this.CurrentControlMode);
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
-                hoveredHex.drawer.MoveHover(true);
+                hoveredHex.drawer.DefaultHover(true);
                 break;
             case ControlMode.characterPlacement:            
-                hoveredHex.drawer.MoveHover(true);
+                hoveredHex.drawer.DefaultHover(true);
                 break;
             case ControlMode.move:
-                hoveredHex.drawer.MoveHover(true);
+                hoveredHex.drawer.MoveHover(true, this.rangeDisplayer.IsHexInActionRange(hoveredHex, isMoveAction:true));
 
                 //find path to hex if we have selected another hex
                 if (this.SelectedHex != null)
@@ -275,10 +278,10 @@ public class MapInputHandler : NetworkBehaviour
         }    
     }
 
-    public void UnhoverHex(Hex unhoveredHex)
+    public void UnhoverHex(Hex unhoveredHex, bool keepState = false)
     {
         //in case we somehow unhover a hex AFTER we starting hovering another, make sure we are unhovering correct hex      
-        if (this.HoveredHex == unhoveredHex)
+        if (!keepState && this.HoveredHex == unhoveredHex)
         {
             this.HoveredHex = null;
         }
@@ -290,10 +293,10 @@ public class MapInputHandler : NetworkBehaviour
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
-                unhoveredHex.drawer.MoveHover(false);
+                unhoveredHex.drawer.DefaultHover(false);
                 break;
             case ControlMode.characterPlacement:
-                unhoveredHex.drawer.MoveHover(false);
+                unhoveredHex.drawer.DefaultHover(false);
                 break;
             case ControlMode.move:
                 unhoveredHex.drawer.MoveHover(false);
@@ -418,8 +421,16 @@ public class MapInputHandler : NetworkBehaviour
 
     public void SetInputAllowed(bool value)
     {
+        Debug.LogFormat("Switching input allowed to : {0}", value);
         this.allowInput = value;
-        if(this.HoveredHex != null)
+        if (value && (this.HoveredHex != null))
+        {
+            Debug.Log("Forcing hex rehover after reenabling input");
             this.HoverHex(this.HoveredHex);
+        }            
+        else if (!value && (this.HoveredHex != null))
+        {
+            this.UnhoverHex(this.HoveredHex, keepState:true);
+        }
     }
 }
