@@ -522,8 +522,6 @@ GameObject:
   - component: {fileID: 7413559367751404486}
   - component: {fileID: 2867270955543423341}
   - component: {fileID: 8729688443436173739}
-  - component: {fileID: 2443111651834267115}
-  - component: {fileID: 4022491025840272948}
   - component: {fileID: 8537482888627092807}
   - component: {fileID: 8685854213405997647}
   - component: {fileID: 1877647940234697466}
@@ -623,62 +621,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &2443111651834267115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7999096988513316336}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcdfe653ddc233d4986f95bba225726e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: 18a4cdf9090449042a8f58bdb7182019, type: 2}
-  Response:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8685854213405997647}
-        m_TargetAssemblyTypeName: EquipmentDraftUI, Assembly-CSharp
-        m_MethodName: OnLocalPlayerTurnStart
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &4022491025840272948
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7999096988513316336}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcdfe653ddc233d4986f95bba225726e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: c0029f6b08fcc0b4db9ca68b9d0c2e49, type: 2}
-  Response:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8685854213405997647}
-        m_TargetAssemblyTypeName: EquipmentDraftUI, Assembly-CSharp
-        m_MethodName: OnLocalPlayerTurnEnd
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &8537482888627092807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1324,3 +1266,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 6561212690723176455, guid: 1e7de72f8cd67d345b620427be5d027d, type: 3}
+  <IsForSelf>k__BackingField: 0
