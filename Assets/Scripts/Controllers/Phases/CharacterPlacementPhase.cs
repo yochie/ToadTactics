@@ -23,7 +23,8 @@ public class CharacterPlacementPhase : IGamePhase
 
         //Clear all state from any previous iterations of this phase
         this.Controller.SetTurnOrderIndex(-1);
-        this.Controller.SetTreasureOpenedByPlayerID(-1);
+        this.Controller.SetTreasureOpenedByPlayerID(-1);     
+
         this.Controller.ClearTurnOrder();
         this.Controller.ClearPlayerCharacters();
 

@@ -201,3 +201,4 @@ MonoBehaviour:
     m_RotationOrder: 4
   flashDurationSeconds: 1.5
   soundEffect: {fileID: 8300000, guid: f82f179d1e4063247a497e28571f0da4, type: 3}
+  treasureRevealDurationSeconds: 3

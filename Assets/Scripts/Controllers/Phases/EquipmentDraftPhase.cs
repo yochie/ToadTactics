@@ -17,7 +17,7 @@ public class EquipmentDraftPhase : IGamePhase
     private int startingPlayerID;
     private readonly List<string> equipmentsToDraft = new();
     private readonly List<string> equipmentsToAssign = new();
-    private string rolledEquipmentIDForTreasureOpener;
+    private string treasureToAssign;
     private bool treasureWasOpened;
     private int treasureWasOpenedByPlayerID;
 
@@ -38,35 +38,18 @@ public class EquipmentDraftPhase : IGamePhase
 
         this.treasureWasOpenedByPlayerID = this.Controller.GetTreasureOpenedByPlayerID();
         this.treasureWasOpened = (this.treasureWasOpenedByPlayerID != -1);
-        uint numToRoll = this.Controller.numEquipmentsDraftedBetweenRounds;
-        if (this.treasureWasOpened)
-            numToRoll++;
-        int previouslyDraftedCount = this.Controller.AlreadyDraftedEquipmentCount();
-        if (EquipmentDataSO.Singleton.GetEquipmentIDs().Count < numToRoll + previouslyDraftedCount)
-            throw new System.Exception("Not enough equipments available for draft... fix");
-
-        List<string> rolledIDs = new();
-        for (int i = 0; i < numToRoll; i++)
-        {
-            string newEquipmentID;
-
-            do { newEquipmentID = EquipmentDataSO.Singleton.GetRandomEquipmentID(); } while (this.Controller.AlreadyDraftedEquipmentID(newEquipmentID));
-            rolledIDs.Add(newEquipmentID);
-            this.Controller.AddAlreadyDraftedEquipmentID(newEquipmentID);
-        }
-
         if (treasureWasOpened)
         {
-            this.SetEquipmentsToAssign(rolledIDs);
-            this.rolledEquipmentIDForTreasureOpener = rolledIDs[0];
-            rolledIDs.RemoveAt(0);
-            this.SetEquipmentsToDraft(rolledIDs);
+            this.treasureToAssign = this.Controller.GetTreasureIDForRound();
+            this.Controller.AddAlreadyDraftedEquipmentID(treasureToAssign);
         }
-        else
-        {
-            this.SetEquipmentsToAssign(rolledIDs);
-            this.SetEquipmentsToDraft(rolledIDs);
-        }
+        List<string> rolledIDs = this.Controller.RollNewEquipmentIDs(this.Controller.numEquipmentsDraftedBetweenRounds);
+
+        this.CopyEquipmentsToDraftFrom(rolledIDs);
+        this.CopyEquipmentsToAssignFrom(rolledIDs);
+        if (treasureWasOpened)
+            this.equipmentsToAssign.Add(this.treasureToAssign);
+       
         this.assigningEquipments = false;
 
         //will init slots using Rpcs (careful, async, need to set all state before)
@@ -120,7 +103,7 @@ public class EquipmentDraftPhase : IGamePhase
 
 
     [Server]
-    internal void SetEquipmentsToDraft(List<string> equipmentIDs)
+    internal void CopyEquipmentsToDraftFrom(List<string> equipmentIDs)
     {
         this.equipmentsToDraft.Clear();
         foreach (string equipmentToAdd in equipmentIDs)
@@ -135,7 +118,7 @@ public class EquipmentDraftPhase : IGamePhase
         foreach (PlayerController player in this.Controller.playerControllers)
         {
             if (this.treasureWasOpened && this.treasureWasOpenedByPlayerID == player.playerID)
-                player.AddEquipmentIDToAssign(this.rolledEquipmentIDForTreasureOpener);
+                player.AddEquipmentIDToAssign(this.treasureToAssign);
             NetworkConnectionToClient client = GameController.Singleton.GetConnectionForPlayerID(player.playerID);
             string firstEquipmentToAssign = player.GetUnassignedEquipmentID();
             List<int> characterIDs = new();
@@ -180,7 +163,7 @@ public class EquipmentDraftPhase : IGamePhase
     }
 
     [Server]
-    internal void SetEquipmentsToAssign(List<string> equipmentIDs)
+    internal void CopyEquipmentsToAssignFrom(List<string> equipmentIDs)
     {
         this.equipmentsToAssign.Clear();
         foreach (string equipmentToAdd in equipmentIDs)

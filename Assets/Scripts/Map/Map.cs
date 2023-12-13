@@ -82,9 +82,9 @@ public class Map : NetworkBehaviour
 
     #region State
 
-    public void QueueTreasureOpenAnimation()
+    public void QueueTreasureOpenAnimation(string equipmentID)
     {
-        this.Treasure.GetComponent<MapTreasure>().RpcOpenAnimation(false);
+        this.Treasure.GetComponent<MapTreasure>().RpcOpenAnimation(equipmentID);
     }
 
     #endregion

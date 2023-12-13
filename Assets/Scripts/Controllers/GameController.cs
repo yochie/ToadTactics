@@ -55,6 +55,7 @@ public class GameController : NetworkBehaviour
     public PlayerController NonLocalPlayer { get; set; }
 
     public BasicCharacterSlotListUI OwnCharacterSlotList { get; internal set; }
+
     public BasicCharacterSlotListUI OpponentCharacterSlotList { get; internal set; }
 
     //Only filled on server
@@ -62,7 +63,10 @@ public class GameController : NetworkBehaviour
     private int lastRoundLoserID;
     public List<PlayerController> playerControllers = new();
     List<int> charactersInstantiantedOnRemote;
+
+    private string openedTreasureID;
     private int treasureOpenedByPlayerID;
+
     private List<string> alreadyDraftedEquipmentIDs = new();
     public bool StartZonesCleared { get; internal set; }
     public Dictionary<int, bool> ClearedStartZones { get; private set; }
@@ -479,6 +483,19 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
+    internal string GetTreasureIDForRound()
+    {
+        return this.openedTreasureID;
+    }
+
+    //-1 if unopened
+    [Server]
+    internal void SetOpenedTreasureID(string equipmentID)
+    {
+        this.openedTreasureID = equipmentID;
+    }
+
+    [Server]
     internal void AddAlreadyDraftedEquipmentID(string equipmentID)
     {
         this.alreadyDraftedEquipmentIDs.Add(equipmentID);
@@ -488,6 +505,23 @@ public class GameController : NetworkBehaviour
     internal bool AlreadyDraftedEquipmentID(string equipmentID)
     {
         return this.alreadyDraftedEquipmentIDs.Contains(equipmentID);
+    }
+
+    public List<string> RollNewEquipmentIDs(uint numToRoll)
+    {
+        if (EquipmentDataSO.Singleton.GetEquipmentIDs().Count < numToRoll + this.AlreadyDraftedEquipmentCount())
+            throw new System.Exception("Not enough equipments available for draft... fix");
+
+        List<string> rolledIDs = new();
+        for (int i = 0; i < numToRoll; i++)
+        {
+            string newEquipmentID;
+
+            do { newEquipmentID = EquipmentDataSO.Singleton.GetRandomEquipmentID(); } while (this.AlreadyDraftedEquipmentID(newEquipmentID));
+            rolledIDs.Add(newEquipmentID);
+            this.AddAlreadyDraftedEquipmentID(newEquipmentID);
+        }
+        return rolledIDs;
     }
 
     [Server]

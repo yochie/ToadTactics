@@ -91,11 +91,14 @@ public class DefaultMoveAction : IMoveAction
 
         if (nextHex.HoldsATreasure())
         {
+            
             string message = string.Format("{0} has collected treasure.", this.ActorCharacter.charClass.name);
             logger.RpcLogMessage(message);
-            Map.Singleton.QueueTreasureOpenAnimation();
             GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);
+            string rolledTreasureID = GameController.Singleton.RollNewEquipmentIDs(1)[0];
+            GameController.Singleton.SetOpenedTreasureID(rolledTreasureID);            
             nextHex.SetTreasure(false);
+            Map.Singleton.QueueTreasureOpenAnimation(rolledTreasureID);
         }
 
         if (nextHex.HoldsAHazard() && HazardDataSO.Singleton.IsHazardTypeRemovedWhenWalkedUpon(nextHex.holdsHazard))

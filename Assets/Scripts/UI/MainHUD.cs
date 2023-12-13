@@ -38,9 +38,11 @@ public class MainHUD : NetworkBehaviour
     [SerializeField]
     private GameObject actionButtonsGrid;
 
+    [SerializeField]
+    private TreasureRevealPanel treasureRevealPanel;
+
     private Dictionary<ControlMode, GameObject> gameplayButtons;
     
-
     public static MainHUD Singleton { get; set; }
 
     private void Awake()
@@ -313,4 +315,14 @@ public class MainHUD : NetworkBehaviour
         return Utility.DEFAULT_BUTTON_COLOR;
     }
 
+    internal void DisplayTreasureRevealPanel(string equipmentID, bool display)
+    {
+        if (!display)
+            this.treasureRevealPanel.Hide();
+        else
+        {
+            this.treasureRevealPanel.FillWithEquipmentData(equipmentID);
+            this.treasureRevealPanel.Show();
+        }
+    }
 }

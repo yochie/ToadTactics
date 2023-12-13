@@ -1,4 +1,5 @@
 using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,19 +27,31 @@ public class MapTreasure : NetworkBehaviour
     [SerializeField]
     private AudioClip soundEffect;
 
+    [SerializeField]
+    private float treasureRevealDurationSeconds;
+
     [ClientRpc]
-    public void RpcOpenAnimation(bool val)
+    public void RpcOpenAnimation(string equipmentID)
     {
         List<IEnumerator> coroutineBatch = new();
-        coroutineBatch.Add(this.SetVisibleCoroutine(val));
+        coroutineBatch.Add(this.HideSpriteCoroutine());
         coroutineBatch.Add(this.IconPopupCoroutine(this.popupIcon, this.flashDurationSeconds, Color.yellow));
-        coroutineBatch.Add(this.PlaySoundEffect(this.soundEffect));
+        coroutineBatch.Add(AudioManager.Singleton.PlaySoundAndWaitCoroutine(this.soundEffect));
         AnimationSystem.Singleton.Queue(coroutineBatch);
+
+        AnimationSystem.Singleton.Queue(this.TreasureRevealPanelCoroutine(equipmentID));
     }
 
-    private IEnumerator SetVisibleCoroutine(bool val)
+    private IEnumerator TreasureRevealPanelCoroutine(string equipmentID)
     {
-        this.render.enabled = val;
+        MainHUD.Singleton.DisplayTreasureRevealPanel(equipmentID, display: true);
+        yield return new WaitForSeconds(this.treasureRevealDurationSeconds);
+        MainHUD.Singleton.DisplayTreasureRevealPanel(equipmentID, display: false);
+    }
+
+    private IEnumerator HideSpriteCoroutine()
+    {
+        this.render.enabled = false;
         yield break;
     }
 
@@ -62,9 +75,4 @@ public class MapTreasure : NetworkBehaviour
         Destroy(popup.gameObject);
     }
 
-    private IEnumerator PlaySoundEffect(AudioClip soundEffect)
-    {
-        AudioManager.Singleton.PlaySoundEffect(soundEffect);
-        yield return new WaitForSeconds(soundEffect.length - 0.25f);
-    }
 }
