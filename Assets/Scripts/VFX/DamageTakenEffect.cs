@@ -67,7 +67,7 @@ public class DamageTakenEffect : MonoBehaviour
                 AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
                     this.FlashCoroutine(flashColor, this.flashDurationSeconds),
                     this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
-                    this.PlaySoundCoroutine(this.appleSoundEffect)
+                    AudioManager.Singleton.PlaySoundAndWaitCoroutine(this.appleSoundEffect)
                 });
             } else
             {
@@ -75,7 +75,7 @@ public class DamageTakenEffect : MonoBehaviour
                 AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
                 this.FlashCoroutine(flashColor, this.flashDurationSeconds),
                 this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
-                this.PlaySoundCoroutine(this.healSoundEffect)
+                AudioManager.Singleton.PlaySoundAndWaitCoroutine(this.healSoundEffect)
             });
             }
 
@@ -85,7 +85,7 @@ public class DamageTakenEffect : MonoBehaviour
                 this.FlashCoroutine(flashColor, this.flashDurationSeconds),
                 this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
                 this.ShakeCoroutine(this.shakeDuration, this.shakeStrength),
-                this.PlaySoundCoroutine(this.hurtSoundEffect)
+                AudioManager.Singleton.PlaySoundAndWaitCoroutine(this.hurtSoundEffect)
             });
         }
     }
@@ -144,6 +144,7 @@ public class DamageTakenEffect : MonoBehaviour
         renderer.color = startColor;
     }
 
+    //TODO: replace with SpriteShaker component
     private IEnumerator ShakeCoroutine(float durationSeconds, float strengthMultiplier)
     {
 
@@ -159,11 +160,5 @@ public class DamageTakenEffect : MonoBehaviour
         }
 
         gameObject.transform.position = startPosition;
-    }
-
-    private IEnumerator PlaySoundCoroutine(AudioClip soundEffect)
-    {
-        AudioManager.Singleton.PlaySoundEffect(soundEffect);
-        yield return new WaitForSeconds(soundEffect.length - 0.25f);
     }
 }

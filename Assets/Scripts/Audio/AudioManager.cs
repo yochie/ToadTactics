@@ -21,8 +21,15 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySoundEffect(AudioClip clip)
+    public void PlaySoundEffect(AudioClip soundEffect)
     {
-        this.effectsSource.PlayOneShot(clip);
+        this.effectsSource.PlayOneShot(soundEffect);
+    }
+
+    public IEnumerator PlaySoundAndWaitCoroutine(AudioClip soundEffect, float earlyExitSeconds = 0.25f)
+    {
+        this.PlaySoundEffect(soundEffect);
+        yield return new WaitForSeconds(soundEffect.length - earlyExitSeconds);
+
     }
 }

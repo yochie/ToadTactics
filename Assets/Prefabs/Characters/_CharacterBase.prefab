@@ -21,6 +21,8 @@ GameObject:
   - component: {fileID: 1634723521688495905}
   - component: {fileID: 1190896658792918362}
   - component: {fileID: 3671175868099292624}
+  - component: {fileID: 8130557142363688273}
+  - component: {fileID: 6918357154697179759}
   m_Layer: 0
   m_Name: _CharacterBase
   m_TagString: Untagged
@@ -166,6 +168,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 8130557142363688273}
+        m_TargetAssemblyTypeName: DeathEffect, Assembly-CSharp
+        m_MethodName: OnCharacterDeath
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &-4663713169142118353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,6 +198,18 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1350857231127888729}
         m_TargetAssemblyTypeName: PlayerCharacter, Assembly-CSharp
+        m_MethodName: OnCharacterResurrect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8130557142363688273}
+        m_TargetAssemblyTypeName: DeathEffect, Assembly-CSharp
         m_MethodName: OnCharacterResurrect
         m_Mode: 0
         m_Arguments:
@@ -530,3 +556,77 @@ MonoBehaviour:
   shakeStrength: 3
   positiveSoundEffect: {fileID: 8300000, guid: b923aaf13931a3d4dac944d0b0fdd260, type: 3}
   negativeSoundEffect: {fileID: 8300000, guid: 3fa1204bb9549ad4db61f56b4a7a92cf, type: 3}
+--- !u!114 &8130557142363688273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dcd04d770947034d9fd3b5faca90fe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  forCharacter: {fileID: 1350857231127888729}
+  deathSoundEffect: {fileID: 8300000, guid: 7a4b92d7fc0330846a4368f095b1d1c0, type: 3}
+  resurrectionSoundEffect: {fileID: 8300000, guid: 71c50cddaf4907843b24191ac8a95a7a, type: 3}
+  shaker: {fileID: 6918357154697179759}
+  fadeAnimationDuration: 2
+  spriteRenderer: {fileID: 3809699183538865181}
+--- !u!114 &6918357154697179759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acceb3bfc1a8c6649813ab2558426e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shakeStrengthCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 3.9185483
+      outSlope: 3.9185483
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.12331511
+      value: 0.48321623
+      inSlope: 1.4683617
+      outSlope: 1.4683617
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.46665227
+      value: 0.14611924
+      inSlope: -0.64476186
+      outSlope: -0.64476186
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0073853
+      value: -0.020263672
+      inSlope: -0.30769885
+      outSlope: -0.30769885
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  shakeDuration: 0.25
+  shakeStrength: 3

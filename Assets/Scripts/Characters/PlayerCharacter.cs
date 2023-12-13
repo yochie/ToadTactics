@@ -278,6 +278,9 @@ public class PlayerCharacter : NetworkBehaviour
     public void TakeDamage(Hit hit)
     {
         int rawDamage = this.CalculateDamageFromHit(hit);
+        Hit mitigatedHit = new(Math.Abs(rawDamage), hit.damageType, hit.hitSource, hit.penetratesArmor);
+        this.RpcOnCharacterTakesHit(mitigatedHit, this.charClassID);
+
         this.TakeRawDamage(rawDamage);
 
         if (hit.damageType != DamageType.healing)
@@ -285,7 +288,6 @@ public class PlayerCharacter : NetworkBehaviour
             this.onCharacterHitServerSide.Raise(this.charClassID);           
         }
 
-        this.RpcOnCharacterTakesHit(hit, this.charClassID);
     }
 
     [Server]
@@ -547,13 +549,15 @@ public class PlayerCharacter : NetworkBehaviour
     public void OnCharacterDeath(int classID)
     {
         if(classID == this.CharClassID)
-            this.spriteRenderer.color = Utility.GrayOutColor(this.spriteRenderer.color, true);
+        {
+            this.baseColor = Utility.GrayOutColor(this.spriteRenderer.color, true);
+        }            
     }
 
     public void OnCharacterResurrect(int classID)
     {
         if(classID == this.CharClassID)
-            this.spriteRenderer.color = Utility.GrayOutColor(this.spriteRenderer.color, false);
+            this.baseColor = Utility.GrayOutColor(this.spriteRenderer.color, false);
     }
 
     //Careful not to call several times in quick succession, order of rpc calls is unreliable in that case
