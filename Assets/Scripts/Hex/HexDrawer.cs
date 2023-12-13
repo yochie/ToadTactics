@@ -140,7 +140,7 @@ public class HexDrawer : MonoBehaviour
         this.currentColor = mode ? HexDrawer.HEX_SELECT_COLOR : this.baseColor;
     }
 
-    public void DefaultHover(bool mode)
+    public void DefaultHover(bool mode, bool useOutline = false, bool isMove = false, bool isValidTarget = false)
     {
         if (mode) { 
             this.unHoveredColor = this.currentColor;
@@ -149,6 +149,11 @@ public class HexDrawer : MonoBehaviour
         {
             this.currentColor = this.unHoveredColor;
         }       
+
+        if (useOutline && !isMove)
+            this.SetOutline2(mode, isValidTarget ? HexDrawer.OUTLINE_VALID_TARGET_COLOR : HexDrawer.OUTLINE_INVALID_TARGET_COLOR);
+        else if (useOutline && isMove)
+            this.SetOutline1(mode, isValidTarget ? HexDrawer.OUTLINE_VALID_TARGET_COLOR : HexDrawer.OUTLINE_INVALID_TARGET_COLOR);
     }
 
     public void MoveHover(bool mode, bool isValidTarget = true)

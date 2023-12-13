@@ -187,14 +187,11 @@ public class MapInputHandler : NetworkBehaviour
     public void HoverHex(Hex hoveredHex)
     {
         this.HoveredHex = hoveredHex;
-        Debug.Log("Setting hoveredHex");
         if (!this.allowInput)
             return;
-
-        Debug.Log("Actually hovering hex with coloring.");
-
         List<Hex> targetedHexes;
         this.SetCursor(this.CurrentControlMode);
+        bool ishoveredHexValidTarget;
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -225,7 +222,8 @@ public class MapInputHandler : NetworkBehaviour
                 int attackAreaScaler = attackerStats.attackAreaScaler;
                 bool attackRequiresLOS = attackerStats.attacksRequireLOS;
                 targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, attackAreaType, attackerHex, hoveredHex, attackAreaScaler);
-                this.rangeDisplayer.HighlightTargetedArea(attackerHex, hoveredHex, attackAreaType, attackAreaScaler, attackRequiresLOS, targetedHexes);
+                ishoveredHexValidTarget = this.rangeDisplayer.IsHexInActionRange(hoveredHex, isMoveAction: false);
+                this.rangeDisplayer.HighlightTargetedArea(attackerHex, hoveredHex, attackAreaType, attackAreaScaler, attackRequiresLOS, targetedHexes, ishoveredHexValidTarget, true, false);
                 ActionExecutor.Singleton.CmdPreviewAttackAt(this.SelectedHex, hoveredHex);
                 break;
             case ControlMode.useAbility:
@@ -234,7 +232,8 @@ public class MapInputHandler : NetworkBehaviour
                 int abilityAreaScaler = currentActivatedAbilityStats.areaScaler;
                 bool abilityRequiresLOS = currentActivatedAbilityStats.requiresLOS;
                 targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, abilityAreaType, userHex, hoveredHex, abilityAreaScaler);
-                this.rangeDisplayer.HighlightTargetedArea(userHex, hoveredHex, abilityAreaType, abilityAreaScaler, abilityRequiresLOS, targetedHexes);
+                ishoveredHexValidTarget = this.rangeDisplayer.IsHexInActionRange(hoveredHex, isMoveAction: false);
+                this.rangeDisplayer.HighlightTargetedArea(userHex, hoveredHex, abilityAreaType, abilityAreaScaler, abilityRequiresLOS, targetedHexes, ishoveredHexValidTarget, true, false);
                 ActionExecutor.Singleton.CmdPreviewAbilityAt(this.SelectedHex, hoveredHex, this.currentActivatedAbilityStats);
                 break;
             case ControlMode.useBallista:
@@ -244,7 +243,8 @@ public class MapInputHandler : NetworkBehaviour
                 int ballistaAreaScaler = this.ballistaPrefab.attackAreaScaler;
                 bool ballistaRequiresLOS = this.ballistaPrefab.attacksRequireLOS;
                 targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, ballistaAreaType, ballistaHex, hoveredHex, ballistaAreaScaler);
-                this.rangeDisplayer.HighlightTargetedArea(ballistaHex, hoveredHex, ballistaAreaType, ballistaAreaScaler, ballistaRequiresLOS, targetedHexes);
+                ishoveredHexValidTarget = this.rangeDisplayer.IsHexInActionRange(hoveredHex, isMoveAction: false);
+                this.rangeDisplayer.HighlightTargetedArea(ballistaHex, hoveredHex, ballistaAreaType, ballistaAreaScaler, ballistaRequiresLOS, targetedHexes, ishoveredHexValidTarget, true, false);
                 ActionExecutor.Singleton.CmdPreviewUseBallista(this.SelectedHex, hoveredHex);
                 break;
         }

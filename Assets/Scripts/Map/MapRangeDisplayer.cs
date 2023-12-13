@@ -188,22 +188,22 @@ public class MapRangeDisplayer : MonoBehaviour
         }
     }
 
-    internal void UnHighlightTargetedArea()
+    internal void UnHighlightTargetedArea(bool forMove = false)
     {
         foreach (Hex h in this.highlightedArea)
         {
-            h.drawer.DefaultHover(false);
+            h.drawer.DefaultHover(false, useOutline:true, isMove: forMove);
         }
         this.MapLOSDisplayer.HideLOS();
     }
 
-    internal void HighlightTargetedArea(Hex sourceHex, Hex primaryTargetHex, AreaType areaType, int areaScaler, bool requiresLOS, List<Hex> targetedHexes)
+    internal void HighlightTargetedArea(Hex sourceHex, Hex primaryTargetHex, AreaType areaType, int areaScaler, bool requiresLOS, List<Hex> targetedHexes, bool validPrimaryTarget, bool useOutline, bool isMove)
     {
 
         foreach (Hex targetedHex in targetedHexes)
         {
             this.highlightedArea.Add(targetedHex);
-            targetedHex.drawer.DefaultHover(true);
+            targetedHex.drawer.DefaultHover(true, useOutline, isMove, validPrimaryTarget);
         }
 
         if (requiresLOS || areaType == AreaType.pierce)
@@ -218,7 +218,7 @@ public class MapRangeDisplayer : MonoBehaviour
         }
         else
         {
-            return this.displayedActionRange[candidateHex] == LOSTargetType.targetable;
+            return this.displayedActionRange.ContainsKey(candidateHex) && this.displayedActionRange[candidateHex] == LOSTargetType.targetable;
         }
     }
 }
