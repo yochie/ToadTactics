@@ -421,11 +421,11 @@ public class MapInputHandler : NetworkBehaviour
 
     public void SetInputAllowed(bool value)
     {
-        Debug.LogFormat("Switching input allowed to : {0}", value);
+        //Debug.LogFormat("Switching input allowed to : {0}", value);
         this.allowInput = value;
         if (value && (this.HoveredHex != null))
         {
-            Debug.Log("Forcing hex rehover after reenabling input");
+            //Debug.Log("Forcing hex rehover after reenabling input");
             this.HoverHex(this.HoveredHex);
         }            
         else if (!value && (this.HoveredHex != null))
