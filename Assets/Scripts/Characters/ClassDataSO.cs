@@ -169,7 +169,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "BarbInvulnerableOnDeath",
                     interfaceName: "Undying Rage",
-                    description: "First death sets to 1 life instead and makes invulnerable until next turn.",
+                    description: "Resurrected at 1 life after first death and made invulnerable until next turn.",
                     isPassive: true,
                     appliesBuffIDOnRoundStart: "BarbInvulnerableOnDeathBuff",
                     passiveCanCauseBuff: "InvulnerabilityRatioDamageMitigationBuff"
