@@ -222,7 +222,12 @@ public class MyNetworkManager : NetworkManager
     /// </summary>
     public override void OnClientDisconnect() {
         Debug.Log("Client disconnected. Destroying GameController.");
-        Destroy(GameController.Singleton.gameObject);
+        if(GameController.Singleton != null)
+            Destroy(GameController.Singleton.gameObject);
+        //else if (MenuController.Singleton != null)
+        //{
+        //    MenuController.Singleton.ConnectionFailed();
+        //}
     }
 
     /// <summary>
@@ -235,7 +240,8 @@ public class MyNetworkManager : NetworkManager
     /// Called on client when transport raises an exception.</summary>
     /// </summary>
     /// <param name="exception">Exception thrown from the Transport.</param>
-    public override void OnClientError(TransportError transportError, string message) { }
+    public override void OnClientError(TransportError transportError, string message) {
+    }
 
     #endregion
 

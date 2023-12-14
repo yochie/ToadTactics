@@ -8,7 +8,7 @@ using System.Linq;
 
 public static class Utility
 {
-
+    public static readonly string IPV4Regex = @"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$";
     public static readonly int MAX_DISTANCE_ON_MAP = 50;
     internal static Color DEFAULT_BUTTON_COLOR = new(149/255f, 140/255f, 61/255f);
 
