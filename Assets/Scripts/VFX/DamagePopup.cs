@@ -13,7 +13,7 @@ public class DamagePopup : MonoBehaviour
     {
         
         text.color = popupColor;
-        this.text.text = (damage > 0 ? "-" : "+") + Mathf.Abs(damage).ToString();
+        this.text.text = (damage >= 0 ? "-" : "+") + Mathf.Abs(damage).ToString();
 
     }
 
