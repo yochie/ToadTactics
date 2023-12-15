@@ -178,7 +178,9 @@ public class MyNetworkManager : NetworkManager
 
         if (this.numPlayers == 2)
         {
-            GameController.Singleton.CmdChangeToScene("Draft");
+            //GameController.Singleton.CmdChangeToScene("Draft");
+            if(LobbyController.Singleton != null)
+                LobbyController.Singleton.LobbyFull();
         }
     }
 
