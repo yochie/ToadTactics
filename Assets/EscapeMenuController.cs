@@ -50,7 +50,7 @@ public class EscapeMenuController : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        NetworkManager.singleton.StopClient();
+        NetworkManager.singleton.StopHost();
     }
 
     public void ExitGame()
