@@ -419,11 +419,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5672201192439033264, guid: 48f5e74a011429344bff59c13e284d39, type: 3}
       propertyPath: m_text
-      value: Options
+      value: Settings
       objectReference: {fileID: 0}
     - target: {fileID: 5993063391724896750, guid: 48f5e74a011429344bff59c13e284d39, type: 3}
       propertyPath: m_Name
-      value: OptionsButton
+      value: SettingsButton
       objectReference: {fileID: 0}
     - target: {fileID: 7802609184806141888, guid: 48f5e74a011429344bff59c13e284d39, type: 3}
       propertyPath: m_AnchorMax.y
