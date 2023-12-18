@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BasicCharacterSlotUI : MonoBehaviour
 {
     [SerializeField]
-    private Image spriteImage;
+    protected Image spriteImage;
 
     public int HoldsCharacterWithClassID { get; set; }
 

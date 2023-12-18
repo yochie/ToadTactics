@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-public class HexMouseEventTracker : MonoBehaviour, IPointerClickHandler
+public class HexMouseEventTracker : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     #region Vars
     private Hex master;
@@ -21,19 +21,33 @@ public class HexMouseEventTracker : MonoBehaviour, IPointerClickHandler
 
     #region Events
 
-    private void OnMouseEnter()
-    {
-        this.inputHandler.HoverHex(master);
-    }
+    //private void OnMouseEnter()
+    //{
+    //    if (!EventSystem.current.IsPointerOverGameObject())
+    //        return;
+    //    this.inputHandler.HoverHex(master);
+    //}
 
-    private void OnMouseExit()
-    {
-        this.inputHandler.UnhoverHex(master);
-    }
+    //private void OnMouseExit()
+    //{
+    //    if (!EventSystem.current.IsPointerOverGameObject())
+    //        return;
+    //    this.inputHandler.UnhoverHex(master);
+    //}
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
         this.inputHandler.ClickHex(master);
+    }
+
+    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+    {
+        this.inputHandler.HoverHex(master);
+    }
+
+    void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+    {
+        this.inputHandler.UnhoverHex(master);
     }
     #endregion
 

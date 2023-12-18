@@ -42,7 +42,11 @@ public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler,
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (this.IsDraggable())
+        {
             this.dragStartPosition = this.transform.position;
+            this.highlightImage.raycastTarget = false;
+            this.spriteImage.raycastTarget = false;
+        }
         this.dragging = true;
     }
 
@@ -55,6 +59,8 @@ public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler,
     public void OnEndDrag(PointerEventData eventData)
     {
         this.dragging = false;
+        this.highlightImage.raycastTarget = true;
+        this.spriteImage.raycastTarget = true;
 
         if (this.IsDraggable())
         {

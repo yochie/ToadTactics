@@ -36,7 +36,7 @@ public class TreasureGenerator : NetworkBehaviour
         TreasureSpawnLocation chosenSpawnLocation = spawnLocations[Random.Range(0, spawnLocations.Count)];
 
         Hex ballistaHex = Map.GetHex(grid, chosenSpawnLocation.ballistaCoordinate.x, chosenSpawnLocation.ballistaCoordinate.y);
-        GameObject ballistaObject = Instantiate(this.ballistaPrefab, ballistaHex.transform.position, Quaternion.identity);
+        GameObject ballistaObject = Instantiate(this.ballistaPrefab, ballistaHex.transform.position, Quaternion.identity, this.treasureParent.transform);
         NetworkServer.Spawn(ballistaObject);
         ballistaHex.holdsBallista = true;
 

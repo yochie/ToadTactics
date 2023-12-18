@@ -975,18 +975,18 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_Camera: {fileID: 1915035254}
+  m_PlaneDistance: 20
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 1
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 676904797
+  m_SortingOrder: 99
   m_TargetDisplay: 0
 --- !u!224 &297310964
 RectTransform:
@@ -3868,7 +3868,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5386626585613462693, guid: c3f302c0d3a83ea4cbfde1955932c07d, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.00012207031
+      value: 0.0009765625
       objectReference: {fileID: 0}
     - target: {fileID: 5386626585613462693, guid: c3f302c0d3a83ea4cbfde1955932c07d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5524,6 +5524,10 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1392558183
       objectReference: {fileID: 0}
+    - target: {fileID: 5159811238670744690, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.00091552734
+      objectReference: {fileID: 0}
     - target: {fileID: 7627946210132959423, guid: 257344cebca2d4748ab5022005c9765b, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -5986,6 +5990,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 297310964}
     m_Modifications:
+    - target: {fileID: 1250882137788522107, guid: 7396408ec600c0f4d99015c38830f775, type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1250882137788522107, guid: 7396408ec600c0f4d99015c38830f775, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 1250882137788522107, guid: 7396408ec600c0f4d99015c38830f775, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4227118458390732641, guid: 7396408ec600c0f4d99015c38830f775, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6894094210929582482, guid: 7396408ec600c0f4d99015c38830f775, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6070,7 +6090,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: EscapeMenu
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2003480237112851370, guid: 7396408ec600c0f4d99015c38830f775, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

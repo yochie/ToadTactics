@@ -419,16 +419,17 @@ public class MapInputHandler : NetworkBehaviour
         this.allowInput = true;
     }
 
-    public void SetInputAllowed(bool value)
+    public void SetInputAllowed(bool allowed)
     {
         //Debug.LogFormat("Switching input allowed to : {0}", value);
-        this.allowInput = value;
-        if (value && (this.HoveredHex != null))
+        this.allowInput = allowed;
+        
+        if (allowed && (this.HoveredHex != null))
         {
             //Debug.Log("Forcing hex rehover after reenabling input");
             this.HoverHex(this.HoveredHex);
         }            
-        else if (!value && (this.HoveredHex != null))
+        else if (!allowed && (this.HoveredHex != null))
         {
             this.UnhoverHex(this.HoveredHex, keepState:true);
         }
