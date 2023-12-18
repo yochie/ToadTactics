@@ -26,10 +26,10 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
     private StatsTable statsTable;
 
     [SerializeField]
-    private GameObject draftButton;
+    private Button draftButton;
 
     [SerializeField]
-    private GameObject crownButton;
+    private Button crownButton;
 
     [SerializeField]
     private Image grayOutPanel;
@@ -117,8 +117,8 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
     internal void SetButtonActiveState(bool state, bool asKingCandidate = false)
     {
         if (asKingCandidate)
-            this.crownButton.SetActive(state);
+            this.crownButton.gameObject.SetActive(state);
         else
-            this.draftButton.SetActive(state);
+            this.draftButton.gameObject.SetActive(state);
     }
 }
