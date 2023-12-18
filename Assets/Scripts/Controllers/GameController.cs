@@ -543,6 +543,15 @@ public class GameController : NetworkBehaviour
         }
         this.StartZonesCleared = true;
     }
+
+    [Command(requiresAuthority = false)]
+    public void CmdConcedRound(NetworkConnectionToClient sender = null)
+    {
+        int concededByPlayerID = sender.identity.GetComponent<PlayerController>().playerID;
+        Debug.LogFormat("Player {0} conceded round", concededByPlayerID);
+        GameController.Singleton.EndRound(concededByPlayerID);
+    }
+
     #endregion
 
     #region Callbacks
