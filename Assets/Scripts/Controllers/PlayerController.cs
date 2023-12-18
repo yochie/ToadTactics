@@ -257,12 +257,19 @@ public class PlayerController : NetworkBehaviour
         GameController.Singleton.CmdNextTurn();
     }
 
+    //withMap allows setting a more approriate parent in object hierarchy
+    //when false, will simply create a top level of hierarchy
     [Server]
-    public void CreateCharacter(int charIDToCreate)
+    public void CreateCharacter(int charIDToCreate, bool withMap = true)
     { 
         int ownerPlayerIndex = GameController.Singleton.DraftedCharacterOwners[charIDToCreate];
         PlayerCharacter characterPrefab = ClassDataSO.Singleton.GetPrefabByClassID(charIDToCreate);
-        GameObject newCharObject = Instantiate(characterPrefab.gameObject, Vector3.zero, Quaternion.identity);
+        GameObject newCharObject;
+        if (withMap)
+            newCharObject = Instantiate(characterPrefab.gameObject, Vector3.zero, Quaternion.identity, Map.Singleton.MapObjectParentTransform);
+        else
+            newCharObject = Instantiate(characterPrefab.gameObject, Vector3.zero, Quaternion.identity);
+
         PlayerCharacter newChar = newCharObject.GetComponent<PlayerCharacter>();
         newChar.SetOwner(ownerPlayerIndex);
         if (newChar.CharClassID == this.kingClassID)

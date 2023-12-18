@@ -26,6 +26,9 @@ public class TreasureGenerator : NetworkBehaviour
     [SerializeField]
     private MapObstacleManager obstacleManager;
 
+    [SerializeField]
+    private GameObject treasureParent;
+
     [Server]
     public void GenerateTreasureAndBallista(Dictionary<Vector2Int, Hex> grid)
     {
@@ -40,14 +43,14 @@ public class TreasureGenerator : NetworkBehaviour
         Hex treasureHex = Map.GetHex(grid, chosenSpawnLocation.treasureCoordinate.x, chosenSpawnLocation.treasureCoordinate.y);
         if (GameController.Singleton.CurrentRound < 2)
         {
-            GameObject treasureObject = Instantiate(this.treasurePrefab, treasureHex.transform.position, Quaternion.identity);
+            GameObject treasureObject = Instantiate(this.treasurePrefab, treasureHex.transform.position, Quaternion.identity, this.treasureParent.transform);
             NetworkServer.Spawn(treasureObject);
             treasureHex.SetTreasure(true);
             Map.Singleton.Treasure = treasureObject;
         }
         else
         {
-            GameObject secondBallistaObject = Instantiate(this.ballistaPrefab, treasureHex.transform.position, Quaternion.identity);
+            GameObject secondBallistaObject = Instantiate(this.ballistaPrefab, treasureHex.transform.position, Quaternion.identity, this.treasureParent.transform);
             NetworkServer.Spawn(secondBallistaObject);
             treasureHex.holdsBallista = true;
         }        

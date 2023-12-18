@@ -30,6 +30,10 @@ public class Map : NetworkBehaviour
     [SerializeField]
     internal float appleSpawnChance;
 
+    [SerializeField]
+    private GameObject mapObjectsParent;
+    public Transform MapObjectParentTransform => this.mapObjectsParent.transform;
+
     #endregion
 
     #region Synced vars

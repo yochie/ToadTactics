@@ -12,6 +12,9 @@ public class MapObstacleManager : NetworkBehaviour
     [SerializeField]
     private List<Obstacle> obstaclePrefabs;
 
+    [SerializeField]
+    private GameObject obstaclesParent;
+
     [Server]
     internal void SpawnObstacleOnMap(Dictionary<Vector2Int, Hex> grid, Vector2Int coordinates, ObstacleType type)
     {
@@ -51,7 +54,7 @@ public class MapObstacleManager : NetworkBehaviour
     private IEnumerator DisplayObstacleCoroutine(Vector2Int coordinates, ObstacleType type, Vector3 position)
     {
         Obstacle obstacleTypePrefab = this.GetPrefabForType(type);
-        GameObject obstaceObject = Instantiate(obstacleTypePrefab.gameObject, position, Quaternion.identity);
+        GameObject obstaceObject = Instantiate(obstacleTypePrefab.gameObject, position, Quaternion.identity, this.obstaclesParent.transform);
         this.spawnedObstacles[coordinates] = obstaceObject.GetComponent<Obstacle>();
         yield break;
     }

@@ -8,6 +8,8 @@ public class MapGenerator : MonoBehaviour
 {
     #region Editor vars
     [SerializeField]
+    private GameObject tilesParent;
+    [SerializeField]
     private bool isFlatTop;
     //radius in hex count
     [SerializeField]
@@ -109,7 +111,7 @@ public class MapGenerator : MonoBehaviour
 
                 HexCoordinates coordinates = HexCoordinates.FromOffsetCoordinates(x, y, isFlatTop);
 
-                GameObject hex = Instantiate(this.hexPrefab, position, rotation);
+                GameObject hex = Instantiate(this.hexPrefab, position, rotation, this.tilesParent.transform);
                 Hex h = hex.GetComponent<Hex>();
                 h.Init(coordinates, "Hex_" + x + "_" + y, position, scale, rotation);
 

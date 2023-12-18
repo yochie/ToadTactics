@@ -7,6 +7,9 @@ using System.Linq;
 
 public class MapHazardManager : NetworkBehaviour
 {
+    [SerializeField]
+    private GameObject hazardsParent;
+
     //tracked on each client
     private Dictionary<Vector2Int, Hazard> spawnedHazardSprites = new();
 
@@ -73,7 +76,7 @@ public class MapHazardManager : NetworkBehaviour
         }
 
         GameObject hazardPrefab = HazardDataSO.Singleton.GetHazardPrefab(type);
-        GameObject hazardObject = Instantiate(hazardPrefab, position, Quaternion.identity);
+        GameObject hazardObject = Instantiate(hazardPrefab, position, Quaternion.identity, this.hazardsParent.transform);
         this.spawnedHazardSprites[coordinates] = hazardObject.GetComponent<Hazard>();
         yield break;
     }

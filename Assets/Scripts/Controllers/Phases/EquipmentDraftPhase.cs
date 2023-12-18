@@ -62,7 +62,7 @@ public class EquipmentDraftPhase : IGamePhase
             foreach (KeyValuePair<int, int> characterToOwner in this.Controller.DraftedCharacterOwners)
             {
                 if (characterToOwner.Value == player.playerID)
-                    player.CreateCharacter(characterToOwner.Key);
+                    player.CreateCharacter(characterToOwner.Key, withMap: false);
             }
         }
 
