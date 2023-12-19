@@ -8,7 +8,6 @@ public class EscapeMenuController : MonoBehaviour
 {
     private bool isOpened;
 
-
     [SerializeField]
     private GameObject grayOutPanel;
 
@@ -38,6 +37,11 @@ public class EscapeMenuController : MonoBehaviour
         this.isOpened = open;
         this.grayOutPanel.SetActive(open);
         this.buttonList.SetActive(open);
+    }
+
+    public void ResumeGame()
+    {
+        this.SetState(open: false);
     }
 
     public void OpenSettings()
