@@ -24,25 +24,17 @@ public class LobbyController : NetworkBehaviour
     [SerializeField]
     private Button startButton;
 
+    [SerializeField]
+    private Button cancelButton;
+
+    [SerializeField]
+    private Button leaveButton;
 
     [SyncVar]
     private string serverLanIP = "";
 
     [SyncVar]
     private string serverWanIP = "";
-
-    [Server]
-    public void LobbyFull()
-    {
-        this.RpcLobbyFull();
-        this.startButton.interactable = true;
-    }
-
-    [ClientRpc]
-    private void RpcLobbyFull()
-    {
-        this.clientIPLabel.text = "Connected";
-    }
 
     private void Awake()
     {
@@ -62,14 +54,31 @@ public class LobbyController : NetworkBehaviour
             this.serverLanIP = lanIP;
 
             ipManager.FetchWanIP((string ip) => { this.SetWanIP(ip); });
-        } else
+        }
+        else
         {
+            //setup buttons for client side
             this.startButton.gameObject.SetActive(false);
+            this.cancelButton.gameObject.SetActive(false);
+            this.leaveButton.gameObject.SetActive(true);
             if (this.serverLanIP != "")
                 this.lanHostIPLabel.text = this.serverLanIP;
             if (this.serverWanIP != "")
                 this.wanHostIPLabel.text = this.serverWanIP;
         }
+    }
+
+    [Server]
+    public void LobbyFull()
+    {
+        this.RpcLobbyFull();
+        this.startButton.interactable = true;
+    }
+
+    [ClientRpc]
+    private void RpcLobbyFull()
+    {
+        this.clientIPLabel.text = "Connected";
     }
 
     private void SetWanIP(string wanIP)
@@ -89,12 +98,28 @@ public class LobbyController : NetworkBehaviour
         GUIUtility.systemCopyBuffer = this.serverWanIP;
     }
 
-
     public void OnStartGameClicked()
     {
         if(isServer)
         {
             GameController.Singleton.CmdChangeToScene("Draft");
+        }
+    }
+
+    public void OnCancelClicked()
+    {
+        if (isServer)
+        {
+            NetworkManager.singleton.StopHost();
+        }
+    }
+
+    //leave button is only available for clients connecting to host
+    public void OnLeaveClicked()
+    {
+        if (!isServer)
+        {
+            NetworkManager.singleton.StopClient();
         }
     }
 }
