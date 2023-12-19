@@ -63,7 +63,7 @@ public class OptionsController : MonoBehaviour
 
     private void InitFieldsToCurrentValues()
     {
-        this.volumeSlider.value = AudioManager.Singleton.GetVolume();
+        this.volumeSlider.value = AudioManager.Singleton.GetEffectsVolume();
 
         Vector2Int currentResolution = new(Screen.width, Screen.height);
         int currentResIndex = this.sortedResolutionOptions.IndexOfValue(currentResolution);

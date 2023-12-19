@@ -11,7 +11,7 @@ public class AudioManager : MonoBehaviour
     private AudioSource effectsSource;
 
     [SerializeField]
-    private float volume;
+    private AudioSource musicSource;
 
     private void Awake()
     {
@@ -23,12 +23,12 @@ public class AudioManager : MonoBehaviour
             AudioManager.Singleton = this;
             DontDestroyOnLoad(gameObject);
         }
-        this.volume = 0.5f;
+
     }
 
     public void PlaySoundEffect(AudioClip soundEffect)
     {
-        this.effectsSource.PlayOneShot(soundEffect, this.volume);
+        this.effectsSource.PlayOneShot(soundEffect);
     }
 
     public IEnumerator PlaySoundAndWaitCoroutine(AudioClip soundEffect, float earlyExitSeconds = 0.25f)
@@ -40,11 +40,23 @@ public class AudioManager : MonoBehaviour
 
     internal void SetVolume(float value)
     {
-        this.volume = value;
+        this.effectsSource.volume = value;
+        this.musicSource.volume = value;
     }
 
-    internal float GetVolume()
+    internal float GetEffectsVolume()
     {
-        return this.volume;
+        return this.effectsSource.volume;
+    }
+
+    internal float GetMusicVolume()
+    {
+        return this.musicSource.volume;
+    }
+
+    public void LoopSong(AudioClip songClip)
+    {
+        this.musicSource.clip = songClip;
+        this.musicSource.Play();
     }
 }

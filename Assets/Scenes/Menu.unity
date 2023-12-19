@@ -1195,6 +1195,7 @@ MonoBehaviour:
   optionsPanel: {fileID: 110942055}
   connectionAttemptTimeout: 5
   connectionButton: {fileID: 2058228504}
+  menuSong: {fileID: 8300000, guid: 2de8493998f804b4b965cb07eda8f479, type: 3}
 --- !u!4 &837800580
 Transform:
   m_ObjectHideFlags: 0
@@ -1218,18 +1219,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1987820080}
     m_Modifications:
-    - target: {fileID: 2117570468482378196, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 837800579}
-    - target: {fileID: 2120493205974057520, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
-      propertyPath: m_Name
-      value: ConnectionPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 1539381979979403367, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 837800579}
     - target: {fileID: 1263255681422837530, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1249,6 +1238,18 @@ PrefabInstance:
     - target: {fileID: 1263255681422837530, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1539381979979403367, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 837800579}
+    - target: {fileID: 2117570468482378196, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 837800579}
+    - target: {fileID: 2120493205974057520, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
+      propertyPath: m_Name
+      value: ConnectionPanel
       objectReference: {fileID: 0}
     - target: {fileID: 4006878127500460216, guid: 842f32e853944d94697c083b9ad041ee, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -1586,6 +1587,18 @@ PrefabInstance:
     - target: {fileID: 825901415832669931, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
       propertyPath: m_Name
       value: AudioManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 886791256059188471, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 886791256059188471, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
+      propertyPath: m_Volume
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6306868219843722765, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
+      propertyPath: m_Volume
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 9000949906077451714, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
       propertyPath: m_LocalPosition.x

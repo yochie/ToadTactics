@@ -27,12 +27,20 @@ public class MenuController : MonoBehaviour
 
     [SerializeField]
     private Button connectionButton;
-    
+
+    [SerializeField]
+    private AudioClip menuSong;
+
     public void Awake()
     {
         if (MenuController.Singleton != null)
             Destroy(MenuController.Singleton.gameObject);
         MenuController.Singleton = this;
+    }
+
+    public void Start()
+    {
+        AudioManager.Singleton.LoopSong(this.menuSong);
     }
 
     #region Connection
