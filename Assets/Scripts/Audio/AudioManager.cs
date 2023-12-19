@@ -56,6 +56,11 @@ public class AudioManager : MonoBehaviour
 
     public void LoopSong(AudioClip songClip)
     {
+        //if trying to play current song, just keep at it
+        if (this.musicSource.clip == songClip)
+            return;
+
+        this.musicSource.Stop();
         this.musicSource.clip = songClip;
         this.musicSource.Play();
     }
