@@ -419,7 +419,7 @@ MonoBehaviour:
   ipManager: {fileID: 1123201407}
   startButton: {fileID: 685327371}
   cancelButton: {fileID: 1340483024}
-  leaveButton: {fileID: 0}
+  leaveButton: {fileID: 1439452867}
 --- !u!4 &1123201406
 Transform:
   m_ObjectHideFlags: 0
@@ -920,6 +920,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LobbyPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 5445376779556899883, guid: ae644183c85aafa4f82ead854f8f8a46, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5449147868922193871, guid: ae644183c85aafa4f82ead854f8f8a46, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1179,6 +1183,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5662644488559102849, guid: b348ad335e97048469815aae280f6182, type: 3}
   m_PrefabInstance: {fileID: 1439452865}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1439452867 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5309594732953195805, guid: b348ad335e97048469815aae280f6182, type: 3}
+  m_PrefabInstance: {fileID: 1439452865}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1584779015
 GameObject:
   m_ObjectHideFlags: 0

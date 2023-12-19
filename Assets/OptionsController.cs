@@ -21,9 +21,6 @@ public class OptionsController : MonoBehaviour
     Toggle vsyncToggle;
 
     [SerializeField]
-    AudioManager audioManager;
-
-    [SerializeField]
     List<Vector2Int> defaultResolutions;
 
     [SerializeField]
@@ -66,7 +63,7 @@ public class OptionsController : MonoBehaviour
 
     private void InitFieldsToCurrentValues()
     {
-        this.volumeSlider.value = this.audioManager.GetVolume();
+        this.volumeSlider.value = AudioManager.Singleton.GetVolume();
 
         Vector2Int currentResolution = new(Screen.width, Screen.height);
         int currentResIndex = this.sortedResolutionOptions.IndexOfValue(currentResolution);
@@ -79,7 +76,7 @@ public class OptionsController : MonoBehaviour
 
     public void ApplyVolumeChange(float value)
     {
-        this.audioManager.SetVolume(value);
+        AudioManager.Singleton.SetVolume(value);
     }
 
     public void ApplyScreenMode(int optionIndex)

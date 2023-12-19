@@ -15,6 +15,9 @@ public class EscapeMenuController : MonoBehaviour
     [SerializeField]
     private GameObject buttonList;
 
+    [SerializeField]
+    private OptionsController optionsPanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +43,8 @@ public class EscapeMenuController : MonoBehaviour
     public void OpenSettings()
     {
         Debug.Log("Opening settings screen");
+        this.buttonList.SetActive(false);
+        this.optionsPanel.gameObject.SetActive(true);
     }
 
     public void ConcedeRound()
@@ -60,5 +65,11 @@ public class EscapeMenuController : MonoBehaviour
         #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
         #endif
+    }
+
+    public void CloseSettings()
+    {
+        this.buttonList.SetActive(true);
+        this.optionsPanel.gameObject.SetActive(false);
     }
 }

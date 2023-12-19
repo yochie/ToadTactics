@@ -1212,7 +1212,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2765328450300033014}
         m_TargetAssemblyTypeName: OptionsController, Assembly-CSharp
-        m_MethodName: ApplySoundChange
+        m_MethodName: ApplyVolumeChange
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3273,6 +3273,26 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1601235224369014918, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1601235224369014918, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1601235224369014918, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1601235224369014918, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1601235224369014918, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 2154656705533827284, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -3413,11 +3433,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5083962550038266611, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5083962550038266611, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5083962550038266611, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_SizeDelta.x
@@ -3434,6 +3454,14 @@ PrefabInstance:
     - target: {fileID: 5083962550038266611, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -53.884727
+      objectReference: {fileID: 0}
+    - target: {fileID: 6106369593226331013, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
+      propertyPath: m_Name
+      value: CloseButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 6665831114314103350, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8726779812313627703, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_text
@@ -3487,7 +3515,6 @@ MonoBehaviour:
   screenModeDropdown: {fileID: 7352278269498496419}
   resolutionDropdown: {fileID: 1439965494543713220}
   vsyncToggle: {fileID: 3613611199770791310}
-  audioManager: {fileID: 0}
   defaultResolutions:
   - {x: 1920, y: 1080}
   - {x: 1600, y: 900}
@@ -3529,7 +3556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798265525620698763, guid: 77a20531af9fdf445996aa9de544d147, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4798265525620698763, guid: 77a20531af9fdf445996aa9de544d147, type: 3}
       propertyPath: m_AnchorMin.x
@@ -3693,7 +3720,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798265525620698763, guid: 77a20531af9fdf445996aa9de544d147, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4798265525620698763, guid: 77a20531af9fdf445996aa9de544d147, type: 3}
       propertyPath: m_AnchorMin.x
@@ -3855,7 +3882,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798265525620698763, guid: 77a20531af9fdf445996aa9de544d147, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4798265525620698763, guid: 77a20531af9fdf445996aa9de544d147, type: 3}
       propertyPath: m_AnchorMin.x
