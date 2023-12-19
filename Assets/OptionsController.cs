@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
+using System;
 
 public class OptionsController : MonoBehaviour
 {
     [SerializeField]
-    AudioManager audioManager;
+    Slider volumeSlider;
 
     [SerializeField]
     TMP_Dropdown screenModeDropdown;
@@ -17,45 +18,75 @@ public class OptionsController : MonoBehaviour
     TMP_Dropdown resolutionDropdown;
 
     [SerializeField]
-    List<Vector2Int> supportedResolutions;
+    Toggle vsyncToggle;
+
+    [SerializeField]
+    AudioManager audioManager;
+
+    [SerializeField]
+    List<Vector2Int> defaultResolutions;
 
     [SerializeField]
     GameObject content;
 
-    private Dictionary<int, Vector2Int> availableResolutions;
+    private SortedList<Vector2Int, Vector2Int> sortedResolutionOptions;
 
     private void Start()
     {
-        Vector2Int currentRes = new(Screen.currentResolution.width, Screen.currentResolution.height);
+        this.SetupResolutionOptions();       
 
-        this.availableResolutions = new();
-        int currentResIndex = -1;
-        int i = 0;
-        foreach(Resolution res in Screen.resolutions)
-        {
-            Vector2Int resVector = new(res.width, res.height);
-            if (availableResolutions.ContainsValue(resVector))
-                continue;
-            if (this.supportedResolutions.Contains(resVector))
-            {
-                if (resVector == currentRes)
-                    currentResIndex = i;
-                this.availableResolutions.Add(i, resVector);
-                i++;
-            }
-        }
-        this.resolutionDropdown.AddOptions(this.availableResolutions.ToList().Select((res) => string.Format("{0} x {1}", res.Value.x, res.Value.y)).ToList());
-        this.resolutionDropdown.value = currentResIndex;
+        this.InitFieldsToCurrentValues();
     }
 
-    public void ApplySoundChange(float value)
+    private void SetupResolutionOptions()
+    {
+        this.sortedResolutionOptions = new(new ResolutionSorter());
+
+        //Add screen supported resolutions
+        foreach (Resolution screenSupportedResolution in Screen.resolutions)
+        {
+            Vector2Int resolutionVector = new(screenSupportedResolution.width, screenSupportedResolution.height);
+            //skip duplicates caused by multiple listings for each framerate
+            if (this.sortedResolutionOptions.ContainsValue(resolutionVector))
+                continue;
+            this.sortedResolutionOptions.Add(resolutionVector, resolutionVector);
+        }
+
+        //Add game defined supported resolutions
+        foreach (Vector2Int res in this.defaultResolutions)
+        {
+            if (this.sortedResolutionOptions.ContainsValue(res))
+                continue;
+            this.sortedResolutionOptions.Add(res, res);
+        }
+
+        List<string> resolutionOptions = this.sortedResolutionOptions.Select((res) => string.Format("{0} x {1}", res.Value.x, res.Value.y)).ToList();
+        this.resolutionDropdown.AddOptions(resolutionOptions);
+    }
+
+    private void InitFieldsToCurrentValues()
+    {
+        this.volumeSlider.value = this.audioManager.GetVolume();
+
+        Vector2Int currentResolution = new(Screen.width, Screen.height);
+        int currentResIndex = this.sortedResolutionOptions.IndexOfValue(currentResolution);
+        Debug.LogFormat("Current res : {0}, setting field to option index : {1}", currentResolution, currentResIndex);
+        this.resolutionDropdown.value = currentResIndex;
+
+        this.screenModeDropdown.value = ScreenModeToOptionIndex(Screen.fullScreenMode);
+        this.vsyncToggle.isOn = QualitySettings.vSyncCount != 0;
+    }
+
+    public void ApplyVolumeChange(float value)
     {
         this.audioManager.SetVolume(value);
     }
 
     public void ApplyScreenMode(int optionIndex)
     {
-        Screen.fullScreenMode = this.OptionIndexToScreenMode(optionIndex);
+        FullScreenMode mode = this.OptionIndexToScreenMode(optionIndex);
+
+        Screen.fullScreenMode = mode;
     }
 
     private FullScreenMode OptionIndexToScreenMode(int optionIndex)
@@ -65,19 +96,27 @@ public class OptionsController : MonoBehaviour
         switch (optionAsText)
         {
             case "Fullscreen":
-                newMode = FullScreenMode.ExclusiveFullScreen;
+                newMode = FullScreenMode.FullScreenWindow;
                 break;
             case "Window":
                 newMode = FullScreenMode.Windowed;
-                break;
-            case "Borderless window":
-                newMode = FullScreenMode.FullScreenWindow;
                 break;
             default:
                 throw new System.Exception("Unhandled screen mode set.");
         }
         return newMode;
+    }
 
+    private int ScreenModeToOptionIndex(FullScreenMode mode)
+    {        
+        for(int i = 0; i < screenModeDropdown.options.Count; i++)
+        {
+            if(mode == OptionIndexToScreenMode(i))
+            {
+                return i;
+            }
+        }
+        throw new System.Exception("Unsupported screenmode supplied");
     }
 
     public void ApplyVSync(bool enabled)
@@ -87,9 +126,18 @@ public class OptionsController : MonoBehaviour
 
     public void ApplyResolution(int optionIndex)
     {
-        Vector2Int newRes = this.availableResolutions[optionIndex];
+        Vector2Int newRes = this.sortedResolutionOptions.ElementAt(optionIndex).Key;
 
-        Screen.SetResolution(newRes.x, newRes.y, this.OptionIndexToScreenMode(this.screenModeDropdown.value));
-        Debug.LogFormat("Setting res : {0} x {1}", newRes.x, newRes.y);
+        Screen.SetResolution(newRes.x, newRes.y, Screen.fullScreenMode);
+        Debug.LogFormat("Setting resolution : {0} x {1}", newRes.x, newRes.y);
+    }
+}
+
+class ResolutionSorter : IComparer<Vector2Int>
+{
+    public int Compare(Vector2Int r1, Vector2Int r2)
+    {
+        if (r1.x != r2.x) return r1.x.CompareTo(r2.x);
+        else return r1.y.CompareTo(r2.y);
     }
 }

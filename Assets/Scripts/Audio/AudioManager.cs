@@ -42,4 +42,9 @@ public class AudioManager : MonoBehaviour
     {
         this.volume = value;
     }
+
+    internal float GetVolume()
+    {
+        return this.volume;
+    }
 }
