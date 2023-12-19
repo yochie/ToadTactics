@@ -18,13 +18,16 @@ public class MenuController : MonoBehaviour
     
     [SerializeField]
     private GameObject connectionPanel;
+    
+    [SerializeField]
+    private GameObject optionsPanel;
 
     [SerializeField]
     private float connectionAttemptTimeout;
 
     [SerializeField]
     private Button connectionButton;
-
+    
     public void Awake()
     {
         if (MenuController.Singleton != null)
@@ -32,23 +35,14 @@ public class MenuController : MonoBehaviour
         MenuController.Singleton = this;
     }
 
+    #region Connection
     public void SetConnectionTarget(string target)
     {
         this.connectionTarget = target;
     }
 
-    public void StartHost()
-    {
-        MyNetworkManager.singleton.StartHost();
-    }
-
-    public void JoinGame()
-    {
-        this.connectionPanel.SetActive(true);
-    }
-
     public void ConnectToHost()
-    {        
+    {
         if (this.connectionTarget != "localhost" && !Regex.IsMatch(this.connectionTarget, Utility.IPV4Regex))
         {
             this.connectionFeedback.Display("Invalid IP");
@@ -64,15 +58,6 @@ public class MenuController : MonoBehaviour
 
         MyNetworkManager.singleton.StartClient();
         StartCoroutine(this.CheckForConnectionFailureCoroutine(this.connectionAttemptTimeout));
-    }
-
-    public void ExitGame()
-    {
-        Application.Quit();
-        Debug.Log("Game should be closed");
-        #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-        #endif
     }
 
     private IEnumerator CheckForConnectionFailureCoroutine(float timeOutSeconds)
@@ -99,4 +84,64 @@ public class MenuController : MonoBehaviour
         }
         this.connectionButton.interactable = true;
     }
+    #endregion
+
+    #region Button responses
+    public void StartHost()
+    {
+        this.SetMenuMode(MenuMode.None);
+
+        MyNetworkManager.singleton.StartHost();
+    }
+
+    public void OpenSettingsPanel()
+    {
+        this.SetMenuMode(MenuMode.Settings);
+    }
+
+    public void OpenConnectionPanel()
+    {
+        this.SetMenuMode(MenuMode.Connecting);
+    }
+
+    public void ExitGame()
+    {
+        this.SetMenuMode(MenuMode.None);
+
+        Application.Quit();
+        Debug.Log("Game should be closed");
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+    }
+    #endregion
+
+    #region menu state
+    public void SetMenuMode(MenuMode menuMode)
+    {
+        this.HideAllPanels();
+        switch (menuMode)
+        {
+            case MenuMode.Connecting:
+                this.connectionPanel.SetActive(true);
+                break;
+            case MenuMode.Settings:
+                this.optionsPanel.SetActive(true);
+                break;            
+        }        
+    }
+
+    public void HideAllPanels()
+    {
+        this.optionsPanel.SetActive(false);
+        this.connectionPanel.SetActive(false);
+    }
+
+    public enum MenuMode
+    {
+        None, Connecting, Settings
+    }
+    #endregion
 }
+
+
