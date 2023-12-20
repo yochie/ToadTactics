@@ -40,6 +40,9 @@ public class MainHUD : NetworkBehaviour
 
     [SerializeField]
     private TreasureRevealPanel treasureRevealPanel;
+    
+    [SerializeField]
+    private ColorPaletteSO colorPalette;
 
     private Dictionary<ControlMode, GameObject> gameplayButtons;
     
@@ -131,10 +134,10 @@ public class MainHUD : NetworkBehaviour
         GameObject buttonObject = this.gameplayButtons[controlMode];
         buttonObject.GetComponent<Button>().interactable = false;
 
-        buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
+        //buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
     }
 
-    private void SetInteractableGameplayButton(ControlMode mode, bool state)
+    private void SetInteractableGameplayButton(ControlMode mode, bool interactable)
     {
         if(!this.gameplayButtons.ContainsKey(mode))
         {
@@ -143,15 +146,15 @@ public class MainHUD : NetworkBehaviour
         }
 
         GameObject buttonObject = this.gameplayButtons[mode];
-        if (state)
+        if (interactable)
         {
             buttonObject.GetComponent<Button>().interactable = true;
-            buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
+            //buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
         }
         else
         {
             buttonObject.GetComponent<Button>().interactable = false;
-            buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
+            //buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
 
         }
     }
@@ -177,14 +180,14 @@ public class MainHUD : NetworkBehaviour
 
 
     [Client]
-    private void SetInteractableGameplayButtons(bool state)
+    private void SetInteractableGameplayButtons(bool interactable)
     {
         foreach(GameObject buttonObject in this.gameplayButtons.Values)
         {
             Button button = buttonObject.GetComponent<Button>();
-            button.interactable = state;
-            if (!state)
-                buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
+            button.interactable = interactable;
+            //if (!interactable)
+            //    buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
         }
     }
 
@@ -199,14 +202,16 @@ public class MainHUD : NetworkBehaviour
 
     public void HighlightGameplayButton(ControlMode mode)
     {
-        foreach (KeyValuePair<ControlMode, GameObject> controlModeToButton in this.gameplayButtons)
+        foreach (var (controlMode, button) in this.gameplayButtons)
         {
-            Image buttonImage = controlModeToButton.Value.GetComponent<Image>();
-            if (controlModeToButton.Key == mode)
+            ColorBlock buttonColors = button.GetComponent<Button>().colors;
+            if (controlMode == mode)
 
-                buttonImage.color = this.GetSelectedColor(mode);
+                buttonColors.normalColor = this.GetSelectedColor(mode);
             else
-                buttonImage.color = this.GetUnselectedColor();
+                buttonColors.normalColor = this.GetUnselectedColor();
+
+            button.GetComponent<Button>().colors = buttonColors;
         }
     }
 
@@ -279,17 +284,17 @@ public class MainHUD : NetworkBehaviour
 
     private Color GetSelectedColor(ControlMode controlMode)
     {
-        Color activeColor = HexDrawer.HEX_IN_MOVE_RANGE_COLOR;
+        Color activeColor = this.colorPalette.HEX_IN_MOVE_RANGE_COLOR;
         switch (controlMode)
         {
             case ControlMode.move:
-                activeColor = HexDrawer.HEX_IN_MOVE_RANGE_COLOR;
+                activeColor = this.colorPalette.HEX_IN_MOVE_RANGE_COLOR;
                 break;
             case ControlMode.attack:
-                activeColor = HexDrawer.HEX_ATTACK_TARGETABLE_COLOR;
+                activeColor = this.colorPalette.HEX_ATTACK_TARGETABLE_COLOR;
                 break;
             case ControlMode.useAbility:
-                activeColor = HexDrawer.HEX_ABILITY_TARGETABLE_COLOR;
+                activeColor = this.colorPalette.HEX_ABILITY_TARGETABLE_COLOR;
                 break;
         }
 

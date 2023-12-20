@@ -5,42 +5,45 @@ using System;
 public class HexDrawer : MonoBehaviour
 {
     #region Constants
-    public static readonly Color HEX_DEFAULT_COLOR = Color.white;
-    public static readonly Color HEX_START_COLOR = Color.blue;
-    public static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
-    public static readonly Color HEX_HOVER_COLOR = Color.cyan;
-    public static readonly Color HEX_SELECT_COLOR = Color.green;
-    public static readonly Color HEX_IN_MOVE_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
-    public static readonly Color HEX_ATTACK_TARGETABLE_COLOR = Color.red;
-    public static readonly Color HEX_ABILITY_TARGETABLE_COLOR = new(103f / 255f, 10f / 255f, 142f / 255f); 
-    public static readonly Color HEX_ATTACK_HOVER_COLOR = Color.cyan; 
-    public static readonly Color HEX_IN_ATTACK_RANGE_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
-    public static readonly Color HEX_IN_ABILITY_RANGE_COLOR = new(189 / 255f, 111f / 255f, 221f / 255f);
-    public static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.gray;
-    public static readonly Color HEX_ABILITY_HOVER_COLOR = Color.cyan;
+    //public static readonly Color HEX_DEFAULT_COLOR = Color.white;
+    //public static readonly Color HEX_START_COLOR = Color.blue;
+    //public static readonly Color HEX_OPPONENT_START_COLOR = Color.grey;
+    //public static readonly Color HEX_HOVER_COLOR = Color.cyan;
+    //public static readonly Color HEX_SELECT_COLOR = Color.green;
+    //public static readonly Color HEX_IN_MOVE_RANGE_COLOR = new(0.6940628f, 0.9433962f, 0.493058f);
+    //public static readonly Color HEX_ATTACK_TARGETABLE_COLOR = Color.red;
+    //public static readonly Color HEX_ABILITY_TARGETABLE_COLOR = new(103f / 255f, 10f / 255f, 142f / 255f); 
+    //public static readonly Color HEX_ATTACK_HOVER_COLOR = Color.cyan; 
+    //public static readonly Color HEX_IN_ATTACK_RANGE_COLOR = new(176f / 255f, 98f / 255f, 100f / 255f);
+    //public static readonly Color HEX_IN_ABILITY_RANGE_COLOR = new(189 / 255f, 111f / 255f, 221f / 255f);
+    //public static readonly Color HEX_OUT_OF_ACTION_RANGE_COLOR = Color.gray;
+    //public static readonly Color HEX_ABILITY_HOVER_COLOR = Color.cyan;
 
-    public static readonly Color OUTLINE_VALID_TARGET_COLOR = Color.green;
-    public static readonly Color OUTLINE_INVALID_TARGET_COLOR = Color.gray;
+    //public static readonly Color OUTLINE_VALID_TARGET_COLOR = Color.green;
+    //public static readonly Color OUTLINE_INVALID_TARGET_COLOR = Color.gray;
 
     #endregion
 
     #region Editor vars
     [SerializeField]
     private TextMeshProUGUI labelPrefab;
+
+    [SerializeField]
+    private ColorPaletteSO colorPalette;
     #endregion
 
     #region State vars
 
-    private Color baseColor = HexDrawer.HEX_DEFAULT_COLOR;
-    private Color unHoveredColor = HexDrawer.HEX_DEFAULT_COLOR;
-    private Color hexColor = HexDrawer.HEX_DEFAULT_COLOR;
+    private Color baseColor;
+    private Color unHoveredColor;
+    private Color currentColor;
 
-    private Color currentColor
+    private Color CurrentColor
     {
-        get { return this.hexColor; }
+        get { return this.currentColor; }
         set
         {
-            this.hexColor = value;
+            this.currentColor = value;
             this.sprite.color = value;
         }
     }
@@ -94,18 +97,18 @@ public class HexDrawer : MonoBehaviour
 
         if (isStartingZone && isLocalStartingZone)
         {
-            this.baseColor = HexDrawer.HEX_START_COLOR;
+            this.baseColor = this.colorPalette.HEX_START_COLOR;
         }
         else if (isStartingZone && !isLocalStartingZone)
         {
-            this.baseColor = HexDrawer.HEX_OPPONENT_START_COLOR;
+            this.baseColor = this.colorPalette.HEX_OPPONENT_START_COLOR;
         }
         else
         {
-            this.baseColor = HexDrawer.HEX_DEFAULT_COLOR;
+            this.baseColor = this.colorPalette.HEX_DEFAULT_COLOR;
         }
 
-        this.currentColor = this.baseColor;
+        this.CurrentColor = this.baseColor;
         this.unHoveredColor = this.baseColor;
     }
 
@@ -136,77 +139,77 @@ public class HexDrawer : MonoBehaviour
 
     public void Select(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_SELECT_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_SELECT_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? this.colorPalette.HEX_SELECT_COLOR : this.baseColor;
+        this.CurrentColor = mode ? this.colorPalette.HEX_SELECT_COLOR : this.baseColor;
     }
 
     public void DefaultHover(bool mode, bool useOutline = false, bool isMove = false, bool isValidTarget = false)
     {
         if (mode) { 
-            this.unHoveredColor = this.currentColor;
-            this.currentColor = HexDrawer.HEX_HOVER_COLOR;
+            this.unHoveredColor = this.CurrentColor;
+            this.CurrentColor = this.colorPalette.HEX_HOVER_COLOR;
         } else
         {
-            this.currentColor = this.unHoveredColor;
+            this.CurrentColor = this.unHoveredColor;
         }       
 
         if (useOutline && !isMove)
-            this.SetOutline2(mode, isValidTarget ? HexDrawer.OUTLINE_VALID_TARGET_COLOR : HexDrawer.OUTLINE_INVALID_TARGET_COLOR);
+            this.SetOutline2(mode, isValidTarget ? this.colorPalette.OUTLINE_VALID_TARGET_COLOR : this.colorPalette.OUTLINE_INVALID_TARGET_COLOR);
         else if (useOutline && isMove)
-            this.SetOutline1(mode, isValidTarget ? HexDrawer.OUTLINE_VALID_TARGET_COLOR : HexDrawer.OUTLINE_INVALID_TARGET_COLOR);
+            this.SetOutline1(mode, isValidTarget ? this.colorPalette.OUTLINE_VALID_TARGET_COLOR : this.colorPalette.OUTLINE_INVALID_TARGET_COLOR);
     }
 
     public void MoveHover(bool mode, bool isValidTarget = true)
     {
         if (mode) { 
-            this.unHoveredColor = this.currentColor;
-            this.currentColor = HexDrawer.HEX_HOVER_COLOR;
+            this.unHoveredColor = this.CurrentColor;
+            this.CurrentColor = this.colorPalette.HEX_HOVER_COLOR;
         } else
-            this.currentColor = this.unHoveredColor;
+            this.CurrentColor = this.unHoveredColor;
 
-        this.SetOutline1(mode, isValidTarget ? HexDrawer.OUTLINE_VALID_TARGET_COLOR : HexDrawer.OUTLINE_INVALID_TARGET_COLOR);
+        this.SetOutline1(mode, isValidTarget ? this.colorPalette.OUTLINE_VALID_TARGET_COLOR : this.colorPalette.OUTLINE_INVALID_TARGET_COLOR);
     }
 
     public void DisplayInMoveRange(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_IN_MOVE_RANGE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_IN_MOVE_RANGE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? this.colorPalette.HEX_IN_MOVE_RANGE_COLOR : this.baseColor;
+        this.CurrentColor = mode ? this.colorPalette.HEX_IN_MOVE_RANGE_COLOR : this.baseColor;
     }
 
     public void DisplayInAttackRange(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_IN_ATTACK_RANGE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_IN_ATTACK_RANGE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? this.colorPalette.HEX_IN_ATTACK_RANGE_COLOR : this.baseColor;
+        this.CurrentColor = mode ? this.colorPalette.HEX_IN_ATTACK_RANGE_COLOR : this.baseColor;
     }
 
     public void DisplayInAbilityRange(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_IN_ABILITY_RANGE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_IN_ABILITY_RANGE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? this.colorPalette.HEX_IN_ABILITY_RANGE_COLOR : this.baseColor;
+        this.CurrentColor = mode ? this.colorPalette.HEX_IN_ABILITY_RANGE_COLOR : this.baseColor;
     }
 
     public void DisplayAttackTargetable(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_ATTACK_TARGETABLE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_ATTACK_TARGETABLE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? this.colorPalette.HEX_ATTACK_TARGETABLE_COLOR : this.baseColor;
+        this.CurrentColor = mode ? this.colorPalette.HEX_ATTACK_TARGETABLE_COLOR : this.baseColor;
     }
 
     public void DisplayAbilityTargetable(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_ABILITY_TARGETABLE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_ABILITY_TARGETABLE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? this.colorPalette.HEX_ABILITY_TARGETABLE_COLOR : this.baseColor;
+        this.CurrentColor = mode ? this.colorPalette.HEX_ABILITY_TARGETABLE_COLOR : this.baseColor;
     }
 
     internal void DisplayOutOfActionRange(bool mode)
     {
-        this.unHoveredColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
-        this.currentColor = mode ? HexDrawer.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
+        this.unHoveredColor = mode ? this.colorPalette.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
+        this.CurrentColor = mode ? this.colorPalette.HEX_OUT_OF_ACTION_RANGE_COLOR : this.baseColor;
     }
 
     public void AttackHover(bool mode)
     {
-        if (mode) { this.unHoveredColor = this.currentColor; }
-        this.currentColor = mode ? HexDrawer.HEX_ATTACK_HOVER_COLOR : this.unHoveredColor;
+        if (mode) { this.unHoveredColor = this.CurrentColor; }
+        this.CurrentColor = mode ? this.colorPalette.HEX_ATTACK_HOVER_COLOR : this.unHoveredColor;
     }
     #endregion
 
@@ -225,8 +228,8 @@ public class HexDrawer : MonoBehaviour
 
     public void ClearStartZone()
     {
-        this.currentColor = HexDrawer.HEX_DEFAULT_COLOR;
-        this.baseColor = HexDrawer.HEX_DEFAULT_COLOR;
-        this.unHoveredColor = HexDrawer.HEX_DEFAULT_COLOR;
+        this.CurrentColor = this.colorPalette.HEX_DEFAULT_COLOR;
+        this.baseColor = this.colorPalette.HEX_DEFAULT_COLOR;
+        this.unHoveredColor = this.colorPalette.HEX_DEFAULT_COLOR;
     }
 }

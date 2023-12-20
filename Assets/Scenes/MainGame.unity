@@ -1047,6 +1047,7 @@ MonoBehaviour:
   abilityCooldownIndicator: {fileID: 416025124}
   actionButtonsGrid: {fileID: 156891758}
   treasureRevealPanel: {fileID: 1017388914}
+  colorPalette: {fileID: 11400000, guid: 1b2becb854cd6ee40b092a57d0bc5f36, type: 2}
 --- !u!114 &297310966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1301,6 +1302,42 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.09019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.10980392
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.5294118
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_PressedColor.b
+      value: 0.0656817
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_PressedColor.g
+      value: 0.081701644
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_PressedColor.r
+      value: 0.4245283
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.15366672
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.18428975
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8396226
+      objectReference: {fileID: 0}
+    - target: {fileID: 5622556269117362286, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 297310965}
@@ -1314,15 +1351,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7819407145326496621, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
       propertyPath: m_Color.b
-      value: 0.09170522
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7819407145326496621, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
       propertyPath: m_Color.g
-      value: 0.10970305
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7819407145326496621, guid: 34dc9ba1368905f4c9234ea5462f395c, type: 3}
       propertyPath: m_Color.r
-      value: 0.5283019
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

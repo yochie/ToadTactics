@@ -232,6 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   labelPrefab: {fileID: 6525404334361133443, guid: 68f45b61888877a4d8ae305dd024c3c3, type: 3}
+  colorPalette: {fileID: 11400000, guid: 1b2becb854cd6ee40b092a57d0bc5f36, type: 2}
 --- !u!114 &4043318281901049022
 MonoBehaviour:
   m_ObjectHideFlags: 0

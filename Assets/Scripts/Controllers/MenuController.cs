@@ -48,6 +48,7 @@ public class MenuController : MonoBehaviour
 
     public void ConnectToHost()
     {
+
         if (this.connectionTarget != "localhost" && !Regex.IsMatch(this.connectionTarget, Utility.IPV4Regex))
         {
             this.connectionFeedback.Display("Invalid IP");

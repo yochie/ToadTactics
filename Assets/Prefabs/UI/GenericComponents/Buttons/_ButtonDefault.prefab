@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3597031520368720976}
   - component: {fileID: 7722600489044495902}
   - component: {fileID: 5309594732953195805}
+  - component: {fileID: 2802830335359811607}
   m_Layer: 0
   m_Name: _ButtonDefault
   m_TagString: Untagged
@@ -60,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5849056, g: 0.54765385, b: 0.23948023, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -90,7 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -98,9 +99,9 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 0.5849056, g: 0.54765385, b: 0.23948023, a: 1}
+    m_HighlightedColor: {r: 0.7264151, g: 0.6846431, b: 0.3179779, a: 1}
+    m_PressedColor: {r: 0.4509804, g: 0.42745098, b: 0.18431373, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -133,6 +134,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2802830335359811607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 870132680828166274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3491a95a726c8614ca79b9e6974240fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonHoverSound: {fileID: 8300000, guid: 6e02fc6c7504d614b93d49e11c0695cd, type: 3}
+  buttonClickSound: {fileID: 8300000, guid: 5bab430401bed9c4c9b5ae663fc8ae22, type: 3}
+  forButton: {fileID: 5309594732953195805}
 --- !u!1001 &5418818944250996116
 PrefabInstance:
   m_ObjectHideFlags: 0
