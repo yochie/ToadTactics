@@ -39,6 +39,11 @@ public class EscapeMenuController : MonoBehaviour
         this.buttonList.SetActive(open);
     }
 
+    public void SwitchEscapeMenu()
+    {
+        this.SetState(!this.isOpened);
+    }
+
     public void ResumeGame()
     {
         this.SetState(open: false);

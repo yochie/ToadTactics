@@ -220,7 +220,7 @@ public class MainHUD : NetworkBehaviour
     [Client]
     public void OnLocalPlayerTurnStart()
     {        
-        this.turnInstructionLabel.text = "Your turn";
+        this.turnInstructionLabel.text = "Turn : You";
         if (GameController.Singleton.CurrentPhaseID == GamePhaseID.characterPlacement)
             this.SetPlacementInstuctionState(yourTurn: true);
         this.endTurnButton.SetActive(true);
@@ -229,7 +229,7 @@ public class MainHUD : NetworkBehaviour
     [Client]
     public void OnLocalPlayerTurnEnd()
     {
-        this.turnInstructionLabel.text = "Opponent turn";
+        this.turnInstructionLabel.text = "Turn : Opponent";
         if (GameController.Singleton.CurrentPhaseID == GamePhaseID.characterPlacement)
             this.SetPlacementInstuctionState(yourTurn: false);
         this.endTurnButton.SetActive(false);
