@@ -13,6 +13,7 @@ public class AudioManager : MonoBehaviour
 
     [SerializeField]
     private AudioSource musicSource;
+    private bool playingMenuMusic;
 
     private void Awake()
     {
@@ -24,6 +25,7 @@ public class AudioManager : MonoBehaviour
             AudioManager.Singleton = this;
             DontDestroyOnLoad(gameObject);
         }
+        this.playingMenuMusic = false;
     }
 
     public void PlaySoundEffect(AudioClip soundEffect)
@@ -86,11 +88,14 @@ public class AudioManager : MonoBehaviour
 
     public void LoopMenuSongs()
     {
-        this.LoopSongQueue(SongListSO.Singleton.GetRandomMenuSongQueue());
+        if(!this.playingMenuMusic)
+            this.LoopSongQueue(SongListSO.Singleton.GetRandomMenuSongQueue());
+        this.playingMenuMusic = true;
     }
 
     public void LoopGameplaySongs()
     {
+        this.playingMenuMusic = false;
         this.LoopSongQueue(SongListSO.Singleton.GetRandomGameplaySongQueue());
     }
 }
