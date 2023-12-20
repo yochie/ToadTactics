@@ -876,5 +876,17 @@ public class GameController : NetworkBehaviour
         return -1;
     }
 
+    [ClientRpc]
+    public void RpcLoopMenuSongs()
+    {
+        AudioManager.Singleton.LoopMenuSongs();
+    }
+
+    [ClientRpc]
+    public void RpcLoopGameplaySongs()
+    {
+        AudioManager.Singleton.LoopGameplaySongs();
+    }
+
     #endregion
 }

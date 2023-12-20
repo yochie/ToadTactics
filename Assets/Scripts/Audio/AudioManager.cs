@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class AudioManager : MonoBehaviour
 {
@@ -23,7 +24,6 @@ public class AudioManager : MonoBehaviour
             AudioManager.Singleton = this;
             DontDestroyOnLoad(gameObject);
         }
-
     }
 
     public void PlaySoundEffect(AudioClip soundEffect)
@@ -35,7 +35,6 @@ public class AudioManager : MonoBehaviour
     {
         this.PlaySoundEffect(soundEffect);
         yield return new WaitForSeconds(soundEffect.length - earlyExitSeconds);
-
     }
 
     internal void SetVolume(float value)
@@ -54,14 +53,44 @@ public class AudioManager : MonoBehaviour
         return this.musicSource.volume;
     }
 
-    public void LoopSong(AudioClip songClip)
+    public void PlaySong(AudioClip songClip)
     {
-        //if trying to play current song, just keep at it
+        this.musicSource.loop = false;
         if (this.musicSource.clip == songClip)
             return;
 
         this.musicSource.Stop();
         this.musicSource.clip = songClip;
         this.musicSource.Play();
+    }
+
+    public void LoopSongQueue(List<AudioClip> songQueue)
+    {
+        StopCoroutine(nameof(PlaySongQueueCoroutine));
+        StartCoroutine(this.PlaySongQueueCoroutine(songQueue));
+    }
+
+    private IEnumerator PlaySongQueueCoroutine(List<AudioClip> songQueue)
+    {
+        this.musicSource.Stop();
+        while (true)
+        {
+            foreach (AudioClip song in songQueue)
+            {
+                this.PlaySong(song);
+                while (this.musicSource.isPlaying)
+                    yield return new WaitForSeconds(1);
+            }
+        }
+    }
+
+    public void LoopMenuSongs()
+    {
+        this.LoopSongQueue(SongListSO.Singleton.GetRandomMenuSongQueue());
+    }
+
+    public void LoopGameplaySongs()
+    {
+        this.LoopSongQueue(SongListSO.Singleton.GetRandomGameplaySongQueue());
     }
 }

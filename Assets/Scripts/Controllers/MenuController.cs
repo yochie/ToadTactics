@@ -28,9 +28,6 @@ public class MenuController : MonoBehaviour
     [SerializeField]
     private Button connectionButton;
 
-    [SerializeField]
-    private AudioClip menuSong;
-
     public void Awake()
     {
         if (MenuController.Singleton != null)
@@ -40,7 +37,7 @@ public class MenuController : MonoBehaviour
 
     public void Start()
     {
-        AudioManager.Singleton.LoopSong(this.menuSong);
+        AudioManager.Singleton.LoopMenuSongs();
     }
 
     #region Connection

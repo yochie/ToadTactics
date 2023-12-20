@@ -35,6 +35,7 @@ public class EquipmentDraftPhase : IGamePhase
         this.Controller = controller;
         this.Controller.SetPlayerTurn(this.startingPlayerID);
 
+        GameController.Singleton.RpcLoopMenuSongs();
 
         this.treasureWasOpenedByPlayerID = this.Controller.GetTreasureOpenedByPlayerID();
         this.treasureWasOpened = (this.treasureWasOpenedByPlayerID != -1);
