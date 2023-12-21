@@ -14,6 +14,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField]
     private AudioSource musicSource;
     private bool playingMenuMusic;
+    private Coroutine currentMusicCoroutine;
 
     private void Awake()
     {
@@ -26,6 +27,7 @@ public class AudioManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         this.playingMenuMusic = false;
+        this.currentMusicCoroutine = null;
     }
 
     public void PlaySoundEffect(AudioClip soundEffect)
@@ -58,8 +60,8 @@ public class AudioManager : MonoBehaviour
     public void PlaySong(AudioClip songClip)
     {
         this.musicSource.loop = false;
-        if (this.musicSource.clip == songClip)
-            return;
+        //if (this.musicSource.clip == songClip)
+        //    return;
 
         this.musicSource.Stop();
         this.musicSource.clip = songClip;
@@ -68,8 +70,9 @@ public class AudioManager : MonoBehaviour
 
     public void LoopSongQueue(List<AudioClip> songQueue)
     {
-        StopCoroutine(nameof(PlaySongQueueCoroutine));
-        StartCoroutine(this.PlaySongQueueCoroutine(songQueue));
+        if(this.currentMusicCoroutine != null)
+            StopCoroutine(this.currentMusicCoroutine);
+        this.currentMusicCoroutine = StartCoroutine(this.PlaySongQueueCoroutine(songQueue));
     }
 
     private IEnumerator PlaySongQueueCoroutine(List<AudioClip> songQueue)
@@ -79,15 +82,25 @@ public class AudioManager : MonoBehaviour
         {
             foreach (AudioClip song in songQueue)
             {
+                Debug.LogFormat("Starting next song in queue : {0}", song.name);
                 this.PlaySong(song);
                 while (this.musicSource.isPlaying)
-                    yield return new WaitForSeconds(1);
+                {
+                    //Debug.LogFormat("Waiting for {0} to end.", song.name);
+                    yield return new WaitForSecondsRealtime(1);
+                }                    
             }
+            yield return new WaitForSecondsRealtime(1);
+            Debug.Log("Looping whole song queue.");
+            Debug.Log(songQueue);
+            Debug.Log(songQueue.Count);
+
         }
     }
 
     public void LoopMenuSongs()
     {
+        Debug.Log("Starting menu music.");
         if(!this.playingMenuMusic)
             this.LoopSongQueue(SongListSO.Singleton.GetRandomMenuSongQueue());
         this.playingMenuMusic = true;
@@ -95,6 +108,7 @@ public class AudioManager : MonoBehaviour
 
     public void LoopGameplaySongs()
     {
+        Debug.Log("Starting gameplay music.");
         this.playingMenuMusic = false;
         this.LoopSongQueue(SongListSO.Singleton.GetRandomGameplaySongQueue());
     }
