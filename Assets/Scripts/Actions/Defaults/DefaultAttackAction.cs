@@ -70,7 +70,7 @@ public class DefaultAttackAction : IAttackAction
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
         defenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, HitSource.CharacterAttack, this.PenetratingDamage));
 
-        if (this.Knockback > 0)
+        if (this.Knockback > 0 && !defenderCharacter.IsDead)
         {
             HexCoordinates sourceToTarget = HexCoordinates.Substract(target.coordinates, this.ActorHex.coordinates);
             if (sourceToTarget.OnSingleAxis())
