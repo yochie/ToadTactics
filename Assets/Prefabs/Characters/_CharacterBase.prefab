@@ -311,53 +311,10 @@ MonoBehaviour:
   healingDamagePopupColor: {r: 0.45882353, g: 0.8784314, b: 0.56078434, a: 1}
   damagePopupPrefab: {fileID: 6807805651193300176, guid: c88de8da159f6e04797513d474cf9f12, type: 3}
   damagePopupOffset: {x: 2, y: 5, z: 0}
-  shakeStrengthCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 3.9185483
-      outSlope: 3.9185483
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.12331511
-      value: 0.48321623
-      inSlope: 1.4683617
-      outSlope: 1.4683617
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.46665227
-      value: 0.14611924
-      inSlope: -0.64476186
-      outSlope: -0.64476186
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.0073853
-      value: -0.020263672
-      inSlope: -0.30769885
-      outSlope: -0.30769885
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  shakeDuration: 0.25
-  shakeStrength: 3
   appleSoundEffect: {fileID: 8300000, guid: ef6f50e88d3b17648b6da2474861754a, type: 3}
   hurtSoundEffect: {fileID: 8300000, guid: aaee06d5a5227bc4680507dddac2cf61, type: 3}
   healSoundEffect: {fileID: 8300000, guid: a81c090231e6b88438627b19a46f533c, type: 3}
+  spriteShaker: {fileID: 6918357154697179759}
 --- !u!114 &5785813856046365177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -630,3 +587,4 @@ MonoBehaviour:
     m_RotationOrder: 4
   shakeDuration: 0.25
   shakeStrength: 3
+  growthFactor: 1.5

@@ -35,14 +35,14 @@ public class DamageTakenEffect : MonoBehaviour
     [SerializeField]
     private Vector3 damagePopupOffset;
 
-    [SerializeField]
-    private AnimationCurve shakeStrengthCurve;
+    //[SerializeField]
+    //private AnimationCurve shakeStrengthCurve;
 
-    [SerializeField]
-    private float shakeDuration;
+    //[SerializeField]
+    //private float shakeDuration;
 
-    [SerializeField]
-    private float shakeStrength;
+    //[SerializeField]
+    //private float shakeStrength;
 
     [SerializeField]
     private AudioClip appleSoundEffect;
@@ -52,6 +52,9 @@ public class DamageTakenEffect : MonoBehaviour
 
     [SerializeField]
     private AudioClip healSoundEffect;
+
+    [SerializeField]
+    private SpriteShaker spriteShaker;
 
     public void OnCharacterTakesHit(Hit hit, int classID)
     {
@@ -84,7 +87,8 @@ public class DamageTakenEffect : MonoBehaviour
             AnimationSystem.Singleton.Queue(new List<IEnumerator>() {
                 this.FlashCoroutine(flashColor, this.flashDurationSeconds),
                 this.DamagePopupCoroutine(hit, this.flashDurationSeconds),
-                this.ShakeCoroutine(this.shakeDuration, this.shakeStrength),
+                this.spriteShaker.ShakeCoroutine(),
+                //this.ShakeCoroutine(this.shakeDuration, this.shakeStrength),
                 AudioManager.Singleton.PlaySoundAndWaitCoroutine(this.hurtSoundEffect)
             });
         }
@@ -144,21 +148,21 @@ public class DamageTakenEffect : MonoBehaviour
         renderer.color = startColor;
     }
 
-    //TODO: replace with SpriteShaker component
-    private IEnumerator ShakeCoroutine(float durationSeconds, float strengthMultiplier)
-    {
+    ////TODO: replace with SpriteShaker component
+    //private IEnumerator ShakeCoroutine(float durationSeconds, float strengthMultiplier)
+    //{
 
-        Vector3 startPosition = gameObject.transform.position;
-        float elapsedSeconds = 0f;
+    //    Vector3 startPosition = gameObject.transform.position;
+    //    float elapsedSeconds = 0f;
 
-        while (elapsedSeconds < durationSeconds)
-        {
-            elapsedSeconds += Time.deltaTime;
-            float currentStrength = shakeStrengthCurve.Evaluate(elapsedSeconds / durationSeconds) * strengthMultiplier;
-            gameObject.transform.position = startPosition + (UnityEngine.Random.insideUnitSphere * currentStrength);
-            yield return null;
-        }
+    //    while (elapsedSeconds < durationSeconds)
+    //    {
+    //        elapsedSeconds += Time.deltaTime;
+    //        float currentStrength = shakeStrengthCurve.Evaluate(elapsedSeconds / durationSeconds) * strengthMultiplier;
+    //        gameObject.transform.position = startPosition + (UnityEngine.Random.insideUnitSphere * currentStrength);
+    //        yield return null;
+    //    }
 
-        gameObject.transform.position = startPosition;
-    }
+    //    gameObject.transform.position = startPosition;
+    //}
 }
