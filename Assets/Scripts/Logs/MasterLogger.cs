@@ -10,7 +10,7 @@ public class MasterLogger : NetworkBehaviour, INetworkedLogger
 
     public static MasterLogger Singleton { get; private set; }
 
-    private List<ILogger> loggers = new();
+    private List<ILogger> loggers;
 
     private void Awake()
     {
@@ -22,6 +22,7 @@ public class MasterLogger : NetworkBehaviour, INetworkedLogger
             return;
         }
         MasterLogger.Singleton = this;
+        this.loggers = new();
     }
 
     private void Start()

@@ -22,7 +22,7 @@ public class MyNetworkManager : NetworkManager
     {
         if (MyNetworkManager.singleton != null) 
         { 
-            //Debug.Log("Destroying this netmanager as singleton is already set."); 
+            Debug.Log("Destroying new netmanager as singleton is already set."); 
             Destroy(this.gameObject); 
             return; 
         }
@@ -223,13 +223,15 @@ public class MyNetworkManager : NetworkManager
     /// <para>This is called on the client when it disconnects from the server. Override this function to decide what happens when the client disconnects.</para>
     /// </summary>
     public override void OnClientDisconnect() {
-        Debug.Log("Client disconnected. Destroying GameController.");
-        if(GameController.Singleton != null)
+        //since Mirror cant handle this apparently...
+        Debug.Log("Client disconnected. Destroying DDOL networked objects");
+
+        if (GameController.Singleton != null)
             Destroy(GameController.Singleton.gameObject);
-        //else if (MenuController.Singleton != null)
-        //{
-        //    MenuController.Singleton.ConnectionFailed();
-        //}
+
+        if (MasterLogger.Singleton != null)
+            Destroy(MasterLogger.Singleton.gameObject);
+
     }
 
     /// <summary>
