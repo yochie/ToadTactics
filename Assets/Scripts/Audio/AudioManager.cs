@@ -13,6 +13,10 @@ public class AudioManager : MonoBehaviour
 
     [SerializeField]
     private AudioSource musicSource;
+
+    [SerializeField]
+    private float effectPitchShiftRange;
+
     private bool playingMenuMusic;
     private Coroutine currentMusicCoroutine;
 
@@ -32,6 +36,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySoundEffect(AudioClip soundEffect)
     {
+        this.effectsSource.pitch = UnityEngine.Random.Range(1 - this.effectPitchShiftRange, 1 + this.effectPitchShiftRange);
         this.effectsSource.PlayOneShot(soundEffect);
     }
 

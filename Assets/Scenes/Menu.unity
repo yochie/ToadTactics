@@ -1864,6 +1864,14 @@ PrefabInstance:
       propertyPath: BypassEffects
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1918094384779473024, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
+      propertyPath: effectPitchShiftRange
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6306868219843722765, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
+      propertyPath: m_Pitch
+      value: 0.91
+      objectReference: {fileID: 0}
     - target: {fileID: 6306868219843722765, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
       propertyPath: m_Volume
       value: 0.5
