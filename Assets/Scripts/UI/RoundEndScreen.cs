@@ -40,6 +40,11 @@ public class RoundEndScreen : MonoBehaviour
 
     public void ActivateMyself()
     {
+        AnimationSystem.Singleton.Queue(this.ActivateMyselfCoroutine());
+    }
+
+    private IEnumerator ActivateMyselfCoroutine()
+    {
         Debug.LogFormat("Activating round end screen {0}", this);
         int yourScore = GameController.Singleton.GetScore(GameController.Singleton.LocalPlayer.playerID);
         int opponentScore = GameController.Singleton.GetScore(GameController.Singleton.NonLocalPlayer.playerID);
@@ -48,6 +53,7 @@ public class RoundEndScreen : MonoBehaviour
         this.textContent.SetActive(true);
         this.hidden = false;
         this.hideButton.gameObject.SetActive(true);
+        yield break;
     }
 
     public void ReturnToMainMenu()
