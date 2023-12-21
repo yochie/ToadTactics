@@ -4208,7 +4208,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8af3721e5b71243438b5c392d0b02d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volumeSlider: {fileID: 1426999656121286137}
+  SFXVolumeSlider: {fileID: 1426999656121286137}
+  musicVolumeSlider: {fileID: 8802848114900306791}
   screenModeDropdown: {fileID: 7352278269498496419}
   resolutionDropdown: {fileID: 1439965494543713220}
   vsyncToggle: {fileID: 3613611199770791310}

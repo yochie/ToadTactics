@@ -9,7 +9,10 @@ using System;
 public class OptionsController : MonoBehaviour
 {
     [SerializeField]
-    Slider volumeSlider;
+    Slider SFXVolumeSlider;
+
+    [SerializeField]
+    Slider musicVolumeSlider;
 
     [SerializeField]
     TMP_Dropdown screenModeDropdown;
@@ -70,7 +73,8 @@ public class OptionsController : MonoBehaviour
 
     private void InitFieldsToCurrentValues()
     {
-        this.volumeSlider.value = AudioManager.Singleton.GetEffectsVolume();
+        this.SFXVolumeSlider.value = AudioManager.Singleton.GetEffectsVolume();
+        this.musicVolumeSlider.value = AudioManager.Singleton.GetMusicVolume();
 
         Vector2Int currentResolution = new(Screen.width, Screen.height);
         int currentResIndex = this.sortedResolutionOptions.IndexOfValue(currentResolution);
