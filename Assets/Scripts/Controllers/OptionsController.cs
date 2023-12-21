@@ -57,7 +57,14 @@ public class OptionsController : MonoBehaviour
             this.sortedResolutionOptions.Add(res, res);
         }
 
+        //Add current resolution (might be weird because of display specific scaling and monitor swaps, so assume it is supported...)
+        Vector2Int currentResolution = new(Screen.width, Screen.height);
+        if (!this.sortedResolutionOptions.ContainsValue(currentResolution))
+            this.sortedResolutionOptions.Add(currentResolution, currentResolution);
+
         List<string> resolutionOptions = this.sortedResolutionOptions.Select((res) => string.Format("{0} x {1}", res.Value.x, res.Value.y)).ToList();
+        
+        this.resolutionDropdown.ClearOptions();
         this.resolutionDropdown.AddOptions(resolutionOptions);
     }
 
@@ -67,6 +74,11 @@ public class OptionsController : MonoBehaviour
 
         Vector2Int currentResolution = new(Screen.width, Screen.height);
         int currentResIndex = this.sortedResolutionOptions.IndexOfValue(currentResolution);
+        //in case resolution changed since we opened menu
+        if (currentResIndex == -1)
+        {
+            Debug.Log("Couldn't find current resolution. This should not happen as it should be added to options when setting those up");
+        }
         Debug.LogFormat("Current res : {0}, setting field to option index : {1}", currentResolution, currentResIndex);
         this.resolutionDropdown.value = currentResIndex;
 
