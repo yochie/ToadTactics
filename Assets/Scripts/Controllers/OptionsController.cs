@@ -86,9 +86,14 @@ public class OptionsController : MonoBehaviour
         this.vsyncToggle.isOn = QualitySettings.vSyncCount != 0;
     }
 
-    public void ApplyVolumeChange(float value)
+    public void ApplySFXVolumeChange(float value)
     {
-        AudioManager.Singleton.SetVolume(value);
+        AudioManager.Singleton.SetVolume(value, VolumeType.SFX);
+    }
+
+    public void ApplyMusicVolumeChange(float value)
+    {
+        AudioManager.Singleton.SetVolume(value, VolumeType.music);
     }
 
     public void ApplyScreenMode(int optionIndex)
@@ -150,3 +155,4 @@ class ResolutionSorter : IComparer<Vector2Int>
         else return r1.y.CompareTo(r2.y);
     }
 }
+

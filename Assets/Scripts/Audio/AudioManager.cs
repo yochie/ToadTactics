@@ -41,10 +41,17 @@ public class AudioManager : MonoBehaviour
         yield return new WaitForSeconds(soundEffect.length - earlyExitSeconds);
     }
 
-    internal void SetVolume(float value)
+    internal void SetVolume(float value, VolumeType volumeType)
     {
-        this.effectsSource.volume = value;
-        this.musicSource.volume = value;
+        switch(volumeType)
+        {
+            case VolumeType.music:
+                this.musicSource.volume = value;
+                return;
+            case VolumeType.SFX:
+                this.effectsSource.volume = value;
+                return;
+        }
     }
 
     internal float GetEffectsVolume()
