@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: SongListData
   m_EditorClassIdentifier: 
   gameplaySongList:
-  - {fileID: 8300000, guid: 88bb19442563d994fb1827bb4c0e212e, type: 3}
-  - {fileID: 8300000, guid: 4b53f3ab53b0454438a269f24cc6bf87, type: 3}
-  - {fileID: 8300000, guid: 5918a8c1de9de1c4288f48d68a2acf7e, type: 3}
-  - {fileID: 8300000, guid: 2de8493998f804b4b965cb07eda8f479, type: 3}
-  - {fileID: 8300000, guid: 7fa4aabdd1db34c4184e4871598d53a4, type: 3}
-  - {fileID: 8300000, guid: c36bac76d2e42a444a748889aa21d498, type: 3}
+  - {fileID: 8300000, guid: 4c1b5ed3bff3fbe4f9a6dae28dca996b, type: 3}
+  - {fileID: 8300000, guid: 89e23eb828acdb746a0acb8c6fc1f5e2, type: 3}
+  - {fileID: 8300000, guid: 78079df85d5d17941bd8f6ddafe33377, type: 3}
+  - {fileID: 8300000, guid: d5707ec0c3a738d4c8847adc8e499bac, type: 3}
+  - {fileID: 8300000, guid: bebee88bdb7579744afcabb9f6ddb9f7, type: 3}
   menuSongList:
-  - {fileID: 8300000, guid: 63a02ff92850ae44e8e58d129a2a3b70, type: 3}
+  - {fileID: 8300000, guid: 2e1fa842527d1f645ae16e3f4c700efe, type: 3}

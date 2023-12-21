@@ -1638,12 +1638,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 886791256059188471, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
       propertyPath: Loop
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 886791256059188471, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
       propertyPath: m_Volume
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 886791256059188471, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
+      propertyPath: BypassEffects
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 886791256059188471, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
+      propertyPath: OutputAudioMixerGroup
+      value: 
+      objectReference: {fileID: 24300002, guid: 18216b96e11d0194886418df4f63291b, type: 2}
     - target: {fileID: 6306868219843722765, guid: 7c41beb2298d43248a9502a8bce78bb2, type: 3}
       propertyPath: m_Volume
       value: 0.5
