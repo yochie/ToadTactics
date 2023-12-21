@@ -511,6 +511,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   shakeDuration: 0.25
   shakeStrength: 3
+  shakeGrowthFactor: 1.5
+  spriteShaker: {fileID: 6918357154697179759}
   positiveSoundEffect: {fileID: 8300000, guid: b923aaf13931a3d4dac944d0b0fdd260, type: 3}
   negativeSoundEffect: {fileID: 8300000, guid: 3fa1204bb9549ad4db61f56b4a7a92cf, type: 3}
 --- !u!114 &8130557142363688273

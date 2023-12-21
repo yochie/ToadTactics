@@ -35,6 +35,12 @@ public class BuffAccruedEffect : MonoBehaviour
     private float shakeStrength;
 
     [SerializeField]
+    private float shakeGrowthFactor;
+
+    [SerializeField]
+    private SpriteShaker spriteShaker;
+
+    [SerializeField]
     private AudioClip positiveSoundEffect;
 
     [SerializeField]
@@ -51,7 +57,7 @@ public class BuffAccruedEffect : MonoBehaviour
         if(icon != null)
             effectsBatch.Add(this.BuffPopupCoroutine(icon, this.flashDurationSeconds, flashColor));
 
-        effectsBatch.Add(this.ShakeCoroutine(this.shakeDuration, this.shakeStrength));
+        effectsBatch.Add(this.spriteShaker.ShakeCoroutine(this.shakeDuration, this.shakeStrength, this.shakeGrowthFactor, this.shakeStrengthCurve));
 
         AudioClip soundEffect = isPositive ? this.positiveSoundEffect : this.negativeSoundEffect;
         effectsBatch.Add(this.PlaySoundCoroutine(soundEffect));
@@ -94,24 +100,6 @@ public class BuffAccruedEffect : MonoBehaviour
         }
 
         renderer.color = startColor;
-    }
-
-    //TODO: replace with SpriteShaker
-    private IEnumerator ShakeCoroutine(float durationSeconds, float strengthMultiplier)
-    {
-
-        Vector3 startPosition = gameObject.transform.position;
-        float elapsedSeconds = 0f;
-
-        while (elapsedSeconds < durationSeconds)
-        {
-            elapsedSeconds += Time.deltaTime;
-            float currentStrength = shakeStrengthCurve.Evaluate(elapsedSeconds / durationSeconds) * strengthMultiplier;
-            gameObject.transform.position = startPosition + (UnityEngine.Random.insideUnitSphere * currentStrength);
-            yield return null;
-        }
-
-        gameObject.transform.position = startPosition;
     }
 
     private IEnumerator PlaySoundCoroutine(AudioClip soundEffect)
