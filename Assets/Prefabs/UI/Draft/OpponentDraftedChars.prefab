@@ -91,9 +91,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad0f9e0dc77246a4a81a66c7833d5cee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotList: []
-  slotPrefab: {fileID: 2453656232044964031, guid: 093e3d0922c414d4688050dc40a70cac, type: 3}
-  isForSelf: 0
+  slotPrefab: {fileID: 5708379096071508406, guid: 093e3d0922c414d4688050dc40a70cac, type: 3}
+  <IsForSelf>k__BackingField: 0
 --- !u!114 &5153351164081708668
 MonoBehaviour:
   m_ObjectHideFlags: 0

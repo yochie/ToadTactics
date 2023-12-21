@@ -43,7 +43,7 @@ public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler,
     {
         if (this.IsDraggable())
         {
-            this.dragStartPosition = this.transform.position;
+            this.dragStartPosition = this.spriteImage.transform.position;
             this.highlightImage.raycastTarget = false;
             this.spriteImage.raycastTarget = false;
         }
@@ -53,7 +53,7 @@ public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler,
     public void OnDrag(PointerEventData eventData)
     {
         if (this.IsDraggable())
-            this.transform.position = eventData.position;
+            this.spriteImage.transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -64,7 +64,7 @@ public class GameplayCharacterSlotUI : ActiveCharacterSlotUI, IBeginDragHandler,
 
         if (this.IsDraggable())
         {
-            this.transform.position = this.dragStartPosition;
+            this.spriteImage.transform.position = this.dragStartPosition;
             Hex destinationHex = this.mapInputHandler.HoveredHex;
             if (destinationHex == null) { return; }
             GameController.Singleton.LocalPlayer.CmdPlaceCharOnBoard(this.HoldsCharacterWithClassID, destinationHex);
