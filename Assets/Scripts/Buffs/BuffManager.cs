@@ -67,7 +67,8 @@ internal class BuffManager : NetworkBehaviour
             affectedCharacter.AddAffectingBuff(buff);
 
             //We dont want to log eternal buffs as those are what players consider as passives
-            if(buff.Data.DurationType != DurationType.eternal) 
+            //skip logging outside of gameplay to avoid passively granted buffs also (since those buffs are applied during character placement)
+            if(buff.Data.DurationType != DurationType.eternal && GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay) 
             {
                 string message = string.Format("{0} applied to {1}", buff.Data.UIName, affectedCharacter.charClass.name);
                 MasterLogger.Singleton.RpcLogMessage(message);
