@@ -35,9 +35,11 @@ public class CharacterDraftPhase : IGamePhase
     [Server]
     public void Tick()
     {
-        Controller.SwapPlayerTurn();
+        if (!this.Controller.AllCharactersDrafted())
+        {
+            Controller.SwapPlayerTurn();
 
-        if (this.Controller.AllCharactersDrafted())
+        } else
         {
             Debug.Log("All chars drafted. Setting up king selection.");
             this.Controller.RpcSetupKingSelection();
