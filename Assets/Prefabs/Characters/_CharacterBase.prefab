@@ -302,7 +302,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  flashDurationSeconds: 1.5
+  flashDurationSeconds: 1
   forCharacter: {fileID: 1350857231127888729}
   damageTakenColor: {r: 0.9056604, g: 0.33663222, b: 0.34256223, a: 1}
   healTakenColor: {r: 0.45854396, g: 0.8773585, b: 0.56225044, a: 1}
@@ -461,7 +461,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  flashDurationSeconds: 1.5
+  flashDurationSeconds: 1
   forCharacter: {fileID: 1350857231127888729}
   positiveColor: {r: 0.42607686, g: 0.9528302, b: 0.45759198, a: 1}
   negativeColor: {r: 0.5660378, g: 0, b: 0, a: 1}
