@@ -29,7 +29,7 @@ public class TurnPopup : MonoBehaviour
 
     public void OnLocalPlayerTurnStart()
     {
-        IEnumerator popupRoutine = this.PopupCoroutine("Your turn");
+        IEnumerator popupRoutine = this.PopupCoroutine("Your turn", Color.green);
         if (AnimationSystem.Singleton != null)
             AnimationSystem.Singleton.Queue(popupRoutine);
         else
@@ -38,18 +38,19 @@ public class TurnPopup : MonoBehaviour
 
     public void OnLocalPlayerTurnEnd()
     {
-        IEnumerator popupRoutine = this.PopupCoroutine("Opponent turn");
+        IEnumerator popupRoutine = this.PopupCoroutine("Opponent turn", Color.red);
         if (AnimationSystem.Singleton != null)
             AnimationSystem.Singleton.Queue(popupRoutine);
         else
             StartCoroutine(popupRoutine);
     }
 
-    public IEnumerator PopupCoroutine(string labelText)
+    public IEnumerator PopupCoroutine(string labelText, Color labelColor)
     {
         this.background.SetActive(true);
         this.popup.SetActive(true);        
         this.label.text = labelText;
+        this.label.color = labelColor;
         float elapsedSeconds = 0f;
         Vector3 screenCenterPosition = Vector3.zero;
         Vector3 startPosition = this.popup.transform.localPosition;

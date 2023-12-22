@@ -301,7 +301,7 @@ MonoBehaviour:
   label: {fileID: 7705531298859332843}
   popup: {fileID: 4871549263903355719}
   background: {fileID: 8549205343302355068}
-  slideDurationSeconds: 0.8
+  slideDurationSeconds: 0.5
   stillDurationSeconds: 0.5
   endPosition: {fileID: 3356580620984794182}
   wooshSound: {fileID: 8300000, guid: 97edf7e33e35b354a9a4db7285f5ba2b, type: 3}
