@@ -379,9 +379,9 @@ public class ClassDataSO : ScriptableObject
                     stringID: "PaladinTeamBuff",
                     interfaceName: "Blessing of Kings",
                     description: "Grants a bonus to health, armor and movement to all allies.",
-                    allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
+                    allowedAbilityTargets: new List<TargetType>(){ TargetType.self, TargetType.other_friendly_chars },
                     cooldownDuration: 4,
-                    range: 0,
+                    range: Utility.MAX_DISTANCE_ON_MAP,
                     cappedByCooldown: true,
                     requiresLOS: false,
                     areaType: AreaType.ownTeam
