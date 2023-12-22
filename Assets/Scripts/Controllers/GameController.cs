@@ -134,16 +134,11 @@ public class GameController : NetworkBehaviour
 
     //Needs to be at bottom of syncvars since it updates UI based on state (order of syncvars determines execution order)
     //currently playing playerID
-    [SyncVar(hook = nameof(OnPlayerTurnChanged))]
+    //[SyncVar(hook = nameof(OnPlayerTurnChanged))]
+    [SyncVar]
     private int playerTurn;
 
     public int PlayerTurn { get => this.playerTurn;}
-
-    [Server]
-    public void SetPlayerTurn(int value)
-    {
-        this.playerTurn = value;
-    }
 
     #endregion
 
@@ -187,7 +182,7 @@ public class GameController : NetworkBehaviour
         
         this.SetPhase(new WaitingForClientPhase());
         this.turnOrderIndex = -1;
-        this.playerTurn = -1;
+        this.SetPlayerTurn(-1);
         this.currentRound = -1;
         this.charactersInstantiantedOnRemote = new();
         this.treasureOpenedByPlayerID = -1;
@@ -348,10 +343,10 @@ public class GameController : NetworkBehaviour
     [Server]
     public void SwapPlayerTurn()
     {
-        if (this.playerTurn == 0)
-            this.playerTurn = 1;
+        if (this.PlayerTurn == 0)
+            this.SetPlayerTurn(1);
         else
-            this.playerTurn = 0;
+            this.SetPlayerTurn(0);
     }
 
     [Server]
@@ -552,6 +547,15 @@ public class GameController : NetworkBehaviour
         GameController.Singleton.EndRound(concededByPlayerID);
     }
 
+    [Server]
+    public void SetPlayerTurn(int playerID)
+    {
+        this.playerTurn = playerID;
+        if (this.IsValidPlayerID(playerID))
+        {
+            this.RpcOnPlayerTurnChanged(playerID);
+        }
+    }
     #endregion
 
     #region Callbacks
@@ -614,6 +618,18 @@ public class GameController : NetworkBehaviour
         this.draftUI.SetupKingSelection(kingCandidates);
     }
 
+    [ClientRpc]
+    public void RpcLoopMenuSongs()
+    {
+        AudioManager.Singleton.LoopMenuSongs();
+    }
+
+    [ClientRpc]
+    public void RpcLoopGameplaySongs()
+    {
+        AudioManager.Singleton.LoopGameplaySongs();
+    }
+
     #endregion
 
     #region Events
@@ -641,8 +657,8 @@ public class GameController : NetworkBehaviour
     }
 
     //called on on all clients by syncvar hook
-    [Client]
-    private void OnPlayerTurnChanged(int _, int newPlayerID)
+    [ClientRpc]
+    private void RpcOnPlayerTurnChanged(int newPlayerID)
     {
         if (newPlayerID == -1)
             //we havent started game yet
@@ -876,16 +892,12 @@ public class GameController : NetworkBehaviour
         return -1;
     }
 
-    [ClientRpc]
-    public void RpcLoopMenuSongs()
+    private bool IsValidPlayerID(int playerID)
     {
-        AudioManager.Singleton.LoopMenuSongs();
-    }
-
-    [ClientRpc]
-    public void RpcLoopGameplaySongs()
-    {
-        AudioManager.Singleton.LoopGameplaySongs();
+        if (playerID < 0 || playerID > 1)
+            return false;
+        else
+            return true;
     }
 
     #endregion

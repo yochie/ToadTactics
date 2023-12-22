@@ -104,7 +104,7 @@ public class CharacterPlacementPhase : IGamePhase
 
         this.Controller.mapInputHandler.RpcSetControlModeOnAllClients(ControlMode.characterPlacement);
     
-}
+    }
 
     [Server]
     public void Tick()

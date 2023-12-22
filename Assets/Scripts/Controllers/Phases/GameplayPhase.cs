@@ -34,17 +34,18 @@ public class GameplayPhase : IGamePhase
     private void FinishInit()
     {
         Controller.SetTurnOrderIndex(0);
-        Controller.SetPlayerTurn(0);
+        Controller.SetPlayerTurn(-1);
 
         //finds character class id for the next turn so that we can check who owns it
         int currentCharacterClassID = this.Controller.GetCharacterIDForTurn();
         PlayerCharacter currentCharacter = this.Controller.PlayerCharactersByID[currentCharacterClassID];
 
         //if we don't own that char, swap player turn
-        if (Controller.PlayerTurn != currentCharacter.OwnerID)
-        {
-            Controller.SwapPlayerTurn();
-        }
+        //if (Controller.PlayerTurn != currentCharacter.OwnerID)
+        //{
+        //    Controller.SwapPlayerTurn();
+        //}
+        Controller.SetPlayerTurn(currentCharacter.OwnerID);
 
         this.SetupControlModes(currentCharacter);
 
