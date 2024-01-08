@@ -11,19 +11,21 @@ public class AbilitiesTable : MonoBehaviour
     [SerializeField]
     private GameObject abilityTableEntryPrefab;
 
-    public void RenderWithoutCooldowns(CharacterClass charClass)
+    public void RenderForClassDefaults(CharacterClass charClass)
     {
         var toPrint = this.GetAbilityPrintData(charClass);
         this.RenderFromPrintData(toPrint);
     }
 
-    public void RenderForLiveCharacter(PlayerCharacter character)
+    public void RenderForLiveCharacter(PlayerCharacter character, bool withCooldowns)
     {
-        var toPrint = this.GetAbilityPrintData(character.charClass, live: true, liveCharacter: character);
+        var toPrint = this.GetAbilityPrintData(character.charClass, live: true, liveCharacter: character, withCooldowns);
         this.RenderFromPrintData(toPrint, forLiveCharacter: true);
     }
 
-    private List<AbilityPrintData> GetAbilityPrintData(CharacterClass charClass, bool live = false, PlayerCharacter liveCharacter = null)
+    //eventually, we might want live characters to display current ability stats (e.g. if they are modified by equipment)
+    //but currently having the character displayed as live makes no difference other than being required for cooldown parameter to take effect
+    private List<AbilityPrintData> GetAbilityPrintData(CharacterClass charClass, bool live = false, PlayerCharacter liveCharacter = null, bool withCooldowns = false)
     {
         List<AbilityPrintData> toPrint = new();
 
@@ -39,7 +41,7 @@ public class AbilitiesTable : MonoBehaviour
             string passiveOrActive = ability.isPassive ? "Passive" : "Active";
             string currentCooldownString = "";
             string remainingUsesString = "";
-            if (live)
+            if (live && withCooldowns)
             {
                 if (ability.isPassive)
                 {
@@ -65,7 +67,7 @@ public class AbilitiesTable : MonoBehaviour
             Dictionary<string, string> mainStatsDictionary = this.GenerateAbilityMainStatsDictionary(ability);
             Dictionary<string, string> passiveStatsDictionary = this.GeneratePassiveStatsDictionary(ability);
             //merge passive stats to main stats
-            //will throw error if common keys, so make sure you define printables with unique fiels keys
+            //will throw error if shared keys, so make sure you define printables with unique field keys
             //would be confusing to read otherwise
             passiveStatsDictionary.ToList().ForEach(entry => mainStatsDictionary.Add(entry.Key, entry.Value));
 

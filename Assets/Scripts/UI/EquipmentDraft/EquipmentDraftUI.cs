@@ -145,7 +145,7 @@ public class EquipmentDraftUI : NetworkBehaviour
         {
             characterSheet.SetButtonActiveState(false);
         }
-        this.instructionLabel.text = "Waiting for other player to assign their equipments";
+        this.instructionLabel.text = "Waiting for opponent";
     }
 
     public void OnLocalPlayerTurnStart()
@@ -162,7 +162,7 @@ public class EquipmentDraftUI : NetworkBehaviour
 
     public void OnLocalPlayerTurnEnd()
     {
-        this.instructionLabel.text = "Waiting for other player to choose";
+        this.instructionLabel.text = "Waiting for opponent";
     }
 
     [TargetRpc]

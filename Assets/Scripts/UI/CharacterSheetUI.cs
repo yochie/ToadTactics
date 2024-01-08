@@ -49,7 +49,7 @@ public class CharacterSheetUI : MonoBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderWithoutCooldowns(classData);
+        this.abilitiesTable.RenderForClassDefaults(classData);
         this.statsTable.RenderForInactiveCharacterStats(classData.stats, isAKing);
     }
 
@@ -63,7 +63,7 @@ public class CharacterSheetUI : MonoBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderForLiveCharacter(character);
+        this.abilitiesTable.RenderForLiveCharacter(character, withCooldowns: GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay);
         this.statsTable.RenderForActiveCharacterStats(currentStats, isAKing);
         GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
         equipmentRow.SetActive(equipmentIDs.Count > 0);

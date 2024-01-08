@@ -574,6 +574,10 @@ PrefabInstance:
       propertyPath: statValueLabelPrefab
       value: 
       objectReference: {fileID: 3982768867530893486, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
+    - target: {fileID: 3962009856660062882, guid: ddcd26c2179c472449c2b38582e6a424, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4587777524556430682, guid: ddcd26c2179c472449c2b38582e6a424, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1

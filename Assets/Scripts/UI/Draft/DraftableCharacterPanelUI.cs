@@ -53,7 +53,7 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderWithoutCooldowns(classData);
+        this.abilitiesTable.RenderForClassDefaults(classData);
         this.statsTable.RenderForInactiveCharacterStats(classData.stats, asKingCandidate);
         this.assigningKing = asKingCandidate;
 

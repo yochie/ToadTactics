@@ -43,7 +43,7 @@ public class AssignmentCharacterPanelUI : MonoBehaviour
         this.spriteImage.sprite = sprite;
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
-        this.abilitiesTable.RenderWithoutCooldowns(classData);
+        this.abilitiesTable.RenderForClassDefaults(classData);
         this.statsTable.RenderForActiveCharacterStats(statsWithPreviousEquipments, asKing);
         //this.statsTable.RenderForInactiveCharacterStats(classData.stats, asKing);
         GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
