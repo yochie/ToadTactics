@@ -115,7 +115,7 @@ public class DamageTakenEffect : MonoBehaviour
 
         DamagePopup popup = Instantiate(this.damagePopupPrefab, gameObject.transform.position + this.damagePopupOffset, Quaternion.identity);
 
-        popup.Init((hit.damageType == DamageType.healing ? -hit.damage : hit.damage), popupColor);
+        popup.Init((hit.damageType == DamageType.healing ? -hit.damage : hit.damage), popupColor, hit.isCrit);
 
         float elapsedSeconds = 0f;
 

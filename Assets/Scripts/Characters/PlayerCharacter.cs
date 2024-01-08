@@ -278,7 +278,7 @@ public class PlayerCharacter : NetworkBehaviour
     public void TakeDamage(Hit hit)
     {
         int rawDamage = this.CalculateDamageFromHit(hit);
-        Hit mitigatedHit = new(Math.Abs(rawDamage), hit.damageType, hit.hitSource, hit.penetratesArmor);
+        Hit mitigatedHit = new(Math.Abs(rawDamage), hit.damageType, hit.hitSource, hit.isCrit, hit.penetratesArmor);
         this.RpcOnCharacterTakesHit(mitigatedHit, this.charClassID);
 
         this.TakeRawDamage(rawDamage);

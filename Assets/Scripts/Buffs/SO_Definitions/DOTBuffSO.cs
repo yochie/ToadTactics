@@ -55,7 +55,7 @@ public class DOTBuffSO : ScriptableObject, IAppliablBuffDataSO
         foreach (int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
-            affectedCharacter.TakeDamage(new Hit(DOTDamage, DOTDamageType, HitSource.Debuff));
+            affectedCharacter.TakeDamage(new Hit(DOTDamage, DOTDamageType, HitSource.Debuff, isCrit: false));
         }
     }
 
