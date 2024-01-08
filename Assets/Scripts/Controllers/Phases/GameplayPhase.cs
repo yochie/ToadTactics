@@ -50,6 +50,7 @@ public class GameplayPhase : IGamePhase
         this.SetupControlModes(currentCharacter);
 
         Controller.RpcOnInitGameplayMode();
+        this.Controller.TriggerNewCharTurnAnimation(currentCharacterClassID);
     }
 
     [Server]
@@ -149,9 +150,9 @@ public class GameplayPhase : IGamePhase
         //if we don't own that char, swap player turn
         if (this.Controller.PlayerTurn != this.Controller.DraftedCharacterOwners[newTurnCharacterID])
         {
-            this.Controller.SwapPlayerTurn();
+            this.Controller.SwapPlayerTurn();            
         }
-
+        this.Controller.TriggerNewCharTurnAnimation(newTurnCharacterID);
         this.SetupControlModes(currentCharacter);
     }
 

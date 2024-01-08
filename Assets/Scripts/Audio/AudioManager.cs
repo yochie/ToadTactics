@@ -36,6 +36,8 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySoundEffect(AudioClip soundEffect)
     {
+        if (soundEffect == null)
+            return;
         this.effectsSource.pitch = UnityEngine.Random.Range(1 - this.effectPitchShiftRange, 1 + this.effectPitchShiftRange);
         this.effectsSource.PlayOneShot(soundEffect);
     }

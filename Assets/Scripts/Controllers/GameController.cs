@@ -126,6 +126,7 @@ public class GameController : NetworkBehaviour
     [SyncVar(hook = nameof(OnTurnOrderIndexChanged))]
     private int turnOrderIndex;
     public int TurnOrderIndex { get => this.turnOrderIndex; }
+
     [Server]
     public void SetTurnOrderIndex(int value)
     {
@@ -134,7 +135,6 @@ public class GameController : NetworkBehaviour
 
     //Needs to be at bottom of syncvars since it updates UI based on state (order of syncvars determines execution order)
     //currently playing playerID
-    //[SyncVar(hook = nameof(OnPlayerTurnChanged))]
     [SyncVar]
     private int playerTurn;
 
@@ -628,6 +628,21 @@ public class GameController : NetworkBehaviour
     public void RpcLoopGameplaySongs()
     {
         AudioManager.Singleton.LoopGameplaySongs();
+    }
+
+    public void TriggerNewCharTurnAnimation(int classID)
+    {
+        foreach (PlayerController player in this.playerControllers) {
+
+            this.TargetRpcNewCharTurn(player.connectionToClient, this.HeOwnsThisCharacter(player.playerID, classID), classID);
+        }
+    }
+
+    [TargetRpc]
+    public void TargetRpcNewCharTurn(NetworkConnectionToClient target, bool yourCharacter, int classID)
+    {
+        if (CharacterTurnPopup.Singleton != null)
+            CharacterTurnPopup.Singleton.TriggerAnimation(classID, yourCharacter);
     }
 
     #endregion
