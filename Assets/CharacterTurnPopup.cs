@@ -31,6 +31,9 @@ public class CharacterTurnPopup : MonoBehaviour
     AnimationCurve fadeCurve;
 
     [SerializeField]
+    AnimationCurve growthCurve;
+
+    [SerializeField]
     Image topBorder;
 
     [SerializeField]
@@ -71,13 +74,17 @@ public class CharacterTurnPopup : MonoBehaviour
         AudioManager.Singleton.PlaySoundEffect(this.animationSound);
 
         float elapsedSeconds = 0f;
+        Vector3 startingScale = this.popup.transform.localScale;
         while (elapsedSeconds < this.animationDurationSeconds)
         {
             elapsedSeconds += Time.deltaTime;
             this.popupCanvasGroup.alpha = this.fadeCurve.Evaluate(elapsedSeconds / this.animationDurationSeconds);
+            float growth = this.growthCurve.Evaluate(elapsedSeconds / this.animationDurationSeconds);
+            this.popup.transform.localScale =  startingScale * (1 + growth);
             yield return null;
         }
 
+        this.popup.transform.localScale = startingScale;
         this.background.SetActive(false);
         this.popup.SetActive(false);
     }
