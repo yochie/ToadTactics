@@ -27,12 +27,12 @@ public static class Utility
 
     internal static string DamageStatsToString(int damage, int damageIterations, DamageType damageType)
     {
-        if (damage == -1)
+        if (damage == 0 || damageIterations <= 0 || damageType == DamageType.none)
             return "";
 
         string formattedDamageType = Utility.FormattedDamageType(damageType);
 
-        return String.Format("{0} x {1} ({2})", damage, damageIterations, formattedDamageType);
+        return String.Format("{0} x {1} ({2})", damage == -1 ? "base" : damage, damageIterations, formattedDamageType);
 
     }
 

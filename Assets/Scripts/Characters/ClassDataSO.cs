@@ -288,7 +288,7 @@ public class ClassDataSO : ScriptableObject
                     stringID: "RogueCrit",
                     interfaceName: "Fatal Strike",
                     description: "Deals massive damage by hitting with a guaranteed critical strike that ignores armor.",
-                    damage: 15,
+                    damage: -1, //-1 here means use char current stat
                     damageIterations: 1,
                     damageType: DamageType.physical,
                     range: 1,

@@ -268,7 +268,7 @@ public class ActionFactory : MonoBehaviour
         abilityAttackAction.Range = 99;
 
         //IAttackAction from ability stats
-        abilityAttackAction.Damage = abilityStats.damage;
+        abilityAttackAction.Damage = abilityStats.damage == -1 ? attackerStats.damage : abilityStats.damage;
         abilityAttackAction.DamageIterations = abilityStats.damageIterations;
         abilityAttackAction.AttackDamageType = abilityStats.damageType;
         abilityAttackAction.PenetratingDamage = abilityStats.penetratingDamage;

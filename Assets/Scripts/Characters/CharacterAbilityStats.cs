@@ -37,7 +37,7 @@ public readonly struct CharacterAbilityStats
     public CharacterAbilityStats(string stringID,
                             string interfaceName,
                             string description,
-                            int damage = -1,
+                            int damage = 0,
                             int range = -1,
                             int areaScaler = -1,
                             bool requiresLOS = true,
