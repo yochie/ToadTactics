@@ -153,7 +153,7 @@ MonoBehaviour:
   damage: 40
   damageType: 0
   damageIterations: 1
-  range: 8
+  range: 6
   critChance: 0
   critMultiplier: 0
   allowedAttackTargets: 0000000001000000030000000400000005000000060000000800000009000000
@@ -161,5 +161,5 @@ MonoBehaviour:
   penetratingDamage: 0
   knockback: 0
   attackAreaType: 3
-  attackAreaScaler: 2
+  attackAreaScaler: 1
   vulnerabilityMultiplier: 2

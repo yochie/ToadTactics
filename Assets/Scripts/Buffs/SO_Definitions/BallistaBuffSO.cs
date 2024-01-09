@@ -34,7 +34,7 @@ public class BallistaBuffSO : ScriptableObject, IBuffDataSO, IMitigationEnhancer
 
     public string GetTooltipDescription()
     {
-        return string.Format("Character can use or reload ballista for massive AOE but will take increased damage from all sources.");
+        return string.Format("Character can use or reload ballista but will take increased damage from all sources.");
     }
 
     public Dictionary<string, string> GetBuffStatsDictionary()
