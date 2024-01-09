@@ -162,3 +162,4 @@ MonoBehaviour:
   knockback: 0
   attackAreaType: 3
   attackAreaScaler: 2
+  vulnerabilityMultiplier: 2

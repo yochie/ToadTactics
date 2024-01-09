@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f5656e2f61151a479ac38fd5d4d02ed, type: 3}
+  m_Name: BallistaBuff
+  m_EditorClassIdentifier: 
+  <stringID>k__BackingField: BallistaBuff
+  <UIName>k__BackingField: Ballista
+  <IsPositive>k__BackingField: 1
+  <DurationType>k__BackingField: 4
+  <TurnDuration>k__BackingField: 0
+  <Icon>k__BackingField: {fileID: 21300000, guid: a442ceb8a232c5c45b755a36b69cd65d, type: 3}
+  BallistaPrefab: {fileID: 2802014603081656047, guid: 73f7682b66d4d024f9a64a1e5dcb99bc, type: 3}
+  <PriorityOrder>k__BackingField: -1

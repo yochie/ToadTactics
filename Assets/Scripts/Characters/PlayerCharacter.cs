@@ -746,11 +746,13 @@ public class PlayerCharacter : NetworkBehaviour
         return toReturn;
     }
 
-    internal Dictionary<int, string> GetAffectingBuffDataIDs()
+    //Returns dict of runtime buff unique ID mapped to their BuffData string ID
+    internal Dictionary<int, string> GetDisplayedAffectingBuffDataIDs()
     {
         Dictionary<int, string> buffIDs = new();
         foreach (RuntimeBuff buff in this.affectedByBuffs)
         {
+            //Only returns buffs that are to be displayed in HUD
             if (buff.Data.Icon != null)
                 buffIDs[buff.UniqueID] = buff.Data.stringID;
         }

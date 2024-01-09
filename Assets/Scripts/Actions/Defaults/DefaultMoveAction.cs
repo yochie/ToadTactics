@@ -101,6 +101,15 @@ public class DefaultMoveAction : IMoveAction
             Map.Singleton.QueueTreasureOpenAnimation(rolledTreasureID);
         }
 
+        //Clear all location buffs on every move before applying those for next position
+        BuffManager.Singleton.RemoveLocationBuffsFromCharacter(this.ActorCharacter);
+        //Replace with request from Hex as to wether it should apply a location buff if there are ever other location buffs
+        if (nextHex.HoldsABallista())
+        {
+            RuntimeBuff ballistaBuff = BuffManager.Singleton.CreateLocationBuff(BuffDataSO.Singleton.GetBuffData("BallistaBuff"), this.ActorCharacter.CharClassID);
+            BuffManager.Singleton.ApplyNewBuff(ballistaBuff);
+        } 
+
         if (nextHex.HoldsAHazard() && HazardDataSO.Singleton.IsHazardTypeRemovedWhenWalkedUpon(nextHex.holdsHazard))
             Map.Singleton.hazardManager.RpcDestroyHazardSprite(nextHex.coordinates.OffsetCoordinatesAsVector());        
 

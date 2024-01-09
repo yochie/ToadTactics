@@ -59,6 +59,37 @@ internal class BuffManager : NetworkBehaviour
     }
 
     [Server]
+    internal RuntimeBuff CreateLocationBuff(IBuffDataSO buffData, int affectedCharacterID)
+    {
+        RuntimeBuff runtimeBuff = new RuntimeBuff();
+        runtimeBuff.UniqueID = IDGenerator.GetNewID();
+        runtimeBuff.AffectedCharacterIDs = new List<int> { affectedCharacterID };
+        runtimeBuff.Data = buffData;
+
+        if (buffData.DurationType != DurationType.locationConditional)
+        {
+            throw new Exception("Location buffs should always use locationConditional duration type");
+        }
+
+        ITriggeredBuff triggeredBuff = buffData as ITriggeredBuff;
+        if (triggeredBuff != null)
+        {
+            RuntimeBuffTriggerCounter triggerCounter = new();
+            triggerCounter.RemainingTriggers = triggeredBuff.MaxTriggers;
+            runtimeBuff.AddComponent(triggerCounter);
+        }
+
+        IConditionalBuff conditionalBuff = buffData as IConditionalBuff;
+        if (conditionalBuff != null)
+        {
+            if (conditionalBuff.DurationType != DurationType.conditional)
+                throw new Exception("Conditional buff does not have duration in data set to conditional");
+        }
+
+        return runtimeBuff;
+    }
+
+    [Server]
     public void ApplyNewBuff(RuntimeBuff buff)
     {
         foreach(int affectedCharacterID in buff.AffectedCharacterIDs)
@@ -111,7 +142,7 @@ internal class BuffManager : NetworkBehaviour
         }
 
     }
-    
+
     [Server]
     public void TickBuffsForTurn(int playingCharacterID)
     {        
@@ -189,6 +220,19 @@ internal class BuffManager : NetworkBehaviour
     internal void RemoveConditionalBuffFromCharacter(int triggeredCharacterID, RuntimeBuff buff)
     {
         this.RemoveBuffFromCharacters(buff, new List<int>() { triggeredCharacterID });
+    }
+
+    [Server]
+    internal void RemoveLocationBuffsFromCharacter(PlayerCharacter character)
+    {
+        List<RuntimeBuff> toRemove = new();
+        foreach (RuntimeBuff buff in character.affectedByBuffs.ToArray())
+        {
+            if(buff.Data.DurationType == DurationType.locationConditional)
+            {
+                this.RemoveBuffFromCharacters(buff, new List<int> { character.CharClassID });
+            }
+        }        
     }
 
     [Server]

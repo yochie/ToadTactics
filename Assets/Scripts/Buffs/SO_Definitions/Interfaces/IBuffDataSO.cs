@@ -41,6 +41,9 @@ public interface IBuffDataSO
                     throw new Exception("Buff has conditional duration but doesn't implement IConditionalBuff");
                 durationDescription = string.Format("until {0}.", conditionalBuff.InlineConditionDescription);
                 break;
+            case DurationType.locationConditional:
+                durationDescription = string.Format("while on tile");
+                break;
             default:
                 durationDescription = "An undefined amount of time...";
                 break;

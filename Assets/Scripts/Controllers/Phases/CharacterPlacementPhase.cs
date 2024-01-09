@@ -70,7 +70,7 @@ public class CharacterPlacementPhase : IGamePhase
             bool isAKing = GameController.Singleton.IsAKing(character.CharClassID);
             bool itsHisTurn = GameController.Singleton.ItsThisCharactersTurn(character.CharClassID);
             int maxHealth = character.CurrentStats.maxHealth;
-            Dictionary<int, string> characterBuffDataIDs = character.GetAffectingBuffDataIDs();
+            Dictionary<int, string> characterBuffDataIDs = character.GetDisplayedAffectingBuffDataIDs();
             Dictionary<int, int> buffDurationsByUniqueID = new();
             foreach (RuntimeBuff buff in character.affectedByBuffs)
             {

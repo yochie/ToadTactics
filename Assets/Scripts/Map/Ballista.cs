@@ -16,4 +16,5 @@ public class Ballista : MonoBehaviour
     public int knockback;
     public AreaType attackAreaType;
     public int attackAreaScaler;
+    public float vulnerabilityMultiplier;
 }
