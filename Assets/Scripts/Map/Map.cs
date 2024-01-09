@@ -228,7 +228,14 @@ public class Map : NetworkBehaviour
     {
         HexCoordinates characterPosition = this.characterPositions[classID];
         Hex hex = Map.GetHex(this.hexGrid, characterPosition);
-        return hex.holdsBallista;
+        return hex.HoldsABallista();
+    }
+
+    [Server]
+    internal bool BallistaNeedsReload(HexCoordinates position)
+    {
+        Hex hex = Map.GetHex(this.hexGrid, position);
+        return hex.BallistaNeedsReload();
     }
 
     [Server]

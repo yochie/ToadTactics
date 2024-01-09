@@ -48,6 +48,9 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     [SyncVar]
     public bool holdsBallista;
 
+    [SyncVar]
+    public bool ballistaNeedsReload;
+
     //0 is host
     //1 is client
     [SyncVar]
@@ -77,6 +80,8 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.holdsHazard = HazardType.none;
         this.holdsTreasure = false;
         this.hasBeenSpawnedOnClient = false;
+        this.holdsBallista = false;
+        this.ballistaNeedsReload = false;
 
         //not currently needed as its set during instatiation, but kept in case
         //scale is needed
@@ -153,6 +158,29 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         this.holdsHazard = type;
     }
 
+    [Server]
+    internal void ReloadBallista()
+    {
+        if (!this.HoldsABallista() || !this.BallistaNeedsReload())
+        {
+            Debug.LogFormat("Attempting to reload ballista with {0} while it isn't available / necessary. You should validate beforehand.");
+            return;
+        }
+
+        this.ballistaNeedsReload = false;
+    }
+
+    [Server]
+    internal void UseBallista()
+    {
+        if (!this.HoldsABallista() || this.BallistaNeedsReload())
+        {
+            Debug.LogFormat("Attempting to use ballista with {0} while it isn't available. You should validate beforehand.");
+            return;
+        }
+
+        this.ballistaNeedsReload = true;
+    }
     #endregion
 
     #region Utility
@@ -244,6 +272,11 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
         return this.holdsBallista;
     }
 
+    public bool BallistaNeedsReload()
+    {
+        return this.ballistaNeedsReload;
+    }
+
     public bool HoldsAHazard()
     {
         if (this.holdsHazard != HazardType.none)
@@ -256,5 +289,6 @@ public class Hex : NetworkBehaviour, IEquatable<Hex>
     {
         return this.holdsTreasure;
     }
+
     #endregion
 }

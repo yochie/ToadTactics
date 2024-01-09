@@ -175,6 +175,8 @@ public class GameplayPhase : IGamePhase
         NetworkConnectionToClient client = this.Controller.GetConnectionForPlayerID(currentCharacter.OwnerID);
 
         bool characterOnBallista = Map.Singleton.IsCharacterOnBallista(currentCharacter.CharClassID);
+        bool ballistaNeedsReload = Map.Singleton.BallistaNeedsReload(Map.Singleton.characterPositions[currentCharacter.CharClassID]);
+        bool ballistaReloadAvailable = currentCharacter.HasAvailableBallistaReload();
 
         //TODO: fix to better determine whether a character has active abilities
         //right now it just assumes that any active ability will be the first one listed... pretty horrible
@@ -182,7 +184,16 @@ public class GameplayPhase : IGamePhase
         if (abilityStats.isPassive)
         {
             //passing in empty strings since RPC cannot have optional arguments
-            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, interactableButtons: activeControlModes, toHighlight: startingMode, abilityName: "", abilityCooldown: -1, usesRemaining: -1, hasActiveAbility:false, onBallista: characterOnBallista);
+            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client,
+                                                           interactableButtons: activeControlModes,
+                                                           toHighlight: startingMode,
+                                                           abilityName: "",
+                                                           abilityCooldown: -1,
+                                                           usesRemaining: -1,
+                                                           hasActiveAbility: false,
+                                                           onBallista: characterOnBallista,
+                                                           ballistaNeedsReload,
+                                                           ballistaReloadAvailable);
         }
         else
         {
@@ -191,7 +202,16 @@ public class GameplayPhase : IGamePhase
             int abilityCooldown = currentCharacter.GetAbilityCooldown(abilityID);
             int remainingUses = currentCharacter.GetAbilityUsesRemaining(abilityID);
 
-            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client, activeControlModes, startingMode, abilityName, abilityCooldown, remainingUses, hasActiveAbility: true, onBallista: characterOnBallista);
+            MainHUD.Singleton.TargetRpcSetupButtonsForTurn(target: client,
+                                                           activeControlModes,
+                                                           startingMode,
+                                                           abilityName,
+                                                           abilityCooldown,
+                                                           remainingUses,
+                                                           hasActiveAbility: true,
+                                                           characterOnBallista,
+                                                           ballistaNeedsReload,
+                                                           ballistaReloadAvailable);
         }
     }
 

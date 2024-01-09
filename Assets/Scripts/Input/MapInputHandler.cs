@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
+using UnityEngine.UI;
 
 public class MapInputHandler : NetworkBehaviour
 {
@@ -27,6 +28,9 @@ public class MapInputHandler : NetworkBehaviour
     
     [SerializeField] 
     private Texture2D ballistaCursorTexture;
+
+    [SerializeField]
+    private Button ballistReloadButton;
 
     public static MapInputHandler Singleton { get; private set; }
 
@@ -336,6 +340,18 @@ public class MapInputHandler : NetworkBehaviour
     public void SetControlModeBallista()
     {
         this.SetControlMode(ControlMode.useBallista);
+    }
+
+    //For button
+    public void ReloadBallista()
+    {
+        this.ballistReloadButton.interactable = false;
+        if (!this.SelectedHex.HoldsABallista() || !this.SelectedHex.BallistaNeedsReload())
+        {
+            Debug.Log("Ballista reloaded for invalid selected Hex");
+            return;
+        }
+        ActionExecutor.Singleton.CmdReloadBallista(this.SelectedHex, this.CurrentControlMode);
     }
 
     //toSelect allows forcing selecting specific hex in case local info might not be updated yet

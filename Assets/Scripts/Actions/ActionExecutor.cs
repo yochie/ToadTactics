@@ -194,6 +194,32 @@ public class ActionExecutor : NetworkBehaviour
         this.TargetRpcPreviewActionEffect(sender, actionEffect);
     }
 
+    //Mini-action, so doesn't use action class, just performs the reload directly after some validation
+    [Command(requiresAuthority = false)]
+    public void CmdReloadBallista(Hex ballistaHex, ControlMode currentControlMode, NetworkConnectionToClient sender = null)
+    {
+        if (!ballistaHex.HoldsACharacter())
+        {
+            Debug.Log("Ballista reload attempt without character in place");
+            return;
+        }
+        PlayerCharacter actor = ballistaHex.GetHeldCharacterObject();
+        if (!actor.HasAvailableAttacks())
+        {
+            Debug.Log("Ballista reload attempt without character attacks remaining");
+            return;
+        }
+        if (!ballistaHex.HoldsABallista() || !ballistaHex.BallistaNeedsReload())
+        {
+            Debug.Log("Ballista reloaded for invalid selected Hex");
+            return;
+        }
+        ballistaHex.ReloadBallista();
+        actor.UsedAttack();
+        this.FinishAction(actor, sender, currentControlMode);
+
+    }
+
     [Command(requiresAuthority = false)]
     internal void CmdUseAbility(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
     {
@@ -397,7 +423,12 @@ public class ActionExecutor : NetworkBehaviour
 
             List<ControlMode> activeControlModes = actor.GetRemainingActions();
             ControlMode nextControlMode = activeControlModes.Contains(currentControlMode) ? currentControlMode : activeControlModes[0];
-            MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender, activeControlModes, nextControlMode, Map.Singleton.IsCharacterOnBallista(actor.CharClassID));
+            MainHUD.Singleton.TargetRpcUpdateButtonsAfterAction(sender,
+                                                                activeControlModes,
+                                                                nextControlMode,
+                                                                Map.Singleton.IsCharacterOnBallista(actor.CharClassID),
+                                                                Map.Singleton.BallistaNeedsReload(actorHex.coordinates),
+                                                                ballistaReloadAvailable: actor.HasAvailableBallistaReload());
             MapInputHandler.Singleton.TargetRpcSetControlMode(sender, nextControlMode, actorHex);           
 
             if (actor.HasActiveAbility())

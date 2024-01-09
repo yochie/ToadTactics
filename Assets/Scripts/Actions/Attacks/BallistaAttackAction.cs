@@ -12,5 +12,6 @@ public class BallistaAttackAction : CustomAttackAction
     {
         base.ServerUse(logger);
         this.ActorCharacter.UsedBallista();
+        ActorHex.UseBallista();
     }
 }

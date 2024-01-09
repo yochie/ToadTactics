@@ -30,6 +30,9 @@ public class MainHUD : NetworkBehaviour
     private GameObject ballistaButton;
 
     [SerializeField]
+    private Button ballistaReloadButton;
+
+    [SerializeField]
     private TextMeshProUGUI abilityButtonText;
 
     [SerializeField]
@@ -59,20 +62,23 @@ public class MainHUD : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetRpcUpdateButtonsAfterAction(NetworkConnectionToClient target, List<ControlMode> interactableButtons, ControlMode toHighlight, bool onBallista)
+    public void TargetRpcUpdateButtonsAfterAction(NetworkConnectionToClient target, List<ControlMode> interactableButtons, ControlMode toHighlight, bool onBallista, bool ballistaNeedsReload, bool ballistaReloadAvailable)
     {
-
-        this.ToggleInteractableButtons(interactableButtons, toHighlight);
-
-        this.ballistaButton.SetActive(onBallista);
+        this.ballistaButton.SetActive(onBallista && !ballistaNeedsReload);
+        this.ballistaReloadButton.gameObject.SetActive(onBallista && ballistaNeedsReload);
+        this.ToggleInteractableButtons(interactableButtons, toHighlight, ballistaReloadAvailable);
 
     }
 
     [TargetRpc]
-    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> interactableButtons, ControlMode toHighlight, string abilityName, int abilityCooldown, int usesRemaining, bool hasActiveAbility, bool onBallista)
+    public void TargetRpcSetupButtonsForTurn(NetworkConnectionToClient target, List<ControlMode> interactableButtons, ControlMode toHighlight, string abilityName, int abilityCooldown, int usesRemaining, bool hasActiveAbility, bool onBallista, bool ballistaNeedsReload, bool ballistaReloadAvailable)
     {
         this.ActivateGameplayButtons(true);
-        this.ToggleInteractableButtons(interactableButtons, toHighlight);
+
+        this.ballistaButton.SetActive(onBallista && !ballistaNeedsReload);
+        this.ballistaReloadButton.gameObject.SetActive(onBallista && ballistaNeedsReload);
+
+        this.ToggleInteractableButtons(interactableButtons, toHighlight, ballistaReloadAvailable);
         if (!hasActiveAbility)
         {
             this.abilityButton.SetActive(false);
@@ -82,7 +88,7 @@ public class MainHUD : NetworkBehaviour
             this.UpdateAbilityCooldownIndicator(abilityCooldown, usesRemaining);
         }
 
-        this.ballistaButton.SetActive(onBallista);
+
     }
 
     [TargetRpc]
@@ -159,7 +165,7 @@ public class MainHUD : NetworkBehaviour
         }
     }
 
-    public void ToggleInteractableButtons(List<ControlMode> activeButtons, ControlMode toHighlight)
+    public void ToggleInteractableButtons(List<ControlMode> activeButtons, ControlMode toHighlight, bool ballistaReloadAvailable)
     {
         foreach (KeyValuePair<ControlMode, GameObject> buttonByMode in this.gameplayButtons)
         {
@@ -176,6 +182,7 @@ public class MainHUD : NetworkBehaviour
 
         if (toHighlight != ControlMode.none)
             this.HighlightGameplayButton(toHighlight);
+        this.ballistaReloadButton.interactable = ballistaReloadAvailable;
     }
 
 

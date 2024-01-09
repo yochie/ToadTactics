@@ -233,6 +233,7 @@ public class PlayerCharacter : NetworkBehaviour
         this.attackCountThisTurn++;
     }
 
+    //Callers should also set ballista reload state in hex
     [Server]
     internal void UsedBallista()
     {
@@ -639,21 +640,24 @@ public class PlayerCharacter : NetworkBehaviour
 
     internal bool HasAvailableAttacks()
     {
-        if (this.AttackCountThisTurn >= this.currentStats.attacksPerTurn || this.BallistaUseCountThisTurn > 0)
-            return false;
-        else
-            return true;
+        return this.AttackCountThisTurn < this.currentStats.attacksPerTurn && this.BallistaUseCountThisTurn == 0;
     }
 
     internal bool HasAvailableBallista()
     {
-        //TODO: add check for ballista loading
-        if (!Map.Singleton.IsCharacterOnBallista(this.charClassID) || this.AttackCountThisTurn >= this.currentStats.attacksPerTurn || this.BallistaUseCountThisTurn > 0)
-            return false;
-        else
-            return true;
+        return Map.Singleton.IsCharacterOnBallista(this.charClassID) &&
+            !Map.Singleton.BallistaNeedsReload(Map.Singleton.characterPositions[this.charClassID]) &&
+            this.AttackCountThisTurn < this.currentStats.attacksPerTurn &&
+            this.BallistaUseCountThisTurn == 0;
     }
 
+    internal bool HasAvailableBallistaReload()
+    {
+        return Map.Singleton.IsCharacterOnBallista(this.charClassID) &&
+            Map.Singleton.BallistaNeedsReload(Map.Singleton.characterPositions[this.charClassID]) &&
+            this.AttackCountThisTurn < this.currentStats.attacksPerTurn &&
+            this.BallistaUseCountThisTurn == 0;
+    }
 
     internal bool AbilityUsesPerRoundExpended(string abilityID)
     {
