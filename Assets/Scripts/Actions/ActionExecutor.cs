@@ -403,12 +403,6 @@ public class ActionExecutor : NetworkBehaviour
             //not necessarily changed but always call just in case
             playerCharacter.RpcOnCharacterLifeChanged(playerCharacter.CurrentLife, playerCharacter.CurrentStats.maxHealth);
 
-            if (playerCharacter.IsDead)
-            {
-                string message = string.Format("{0} <color=red><b>died</b>", playerCharacter.charClass.name);
-                MasterLogger.Singleton.RpcLogMessage(message);
-            }
-
             //check for end of round
             if (playerCharacter.IsKing && playerCharacter.IsDead)
             {

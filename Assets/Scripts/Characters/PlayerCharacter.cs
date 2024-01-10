@@ -275,6 +275,7 @@ public class PlayerCharacter : NetworkBehaviour
         this.remainingMoves = this.CurrentStats.moveSpeed;
     }
 
+    //TODO: Add function arg that is to be called with calculated raw damage and that will log the full message once dmg is calculated based on context know beforehand but before death is logged
     [Server]
     public void TakeDamage(Hit hit)
     {
@@ -339,8 +340,8 @@ public class PlayerCharacter : NetworkBehaviour
         this.isDead = true;
         this.currentLife = 0;
         this.ResetCooldownsAndUses();
-        //string message = string.Format("{0} has died", this.charClass.name);
-        //MasterLogger.Singleton.RpcLogMessage(message);
+        string message = string.Format("{0} has died", this.charClass.name);
+        MasterLogger.Singleton.RpcLogMessage(message);
 
         Map.Singleton.SetCharacterAliveState(this.charClassID, isDead: true);
         this.RemoveBuffsOnDeath();
