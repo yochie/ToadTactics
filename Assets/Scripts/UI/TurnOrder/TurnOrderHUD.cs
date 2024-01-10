@@ -52,7 +52,7 @@ public class TurnOrderHUD : MonoBehaviour
             slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
             slot.HoldsCharacterWithClassID = classID;
 
-            slot.setHighlight(slotData.itsHisTurn);
+            slot.SetHighlight(slotData.itsHisTurn);
             slot.DisplayCrown(slotData.isAKing);
 
             slot.SetLifeDisplay(slotData.maxHealth, slotData.maxHealth);
@@ -155,7 +155,7 @@ public class TurnOrderHUD : MonoBehaviour
     {        
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
         {     
-            slot.setHighlight(slot.HoldsCharacterWithClassID == classID);
+            slot.SetHighlight(slot.HoldsCharacterWithClassID == classID);
         }
     }
 

@@ -3283,9 +3283,19 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 297310964}
     m_Modifications:
+    - target: {fileID: 1857312241423492523, guid: 5e2d252b1602a7b48b3eca291da541c0, type: 3}
+      propertyPath: m_text
+      value: 'Equipment Title AAA
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 3397868060705881285, guid: 5e2d252b1602a7b48b3eca291da541c0, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3525610964804298119, guid: 5e2d252b1602a7b48b3eca291da541c0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -160
       objectReference: {fileID: 0}
     - target: {fileID: 4262735388916406883, guid: 5e2d252b1602a7b48b3eca291da541c0, type: 3}
       propertyPath: m_AnchorMax.y
@@ -6323,6 +6333,10 @@ PrefabInstance:
     - target: {fileID: 2702700573019022953, guid: 9fa89177a66c29947a4be721cefe6ece, type: 3}
       propertyPath: m_Name
       value: TurnOrderHUD
+      objectReference: {fileID: 0}
+    - target: {fileID: 6372158707585568752, guid: 9fa89177a66c29947a4be721cefe6ece, type: 3}
+      propertyPath: m_Spacing
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
