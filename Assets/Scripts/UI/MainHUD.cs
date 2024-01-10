@@ -230,7 +230,8 @@ public class MainHUD : NetworkBehaviour
         this.turnInstructionLabel.text = "Turn : You";
         if (GameController.Singleton.CurrentPhaseID == GamePhaseID.characterPlacement)
             this.SetPlacementInstuctionState(yourTurn: true);
-        this.endTurnButton.SetActive(true);
+        else
+            this.endTurnButton.SetActive(true);
     }
 
     [Client]
@@ -239,7 +240,8 @@ public class MainHUD : NetworkBehaviour
         this.turnInstructionLabel.text = "Turn : Opponent";
         if (GameController.Singleton.CurrentPhaseID == GamePhaseID.characterPlacement)
             this.SetPlacementInstuctionState(yourTurn: false);
-        this.endTurnButton.SetActive(false);
+        else
+            this.endTurnButton.SetActive(false);
         if (GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay)
         {
             this.ActivateGameplayButtons(false);
