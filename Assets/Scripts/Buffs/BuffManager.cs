@@ -124,7 +124,13 @@ internal class BuffManager : NetworkBehaviour
         {
             RuntimeBuffTimeout timedBuffComponent = buff.GetComponent<RuntimeBuffTimeout>();
             if (timedBuffComponent != null)
-                this.RpcAddBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs, buff.Data.stringID, timedBuffComponent.TurnDurationRemaining);
+            {   
+                //bit of a hardcoded fix to display remaining turns in way that makes more sense to user
+                //since the actual turns remaining counter counts applier turns but it makes more sense to indicate buff duration in turn cycles
+                //Might cause issues if we ever want to stack buffs by combining their duration, but not currently an issue
+                int remainingTurns = Math.Min(timedBuffComponent.TurnDurationRemaining, buff.Data.TurnDuration);
+                this.RpcAddBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs, buff.Data.stringID, remainingTurns);
+            }
             else
                 this.RpcAddBuffIcons(buff.UniqueID, buff.AffectedCharacterIDs, buff.Data.stringID, -1);
         }
