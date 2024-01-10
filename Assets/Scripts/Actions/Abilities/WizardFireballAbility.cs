@@ -30,7 +30,7 @@ public class WizardFireballAbility : IAbilityAction, ITargetedAction
     [Server]
     public void ServerUse(INetworkedLogger logger)
     {
-        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        string message = string.Format("{0} used <b>{1}</b>", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
         logger.RpcLogMessage(message);
         
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);

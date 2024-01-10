@@ -101,7 +101,7 @@ internal class BuffManager : NetworkBehaviour
             //skip logging outside of gameplay to avoid passively granted buffs also (since those buffs are applied during character placement)
             if(buff.Data.DurationType != DurationType.eternal && GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay) 
             {
-                string message = string.Format("{0} applied to {1}", buff.Data.UIName, affectedCharacter.charClass.name);
+                string message = string.Format("<b>{0}</b> {1} applied to {2}", buff.Data.UIName, buff.Data.IsPositive ? "buff" : "debuff", affectedCharacter.charClass.name);
                 MasterLogger.Singleton.RpcLogMessage(message);
             }
         }
@@ -173,8 +173,8 @@ internal class BuffManager : NetworkBehaviour
                 if (buff.Data is IAppliablBuffDataSO appliableBuff && appliableBuff.NeedsToBeReAppliedEachTurn && !character.IsDead)
                 {
                     appliableBuff.Apply(new List<int> { character.CharClassID }, isReapplication: true);
-                    string message = string.Format("Ticking {0} {1} on {2}", appliableBuff.UIName, appliableBuff.IsPositive ? "buff" : "debuff", character.charClass.name);
-                    MasterLogger.Singleton.RpcLogMessage(message);
+                    //string message = string.Format("<b>{0}</b> {1} on {2}", appliableBuff.UIName, appliableBuff.IsPositive ? "buff" : "debuff", character.charClass.name);
+                    //MasterLogger.Singleton.RpcLogMessage(message);
                 }
             }
         }

@@ -29,6 +29,7 @@ public class DefaultAttackAction : IAttackAction
     public float CritMultiplier { get; set; }
     public AreaType TargetedAreaType { get; set; }
     public int AreaScaler { get; set; }
+    public string DamageSourceName { get; set; }
 
     [Server]
     public virtual void ServerUse(INetworkedLogger logger)
@@ -56,8 +57,8 @@ public class DefaultAttackAction : IAttackAction
             bool gotAnApple = Utility.RollChance(Map.Singleton.appleSpawnChance);
             if (gotAnApple)
                 Map.Singleton.hazardManager.SpawnHazardOnMap(Map.Singleton.hexGrid, target.coordinates.OffsetCoordinatesAsVector(), HazardType.apple);
-            string logMessage = string.Format("{0} felled tree{1}", this.ActorCharacter.charClass.name, gotAnApple ? " and it dropped an apple!":"");
-            logger.RpcLogMessage(logMessage);
+            //string logMessage = string.Format("{0} felled tree{1}", this.ActorCharacter.charClass.name, gotAnApple ? " and it dropped an apple!":"");
+            //logger.RpcLogMessage(logMessage);
             return;
         }
 
@@ -82,22 +83,22 @@ public class DefaultAttackAction : IAttackAction
                 else
                     knockbackSuccess = false;
 
-                if(knockbackSuccess)
-                    logger.RpcLogMessage(string.Format("{0} knocked back {1}.", this.ActorCharacter.charClass.name, defenderCharacter.charClass.name));
-                else
-                    logger.RpcLogMessage(string.Format("{0} attempted to knockback {1} but it was blocked.", this.ActorCharacter.charClass.name, defenderCharacter.charClass.name));
+                //if(knockbackSuccess)
+                //    logger.RpcLogMessage(string.Format("{0} knocked back {1}.", this.ActorCharacter.charClass.name, defenderCharacter.charClass.name));
+                //else
+                //    logger.RpcLogMessage(string.Format("{0} attempted to knockback {1} but it was blocked.", this.ActorCharacter.charClass.name, defenderCharacter.charClass.name));
             }
         }
 
-        string message = string.Format("{0} hit {1} for {2} ({6} {5}{7}) {3} => {4}",
+        string message = string.Format("{0}'s <b>{1}</b> hit {2} for <color={6}><b>{3} {4}</color></b>{5}",
         this.ActorCharacter.charClass.name,
+        this.DamageSourceName,
         defenderCharacter.charClass.name,
-        critRolledDamage,
-        prevLife,
-        defenderCharacter.CurrentLife,
-        isCrit ? "crit" : "",
+        Math.Abs(prevLife - defenderCharacter.CurrentLife),
         this.AttackDamageType,
-        this.PenetratingDamage ? " penetrating" : "");
+        isCrit ? " (crit)" : "",
+        Utility.DamageTypeToColorName(this.AttackDamageType)
+        );
 
         logger.RpcLogMessage(message);
     }

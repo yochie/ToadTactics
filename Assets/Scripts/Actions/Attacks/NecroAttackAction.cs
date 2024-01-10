@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using System.Collections.Generic;
+using System.Linq;
 
 internal class NecroAttackAction : DefaultAttackAction, IPrintableStats
 {
@@ -33,7 +34,8 @@ internal class NecroAttackAction : DefaultAttackAction, IPrintableStats
                                               knockback: 0,
                                               canCrit: false,
                                               critChance: 0,
-                                              critMultiplier: 0, 
+                                              critMultiplier: 0,
+                                              this.ActorCharacter.charClass.abilities.Single(ability => ability.stringID == "NecroMultiAttack").interfaceName,
                                               sender: this.RequestingClient);
     }
 
@@ -52,6 +54,7 @@ internal class NecroAttackAction : DefaultAttackAction, IPrintableStats
                                               canCrit: false,
                                               critChance: 0,
                                               critMultiplier: 0,
+                                              this.DamageSourceName,
                                               sender: this.RequestingClient);
         
         return basePreview.MergeWithPreview(customPortionPreview);

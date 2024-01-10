@@ -31,7 +31,7 @@ public class NecroDOTAbility : IAbilityAction, IActivatedBuffSource, ITargetedAc
     [Server]
     public void ServerUse(INetworkedLogger logger)
     {
-        string message = string.Format("{0} using {1}", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
+        string message = string.Format("{0} used <b>{1}</b>", this.ActorCharacter.charClass.name, this.AbilityStats.interfaceName);
         logger.RpcLogMessage(message);
 
         this.ActorCharacter.UsedAbility(this.AbilityStats.stringID);
@@ -49,6 +49,7 @@ public class NecroDOTAbility : IAbilityAction, IActivatedBuffSource, ITargetedAc
                                               canCrit: false,
                                               critChance: 0f,
                                               critMultiplier: 0f,
+                                              damageSourceName: this.AbilityStats.interfaceName,
                                               sender: this.RequestingClient);
 
         List<Hex> targetedHexes = AreaGenerator.GetHexesInArea(Map.Singleton.hexGrid, this.TargetedAreaType, this.ActorHex, this.TargetHex, this.AreaScaler);
@@ -88,6 +89,7 @@ public class NecroDOTAbility : IAbilityAction, IActivatedBuffSource, ITargetedAc
                                               canCrit: false,
                                               critChance: 0f,
                                               critMultiplier: 0f,
+                                              damageSourceName: AbilityStats.interfaceName,
                                               sender: this.RequestingClient);
 
         return baseEffectPreview.MergeWithPreview(attackPortionPreview);

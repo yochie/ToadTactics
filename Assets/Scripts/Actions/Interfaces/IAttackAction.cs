@@ -12,4 +12,6 @@ public interface IAttackAction : ITargetedAction, IAreaTargeter, IPreviewedActio
     public float CritChance { get; set; }
     public float CritMultiplier { get; set; }
 
+    public string DamageSourceName { get; set; }
+
 }

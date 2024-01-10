@@ -115,4 +115,21 @@ public class HazardDataSO : ScriptableObject
                 return false;
         }
     }
+
+    public string HazardTypeToName(HazardType hazardType)
+    {
+        switch (hazardType)
+        {
+            case HazardType.fire:
+                return "fire";
+            case HazardType.apple:
+                return "apple";
+            case HazardType.cookedApple:
+                return "cooked apple";
+            case HazardType.cold:
+                return "cold";
+            default:
+                return hazardType.ToString();
+        }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using System.Collections.Generic;
+using System.Linq;
 
 internal class PaladinAttackAction : DefaultAttackAction, IPrintableStats
 {
@@ -35,7 +36,8 @@ internal class PaladinAttackAction : DefaultAttackAction, IPrintableStats
                                               canCrit: false,
                                               critChance: 0,
                                               critMultiplier: 0,
-                                              sender: this.RequestingClient);
+                                              this.ActorCharacter.charClass.abilities.Single(ability => ability.stringID == "PaladinCrusader").interfaceName,
+                                              sender: this.RequestingClient); ;
         }
     }
 
@@ -60,6 +62,7 @@ internal class PaladinAttackAction : DefaultAttackAction, IPrintableStats
                                               canCrit: false,
                                               critChance: 0,
                                               critMultiplier: 0,
+                                              this.DamageSourceName,
                                               sender: this.RequestingClient);
 
             return basePreview.MergeWithPreview(customPortionPreview);

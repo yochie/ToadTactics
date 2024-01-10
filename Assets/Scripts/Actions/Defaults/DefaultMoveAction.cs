@@ -92,7 +92,7 @@ public class DefaultMoveAction : IMoveAction
         if (nextHex.HoldsATreasure())
         {
             
-            string message = string.Format("{0} has collected treasure.", this.ActorCharacter.charClass.name);
+            string message = string.Format("{0} collected treasure", this.ActorCharacter.charClass.name);
             logger.RpcLogMessage(message);
             GameController.Singleton.SetTreasureOpenedByPlayerID(this.RequestingPlayerID);
             string rolledTreasureID = GameController.Singleton.RollNewEquipmentIDs(1)[0];
@@ -121,19 +121,20 @@ public class DefaultMoveAction : IMoveAction
             {
                 this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto(), HitSource.Apple, isCrit: false));
 
-                message = string.Format("{0} gains {1} life from {2}",
+                message = string.Format("{0} gained <b><color=green>{1} healing</color></b> from {2}",
                     this.ActorCharacter.charClass.name,
                     moveDamage,
-                    nextHex.holdsHazard);
+                    HazardDataSO.Singleton.HazardTypeToName(nextHex.holdsHazard));
             }
             else
             {
                 this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto(), HitSource.FireHazard, isCrit: false));
-                message = string.Format("{0} takes {1} {2} damage for walking on {3} hazard",
+                message = string.Format("{0} was dealt <color={4}><b>{1} {2}</b></color> damage by {3}",
                 this.ActorCharacter.charClass.name,
                 moveDamage,
                 nextHex.DealsDamageTypeWhenMovedInto(),
-                nextHex.holdsHazard);
+                HazardDataSO.Singleton.HazardTypeToName(nextHex.holdsHazard),
+                Utility.DamageTypeToColorName(nextHex.DealsDamageTypeWhenMovedInto()));
             }
             MasterLogger.Singleton.RpcLogMessage(message);
         }

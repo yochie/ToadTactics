@@ -117,11 +117,12 @@ public class GameplayPhase : IGamePhase
             lastTurnCharacter.TakeDamage(new Hit(damageTaken, damageTypeTaken, HitSource.FireHazard, isCrit : false));
             if (damageTaken > 0)
             {
-                string message = string.Format("{0} takes {1} {2} damage at end of turn for standing on {3} hazard",
+                string message = string.Format("{0} was dealt <color={4}><b>{1} {2}</b></color> damage by {3} at end of turn",
                     lastTurnCharacter.charClass.name,
                     damageTaken,
                     damageTypeTaken,
-                    standingOnHazardType);
+                    standingOnHazardType,
+                    Utility.DamageTypeToColorName(damageTypeTaken));
                 MasterLogger.Singleton.RpcLogMessage(message);
             }
         }

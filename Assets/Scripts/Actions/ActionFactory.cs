@@ -90,6 +90,7 @@ public class ActionFactory : MonoBehaviour
         attackAction.CritMultiplier = attackerStats.critMultiplier;
         attackAction.TargetedAreaType = attackerStats.attackAreaType;
         attackAction.AreaScaler = attackerStats.attackAreaScaler;
+        attackAction.DamageSourceName = "Attack";
 
         return attackAction;
     }
@@ -148,6 +149,7 @@ public class ActionFactory : MonoBehaviour
                                                                  AreaType areaType,
                                                                  int areaScaler,
                                                                  Hex source,
+                                                                 string damageSourceName,
                                                                  Hex primaryTarget)
     {
         CustomAttackAction customAttackAction = new CustomAttackAction();
@@ -184,6 +186,7 @@ public class ActionFactory : MonoBehaviour
 
         customAttackAction.TargetedAreaType = areaType;
         customAttackAction.AreaScaler = areaScaler;
+        customAttackAction.DamageSourceName = damageSourceName;
 
         return customAttackAction;
     }
@@ -220,11 +223,14 @@ public class ActionFactory : MonoBehaviour
         customAttackAction.RequiresLOS = false;
         customAttackAction.Range = range;
 
+        //IAttackAction
         customAttackAction.Damage = damage;
         customAttackAction.DamageIterations = damageIterations;
         customAttackAction.AttackDamageType = damageType;
         customAttackAction.PenetratingDamage = penetratingDamage;
         customAttackAction.Knockback = knockback;
+        customAttackAction.DamageSourceName = "Ballista shot";
+
         //use attack stats if -1 and can crit
         if (canCrit)
         {
@@ -286,6 +292,7 @@ public class ActionFactory : MonoBehaviour
         
         abilityAttackAction.TargetedAreaType = abilityStats.areaType;
         abilityAttackAction.AreaScaler = abilityStats.areaScaler;
+        abilityAttackAction.DamageSourceName = abilityStats.interfaceName;
 
         return abilityAttackAction;
     }

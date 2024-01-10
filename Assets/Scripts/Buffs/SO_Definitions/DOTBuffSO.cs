@@ -55,7 +55,19 @@ public class DOTBuffSO : ScriptableObject, IAppliablBuffDataSO
         foreach (int affectedCharacterID in applyToCharacterIDs)
         {
             PlayerCharacter affectedCharacter = GameController.Singleton.PlayerCharactersByID[affectedCharacterID];
+            int prevLife = affectedCharacter.CurrentLife;
             affectedCharacter.TakeDamage(new Hit(DOTDamage, DOTDamageType, HitSource.Debuff, isCrit: false));
+            int mitigatedDamage = Math.Abs(prevLife - affectedCharacter.CurrentLife);
+            string message = string.Format("{0}'s <b>{1}</b> {2} deals <b><color={3}>{4} {5}</color></b> to him",
+                affectedCharacter.charClass.name,
+                this.UIName,
+                this.IsPositive ? "buff" : "debuff",
+                Utility.DamageTypeToColorName(this.DOTDamageType),
+                mitigatedDamage,
+                this.DOTDamageType,
+                affectedCharacter.charClass.name
+                );
+            MasterLogger.Singleton.RpcLogMessage(message);
         }
     }
 

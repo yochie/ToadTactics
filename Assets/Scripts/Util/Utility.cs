@@ -113,4 +113,23 @@ public static class Utility
             list[n] = value;
         }
     }
+
+    //Used for rich text labelling
+    public static string DamageTypeToColorName (DamageType dmgType)
+    {
+        string damageTypeTextColor;
+        switch (dmgType)
+        {
+            case DamageType.magic:
+                damageTypeTextColor = "blue";
+                break;
+            case DamageType.healing:
+                damageTypeTextColor = "green";
+                break;
+            default:
+                damageTypeTextColor = "white";
+                break;
+        }
+        return damageTypeTextColor;
+    }
 }

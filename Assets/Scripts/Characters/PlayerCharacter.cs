@@ -339,8 +339,8 @@ public class PlayerCharacter : NetworkBehaviour
         this.isDead = true;
         this.currentLife = 0;
         this.ResetCooldownsAndUses();
-        string message = string.Format("{0} has died", this.charClass.name);
-        MasterLogger.Singleton.RpcLogMessage(message);
+        //string message = string.Format("{0} has died", this.charClass.name);
+        //MasterLogger.Singleton.RpcLogMessage(message);
 
         Map.Singleton.SetCharacterAliveState(this.charClassID, isDead: true);
         this.RemoveBuffsOnDeath();
