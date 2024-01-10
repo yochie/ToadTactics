@@ -280,12 +280,20 @@ public class PlayerCharacter : NetworkBehaviour
     public void TakeDamage(Hit hit, Action<int> logMessageWithDamage)
     {
         int rawDamage = this.CalculateDamageFromHit(hit);
-        Hit mitigatedHit = new(Math.Abs(rawDamage), hit.damageType, hit.hitSource, hit.isCrit, hit.penetratesArmor);
+        int damageToLife;
+        if(rawDamage >= 0)
+        {
+            damageToLife = Mathf.Clamp(rawDamage, 0, this.currentLife);
+        } else
+        {
+            damageToLife = Mathf.Clamp(rawDamage, this.currentLife - this.currentStats.maxHealth, 0);
+        }
+        Hit mitigatedHit = new(Math.Abs(damageToLife), hit.damageType, hit.hitSource, hit.isCrit, hit.penetratesArmor);
         this.RpcOnCharacterTakesHit(mitigatedHit, this.charClassID);
 
-        logMessageWithDamage(Math.Abs(rawDamage));
+        logMessageWithDamage(Math.Abs(damageToLife));
 
-        this.TakeRawDamage(rawDamage);
+        this.TakeRawDamage(damageToLife);
 
         if (hit.damageType != DamageType.healing)
         {

@@ -13,11 +13,11 @@ public class DamagePopup : MonoBehaviour
     [SerializeField]
     private SpriteRenderer critIcon;
 
-    internal void Init(int damage, Color popupColor, bool isCrit)
+    internal void Init(int damageAbsoluteVal, Color popupColor, bool isCrit, bool isHeal)
     {
         
         text.color = popupColor;
-        this.text.text = (damage >= 0 ? "-" : "+") + Mathf.Abs(damage).ToString();
+        this.text.text = (isHeal ? "+" : "-") + Mathf.Abs(damageAbsoluteVal).ToString();
         if (isCrit)
         {
             this.critIcon.gameObject.SetActive(true);
