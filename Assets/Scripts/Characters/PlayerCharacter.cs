@@ -277,11 +277,13 @@ public class PlayerCharacter : NetworkBehaviour
 
     //TODO: Add function arg that is to be called with calculated raw damage and that will log the full message once dmg is calculated based on context know beforehand but before death is logged
     [Server]
-    public void TakeDamage(Hit hit)
+    public void TakeDamage(Hit hit, Action<int> logMessageWithDamage)
     {
         int rawDamage = this.CalculateDamageFromHit(hit);
         Hit mitigatedHit = new(Math.Abs(rawDamage), hit.damageType, hit.hitSource, hit.isCrit, hit.penetratesArmor);
         this.RpcOnCharacterTakesHit(mitigatedHit, this.charClassID);
+
+        logMessageWithDamage(Math.Abs(rawDamage));
 
         this.TakeRawDamage(rawDamage);
 

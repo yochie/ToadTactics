@@ -69,18 +69,21 @@ public class AuraDOTBuffSO : ScriptableObject, IAppliablBuffDataSO, IAreaTargete
                 PlayerCharacter characterInAura = hex.GetHeldCharacterObject();
                 HitSource hitSource = DOTDamageType == DamageType.healing ? HitSource.Buff : HitSource.Debuff;
                 int prevLife = characterInAura.CurrentLife;
-                characterInAura.TakeDamage(new Hit(this.DOTDamage, DOTDamageType, hitSource, isCrit: false));
-                int mitigatedDamage = Math.Abs(prevLife - characterInAura.CurrentLife);
-                string message = string.Format("{0}'s <b>{1}</b> {2} deals <b><color={3}>{4} {5}</color></b> to {6}",
-                    affectedCharacter.charClass.name,
-                    this.UIName,
-                    this.IsPositive ? "buff" : "debuff",
-                    Utility.DamageTypeToColorName(this.DOTDamageType),
-                    mitigatedDamage,
-                    this.DOTDamageType,
-                    characterInAura.charClass.name
-                    );
-                MasterLogger.Singleton.RpcLogMessage(message);
+                Action<int> logMessageWithDamage = new((int rawDamage) => {
+                    string message = string.Format("{0}'s <b>{1}</b> {2} deals <b><color={3}>{4} {5}</color></b> to {6}",
+                        affectedCharacter.charClass.name,
+                        this.UIName,
+                        this.IsPositive ? "buff" : "debuff",
+                        Utility.DamageTypeToColorName(this.DOTDamageType),
+                        rawDamage,
+                        this.DOTDamageType,
+                        characterInAura.charClass.name
+                        );
+                    MasterLogger.Singleton.RpcLogMessage(message);
+                });
+
+                characterInAura.TakeDamage(new Hit(this.DOTDamage, DOTDamageType, hitSource, isCrit: false), logMessageWithDamage);
+
             }            
         }
     }

@@ -66,10 +66,24 @@ public class DefaultAttackAction : IAttackAction
             return;
 
         PlayerCharacter defenderCharacter = target.GetHeldCharacterObject();
-        int prevLife = defenderCharacter.CurrentLife;
         bool isCrit = Utility.RollChance(this.CritChance);
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
-        defenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, HitSource.CharacterAttack, isCrit, this.PenetratingDamage));
+
+        Action<int> logMessageWithDamage = new((int rawDamage) => {
+            string message = string.Format("{0}'s <b>{1}</b> hit {2} for <color={6}><b>{3} {4}</color></b>{5}",
+            this.ActorCharacter.charClass.name,
+            this.DamageSourceName,
+            defenderCharacter.charClass.name,
+            rawDamage,
+            this.AttackDamageType,
+            isCrit ? " (crit)" : "",
+            Utility.DamageTypeToColorName(this.AttackDamageType)
+            );
+
+            logger.RpcLogMessage(message);
+        });
+
+        defenderCharacter.TakeDamage(new Hit(critRolledDamage, this.AttackDamageType, HitSource.CharacterAttack, isCrit, this.PenetratingDamage), logMessageWithDamage);
 
         if (this.Knockback > 0 && !defenderCharacter.IsDead)
         {
@@ -89,18 +103,6 @@ public class DefaultAttackAction : IAttackAction
                 //    logger.RpcLogMessage(string.Format("{0} attempted to knockback {1} but it was blocked.", this.ActorCharacter.charClass.name, defenderCharacter.charClass.name));
             }
         }
-
-        string message = string.Format("{0}'s <b>{1}</b> hit {2} for <color={6}><b>{3} {4}</color></b>{5}",
-        this.ActorCharacter.charClass.name,
-        this.DamageSourceName,
-        defenderCharacter.charClass.name,
-        Math.Abs(prevLife - defenderCharacter.CurrentLife),
-        this.AttackDamageType,
-        isCrit ? " (crit)" : "",
-        Utility.DamageTypeToColorName(this.AttackDamageType)
-        );
-
-        logger.RpcLogMessage(message);
     }
 
     [Server]

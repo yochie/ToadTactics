@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class DefaultMoveAction : IMoveAction
 {
@@ -119,24 +120,31 @@ public class DefaultMoveAction : IMoveAction
             string message;
             if (nextHex.DealsDamageTypeWhenMovedInto() == DamageType.healing)
             {
-                this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto(), HitSource.Apple, isCrit: false));
+                Action<int> logMessageWithDamage = new((int rawDamage) => {
+                    message = string.Format("{0} gained <b><color=green>{1} healing</color></b> from {2}",
+                        this.ActorCharacter.charClass.name,
+                        rawDamage,
+                        HazardDataSO.Singleton.HazardTypeToName(nextHex.holdsHazard));
+                    MasterLogger.Singleton.RpcLogMessage(message);
 
-                message = string.Format("{0} gained <b><color=green>{1} healing</color></b> from {2}",
-                    this.ActorCharacter.charClass.name,
-                    moveDamage,
-                    HazardDataSO.Singleton.HazardTypeToName(nextHex.holdsHazard));
+                });
+                    this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto(), HitSource.Apple, isCrit: false), logMessageWithDamage);
             }
             else
             {
-                this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto(), HitSource.FireHazard, isCrit: false));
-                message = string.Format("{0} was dealt <color={4}><b>{1} {2}</b></color> damage by {3}",
-                this.ActorCharacter.charClass.name,
-                moveDamage,
-                nextHex.DealsDamageTypeWhenMovedInto(),
-                HazardDataSO.Singleton.HazardTypeToName(nextHex.holdsHazard),
-                Utility.DamageTypeToColorName(nextHex.DealsDamageTypeWhenMovedInto()));
+                Action<int> logMessageWithDamage = new((int rawDamage) => {
+                    message = string.Format("{0} was dealt <color={4}><b>{1} {2}</b></color> damage by {3}",
+                        this.ActorCharacter.charClass.name,
+                        rawDamage,
+                        nextHex.DealsDamageTypeWhenMovedInto(),
+                        HazardDataSO.Singleton.HazardTypeToName(nextHex.holdsHazard),
+                        Utility.DamageTypeToColorName(nextHex.DealsDamageTypeWhenMovedInto()));
+                    MasterLogger.Singleton.RpcLogMessage(message);
+                });
+
+                this.ActorCharacter.TakeDamage(new Hit(moveDamage, nextHex.DealsDamageTypeWhenMovedInto(), HitSource.FireHazard, isCrit: false),logMessageWithDamage);
+
             }
-            MasterLogger.Singleton.RpcLogMessage(message);
         }
 
         if (nextHex.HoldsAHazard() && HazardDataSO.Singleton.IsHazardTypeRemovedWhenWalkedUpon(nextHex.holdsHazard))
