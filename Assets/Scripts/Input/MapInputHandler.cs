@@ -465,4 +465,10 @@ public class MapInputHandler : NetworkBehaviour
             this.UnhoverHex(this.HoveredHex);
         this.SetControlMode(ControlMode.none);
     }
+
+    public void OnDestroy()
+    {
+        Debug.Log("Destroying map input handler");
+        this.SetCursorToDefault();   
+    }
 }
