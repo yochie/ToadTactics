@@ -39,6 +39,10 @@ public class EquipmentDraftUI : NetworkBehaviour
     [SerializeField]
     private TextMeshProUGUI instructionLabel;
 
+    [SerializeField]
+    private MessagePopup messagePopup;
+
+
     private List<DraftableEquipmentSlotUI> draftableSlots;
 
     private AssignmentEquipmentPanelUI currentAssigmentEquipmentPanel;
@@ -99,20 +103,31 @@ public class EquipmentDraftUI : NetworkBehaviour
     [TargetRpc]
     public void TargetRpcSetupEquipmentAssignment(NetworkConnectionToClient target, string firstEquipmentID, List<int> teamIDs, List<CharacterStats> teamStats)
     {
-        this.DraftContainer.SetActive(false);
-        this.AssignmentContainer.SetActive(true);
-        
-        this.currentlyAssigningEquipmentID = firstEquipmentID;
-        this.instructionLabel.text = "Assign your equipments";
-
-        this.GenerateAssignmentEquipmentPanel(firstEquipmentID);
-        Dictionary<int, CharacterStats> teamStatsByID = new();
-        int i = 0;
-        foreach(int charID in teamIDs)
+        Action afterTransition = () =>
         {
-            teamStatsByID.Add(charID, teamStats[i++]);
-        }
-        this.GenerateAssignmentCharacterPanels(teamStatsByID);
+            this.DraftContainer.SetActive(false);
+            this.AssignmentContainer.SetActive(true);
+
+            this.currentlyAssigningEquipmentID = firstEquipmentID;
+            this.instructionLabel.text = "Assign your equipments";
+
+            this.GenerateAssignmentEquipmentPanel(firstEquipmentID);
+            Dictionary<int, CharacterStats> teamStatsByID = new();
+            int i = 0;
+            foreach (int charID in teamIDs)
+            {
+                teamStatsByID.Add(charID, teamStats[i++]);
+            }
+            this.GenerateAssignmentCharacterPanels(teamStatsByID);
+        };
+        StartCoroutine(this.SwitchToAssignmentCoroutine(afterTransition));
+    }
+
+    private IEnumerator SwitchToAssignmentCoroutine(Action afterTransition)
+    {
+        this.messagePopup.TriggerPopup("Draft complete", Color.white);
+        yield return new WaitForSeconds(this.messagePopup.GetPopupTotalDuration());
+        afterTransition();
     }
 
     private void GenerateAssignmentEquipmentPanel(string firstEquipmentID)
