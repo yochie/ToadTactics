@@ -38,12 +38,12 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
 
     #region Startup
     [TargetRpc]
-    public void TargetRpcInitForDraft(NetworkConnectionToClient target, int classID, bool itsYourTurn)
+    public void TargetRpcInitForDraft(NetworkConnectionToClient target, int classID)
     {
-        this.Init(classID, itsYourTurn);
+        this.Init(classID);
     }
 
-    public void Init(int classID, bool itsYourTurn, bool asKingCandidate = false)
+    public void Init(int classID, bool asKingCandidate = false)
     {
         this.holdsClassID = classID;
 
@@ -65,7 +65,14 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
             this.SetButtonActiveState(state: true, asKingCandidate: true);
         }
         else
-            this.SetButtonActiveState(itsYourTurn, false);
+            //hide draft buttons at start, enabled after dice roll
+            this.SetButtonActiveState(false);
+    }
+
+    [TargetRpc]
+    internal void TargetRpcEnableDraftButton(NetworkConnectionToClient target)
+    {
+        this.SetButtonActiveState(state: true);
     }
 
     #endregion

@@ -10,6 +10,7 @@ public static class Utility
 {
     public static readonly string IPV4Regex = @"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$";
     public static readonly int MAX_DISTANCE_ON_MAP = 50;
+    public static readonly int NUM_PLAYERS = 2;
     internal static Color DEFAULT_BUTTON_COLOR = new(149/255f, 140/255f, 61/255f);
 
     internal static bool DictContainsValue(SyncIDictionary<float, int> dict, int item)
@@ -99,6 +100,8 @@ public static class Utility
     }
 
     private static System.Random rng = new System.Random();
+
+
 
     public static void Shuffle<T>(this IList<T> list)
     {

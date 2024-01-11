@@ -17,7 +17,7 @@ public class CharacterDraftPhase : IGamePhase
     {
         this.Name = name;
         this.Controller = controller;
-        this.Controller.SetPlayerTurn(0);
+
 
         uint numToRoll = this.Controller.defaultNumCharsPerPlayer * 2;
         List<int> rolledIDs = new();
@@ -30,6 +30,22 @@ public class CharacterDraftPhase : IGamePhase
 
         //will init slots using Rpcs (careful, async, need to set all state before)
         this.Controller.draftUI.InitSlotContents(rolledIDs);
+
+        int startingPlayerID = UnityEngine.Random.Range(0, Utility.NUM_PLAYERS);
+        this.Controller.StartCoroutine(RollDiceThenStartDraftCoroutine(startingPlayerID));
+
+
+    }
+
+    private IEnumerator RollDiceThenStartDraftCoroutine(int startingPlayerID)
+    {
+        this.Controller.draftUI.DiceRollPopup(startingPlayerID);
+        while (this.Controller.DiceRollPopupPlayedOnClients < Utility.NUM_PLAYERS)
+            yield return null;
+
+        this.Controller.draftUI.EnableDraftButtons(startingPlayerID);
+
+        this.Controller.SetPlayerTurn(startingPlayerID);
     }
 
     [Server]

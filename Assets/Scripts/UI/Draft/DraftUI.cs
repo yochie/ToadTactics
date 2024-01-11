@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using TMPro;
 using System;
+using System.Linq;
 
 public class DraftUI : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class DraftUI : MonoBehaviour
     [SerializeField]
     private MessagePopup messagePopup;
 
+    [SerializeField]
+    private DiceRollPopup diceRollPopup;
+
     private void Awake()
     {
         //just to avoid printing error when starting editor in wrong draft scene
@@ -36,16 +40,32 @@ public class DraftUI : MonoBehaviour
     [Server]
     public void InitSlotContents(List<int> classIDsToDraft)
     {
-        int currentPlayerID = GameController.Singleton.PlayerTurn;
-        NetworkConnectionToClient currentPlayerClient =  GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
-        NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
         int i = 0;
         foreach (DraftableCharacterPanelUI slot in draftableSlots)
         {
-            slot.TargetRpcInitForDraft(currentPlayerClient, classIDsToDraft[i], true);
-            slot.TargetRpcInitForDraft(waitingPlayerClient, classIDsToDraft[i], false);
+            foreach (PlayerController player in GameController.Singleton.playerControllers)
+            {
+                slot.TargetRpcInitForDraft(player.connectionToClient, classIDsToDraft[i]);
+            }
             i++;
         }
+    }
+
+    internal void EnableDraftButtons(int startingPlayerID)
+    {
+        NetworkConnectionToClient startingPlayerConnection = GameController.Singleton.GetConnectionForPlayerID(startingPlayerID);
+        foreach (DraftableCharacterPanelUI slot in draftableSlots)
+        {
+            slot.TargetRpcEnableDraftButton(startingPlayerConnection);
+        }
+    }
+
+    internal void DiceRollPopup(int startingPlayerID)
+    {
+        foreach(PlayerController player in GameController.Singleton.playerControllers)
+        {
+            this.diceRollPopup.TargetRpcShowRollOutcome(player.connectionToClient, player.playerID == startingPlayerID);
+        }        
     }
 
     public void SetupKingSelection(List<int> classIDs)
@@ -74,7 +94,7 @@ public class DraftUI : MonoBehaviour
         {
             GameObject kingCandidateSlotObject = Instantiate(this.slotPrefab, this.characterSheetsListFirstRow.transform);
             DraftableCharacterPanelUI kingCandidateSlot = kingCandidateSlotObject.GetComponent<DraftableCharacterPanelUI>();
-            kingCandidateSlot.Init(classID, true, true);
+            kingCandidateSlot.Init(classID, true);
         }
     }
 

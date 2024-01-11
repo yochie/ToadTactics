@@ -71,12 +71,14 @@ public class GameController : NetworkBehaviour
     public bool StartZonesCleared { get; internal set; }
     public Dictionary<int, bool> ClearedStartZones { get; private set; }
 
+    public int DiceRollPopupPlayedOnClients { get; internal set; }
 
     //Only exist in some scenes, so they need to plug themselves here in their own Awake()
     //dont try to set them here, too tricky to wait for them before handling scene initialization
     public MapInputHandler mapInputHandler;
     public DraftUI draftUI;
     public EquipmentDraftUI equipmentDraftUI;
+
     #endregion
 
     #region Synced vars
@@ -188,6 +190,7 @@ public class GameController : NetworkBehaviour
         this.treasureOpenedByPlayerID = -1;
         this.StartZonesCleared = false;
         this.ClearedStartZones = new();
+        this.DiceRollPopupPlayedOnClients = 0;
     }
 
     #endregion
@@ -562,6 +565,12 @@ public class GameController : NetworkBehaviour
         {
             this.RpcOnPlayerTurnChanged(playerID);
         }
+    }
+
+    [Command(requiresAuthority = false)]
+    internal void CmdDiceRollPlayed()
+    {
+        this.DiceRollPopupPlayedOnClients++;
     }
     #endregion
 
