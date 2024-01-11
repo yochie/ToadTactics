@@ -474,6 +474,7 @@ MonoBehaviour:
   scoreLabel: {fileID: 4759517168293736378}
   continueButtonText: {fileID: 6224284464216959710}
   hideButton: {fileID: 4867932568288962400}
+  continueButton: {fileID: 9197377345931451509}
   hideButtonText: {fileID: 7659746278853661131}
   textContent: {fileID: 1434111463052079719}
 --- !u!1001 &1606041677914494781
@@ -926,3 +927,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5979981967413587649, guid: 28adfb562b285e941b9cc1f5ee4dbcff, type: 3}
   m_PrefabInstance: {fileID: 3054625218934074408}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9197377345931451509 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6181067913319673949, guid: 28adfb562b285e941b9cc1f5ee4dbcff, type: 3}
+  m_PrefabInstance: {fileID: 3054625218934074408}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

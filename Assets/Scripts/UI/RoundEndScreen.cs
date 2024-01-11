@@ -20,6 +20,9 @@ public class RoundEndScreen : MonoBehaviour
     private Button hideButton;
 
     [SerializeField]
+    private Button continueButton;
+
+    [SerializeField]
     private TextMeshProUGUI hideButtonText;
 
     [SerializeField]
@@ -76,8 +79,10 @@ public class RoundEndScreen : MonoBehaviour
     public void ToggleHideScreen()
     {
         this.hidden = !this.hidden;
-        this.container.GetComponent<Image>().color = Utility.SetAlpha(this.baseColor, this.hidden ? 0 : this.baseAlpha);
+        //this.container.GetComponent<Image>().color = Utility.SetAlpha(this.baseColor, this.hidden ? 0 : this.baseAlpha);
+        this.container.SetActive(!this.hidden);
         this.textContent.SetActive(!this.hidden);
         this.hideButtonText.text = this.hidden ? "Return" : "View game";
+        this.continueButton.gameObject.SetActive(!this.hidden);
     }
 }

@@ -297,13 +297,16 @@ public class MapInputHandler : NetworkBehaviour
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
-                unhoveredHex.drawer.DefaultHover(false);
+                if (unhoveredHex != null)                    
+                    unhoveredHex.drawer.DefaultHover(false);
                 break;
             case ControlMode.characterPlacement:
-                unhoveredHex.drawer.DefaultHover(false);
+                if (unhoveredHex != null)
+                    unhoveredHex.drawer.DefaultHover(false);
                 break;
             case ControlMode.move:
-                unhoveredHex.drawer.MoveHover(false);
+                if (unhoveredHex != null)
+                    unhoveredHex.drawer.MoveHover(false);
                 this.rangeDisplayer.HidePath();
                 break;
             case ControlMode.attack:
@@ -390,8 +393,7 @@ public class MapInputHandler : NetworkBehaviour
             || mode == ControlMode.attack
             || mode == ControlMode.useAbility
             || mode == ControlMode.useBallista
-            || mode == ControlMode.useEquipment
-            || mode == ControlMode.none))
+            || mode == ControlMode.useEquipment))
         {
             if (toSelect == null)
                 this.SelectHexForPlayingCharacter();
@@ -402,6 +404,12 @@ public class MapInputHandler : NetworkBehaviour
 
     private void SelectHexForPlayingCharacter()
     {
+        int playingCharID = GameController.Singleton.GetCharacterIDForTurn();
+        if(playingCharID == -1)
+        {
+            Debug.Log("Trying to select hex but could not get ID for playing character");
+            return;
+        }
         HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.GetCharacterIDForTurn()];
         Hex toSelect = Map.GetHex(Map.Singleton.hexGrid, toSelectCoords.X, toSelectCoords.Y);
         this.SelectHex(toSelect);
@@ -425,15 +433,15 @@ public class MapInputHandler : NetworkBehaviour
         this.SetControlMode(mode, null);
     }
 
-    public void OnCharacterSheetDisplayed(int classID)
-    {
-        this.allowInput = false;
-    }
+    //public void OnCharacterSheetDisplayed(int classID)
+    //{
+    //    this.allowInput = false;
+    //}
 
-    public void OnCharacterSheetClosed()
-    {
-        this.allowInput = true;
-    }
+    //public void OnCharacterSheetClosed()
+    //{
+    //    this.allowInput = true;
+    //}
 
     public void SetInputAllowed(bool allowed)
     {
@@ -449,5 +457,12 @@ public class MapInputHandler : NetworkBehaviour
         {
             this.UnhoverHex(this.HoveredHex, keepState:true);
         }
+    }
+
+    public void OnRoundEnd()
+    {
+        if(this.HoveredHex != null)
+            this.UnhoverHex(this.HoveredHex);
+        this.SetControlMode(ControlMode.none);
     }
 }

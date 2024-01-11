@@ -14,6 +14,9 @@ public class CharacterSheetUI : MonoBehaviour
     private GameObject content;
 
     [SerializeField]
+    private GameObject background;
+
+    [SerializeField]
     private Image spriteImage;
 
     [SerializeField]
@@ -78,6 +81,8 @@ public class CharacterSheetUI : MonoBehaviour
     public void CloseSheet()
     {
         this.content.SetActive(false);
+        this.background.SetActive(false);
+
         this.characterSheetClosedEvent.Raise();
     }
 
@@ -91,6 +96,7 @@ public class CharacterSheetUI : MonoBehaviour
             this.FillWithActiveCharacterData(classID, activeCharacter.CurrentStats, GameController.Singleton.IsAKing(classID), activeCharacter.EquipmentIDsCopy, activeCharacter);
         }
         this.content.SetActive(true);
+        this.background.SetActive(true);
     }
     #endregion
 }

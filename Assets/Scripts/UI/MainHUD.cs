@@ -205,6 +205,9 @@ public class MainHUD : NetworkBehaviour
         {
             buttonObject.SetActive(state);
         }
+
+        //since this is not mapped to a control state, it is handled seperately
+        this.ballistaReloadButton.gameObject.SetActive(state);
     }
 
     public void HighlightGameplayButton(ControlMode mode)
@@ -324,5 +327,11 @@ public class MainHUD : NetworkBehaviour
             this.treasureRevealPanel.FillWithEquipmentData(equipmentID);
             this.treasureRevealPanel.Show();
         }
+    }
+
+    public void OnRoundEnd()
+    {
+        this.ActivateGameplayButtons(false);
+        this.endTurnButton.SetActive(false);
     }
 }
