@@ -68,7 +68,7 @@ public class RoundEndScreen : MonoBehaviour
     {
         if (!GameController.Singleton.isServer)
             //TODO : make it so both players have to click button, not just host
-            this.continueButtonText.text = "Waiting for host to proceed";
+            this.continueButtonText.text = "Waiting for host";
         else
             GameController.Singleton.CmdChangeToScene("EquipmentDraft");
     }
