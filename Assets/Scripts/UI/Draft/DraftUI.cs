@@ -20,6 +20,9 @@ public class DraftUI : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI instructionLabel;
+    
+    [SerializeField]
+    private MessagePopup messagePopup;
 
     private void Awake()
     {
@@ -46,6 +49,18 @@ public class DraftUI : MonoBehaviour
     }
 
     public void SetupKingSelection(List<int> classIDs)
+    {
+        StartCoroutine(this.SwitchToKingSelectCoroutine(classIDs));
+    }
+
+    private IEnumerator SwitchToKingSelectCoroutine(List<int> classIDs)
+    {
+        this.messagePopup.TriggerPopup("Draft complete", Color.white);
+        yield return new WaitForSeconds(this.messagePopup.GetPopupTotalDuration());
+        this.FinishKingSelectionSetup(classIDs);
+    }
+
+    private void FinishKingSelectionSetup(List<int> classIDs)
     {
         this.ClearDraftableSlots();
         this.GenerateKingCandidates(classIDs);
