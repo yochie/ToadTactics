@@ -169,10 +169,10 @@ public class PlayerController : NetworkBehaviour
         //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
         this.kingClassID = classID;
 
-        //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
-        GameController.Singleton.CmdCrownCharacter(this.playerID, classID);
+        //notify GameController so that he changes scene once done
+        GameController.Singleton.CharacterCrowned();
 
-        this.TargetRpcOnCharacterCrowned(sender, classID);        
+        this.TargetRpcOnCharacterCrowned(sender, classID);
     }
 
     [Command]

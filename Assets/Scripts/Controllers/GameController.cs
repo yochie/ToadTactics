@@ -389,14 +389,21 @@ public class GameController : NetworkBehaviour
         this.CmdNextTurn();
     }
 
-    [Command(requiresAuthority = false)]
-    internal void CmdCrownCharacter(int playerID, int classID)
+    [Server]
+    internal void CharacterCrowned()
     {
         if (this.AllPlayersAssignedKings())
         {
-            //just change scene, scene changed callback will set phase once all clients have loaded scene
-            this.CmdChangeToScene("MainGame");
+            //wait a little just for less abrupt transition
+            //scene changed callback will set phase once all clients have loaded scene
+            this.StartCoroutine(this.WaitALittle(0.8f, () => { this.CmdChangeToScene("MainGame"); }));            
         }
+    }
+
+    private IEnumerator WaitALittle(float seconds, Action doAfter)
+    {
+        yield return new WaitForSeconds(seconds);
+        doAfter();
     }
 
     [Server]
