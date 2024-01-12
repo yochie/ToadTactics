@@ -11,6 +11,8 @@ using System.Collections;
 
 public class MyNetworkManager : NetworkManager
 {
+    private bool stoppingHost;
+
     // Overrides the base singleton so we don't
     // have to cast to this type everywhere.
     public static new MyNetworkManager singleton { get; private set; }
@@ -30,6 +32,7 @@ public class MyNetworkManager : NetworkManager
         base.Awake();
         Debug.Log("NetworkManager awaking.");
         singleton = this;
+        this.stoppingHost = false;
     }
 
     #region Unity Callbacks
@@ -96,6 +99,8 @@ public class MyNetworkManager : NetworkManager
     /// <param name="newSceneName"></param>
     public override void ServerChangeScene(string newSceneName)
     {
+        if (newSceneName == SceneManager.GetActiveScene().name)
+            return;
 
         //Finding by tag since we have a different one for each scene so it would be more trouble to get ref each time new scene is loaded
         GameObject netTransitioner = GameObject.FindWithTag("NetworkedSceneTransitioner");
@@ -213,7 +218,7 @@ public class MyNetworkManager : NetworkManager
     {
         Debug.Log("Client disconnected, closing host");
         //Only disconnet when remote player disconnects, local player already handles this and would cause recusion here
-        if (conn != null && conn.identity != null && !conn.identity.isLocalPlayer)
+        if (conn != null && conn.identity != null && !conn.identity.isLocalPlayer && NetworkServer.active && !this.stoppingHost)
         {
             this.StopHost();
         }
@@ -283,7 +288,9 @@ public class MyNetworkManager : NetworkManager
     /// This is invoked when a host is started.
     /// <para>StartHost has multiple signatures, but they all cause this hook to be called.</para>
     /// </summary>
-    public override void OnStartHost() { }
+    public override void OnStartHost() {
+        this.stoppingHost = false;
+    }
 
     /// <summary>
     /// This is invoked when a server is started - including when a host is started.
@@ -299,7 +306,9 @@ public class MyNetworkManager : NetworkManager
     /// <summary>
     /// This is called when a host is stopped.
     /// </summary>
-    public override void OnStopHost() { }
+    public override void OnStopHost() {
+        this.stoppingHost = true;
+    }
 
     /// <summary>
     /// This is called when a server is stopped - including when a host is stopped.
