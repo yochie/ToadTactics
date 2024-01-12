@@ -9,6 +9,7 @@ TagManager:
   - Obstacle
   - DraftUI
   - SceneTransitioner
+  - NetworkedSceneTransitioner
   layers:
   - Default
   - TransparentFX

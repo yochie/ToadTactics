@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Mirror;
+using System.Collections;
 
 /*
 	Documentation: https://mirror-networking.gitbook.io/docs/components/network-manager
@@ -20,11 +21,11 @@ public class MyNetworkManager : NetworkManager
     /// </summary>
     public override void Awake()
     {
-        if (MyNetworkManager.singleton != null) 
-        { 
-            Debug.Log("Destroying new netmanager as singleton is already set."); 
-            Destroy(this.gameObject); 
-            return; 
+        if (MyNetworkManager.singleton != null)
+        {
+            Debug.Log("Destroying new netmanager as singleton is already set.");
+            Destroy(this.gameObject);
+            return;
         }
         base.Awake();
         Debug.Log("NetworkManager awaking.");
@@ -95,14 +96,33 @@ public class MyNetworkManager : NetworkManager
     /// <param name="newSceneName"></param>
     public override void ServerChangeScene(string newSceneName)
     {
-        //if (GameController.Singleton != null)
-        //{
-        //    string currentScene = SceneManager.GetActiveScene().name;
-        //    GameController.Singleton.remoteAwokenScenes[currentScene] = false;
-        //    GameController.Singleton.hostAwokenScenes[currentScene] = false;
-        //}
-        base.ServerChangeScene(newSceneName);
+
+        //Finding by tag since we have a different one for each scene so it would be more trouble to get ref each time new scene is loaded
+        GameObject netTransitioner = GameObject.FindWithTag("NetworkedSceneTransitioner");
+        GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
+        if (netTransitioner != null && GameController.Singleton != null) {
+            netTransitioner.GetComponent<NetworkedSceneTransitioner>().RpcFadeout();
+            StartCoroutine(this.WaitForFadeoutsBeforeSceneChange(() => base.ServerChangeScene(newSceneName)));
+        }
+        else if (transitioner != null)
+            transitioner.GetComponent<SceneTransitioner>().ChangeScene(() => base.ServerChangeScene(newSceneName));
+        else
+            base.ServerChangeScene(newSceneName);
+
     }
+
+    private IEnumerator WaitForFadeoutsBeforeSceneChange(Action after)
+    {
+        if (GameController.Singleton == null)
+            yield break; ;
+        
+        while (GameController.Singleton.SceneFadeOutOnClients < Utility.NUM_PLAYERS)
+            yield return null;
+
+        GameController.Singleton.SceneFadeOutOnClients = 0;
+        after();
+    }
+
 
     /// <summary>
     /// Called from ServerChangeScene immediately before SceneManager.LoadSceneAsync is executed
@@ -195,12 +215,7 @@ public class MyNetworkManager : NetworkManager
         //Only disconnet when remote player disconnects, local player already handles this and would cause recusion here
         if (conn != null && conn.identity != null && !conn.identity.isLocalPlayer)
         {
-            //Finding by tag since we have a different one for each scene so it would be more trouble to get ref each time new scene is loaded
-            GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
-            if (transitioner != null)
-                transitioner.GetComponent<SceneTransitioner>().ChangeScene(() => this.StopHost());
-            else
-                this.StopHost();
+            this.StopHost();
         }
             
         base.OnServerDisconnect(conn);

@@ -106,7 +106,7 @@ public class LobbyController : NetworkBehaviour
     {
         if(isServer)
         {
-            this.sceneTransitioner.ChangeScene(() => GameController.Singleton.CmdChangeToScene("Draft"));            
+            GameController.Singleton.CmdChangeToScene("Draft");
         }
     }
 
@@ -114,7 +114,7 @@ public class LobbyController : NetworkBehaviour
     {
         if (isServer)
         {
-            this.sceneTransitioner.ChangeScene(() => NetworkManager.singleton.StopHost());           
+            NetworkManager.singleton.StopHost();
         }
     }
 
@@ -123,7 +123,7 @@ public class LobbyController : NetworkBehaviour
     {
         if (!isServer)
         {
-            this.sceneTransitioner.ChangeScene(() => NetworkManager.singleton.StopClient());
+            NetworkManager.singleton.StopClient();        
         }
     }
 }

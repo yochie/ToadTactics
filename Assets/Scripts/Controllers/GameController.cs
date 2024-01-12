@@ -73,6 +73,8 @@ public class GameController : NetworkBehaviour
 
     public int DiceRollPopupPlayedOnClients { get; internal set; }
 
+    public int SceneFadeOutOnClients { get; internal set; }
+
     //Only exist in some scenes, so they need to plug themselves here in their own Awake()
     //dont try to set them here, too tricky to wait for them before handling scene initialization
     public MapInputHandler mapInputHandler;
@@ -571,6 +573,12 @@ public class GameController : NetworkBehaviour
     internal void CmdDiceRollPlayed()
     {
         this.DiceRollPopupPlayedOnClients++;
+    }
+
+    [Command(requiresAuthority = false)]
+    internal void CmdNotifySceneFadeOutComplete()
+    {
+        this.SceneFadeOutOnClients++;
     }
     #endregion
 

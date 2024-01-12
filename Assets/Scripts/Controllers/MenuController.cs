@@ -99,8 +99,8 @@ public class MenuController : MonoBehaviour
     public void StartHost()
     {
         this.SetMenuMode(MenuMode.None);
-
-        this.sceneTransitioner.ChangeScene(() => MyNetworkManager.singleton.StartHost());
+        MyNetworkManager.singleton.StartHost();
+        //this.sceneTransitioner.ChangeScene(() => MyNetworkManager.singleton.StartHost());
     }
 
     public void OpenSettingsPanel()
