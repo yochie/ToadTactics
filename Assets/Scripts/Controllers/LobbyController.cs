@@ -30,11 +30,15 @@ public class LobbyController : NetworkBehaviour
     [SerializeField]
     private Button leaveButton;
 
+    [SerializeField]
+    private SceneTransitioner sceneTransitioner;
+
     [SyncVar]
     private string serverLanIP = "";
 
     [SyncVar]
     private string serverWanIP = "";
+
 
     private void Awake()
     {
@@ -102,7 +106,7 @@ public class LobbyController : NetworkBehaviour
     {
         if(isServer)
         {
-            GameController.Singleton.CmdChangeToScene("Draft");
+            this.sceneTransitioner.ChangeScene(() => GameController.Singleton.CmdChangeToScene("Draft"));            
         }
     }
 
@@ -110,7 +114,7 @@ public class LobbyController : NetworkBehaviour
     {
         if (isServer)
         {
-            NetworkManager.singleton.StopHost();
+            this.sceneTransitioner.ChangeScene(() => NetworkManager.singleton.StopHost());           
         }
     }
 
@@ -119,7 +123,7 @@ public class LobbyController : NetworkBehaviour
     {
         if (!isServer)
         {
-            NetworkManager.singleton.StopClient();
+            this.sceneTransitioner.ChangeScene(() => NetworkManager.singleton.StopClient());
         }
     }
 }

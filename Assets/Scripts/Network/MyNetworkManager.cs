@@ -191,9 +191,18 @@ public class MyNetworkManager : NetworkManager
     /// <param name="conn">Connection from client.</param>
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
+        Debug.Log("Client disconnected, closing host");
         //Only disconnet when remote player disconnects, local player already handles this and would cause recusion here
         if (conn != null && conn.identity != null && !conn.identity.isLocalPlayer)
-            this.StopHost();
+        {
+            //Finding by tag since we have a different one for each scene so it would be more trouble to get ref each time new scene is loaded
+            GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
+            if (transitioner != null)
+                transitioner.GetComponent<SceneTransitioner>().ChangeScene(() => this.StopHost());
+            else
+                this.StopHost();
+        }
+            
         base.OnServerDisconnect(conn);
     }
 
@@ -287,7 +296,8 @@ public class MyNetworkManager : NetworkManager
     /// <summary>
     /// This is called when a client is stopped.
     /// </summary>
-    public override void OnStopClient() { }
+    public override void OnStopClient() {
+    }
 
     #endregion
 }

@@ -8,6 +8,7 @@ TagManager:
   - P2
   - Obstacle
   - DraftUI
+  - SceneTransitioner
   layers:
   - Default
   - TransparentFX

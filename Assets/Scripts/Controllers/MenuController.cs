@@ -28,6 +28,9 @@ public class MenuController : MonoBehaviour
     [SerializeField]
     private Button connectionButton;
 
+    [SerializeField]
+    private SceneTransitioner sceneTransitioner;
+
     public void Awake()
     {
         if (MenuController.Singleton != null)
@@ -97,7 +100,7 @@ public class MenuController : MonoBehaviour
     {
         this.SetMenuMode(MenuMode.None);
 
-        MyNetworkManager.singleton.StartHost();
+        this.sceneTransitioner.ChangeScene(() => MyNetworkManager.singleton.StartHost());
     }
 
     public void OpenSettingsPanel()
