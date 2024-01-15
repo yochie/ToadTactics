@@ -918,6 +918,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: ButtonText
       objectReference: {fileID: 0}
+    - target: {fileID: 4309155235753651038, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309155235753651038, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309155235753651038, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309155235753651038, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5273630871422532634, guid: f748c1f1c84aa534896b881dfc637a08, type: 3}
       propertyPath: m_fontSize
       value: 28
