@@ -252,14 +252,14 @@ public class MyNetworkManager : NetworkManager
     /// <para>This is called on the client when it disconnects from the server. Override this function to decide what happens when the client disconnects.</para>
     /// </summary>
     public override void OnClientDisconnect() {
-        //since Mirror cant handle this apparently...
-        Debug.Log("Client disconnected. Destroying DDOL networked objects");
+        ////since Mirror cant handle this apparently...
+        //Debug.Log("Client disconnected. Destroying DDOL networked objects");
 
-        if (GameController.Singleton != null)
-            Destroy(GameController.Singleton.gameObject);
+        //if (GameController.Singleton != null)
+        //    Destroy(GameController.Singleton.gameObject);
 
-        if (MasterLogger.Singleton != null)
-            Destroy(MasterLogger.Singleton.gameObject);
+        //if (MasterLogger.Singleton != null)
+        //    Destroy(MasterLogger.Singleton.gameObject);
 
     }
 

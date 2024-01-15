@@ -36,6 +36,13 @@ public class MenuController : MonoBehaviour
         if (MenuController.Singleton != null)
             Destroy(MenuController.Singleton.gameObject);
         MenuController.Singleton = this;
+
+        //Cleanup previous session DDOL objects
+        if (GameController.Singleton != null)
+            Destroy(GameController.Singleton.gameObject);
+
+        if (MasterLogger.Singleton != null)
+            Destroy(MasterLogger.Singleton.gameObject);
     }
 
     public void Start()
