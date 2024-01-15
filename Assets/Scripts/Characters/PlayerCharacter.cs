@@ -52,6 +52,7 @@ public class PlayerCharacter : NetworkBehaviour
     public CharacterClass charClass;
     [SyncVar]
     private int currentLife;
+
     public int CurrentLife => this.currentLife;
     [SyncVar]
     private CharacterStats currentStats;
@@ -772,6 +773,12 @@ public class PlayerCharacter : NetworkBehaviour
                 buffIDs[buff.UniqueID] = buff.Data.stringID;
         }
         return buffIDs;
+    }
+
+
+    internal SpriteRenderer GetSpriteRenderer()
+    {
+        return this.spriteRenderer;
     }
     #endregion
 }

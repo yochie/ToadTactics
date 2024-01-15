@@ -132,7 +132,7 @@ public class DamageTakenEffect : MonoBehaviour
 
     IEnumerator FlashCoroutine(Color flashColor, float flashDurationSeconds)
     {
-        SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
+        SpriteRenderer renderer = this.forCharacter.GetSpriteRenderer();
         Color startColor = this.forCharacter.BaseColor;
 
         float elapsedSeconds = 0f;
