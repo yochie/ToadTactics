@@ -50,11 +50,11 @@ TagManager:
   - name: MapHex
     uniqueID: 1635455935
     locked: 0
-  - name: MapHazard
-    uniqueID: 4012156555
-    locked: 0
   - name: MapCharacter
     uniqueID: 1258294933
+    locked: 0
+  - name: MapHazard
+    uniqueID: 4012156555
     locked: 0
   - name: Default
     uniqueID: 0
