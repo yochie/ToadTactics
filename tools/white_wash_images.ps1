@@ -1,6 +1,6 @@
 
 # Specify the root folder
-$rootFolder = "E:\code\temp_name\thom\Assets\Art\2D"
+$rootFolder = "D:\Downloads\toConvert"
 
 # Specify the path to magick.exe
 $magickPath = "magick.exe"
