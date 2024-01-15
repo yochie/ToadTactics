@@ -21,16 +21,13 @@ public class DeathEffect : MonoBehaviour
     [SerializeField]
     private float fadeAnimationDuration;
 
-    [SerializeField]
-    private SpriteRenderer spriteRenderer;
-
     public void OnCharacterDeath(int classID)
     {
         if (classID == this.forCharacter.CharClassID)
         {
             Color fadeToColor = Utility.GrayOutColor(this.forCharacter.BaseColor, true);
             List<IEnumerator> deathEffects = new();
-            deathEffects.Add(this.FadeAnimationCoroutine(fadeToColor, this.fadeAnimationDuration, this.spriteRenderer));
+            deathEffects.Add(this.FadeAnimationCoroutine(fadeToColor, this.fadeAnimationDuration, this.forCharacter.GetSpriteRenderer()));
             deathEffects.Add(AudioManager.Singleton.PlaySoundAndWaitCoroutine(this.deathSoundEffect));
             deathEffects.Add(this.shaker.ShakeCoroutine());
             AnimationSystem.Singleton.Queue(deathEffects);
@@ -43,7 +40,7 @@ public class DeathEffect : MonoBehaviour
         {
             Color fadeToColor = Utility.GrayOutColor(this.forCharacter.BaseColor, false);
             List<IEnumerator> resurrectionEffects = new();
-            resurrectionEffects.Add(this.FadeAnimationCoroutine(fadeToColor, this.fadeAnimationDuration, this.spriteRenderer));
+            resurrectionEffects.Add(this.FadeAnimationCoroutine(fadeToColor, this.fadeAnimationDuration, this.forCharacter.GetSpriteRenderer()));
             resurrectionEffects.Add(AudioManager.Singleton.PlaySoundAndWaitCoroutine(this.resurrectionSoundEffect));
             resurrectionEffects.Add(this.shaker.ShakeCoroutine());
 
