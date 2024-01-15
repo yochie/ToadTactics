@@ -44,6 +44,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 592776961
+    locked: 0
   - name: MapHex
     uniqueID: 1635455935
     locked: 0
