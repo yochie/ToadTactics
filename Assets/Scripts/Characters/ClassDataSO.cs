@@ -46,7 +46,7 @@ public class ClassDataSO : ScriptableObject
         {
             if (prefab.CharClassID == classID)
             {
-                return prefab.GetComponent<SpriteRenderer>().sprite;
+                return prefab.GetSpriteRenderer().sprite;
             }
         }
 
