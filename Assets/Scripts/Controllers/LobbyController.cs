@@ -36,13 +36,17 @@ public class LobbyController : NetworkBehaviour
     [SerializeField]
     private Button copyLANButton;
 
+    [SerializeField]
+    private TMP_Dropdown lanHostSelector;
+
+    [SerializeField]
+    private GameObject lanHostSelectorContainer;
+
     [SyncVar]
     private string serverLanIP = "";
 
     [SyncVar]
     private string serverWanIP = "";
-
-
 
     private void Awake()
     {
@@ -56,12 +60,27 @@ public class LobbyController : NetworkBehaviour
     {
         if (isServer)
         {
-            string lanIP = this.ipManager.GetLANIPAddress();
-            this.lanHostIPLabel.text = string.Format("{0} (LAN)", lanIP);
-            //save for clipboarding
-            this.serverLanIP = lanIP;
-            this.SetInteractableCopyWanButton(interactable: false);
+            List<string> lanIPs = this.ipManager.GetLANIPAddresses();
+            if (lanIPs.Count == 1)
+            {
+                this.lanHostIPLabel.text = string.Format("{0} (LAN)", lanIPs[0]);
+                //save for clipboarding
+                this.serverLanIP = lanIPs[0];
+            } else if (lanIPs.Count > 1)
+            {
+                this.lanHostIPLabel.gameObject.SetActive(false);
+                this.lanHostSelectorContainer.gameObject.SetActive(true);
+                List<TMP_Dropdown.OptionData> options = new();
+                foreach(string lanIP in lanIPs)
+                {
+                    options.Add(new TMP_Dropdown.OptionData(lanIP));
+                }
+                this.lanHostSelector.options = options;
+                this.serverLanIP = lanIPs[0];
+                this.lanHostSelector.value = 0;
+            }
 
+            this.SetInteractableCopyWanButton(interactable: false);
             ipManager.FetchWanIP((string ip) => { this.SetWanIP(ip); this.SetInteractableCopyWanButton(interactable: true); });
         }
         else
@@ -78,6 +97,12 @@ public class LobbyController : NetworkBehaviour
             this.copyWANButton.gameObject.SetActive(false);
             this.copyLANButton.gameObject.SetActive(false);
         }
+    }
+
+    [Server]
+    public void OnLanIPSelectorValueChanged(int valueIndex)
+    {
+        this.serverLanIP = this.lanHostSelector.options[valueIndex].text;
     }
 
     [Server]

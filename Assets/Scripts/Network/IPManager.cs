@@ -8,18 +8,21 @@ using System;
 public class IPManager : MonoBehaviour
 {
 
-    public string GetLANIPAddress()
+    public List<string> GetLANIPAddresses()
     {
         var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+        List<string> ips = new();
         foreach (var ip in host.AddressList)
         {
-            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            if (ip. AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
             {
-                return ip.ToString();
+                ips.Add(ip.ToString());
             }
         }
 
-        throw new System.Exception("No network adapters with an IPv4 address in the system!");
+        if(ips.Count == 0)        
+            Debug.Log("No network adapters with an IPv4 address in the system!");
+        return ips;
     }
 
 
