@@ -307,7 +307,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7504354939391992494, guid: 78a73cbb412810d4495a922343f0c688, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8621042922888541905, guid: 78a73cbb412810d4495a922343f0c688, type: 3}
       propertyPath: m_Pivot.x
@@ -1580,8 +1580,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 367691773901003087, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 367691773901003087, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 140
+      objectReference: {fileID: 0}
+    - target: {fileID: 367691773901003087, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 52.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 583265801540638494, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 583265801540638494, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 140
       objectReference: {fileID: 0}
     - target: {fileID: 583265801540638494, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1590,6 +1606,26 @@ PrefabInstance:
     - target: {fileID: 1158849384788743397, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
       propertyPath: m_text
       value: You
+      objectReference: {fileID: 0}
+    - target: {fileID: 1696955376952070610, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1696955376952070610, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1696955376952070610, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1696955376952070610, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1696955376952070610, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1744256756044592375, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
       propertyPath: <IsForSelf>k__BackingField
@@ -1771,7 +1807,28 @@ PrefabInstance:
       propertyPath: messagePopup
       value: 
       objectReference: {fileID: 1766112141}
-    m_RemovedComponents: []
+    - target: {fileID: 8985155196420966339, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8985155196420966339, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8985155196420966339, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8985155196420966339, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8985155196420966339, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6643035489729607148, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 6006472324208981007, guid: bc4db35ebe1e0ab42bc4a112b93591d9, type: 3}
