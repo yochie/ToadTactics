@@ -30,9 +30,6 @@ public class LobbyController : NetworkBehaviour
     [SerializeField]
     private Button leaveButton;
 
-    [SerializeField]
-    private SceneTransitioner sceneTransitioner;
-
     [SyncVar]
     private string serverLanIP = "";
 
