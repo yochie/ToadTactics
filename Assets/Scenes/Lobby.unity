@@ -618,7 +618,8 @@ MonoBehaviour:
   startButton: {fileID: 685327371}
   cancelButton: {fileID: 1340483024}
   leaveButton: {fileID: 1439452867}
-  sceneTransitioner: {fileID: 0}
+  copyWANButton: {fileID: 1340483027}
+  copyLANButton: {fileID: 1340483026}
 --- !u!4 &1123201406
 Transform:
   m_ObjectHideFlags: 0
@@ -1256,6 +1257,28 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2102332578752989121, guid: ae644183c85aafa4f82ead854f8f8a46, type: 3}
   m_PrefabInstance: {fileID: 1340483022}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1340483026 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1433137821489683268, guid: ae644183c85aafa4f82ead854f8f8a46, type: 3}
+  m_PrefabInstance: {fileID: 1340483022}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1340483027 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8432846594926400760, guid: ae644183c85aafa4f82ead854f8f8a46, type: 3}
+  m_PrefabInstance: {fileID: 1340483022}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1439452865
 PrefabInstance:
   m_ObjectHideFlags: 0

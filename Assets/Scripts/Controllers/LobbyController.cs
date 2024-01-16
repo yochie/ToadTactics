@@ -30,11 +30,18 @@ public class LobbyController : NetworkBehaviour
     [SerializeField]
     private Button leaveButton;
 
+    [SerializeField]
+    private Button copyWANButton;
+
+    [SerializeField]
+    private Button copyLANButton;
+
     [SyncVar]
     private string serverLanIP = "";
 
     [SyncVar]
     private string serverWanIP = "";
+
 
 
     private void Awake()
@@ -53,8 +60,9 @@ public class LobbyController : NetworkBehaviour
             this.lanHostIPLabel.text = string.Format("{0} (LAN)", lanIP);
             //save for clipboarding
             this.serverLanIP = lanIP;
+            this.SetInteractableCopyWanButton(interactable: false);
 
-            ipManager.FetchWanIP((string ip) => { this.SetWanIP(ip); });
+            ipManager.FetchWanIP((string ip) => { this.SetWanIP(ip); this.SetInteractableCopyWanButton(interactable: true); });
         }
         else
         {
@@ -63,9 +71,12 @@ public class LobbyController : NetworkBehaviour
             this.cancelButton.gameObject.SetActive(false);
             this.leaveButton.gameObject.SetActive(true);
             if (this.serverLanIP != "")
-                this.lanHostIPLabel.text = this.serverLanIP;
+                this.lanHostIPLabel.text = this.FormatIP( this.serverLanIP, type: "LAN", hideStart: false);
             if (this.serverWanIP != "")
-                this.wanHostIPLabel.text = this.serverWanIP;
+                this.wanHostIPLabel.text = this.FormatIP(this.serverWanIP, type: "WAN", hideStart: true);
+
+            this.copyWANButton.gameObject.SetActive(false);
+            this.copyLANButton.gameObject.SetActive(false);
         }
     }
 
@@ -84,9 +95,24 @@ public class LobbyController : NetworkBehaviour
 
     private void SetWanIP(string wanIP)
     {
-        this.wanHostIPLabel.text = string.Format("{0} (WAN)", wanIP);
+        //only display last three chars
+        this.wanHostIPLabel.text = this.FormatIP(wanIP, type: "WAN", hideStart: true);
         //save for clipboarding
         this.serverWanIP = wanIP;
+    }
+
+    private string FormatIP(string ip, string type, bool hideStart)
+    {
+        if (hideStart)
+            return string.Format("***.***.***.{0} ({1})", ip[(ip.LastIndexOf('.') + 1)..], type);
+        else
+            return string.Format("{0} ({1})", ip, type);
+
+    }
+
+    private void SetInteractableCopyWanButton(bool interactable)
+    {
+        this.copyWANButton.interactable = interactable;
     }
 
     public void CopyLANToClipboard()
