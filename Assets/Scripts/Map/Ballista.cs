@@ -17,4 +17,13 @@ public class Ballista : MonoBehaviour
     public AreaType attackAreaType;
     public int attackAreaScaler;
     public float vulnerabilityMultiplier;
+
+    [SerializeField]
+    private AudioClip usedSound;
+
+    [SerializeField]
+    private AudioClip reloadedSound;
+
+    [SerializeField]
+    private AudioClip impactSound;
 }

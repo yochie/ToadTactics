@@ -21,10 +21,17 @@ public class ActionExecutor : NetworkBehaviour
     [SerializeField]
     private StringIntGameEventSO OnCharacterUsedAbility;
 
+    [SerializeField]
+    private IntGameEventSO onCharacterUsedBallista;
+
+    [SerializeField]
+    private IntGameEventSO onCharacterReloadedBallista;
+
     public static ActionExecutor Singleton { get; private set; }
 
     [SerializeField]
     private ActionPreviewer actionPreviewer;
+
 
     public void Awake()
     {
@@ -159,9 +166,9 @@ public class ActionExecutor : NetworkBehaviour
             if (target.HoldsACharacter())
                 attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
 
+            //Ballista usage is considered the same as attack for event game logic event listeners (e.g. rogue stealth)
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
-            this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
-
+            this.RpcOnCharacterUsedBallista(attackingCharacter.CharClassID);
         }
         bool actionSuccess = this.TryAction(attackAction, isFullAction: true, startingMode: ControlMode.useBallista);
     }
@@ -214,6 +221,7 @@ public class ActionExecutor : NetworkBehaviour
             Debug.Log("Ballista reloaded for invalid selected Hex");
             return;
         }
+        this.RpcOnCharacterReloadedBallista(actor.CharClassID);
         ballistaHex.ReloadBallista();
         actor.UsedAttack();
         this.FinishAction(actor, sender, currentControlMode);
@@ -501,6 +509,18 @@ public class ActionExecutor : NetworkBehaviour
         return true;
     }
 
+
+    [ClientRpc]
+    private void RpcOnCharacterUsedBallista(int charClassID)
+    {
+        this.onCharacterUsedBallista.Raise(charClassID);
+    }
+
+    [ClientRpc]
+    private void RpcOnCharacterReloadedBallista(int charClassID)
+    {
+        this.onCharacterReloadedBallista.Raise(charClassID);
+    }
 
     [ClientRpc]
     private void RpcOnCharacterAttacks(int charClassID)

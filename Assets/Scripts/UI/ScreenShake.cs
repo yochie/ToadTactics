@@ -12,9 +12,11 @@ public class ScreenShake : MonoBehaviour
     [SerializeField]
     private float shakeStrength;
 
-    public IEnumerator TriggerScreenShake()
+    public IEnumerator TriggerScreenShake(float overrideStrength = -1, float overrideDuration = -1)
     {
-        return this.ShakeCoroutine(this.shakeDuration, this.shakeStrength);
+        float duration = overrideDuration > 0 ? overrideDuration : this.shakeStrength;
+        float strength = overrideStrength > 0 ? overrideStrength : this.shakeDuration;
+        return this.ShakeCoroutine(duration, strength);
     }
 
     private IEnumerator ShakeCoroutine(float durationSeconds, float strengthMultiplier)

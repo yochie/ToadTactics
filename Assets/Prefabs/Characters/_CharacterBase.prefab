@@ -71,7 +71,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1258294933
-  m_SortingLayer: -1
+  m_SortingLayer: -2
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -106,6 +106,9 @@ GameObject:
   - component: {fileID: 3671175868099292624}
   - component: {fileID: 8130557142363688273}
   - component: {fileID: 6918357154697179759}
+  - component: {fileID: -2140376523935457251}
+  - component: {fileID: -64253542288698992}
+  - component: {fileID: 1060200663922460481}
   m_Layer: 0
   m_Name: _CharacterBase
   m_TagString: Untagged
@@ -390,9 +393,13 @@ MonoBehaviour:
   effectAnimation: {fileID: 1784937098078928453, guid: af62510a403ad4f42b15d178a4f9d6c9, type: 3}
   spawnLocation: {fileID: 50511358748113857}
   forCharacter: {fileID: 1350857231127888729}
+  forBallista: 0
   spawnOffsets: {x: 2.68, y: 8.85, z: 0}
   spawnRotation: 180
   shakeScreen: 1
+  shakeScreenAfterEffect: 0
+  shakeScreenStrengthOverride: 0
+  shakeScreenDurationOverride: 0
 --- !u!114 &1634723521688495905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,9 +443,13 @@ MonoBehaviour:
   effectAnimation: {fileID: 1784937098078928453, guid: 5f84972f7f6b7ff4ea4a3873123e618a, type: 3}
   spawnLocation: {fileID: 50511358748113857}
   forCharacter: {fileID: 1350857231127888729}
+  forBallista: 0
   spawnOffsets: {x: 3.6, y: 6.3, z: 0}
   spawnRotation: 0
   shakeScreen: 0
+  shakeScreenAfterEffect: 0
+  shakeScreenStrengthOverride: 0
+  shakeScreenDurationOverride: 0
 --- !u!114 &3671175868099292624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,7 +575,6 @@ MonoBehaviour:
   resurrectionSoundEffect: {fileID: 8300000, guid: 71c50cddaf4907843b24191ac8a95a7a, type: 3}
   shaker: {fileID: 6918357154697179759}
   fadeAnimationDuration: 2
-  spriteRenderer: {fileID: 0}
 --- !u!114 &6918357154697179759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -622,3 +632,69 @@ MonoBehaviour:
   shakeDuration: 0.25
   shakeStrength: 3
   growthFactor: 1.5
+--- !u!114 &-2140376523935457251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca3c739417bcc0a4ab5e6853da8f87e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 72c9071f9aef44143b2b0e2b07dbc9d6, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1060200663922460481}
+        m_TargetAssemblyTypeName: EffectSpawner, Assembly-CSharp
+        m_MethodName: OnCharacterUsedBallista
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &-64253542288698992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca3c739417bcc0a4ab5e6853da8f87e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 3b68224fde8e1784a96ab9644fa8100f, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1060200663922460481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270620172720993448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ad4d573b8b2f9041a80445999f9aec8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effectAnimation: {fileID: 1784937098078928453, guid: 85a220eb27189614ca4d0541c52e2cfe, type: 3}
+  spawnLocation: {fileID: 50511358748113857}
+  forCharacter: {fileID: 1350857231127888729}
+  forBallista: 1
+  spawnOffsets: {x: 3.6, y: 6.3, z: 0}
+  spawnRotation: 0
+  shakeScreen: 1
+  shakeScreenAfterEffect: 1
+  shakeScreenStrengthOverride: 8
+  shakeScreenDurationOverride: 0.5
