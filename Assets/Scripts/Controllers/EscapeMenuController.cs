@@ -69,12 +69,12 @@ public class EscapeMenuController : MonoBehaviour
             //since Network manager hook doesnt handle scene change here, manually play transition before disconnecting
             GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
             if (transitioner != null)
-                transitioner.GetComponent<SceneTransitioner>().ChangeScene(() => NetworkManager.singleton.StopHost());
+                transitioner.GetComponent<SceneTransitioner>().FadeOut(() => NetworkManager.singleton.StopHost());
 
         } else
         {
             //server properly handles scene change transition
-            NetworkManager.singleton.StopHost();
+            MyNetworkManager.singleton.StopHostWithTransitionsOnAllClients();
         }        
     }
 

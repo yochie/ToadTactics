@@ -66,12 +66,12 @@ public class RoundEndScreen : MonoBehaviour
             //since Network manager hook doesnt handle scene change here, manually play transition before disconnecting
             GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
             if (transitioner != null)
-                transitioner.GetComponent<SceneTransitioner>().ChangeScene(() => MyNetworkManager.singleton.StopClient());
+                transitioner.GetComponent<SceneTransitioner>().FadeOut(() => MyNetworkManager.singleton.StopClient());
         }
         else
         {
             //server properly handles scene change transition
-            MyNetworkManager.singleton.StopHost();
+            MyNetworkManager.singleton.StopHostWithTransitionsOnAllClients();
         }
     }
 

@@ -3503,6 +3503,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78a73cbb412810d4495a922343f0c688, type: 3}
+--- !u!114 &1054607798 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 883883437551826423, guid: 78a73cbb412810d4495a922343f0c688, type: 3}
+  m_PrefabInstance: {fileID: 1054607797}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5c5f424efc9caf4597cdc1edab04ab8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1074576260
 GameObject:
   m_ObjectHideFlags: 0
@@ -3714,6 +3725,10 @@ PrefabInstance:
       propertyPath: sceneId
       value: 3068482300
       objectReference: {fileID: 0}
+    - target: {fileID: 1831855613981394019, guid: 9f31fd99d8fdd6c4fb07fe4cfbe360a7, type: 3}
+      propertyPath: localTransitioner
+      value: 
+      objectReference: {fileID: 1054607798}
     - target: {fileID: 7504354939391992494, guid: 9f31fd99d8fdd6c4fb07fe4cfbe360a7, type: 3}
       propertyPath: m_Name
       value: NetworkedSceneTransitioner

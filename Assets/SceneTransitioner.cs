@@ -12,6 +12,9 @@ public class SceneTransitioner : MonoBehaviour
     [SerializeField]
     private float transitionDurationSeconds;
 
+    //Set here OR whenever NetworkedSceneTransitioner takes care of transition
+    public bool FadeOutTriggered { get; set; }
+
     void Start()
     {
         //skip fade in when entering lobby to avoid abrupt transitions for client connections
@@ -21,18 +24,19 @@ public class SceneTransitioner : MonoBehaviour
         this.animator.SetTrigger("FadeIn");
     }
 
-    public void ChangeScene(Action doSceneChange)
+    public void FadeOut(Action afterFadeOut)
     {
+        this.FadeOutTriggered = true;
         Debug.Log("Transitioning scenes");
-        StartCoroutine(FadeOutThenChangeScene(doSceneChange));
+        StartCoroutine(FadeOutThenChangeScene(afterFadeOut));
     }
 
-    private IEnumerator FadeOutThenChangeScene(Action doSceneChange)
+    private IEnumerator FadeOutThenChangeScene(Action after)
     {
-        animator.SetTrigger("FadeOut");
+        this.animator.SetTrigger("FadeOut");
 
         yield return new WaitForSeconds(transitionDurationSeconds);
 
-        doSceneChange();
+        after();
     }
 }

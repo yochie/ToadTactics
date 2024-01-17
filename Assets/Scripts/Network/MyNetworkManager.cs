@@ -105,7 +105,7 @@ public class MyNetworkManager : NetworkManager
         if (newSceneName == SceneManager.GetActiveScene().name)
             return;
 
-        //Dont fade out when moving to lobby scene
+        //Dont fade out when moving to lobby scene or menu scene (menu scene fadeout always be handled via StopHost wrapper below)
         //Apparently scene name formatting for online scene is not same as that returned by SceneManager.GetActiveScene()...
         if (newSceneName == "Assets/Scenes/Lobby.unity")
         {
@@ -116,23 +116,61 @@ public class MyNetworkManager : NetworkManager
         //Finding by tag since we have a different one for each scene so it would be more trouble to get ref each time new scene is loaded
         GameObject netTransitioner = GameObject.FindWithTag("NetworkedSceneTransitioner");
         GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
-        if (netTransitioner != null && GameController.Singleton != null) {
-            netTransitioner.GetComponent<NetworkedSceneTransitioner>().RpcFadeout();
-            StartCoroutine(this.WaitForFadeoutsBeforeSceneChange(() => base.ServerChangeScene(newSceneName)));
+        if (netTransitioner != null && GameController.Singleton != null)
+        {
+            Debug.Log("Found net transitioner");
+            NetworkedSceneTransitioner netTransitionerComponent = netTransitioner.GetComponent<NetworkedSceneTransitioner>();
+            if (!netTransitionerComponent.HasTriggered)
+            {
+                netTransitionerComponent.RpcFadeout();
+                StartCoroutine(this.WaitForFadeouts(NetworkManager.singleton.numPlayers, () => base.ServerChangeScene(newSceneName)));
+            } else
+                base.ServerChangeScene(newSceneName);
         }
         else if (transitioner != null)
-            transitioner.GetComponent<SceneTransitioner>().ChangeScene(() => base.ServerChangeScene(newSceneName));
+        {
+            Debug.Log("Found local transitioner");
+
+            SceneTransitioner transitionerComponent = transitioner.GetComponent<SceneTransitioner>();
+            //make sure fadeout hasnt already occured elsewhere (e.g. in networked transitioner)
+            if (!transitionerComponent.FadeOutTriggered)
+                transitionerComponent.FadeOut(() => base.ServerChangeScene(newSceneName));
+            else
+                base.ServerChangeScene(newSceneName);
+        }
         else
             base.ServerChangeScene(newSceneName);
-
     }
 
-    private IEnumerator WaitForFadeoutsBeforeSceneChange(Action after)
+    [Server]
+    public void StopHostWithTransitionsOnAllClients()
+    {
+        Debug.LogFormat("Stopping host with scene transitions");
+        if (SceneManager.GetActiveScene().name == "Menu")
+            return;
+
+        GameObject netTransitioner = GameObject.FindWithTag("NetworkedSceneTransitioner");
+        GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
+
+        if (netTransitioner != null && GameController.Singleton != null)
+        {
+            netTransitioner.GetComponent<NetworkedSceneTransitioner>().RpcFadeout();
+            StartCoroutine(this.WaitForFadeouts(NetworkManager.singleton.numPlayers, () => this.StopHost()));
+        }
+        else
+        {
+            //fallback on default
+            Debug.Log("Couldn't find net transitioner to handle host stopping transitions across all clients. Falling back on default StopHost().");
+            this.StopHost();
+        }
+    }
+
+    private IEnumerator WaitForFadeouts(int numClients, Action after)
     {
         if (GameController.Singleton == null)
             yield break; ;
         
-        while (GameController.Singleton.SceneFadeOutOnClients < Utility.NUM_PLAYERS)
+        while (GameController.Singleton.SceneFadeOutOnClients < numClients)
             yield return null;
 
         GameController.Singleton.SceneFadeOutOnClients = 0;

@@ -6,31 +6,23 @@ using UnityEngine;
 
 public class NetworkedSceneTransitioner : NetworkBehaviour
 {
-    [SerializeField]
-    private Animator animator;
 
     [SerializeField]
-    private float transitionDurationSeconds;
+    private SceneTransitioner localTransitioner;
+
+    //checked on server only to see if current scene has already triggered fading out and avoid double trigger
+    public bool HasTriggered { get; set; }
 
     [ClientRpc]
     public void RpcFadeout()
     {
         Debug.Log("Transitioning scenes");
+        this.HasTriggered = true;
 
         Action after = () => {
             GameController.Singleton.CmdNotifySceneFadeOutComplete();        
         };
 
-        StartCoroutine(FadeOutThenChangeScene(after));
-
-    }
-
-    private IEnumerator FadeOutThenChangeScene(Action after)
-    {
-        animator.SetTrigger("FadeOut");
-
-        yield return new WaitForSeconds(transitionDurationSeconds);
-
-        after();
+        this.localTransitioner.FadeOut(after);
     }
 }
