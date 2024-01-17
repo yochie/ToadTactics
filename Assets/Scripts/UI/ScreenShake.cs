@@ -14,8 +14,8 @@ public class ScreenShake : MonoBehaviour
 
     public IEnumerator TriggerScreenShake(float overrideStrength = -1, float overrideDuration = -1)
     {
-        float duration = overrideDuration > 0 ? overrideDuration : this.shakeStrength;
-        float strength = overrideStrength > 0 ? overrideStrength : this.shakeDuration;
+        float duration = overrideDuration > 0 ? overrideDuration : this.shakeDuration;
+        float strength = overrideStrength > 0 ? overrideStrength : this.shakeStrength;
         return this.ShakeCoroutine(duration, strength);
     }
 
