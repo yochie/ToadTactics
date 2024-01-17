@@ -97,6 +97,8 @@ public class MyNetworkManager : NetworkManager
     /// <para>Clients that connect to this server will automatically switch to this scene. This is called automatically if onlineScene or offlineScene are set, but it can be called from user code to switch scenes again while the game is in progress. This automatically sets clients to be not-ready. The clients must call NetworkClient.Ready() again to participate in the new scene.</para>
     /// </summary>
     /// <param name="newSceneName"></param>
+    /// TODO: move this to everywhere that server might initiate scene change so that remote client can properly have fadeout triggers
+    /// currently this doesn't trigger on client whenever it is initiated by a stopHost() call since networked functionalities are shutdown before callback is reached
     public override void ServerChangeScene(string newSceneName)
     {
         Debug.LogFormat("Server changing scene to {0}", newSceneName);
