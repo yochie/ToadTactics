@@ -14,6 +14,7 @@ public class MovementEquipmentSO : EquipmentSO, IEquipmentQuality, IMovementModi
     {
         int currentMoveSpeed = playerCharacter.CurrentStats.moveSpeed;
         playerCharacter.SetCurrentStats(new CharacterStats(playerCharacter.CurrentStats, moveSpeed: currentMoveSpeed + this.MovementOffset));
+        playerCharacter.GrantMovesForTurn(this.MovementOffset);
     }
 
     public Dictionary<string, string> GetStatModificationsDictionnary()

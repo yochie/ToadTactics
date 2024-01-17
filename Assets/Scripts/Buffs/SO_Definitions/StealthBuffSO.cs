@@ -119,6 +119,7 @@ public class StealthBuffSO : ScriptableObject, IConditionalBuff, IStealthModifie
             moveSpeed: playerCharacter.CurrentStats.moveSpeed + this.MovementOffset,
             stealthLayers: playerCharacter.CurrentStats.stealthLayers + this.StealthLayersOffset);
         playerCharacter.SetCurrentStats(newStats);
+        playerCharacter.GrantMovesForTurn(this.MovementOffset);
     }
 
     public void RemoveStatModification(PlayerCharacter playerCharacter)

@@ -25,6 +25,6 @@ public class DamagePreview : MonoBehaviour
     void Update()
     {
         if(displayed)
-            this.image.color = Utility.SetAlpha(this.image.color, Mathf.PingPong(Time.time, 1f));
+            this.image.color = Utility.SetAlpha(this.image.color, Mathf.PingPong(Time.time * 2, 1f));
     }
 }
