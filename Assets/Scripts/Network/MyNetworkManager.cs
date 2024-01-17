@@ -99,8 +99,17 @@ public class MyNetworkManager : NetworkManager
     /// <param name="newSceneName"></param>
     public override void ServerChangeScene(string newSceneName)
     {
+        Debug.LogFormat("Server changing scene to {0}", newSceneName);
         if (newSceneName == SceneManager.GetActiveScene().name)
             return;
+
+        //Dont fade out when moving to lobby scene
+        //Apparently scene name formatting for online scene is not same as that returned by SceneManager.GetActiveScene()...
+        if (newSceneName == "Assets/Scenes/Lobby.unity")
+        {
+            base.ServerChangeScene(newSceneName);
+            return;
+        }
 
         //Finding by tag since we have a different one for each scene so it would be more trouble to get ref each time new scene is loaded
         GameObject netTransitioner = GameObject.FindWithTag("NetworkedSceneTransitioner");

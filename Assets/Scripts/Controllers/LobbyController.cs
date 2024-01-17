@@ -171,7 +171,12 @@ public class LobbyController : NetworkBehaviour
     {
         if (!isServer)
         {
-            NetworkManager.singleton.StopClient();        
+            //since Network manager doesnt handle scene change here, manually play transition instead of usual hook
+            GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
+            if (transitioner != null)
+                transitioner.GetComponent<SceneTransitioner>().ChangeScene(() => NetworkManager.singleton.StopClient());
+            else
+                NetworkManager.singleton.StopClient();        
         }
     }
 }
