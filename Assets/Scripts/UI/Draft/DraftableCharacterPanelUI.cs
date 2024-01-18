@@ -43,7 +43,7 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
         this.Init(classID);
     }
 
-    public void Init(int classID, bool asKingCandidate = false)
+    public void Init(int classID, bool forKingAssignment = false)
     {
         this.holdsClassID = classID;
 
@@ -54,19 +54,22 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderForClassDefaults(classData);
-        this.statsTable.RenderForInactiveCharacterStats(classData.stats, asKingCandidate);
-        this.assigningKing = asKingCandidate;
+            
+        this.assigningKing = forKingAssignment;
 
-        if (asKingCandidate)
+        if (forKingAssignment)
         {
+            this.statsTable.RenderCharacterStatsForKingAssignment(classData.stats);
             //hides draft buttons
             this.SetButtonActiveState(state: false, asKingCandidate: false);
             //displays crown buttons
             this.SetButtonActiveState(state: true, asKingCandidate: true);
         }
-        else
+        else {
+            this.statsTable.RenderCharacterStats(classData.stats, isAKing: false);
             //hide draft buttons at start, enabled after dice roll
             this.SetButtonActiveState(false);
+        }
     }
 
     [TargetRpc]

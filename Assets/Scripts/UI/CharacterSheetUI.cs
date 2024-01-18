@@ -53,7 +53,7 @@ public class CharacterSheetUI : MonoBehaviour
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderForClassDefaults(classData);
-        this.statsTable.RenderForInactiveCharacterStats(classData.stats, isAKing);
+        this.statsTable.RenderCharacterStats(classData.stats, isAKing);
     }
 
     public void FillWithActiveCharacterData(int classID, CharacterStats currentStats, bool isAKing, List<string> equipmentIDs, PlayerCharacter character)
@@ -67,7 +67,7 @@ public class CharacterSheetUI : MonoBehaviour
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderForLiveCharacter(character, withCooldowns: GameController.Singleton.CurrentPhaseID == GamePhaseID.gameplay);
-        this.statsTable.RenderForActiveCharacterStats(currentStats, isAKing);
+        this.statsTable.RenderCharacterStats(currentStats, isAKing);
         GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
         equipmentRow.SetActive(equipmentIDs.Count > 0);
         this.equipmentTable.SetupWithEquipments(equipmentIDs);

@@ -44,7 +44,7 @@ public class AssignmentCharacterPanelUI : MonoBehaviour
         this.nameLabel.text = classData.name;
         this.descriptionLabel.text = classData.description;
         this.abilitiesTable.RenderForClassDefaults(classData);
-        this.statsTable.RenderForActiveCharacterStats(statsWithPreviousEquipments, asKing);
+        this.statsTable.RenderCharacterStats(statsWithPreviousEquipments, asKing);
         //this.statsTable.RenderForInactiveCharacterStats(classData.stats, asKing);
         GameObject equipmentRow = this.equipmentTable.transform.parent.gameObject;
         equipmentRow.SetActive(previouslyAssignedEquipmentIDs.Count > 0);
@@ -89,6 +89,6 @@ public class AssignmentCharacterPanelUI : MonoBehaviour
 
     internal void UpdateStats(CharacterStats currentStats, bool asKing)
     {
-        this.statsTable.RenderForActiveCharacterStats(currentStats, asKing);
+        this.statsTable.RenderCharacterStats(currentStats, asKing);
     }
 }

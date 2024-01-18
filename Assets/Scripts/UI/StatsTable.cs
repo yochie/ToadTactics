@@ -26,19 +26,19 @@ public class StatsTable : MonoBehaviour
         this.RenderFromDictionary(toPrint);
     }
 
-    public void RenderForInactiveCharacterStats(CharacterStats stats, bool isAKing)
+    public void RenderCharacterStatsForKingAssignment(CharacterStats stats)
     {
         var toPrint = stats.GetPrintableStatsDictionary();
-        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing : isAKing, forActiveCharacter: false);
+        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing : false, forKingAssignment: true);
     }
 
-    public void RenderForActiveCharacterStats(CharacterStats stats, bool isAKing)
+    public void RenderCharacterStats(CharacterStats stats, bool isAKing)
     {
         var toPrint = stats.GetPrintableStatsDictionary();
-        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing: isAKing, forActiveCharacter: true);
+        this.RenderFromDictionaryForCharacter(stats: toPrint, isAKing: isAKing, forKingAssignment: false);
     }
 
-    internal void RenderFromDictionaryForCharacter(Dictionary<string, string> stats, bool isAKing, bool forActiveCharacter)
+    internal void RenderFromDictionaryForCharacter(Dictionary<string, string> stats, bool isAKing, bool forKingAssignment)
     {
         this.Clear();
         foreach (KeyValuePair<string, string> stat in stats)
@@ -49,9 +49,9 @@ public class StatsTable : MonoBehaviour
 
             GameObject valueLabelObject = Instantiate(this.statValueLabelPrefab, this.statsValueTable.gameObject.transform);
             TextMeshProUGUI valueLabel = valueLabelObject.GetComponent<TextMeshProUGUI>();
-            if(isAKing && stat.Key == "Health")
+            if((isAKing || forKingAssignment) && stat.Key == "Health")
             {
-                if (!forActiveCharacter)
+                if (forKingAssignment)
                 {
                     string baseHealth = stat.Value;
                     string buffedHealth = (Utility.ApplyKingLifeBuff(Int32.Parse(baseHealth))).ToString();
