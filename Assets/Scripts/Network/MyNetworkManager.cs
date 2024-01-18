@@ -101,7 +101,7 @@ public class MyNetworkManager : NetworkManager
     /// currently this doesn't trigger on client whenever it is initiated by a stopHost() call since networked functionalities are shutdown before callback is reached
     public override void ServerChangeScene(string newSceneName)
     {
-        Debug.LogFormat("Server changing scene to {0}", newSceneName);
+        //Debug.LogFormat("Server changing scene to {0}", newSceneName);
         if (newSceneName == SceneManager.GetActiveScene().name)
             return;
 
