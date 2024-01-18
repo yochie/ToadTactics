@@ -16,7 +16,7 @@ public class NetworkedSceneTransitioner : NetworkBehaviour
     [ClientRpc]
     public void RpcFadeout()
     {
-        Debug.Log("Transitioning scenes");
+        //Debug.Log("Transitioning scenes");
         this.HasTriggered = true;
 
         Action after = () => {

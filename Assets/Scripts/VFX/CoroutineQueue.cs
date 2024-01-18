@@ -120,7 +120,7 @@ public class CoroutineQueue
 	/// <param name="coroutine">Coroutine to run</param>
 	private IEnumerator CoroutineRunner(IEnumerator coroutine)
 	{
-		Debug.Log("Coroutine started");
+		//Debug.Log("Coroutine started");
 
 		while (coroutine.MoveNext())
 		{
@@ -128,7 +128,7 @@ public class CoroutineQueue
 			yield return coroutine.Current;
 		}
 		
-		Debug.Log("Coroutine ended");
+		//Debug.Log("Coroutine ended");
 
 		this.numCompletedInBatch++;
 	}

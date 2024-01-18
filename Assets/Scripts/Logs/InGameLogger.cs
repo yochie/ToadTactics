@@ -19,7 +19,7 @@ public class InGameLogger : MonoBehaviour, ILogger
 
     private void Awake()
     {
-        Debug.Log("Awaking InGameLogger");
+        //Debug.Log("Awaking InGameLogger");
         if (MasterLogger.Singleton == null)
             throw new System.Exception("MasterLogger doesn't exist.");
 

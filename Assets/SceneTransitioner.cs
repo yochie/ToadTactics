@@ -27,7 +27,7 @@ public class SceneTransitioner : MonoBehaviour
     public void FadeOut(Action afterFadeOut)
     {
         this.FadeOutTriggered = true;
-        Debug.Log("Transitioning scenes");
+        //Debug.Log("Transitioning scenes");
         StartCoroutine(FadeOutThenChangeScene(afterFadeOut));
     }
 

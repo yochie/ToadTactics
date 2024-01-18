@@ -118,7 +118,7 @@ public class MyNetworkManager : NetworkManager
         GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
         if (netTransitioner != null && GameController.Singleton != null)
         {
-            Debug.Log("Found net transitioner");
+            //Debug.Log("Found net transitioner");
             NetworkedSceneTransitioner netTransitionerComponent = netTransitioner.GetComponent<NetworkedSceneTransitioner>();
             if (!netTransitionerComponent.HasTriggered)
             {
@@ -129,7 +129,7 @@ public class MyNetworkManager : NetworkManager
         }
         else if (transitioner != null)
         {
-            Debug.Log("Found local transitioner");
+            //Debug.Log("Found local transitioner");
 
             SceneTransitioner transitionerComponent = transitioner.GetComponent<SceneTransitioner>();
             //make sure fadeout hasnt already occured elsewhere (e.g. in networked transitioner)

@@ -44,6 +44,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        if (movingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't perform move from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            return;
+        }
         IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
         moveAction.SetupPath();
         this.TryAction(moveAction, isFullAction: true, startingMode: ControlMode.move);

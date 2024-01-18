@@ -10,10 +10,10 @@ internal class BuffManager : NetworkBehaviour
 
     private void Awake()
     {
-        Debug.Log("BuffManager awoken");
+        //Debug.Log("BuffManager awoken");
         if (BuffManager.Singleton != null)
         {
-            Debug.Log("Destroying new buffmanager to avoid duplicate");
+            //Debug.Log("Destroying new buffmanager to avoid duplicate");
             Destroy(BuffManager.Singleton.gameObject);
             return;
         }            

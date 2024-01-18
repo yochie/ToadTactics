@@ -10,10 +10,10 @@ public class DebugLogger : MonoBehaviour, ILogger
 
     private void Awake()
     {
-        Debug.Log("Awaking DebugLogger");
+        //Debug.Log("Awaking DebugLogger");
         if (DebugLogger.Singleton != null)
         {
-            Debug.Log("Destroying duplicated DebugLogger");
+            //Debug.Log("Destroying duplicated DebugLogger");
             Destroy(this.gameObject);
             return;
         }

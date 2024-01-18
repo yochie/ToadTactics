@@ -54,7 +54,7 @@ public class MapInputHandler : NetworkBehaviour
         if (MapInputHandler.Singleton == null)
             MapInputHandler.Singleton = this;
         GameController.Singleton.mapInputHandler = this;
-        Debug.Log("MapInputHandler awakened");
+        //Debug.Log("MapInputHandler awakened");
         this.playingCharacter = null;
         this.SelectedHex = null;
         this.HoveredHex = null;      
@@ -468,7 +468,7 @@ public class MapInputHandler : NetworkBehaviour
 
     public void OnDestroy()
     {
-        Debug.Log("Destroying map input handler");
+        //Debug.Log("Destroying map input handler");
         this.SetCursorToDefault();   
     }
 }

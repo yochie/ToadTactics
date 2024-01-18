@@ -41,12 +41,12 @@ public class MenuController : MonoBehaviour
         if (GameController.Singleton != null)
         {
             Destroy(GameController.Singleton.gameObject);
-            Debug.Log("Previous GameController destroyed");
+            //Debug.Log("Previous GameController destroyed");
         }
 
         if (MasterLogger.Singleton != null) { 
             Destroy(MasterLogger.Singleton.gameObject);
-            Debug.Log("Previous MasterLogger destroyed");
+            //Debug.Log("Previous MasterLogger destroyed");
         }
     }
 
