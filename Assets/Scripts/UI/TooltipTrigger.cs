@@ -15,7 +15,9 @@ public class TooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        
         this.tooltipObject.SetActive(true);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(this.tooltipObject.gameObject.transform.GetComponent<RectTransform>());
         if (highlight != null)
             highlight.color = Utility.SetAlpha(highlight.color, 0.2f);
     }

@@ -168,6 +168,7 @@ public readonly struct CharacterStats : IEquatable<CharacterStats>
         }
     }
 
+    //Careful: names defined here are used to map to Icons on character sheets
     public Dictionary<string, string> GetPrintableStatsDictionary()
     {
         Dictionary<string, string> toPrint = new();

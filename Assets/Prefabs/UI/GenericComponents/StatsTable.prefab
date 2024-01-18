@@ -138,8 +138,8 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 0
+  m_Spacing: 5
+  m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
@@ -159,10 +159,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 100
+  m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: -1
+  m_PreferredHeight: 100
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -219,7 +219,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e691e519d383ece4e84c0e1a803f3347, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statNameLabelPrefab: {fileID: 3982768867530893486, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
+  statNameAsIconPrefab: {fileID: 6713226390018223304, guid: 1c399245502fccc4190c83af51c7bce3, type: 3}
+  statNameAsStringPrefab: {fileID: 3982768867530893486, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
   statValueLabelPrefab: {fileID: 3982768867530893486, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
   statsNameTable: {fileID: 2886596446810999707}
   statsValueTable: {fileID: 898683605779463988}
@@ -241,7 +242,7 @@ MonoBehaviour:
     m_Top: 10
     m_Bottom: 10
   m_ChildAlignment: 4
-  m_Spacing: 10
+  m_Spacing: 30
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1

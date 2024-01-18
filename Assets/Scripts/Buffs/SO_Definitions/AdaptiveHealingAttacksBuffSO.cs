@@ -53,13 +53,13 @@ public class AdaptiveHealingAttacksBuffSO : ScriptableObject, IBuffDataSO, IAtta
 
     public string GetTooltipDescription()
     {
-        return "Attacks heal allies but damage enemies.";
+        return "Attacks heal allies but damage enemies to lesser extent.";
     }
 
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
         Dictionary<string, string> statsDictionary = new();
-        statsDictionary.Add("Damage/Heal", this.DamageToHealRatio.ToString());
+        statsDictionary.Add("Damage ratio", this.DamageToHealRatio.ToString());
         statsDictionary.Add("Damage type", Utility.FormattedDamageType(this.DamageConversion));
 
         return statsDictionary;

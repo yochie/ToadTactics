@@ -531,7 +531,7 @@ MonoBehaviour:
   nameLabel: {fileID: 4169551706043492375}
   descriptionLabel: {fileID: 869430759424474439}
   abilitiesTable: {fileID: 1515759892539177826}
-  statsTable: {fileID: 4231460053449590520}
+  statsTable: {fileID: 8018368677664497929}
   equipmentTable: {fileID: 99942708880899050}
   closeButton: {fileID: 6804896099933112046}
   characterSheetClosedEvent: {fileID: 11400000, guid: be2b8f8535603724884e28e795b5aae3, type: 2}
@@ -585,17 +585,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4231460053449590520 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3085306249541329150, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
-  m_PrefabInstance: {fileID: 1182229881005172230}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e691e519d383ece4e84c0e1a803f3347, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &5386626585613462693 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6532818186172107427, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
@@ -606,3 +595,14 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5622681612226273512, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
   m_PrefabInstance: {fileID: 1182229881005172230}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8018368677664497929 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9164517397273888527, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
+  m_PrefabInstance: {fileID: 1182229881005172230}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e691e519d383ece4e84c0e1a803f3347, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -436,10 +436,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: {fileID: 1348989923680759332}
   description: {fileID: 8823372241432322573}
-  statsTable: {fileID: 3240095222284271949}
---- !u!114 &3240095222284271949 stripped
+  statsTable: {fileID: 4512422862875067909}
+--- !u!114 &4512422862875067909 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 446212294772824293, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1466267373327376301, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
   m_PrefabInstance: {fileID: 3082259605425314216}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
