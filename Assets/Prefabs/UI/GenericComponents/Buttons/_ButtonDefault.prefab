@@ -99,7 +99,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.5849056, g: 0.54765385, b: 0.23948023, a: 1}
+    m_NormalColor: {r: 0.43921572, g: 0.33333334, b: 0, a: 1}
     m_HighlightedColor: {r: 0.7264151, g: 0.6846431, b: 0.3179779, a: 1}
     m_PressedColor: {r: 0.4509804, g: 0.42745098, b: 0.18431373, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -250,6 +250,22 @@ PrefabInstance:
     - target: {fileID: 7675603558607370916, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
       propertyPath: m_fontStyle
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7675603558607370916, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7675603558607370916, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.8862746
+      objectReference: {fileID: 0}
+    - target: {fileID: 7675603558607370916, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.9686275
+      objectReference: {fileID: 0}
+    - target: {fileID: 7675603558607370916, guid: 30146c36ce56cde4197426a05359dce8, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4288275191
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
