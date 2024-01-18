@@ -37,6 +37,10 @@ public class EscapeMenuController : MonoBehaviour
         this.isOpened = open;
         this.grayOutPanel.SetActive(open);
         this.buttonList.SetActive(open);
+        if (!open)
+        {
+            this.CloseSettingsWindow();
+        }
     }
 
     public void SwitchEscapeMenu()
@@ -87,9 +91,18 @@ public class EscapeMenuController : MonoBehaviour
         #endif
     }
 
-    public void CloseSettings()
+    //for close button clicked on settings window
+    public void ReturnToEscapeMenu()
     {
         this.buttonList.SetActive(true);
+        this.CloseSettingsWindow();
+    }
+
+    //close window from any state
+    //used for closing window normal and closing window when escape menu is exited
+    private void CloseSettingsWindow()
+    {
         this.optionsPanel.gameObject.SetActive(false);
+
     }
 }

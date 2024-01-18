@@ -254,7 +254,7 @@ PrefabInstance:
       objectReference: {fileID: 3088847759534333448}
     - target: {fileID: 1166773740961673612, guid: a8793d8d3e42de24f8aa893f5a9bd45b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CloseSettings
+      value: ReturnToEscapeMenu
       objectReference: {fileID: 0}
     - target: {fileID: 1166773740961673612, guid: a8793d8d3e42de24f8aa893f5a9bd45b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
