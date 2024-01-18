@@ -58,12 +58,13 @@ public class ActionExecutor : NetworkBehaviour
     public void CmdPreviewMoveTo(Hex source, Hex destination, NetworkConnectionToClient sender = null)
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        if (!source.HoldsACharacter())
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        if (movingCharacter == null)
         {
             Debug.Log("Previewing move from source without character... should not happen.");
             return;
         }
-        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        
         IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, destination);
 
         moveAction.SetupPath();
@@ -80,6 +81,12 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        if (movingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't perform custom move from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            return false;
+        }
+
         CustomMoveAction moveAction = ActionFactory.CreateCustomMoveAction(sender, playerID, movingCharacter, source, dest);
         moveAction.SetupPath();
         bool success = this.TryAction(moveAction, isFullAction: false, startingMode: ControlMode.move);
@@ -93,6 +100,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        if (movingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't preview custom move from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            return ActionEffectPreview.None();
+        }
         CustomMoveAction moveAction = ActionFactory.CreateCustomMoveAction(sender, playerID, movingCharacter, source, dest);
         moveAction.SetupPath();
         return moveAction.PreviewEffect();
@@ -104,6 +116,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        if (attackingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't perform attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            return;
+        }
         IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
         List<IAttackEnhancer> attackEnhancers = attackAction.ActorCharacter.GetAttackEnhancers();
         foreach (IAttackEnhancer attackEnhancer in attackEnhancers)
@@ -115,8 +132,12 @@ public class ActionExecutor : NetworkBehaviour
         if (attackAction.ServerValidate())
         {
             int attackedCharacterId = -1;
+
             if (target.HoldsACharacter())
-                attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+            {
+                PlayerCharacter attackedCharacter = target.GetHeldCharacterObject();
+                attackedCharacterId = attackedCharacter == null ? -1 : attackedCharacter.CharClassID;
+            }
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
             this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
         }
@@ -128,6 +149,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        if (attackingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't preview attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            return;
+        }
         IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, destination);
 
         List<IAttackEnhancer> attackEnhancers = attackAction.ActorCharacter.GetAttackEnhancers();
@@ -148,6 +174,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        if (attackingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't perform ballista use from {0} ({1}), it contains no character.", source, source.coordinates);
+            return;
+        }
         IAttackAction attackAction = ActionFactory.CreateBallistaAttackAction(sender,
                                                                             playerID,
                                                                             attackingCharacter,
@@ -169,7 +200,10 @@ public class ActionExecutor : NetworkBehaviour
         {
             int attackedCharacterId = -1;
             if (target.HoldsACharacter())
-                attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+            {
+                PlayerCharacter attackedCharacter = target.GetHeldCharacterObject();
+                attackedCharacterId = attackedCharacter == null ? -1 : attackedCharacter.CharClassID;
+            }
 
             //Ballista usage is considered the same as attack for event game logic event listeners (e.g. rogue stealth)
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
@@ -183,6 +217,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        if (attackingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't perform ballista use preview from {0} ({1}), it contains no character.", source, source.coordinates);
+            return;
+        }
         IAttackAction attackAction = ActionFactory.CreateBallistaAttackAction(sender,
                                                                                     playerID,
                                                                                     attackingCharacter,
@@ -216,6 +255,11 @@ public class ActionExecutor : NetworkBehaviour
             return;
         }
         PlayerCharacter actor = ballistaHex.GetHeldCharacterObject();
+        if (actor == null)
+        {
+            Debug.LogFormat("Couldn't perform ballista reload from {0} ({1}), it contains no character.", ballistaHex, ballistaHex.coordinates);
+            return;
+        }
         if (!actor.HasAvailableAttacks())
         {
             Debug.Log("Ballista reload attempt without character attacks remaining");
@@ -238,6 +282,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
+        if (usingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't ability use from {0} ({1}), it contains no character.", source, source.coordinates);
+            return;
+        }
         IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, playerID, usingCharacter, abilityStats, source, target);
         //TODO : fix double validation
         //required to trigger ability animation before targets take damage animation
@@ -255,6 +304,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
+        if (usingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't preview ability use from {0} ({1}), it contains no character.", source, source.coordinates);
+            return;
+        }
         IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, playerID, usingCharacter, abilityStats, source, target);
         if (!abilityAction.ServerValidate())
             return;
@@ -270,6 +324,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        if (attackingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't perform ability attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            return;
+        }
         CustomAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(sender,
                                                                                    playerID,
                                                                                    attackingCharacter,
@@ -282,7 +341,10 @@ public class ActionExecutor : NetworkBehaviour
         {
             int attackedCharacterId = -1;
             if (target.HoldsACharacter())
-                attackedCharacterId = target.GetHeldCharacterObject().CharClassID;
+            {
+                PlayerCharacter attackedCharacter = target.GetHeldCharacterObject();
+                attackedCharacterId = attackedCharacter == null ? -1 : attackedCharacter.CharClassID;
+            }
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
             //this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
         }
@@ -295,6 +357,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        if (attackingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't preview ability attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            return ActionEffectPreview.None();
+        }
         CustomAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(
                                                                  sender,
                                                                  playerID,
@@ -325,6 +392,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        if (attackingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't perform custom attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            return;
+        }
         CustomAttackAction customAttackAction = ActionFactory.CreateCustomAttackAction(
                                                                  sender,
                                                                  playerID,
@@ -362,6 +434,11 @@ public class ActionExecutor : NetworkBehaviour
     {
         int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        if (attackingCharacter == null)
+        {
+            Debug.LogFormat("Couldn't preview custom attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            return ActionEffectPreview.None();
+        }
         CustomAttackAction customAttackAction = ActionFactory.CreateCustomAttackAction(
                                                                  sender,
                                                                  playerID,

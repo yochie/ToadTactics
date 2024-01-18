@@ -68,20 +68,23 @@ public class DefaultMoveAction : IMoveAction
             //Validate path
             if (this.movePath == null)
             {
-                Debug.Log("Client requested move without path to destination");
+                Debug.Log("Move validation failed: no path to destination");
                 return false;
             }
 
             if (this.moveCost > this.ActorCharacter.RemainingMoves)
             {
-                Debug.Log("Client requested move outside his current range");
+                Debug.Log("Move validation failed : not enough moves remaining for path taken");
                 return false;
             }
 
             return true;
-        }            
+        }
         else
+        {
+            Debug.Log("Move validation failed");
             return false;
+        }
     }
 
     protected void MoveToTile(Hex previousHex, Hex nextHex, INetworkedLogger logger)

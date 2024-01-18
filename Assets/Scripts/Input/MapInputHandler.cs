@@ -72,6 +72,15 @@ public class MapInputHandler : NetworkBehaviour
         if (!this.allowInput)
             return;
 
+        if (this.SelectedHex == null)
+        {
+            Debug.Log("Ignoring click : No selected hex.");
+            return;
+        } else if (!this.SelectedHex.HoldsACharacter()) {
+            Debug.Log("Ignoring click : Selected hex doesn't hold a character.");
+            return;
+        }
+
         switch (this.CurrentControlMode)
         {
             case ControlMode.none:
@@ -90,7 +99,6 @@ public class MapInputHandler : NetworkBehaviour
                     return;
                 ActionExecutor.Singleton.CmdUseAbility(this.SelectedHex, clickedHex, this.currentActivatedAbilityStats);
                 break;
-
             case ControlMode.useBallista:
                 ActionExecutor.Singleton.CmdUseBallista(this.SelectedHex, clickedHex);
                 break;
@@ -371,6 +379,10 @@ public class MapInputHandler : NetworkBehaviour
         if (mode == ControlMode.useAbility)
         {
             int classID = GameController.Singleton.GetCharacterIDForTurn();
+            if (classID == -1) {
+                Debug.Log("Couldn't setup ability usage, GameController could find character ID for turn.");
+                return;
+            }
             PlayerCharacter currentlyPlayingCharacter = GameController.Singleton.PlayerCharactersByID[classID];
 
             //TODO: fetch correct ability here instead of juste getting first one
@@ -378,7 +390,8 @@ public class MapInputHandler : NetworkBehaviour
                 currentlyPlayingCharacter.charClass.abilities.Count < 1 ||
                 currentlyPlayingCharacter.charClass.abilities[0].isPassive)
             {
-                throw new System.Exception("Trying to use ability while character has no defined activated abilities to fetch.");
+                Debug.Log("Trying to use ability while character has no defined activated abilities to fetch.");
+                return;
             }                
              else
             {
@@ -407,7 +420,7 @@ public class MapInputHandler : NetworkBehaviour
         int playingCharID = GameController.Singleton.GetCharacterIDForTurn();
         if(playingCharID == -1)
         {
-            Debug.Log("Trying to select hex but could not get ID for playing character");
+            Debug.Log("ERROR : Trying to select hex but could not get ID for playing character");
             return;
         }
         HexCoordinates toSelectCoords = Map.Singleton.characterPositions[GameController.Singleton.GetCharacterIDForTurn()];
@@ -430,7 +443,7 @@ public class MapInputHandler : NetworkBehaviour
     [ClientRpc]
     public void RpcSetControlModeOnAllClients(ControlMode mode)
     {
-        this.SetControlMode(mode, null);
+        this.SetControlMode(mode);
     }
 
     //public void OnCharacterSheetDisplayed(int classID)

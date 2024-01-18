@@ -60,10 +60,16 @@ internal class AreaGenerator
         {
             throw new Exception("GetHexesForTeam is being used with invalid area type");
         }
-
-        int ownPlayerID = sourceHex.GetHeldCharacterObject().OwnerID;
-        int teamToTarget = abilityAreaType == AreaType.ownTeam ? ownPlayerID : GameController.Singleton.OtherPlayer(ownPlayerID);
         List<Hex> teamHexes = new();
+        PlayerCharacter sourceCharacter = sourceHex.GetHeldCharacterObject();
+        if (sourceCharacter == null)
+        {
+            Debug.LogFormat("Couldn't get hexes for team from {0} ({1}), it contains no character.", sourceHex, sourceHex.coordinates);
+            return teamHexes;
+        }
+        int ownPlayerID = sourceCharacter.OwnerID;
+        int teamToTarget = abilityAreaType == AreaType.ownTeam ? ownPlayerID : GameController.Singleton.OtherPlayer(ownPlayerID);
+
         foreach(var (charID, ownerID) in draftedCharacterOwners)
         {
             if (ownerID == teamToTarget)
