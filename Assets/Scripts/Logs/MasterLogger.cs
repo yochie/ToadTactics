@@ -14,10 +14,10 @@ public class MasterLogger : NetworkBehaviour, INetworkedLogger
 
     private void Awake()
     {
-        Debug.Log("Awaking MasterLogger");
+        //Debug.Log("Awaking MasterLogger");
         if (MasterLogger.Singleton != null)
         {
-            Debug.Log("Destroying duplicated MasterLogger");
+            //Debug.Log("Destroying duplicated MasterLogger");
             Destroy(this.gameObject);
             return;
         }

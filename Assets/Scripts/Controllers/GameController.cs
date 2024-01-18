@@ -155,10 +155,10 @@ public class GameController : NetworkBehaviour
 
     private void Awake()
     {
-        Debug.Log("Gamecontroller awoken");
+        //Debug.Log("Gamecontroller awoken");
         if (GameController.Singleton != null)
         {
-            Debug.Log("Destroying old Gamecontroller to avoid duplicate");
+            //Debug.Log("Destroying old Gamecontroller to avoid duplicate");
             Destroy(GameController.Singleton.gameObject);
         }
         GameController.Singleton = this;
