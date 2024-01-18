@@ -29,7 +29,7 @@ public interface ITargetedAction : IAction
             (action.RequiresLOS && !MapPathfinder.LOSReaches(actorHex, targetedHex, range))
             )
         {
-            Debug.Log("Target validation failed");
+            //Debug.Log("Target validation failed");
             return false;
         }
             

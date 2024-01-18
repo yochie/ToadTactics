@@ -49,7 +49,7 @@ public class RootBuffSO : ScriptableObject, IAppliablBuffDataSO
     }
     public string GetTooltipDescription()
     {
-        return string.Format("Prevents movement and use of movement abilities.");
+        return string.Format("Prevents movement.");
     }
 
     public Dictionary<string, string> GetBuffStatsDictionary()

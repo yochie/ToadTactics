@@ -57,24 +57,35 @@ public class DefaultMoveAction : IMoveAction
 
     public virtual bool ServerValidate()
     {
-        if (IAction.ValidateBasicAction(this) &&
-            !this.TargetHex.HoldsACharacter() &&
+        //logs itself
+        if (!IAction.ValidateBasicAction(this))
+        {
+            return false;
+        }
+
+        if (!this.TargetHex.HoldsACharacter() &&
             !this.TargetHex.HoldsACorpse() &&
             !this.TargetHex.HoldsAnObstacle() &&
             this.ActorCharacter.HasAvailableMoves() &&
-            this.ActorCharacter.CanMove &&
-            ITargetedAction.ValidateTarget(this))
+            this.ActorCharacter.CanMove
+            )
         {
+            //logs itself
+            if (!ITargetedAction.ValidateTarget(this))
+            {
+                return false;
+            }
+
             //Validate path
             if (this.movePath == null)
             {
-                Debug.Log("Move validation failed: no path to destination");
+                //Debug.Log("Move validation failed: no path to destination");
                 return false;
             }
 
             if (this.moveCost > this.ActorCharacter.RemainingMoves)
             {
-                Debug.Log("Move validation failed : not enough moves remaining for path taken");
+                //Debug.Log("Move validation failed : not enough moves remaining for path taken");
                 return false;
             }
 
@@ -82,7 +93,7 @@ public class DefaultMoveAction : IMoveAction
         }
         else
         {
-            Debug.Log("Move validation failed");
+            //Debug.Log("Move validation failed");
             return false;
         }
     }

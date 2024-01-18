@@ -70,7 +70,7 @@ public class DefaultAttackAction : IAttackAction
         int critRolledDamage = isCrit ? Utility.CalculateCritDamage(this.Damage, this.CritMultiplier) : this.Damage;
 
         Action<int> logMessageWithDamage = new((int rawDamage) => {
-            string message = string.Format("{0}'s <b>{1}</b> hit {2} for <color={6}><b>{3} {4}</color></b>{5}",
+            string message = string.Format("{0}'s <b>{1}</b> hit {2} for <color={6}><b>{3} {4}</b></color>{5}",
             this.ActorCharacter.charClass.name,
             this.DamageSourceName,
             defenderCharacter.charClass.name,
@@ -139,13 +139,19 @@ public class DefaultAttackAction : IAttackAction
     [Server]
     public virtual bool ServerValidate()
     {
-        if (IAction.ValidateBasicAction(this) &&
-            this.ActorCharacter.HasAvailableAttacks() &&
-            ITargetedAction.ValidateTarget(this)
-            )
-            return true;
-        else
+        if (!IAction.ValidateBasicAction(this))
             return false;
+        
+        if (!this.ActorCharacter.HasAvailableAttacks())
+        {
+            //Debug.Log("Attack validation failed : no available attacks.");
+            return false;
+        }
+
+        if(!ITargetedAction.ValidateTarget(this))
+            return false;
+
+        return true;
     }
 
     [Server]
