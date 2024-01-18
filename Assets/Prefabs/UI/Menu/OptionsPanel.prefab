@@ -4002,7 +4002,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3959135534570471067, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 496.8357
+      value: 458.8
       objectReference: {fileID: 0}
     - target: {fileID: 3959135534570471067, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -4010,11 +4010,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3959135534570471067, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -220.8
       objectReference: {fileID: 0}
     - target: {fileID: 4417395634080459155, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417395634080459155, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4417395634080459155, guid: b5837c07fec914e47880d7268ef6e7ec, type: 3}
       propertyPath: m_ChildControlHeight
