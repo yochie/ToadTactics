@@ -200,5 +200,5 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   flashDurationSeconds: 1.5
-  soundEffect: {fileID: 8300000, guid: f82f179d1e4063247a497e28571f0da4, type: 3}
+  soundEffect: {fileID: 8300000, guid: 94f18150be4d3ab48828fe888117b58a, type: 3}
   treasureRevealDurationSeconds: 3

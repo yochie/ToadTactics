@@ -146,8 +146,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3491a95a726c8614ca79b9e6974240fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonHoverSound: {fileID: 8300000, guid: 6e02fc6c7504d614b93d49e11c0695cd, type: 3}
-  buttonClickSound: {fileID: 8300000, guid: 5bab430401bed9c4c9b5ae663fc8ae22, type: 3}
+  buttonHoverSound: {fileID: 8300000, guid: 79b09e048778c064598a07fcfc840fdf, type: 3}
+  buttonClickSound: {fileID: 8300000, guid: 58f7b053edce9664baad3e540c297d5f, type: 3}
   forButton: {fileID: 5309594732953195805}
 --- !u!1001 &5418818944250996116
 PrefabInstance:

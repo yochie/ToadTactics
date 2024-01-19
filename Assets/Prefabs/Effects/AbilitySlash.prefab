@@ -99,7 +99,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: -1570363049206819142}
-  soundEffect: {fileID: 8300000, guid: da990c8fc689fa146a388ef6f643d246, type: 3}
+  soundEffect: {fileID: 8300000, guid: 7efc62eb2212d6c4abc5d7c7d8685c8a, type: 3}
+  soundEarlyExitSeconds: 0
 --- !u!95 &-1570363049206819142
 Animator:
   serializedVersion: 5

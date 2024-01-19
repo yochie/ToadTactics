@@ -347,9 +347,9 @@ MonoBehaviour:
   healingDamagePopupColor: {r: 0.45882353, g: 0.8784314, b: 0.56078434, a: 1}
   damagePopupPrefab: {fileID: 6807805651193300176, guid: c88de8da159f6e04797513d474cf9f12, type: 3}
   damagePopupOffset: {x: 2, y: 5, z: 0}
-  appleSoundEffect: {fileID: 8300000, guid: ef6f50e88d3b17648b6da2474861754a, type: 3}
-  hurtSoundEffect: {fileID: 8300000, guid: aaee06d5a5227bc4680507dddac2cf61, type: 3}
-  healSoundEffect: {fileID: 8300000, guid: a81c090231e6b88438627b19a46f533c, type: 3}
+  appleSoundEffect: {fileID: 8300000, guid: ee04becb3c0717f4bb4be579eeb3e64d, type: 3}
+  hurtSoundEffect: {fileID: 8300000, guid: 604d20b3145ac79438880794c7325f96, type: 3}
+  healSoundEffect: {fileID: 8300000, guid: b4d8450464348584c8e07ac478a8922e, type: 3}
   spriteShaker: {fileID: 6918357154697179759}
 --- !u!114 &5785813856046365177
 MonoBehaviour:
@@ -557,8 +557,8 @@ MonoBehaviour:
   shakeStrength: 3
   shakeGrowthFactor: 1.5
   spriteShaker: {fileID: 6918357154697179759}
-  positiveSoundEffect: {fileID: 8300000, guid: b923aaf13931a3d4dac944d0b0fdd260, type: 3}
-  negativeSoundEffect: {fileID: 8300000, guid: 3fa1204bb9549ad4db61f56b4a7a92cf, type: 3}
+  positiveSoundEffect: {fileID: 8300000, guid: 368a03ca64a46e14983c9b107e063650, type: 3}
+  negativeSoundEffect: {fileID: 8300000, guid: 153512eb5694ebb41b2bd382fd43b1d2, type: 3}
 --- !u!114 &8130557142363688273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,8 +572,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forCharacter: {fileID: 1350857231127888729}
-  deathSoundEffect: {fileID: 8300000, guid: 7a4b92d7fc0330846a4368f095b1d1c0, type: 3}
-  resurrectionSoundEffect: {fileID: 8300000, guid: 71c50cddaf4907843b24191ac8a95a7a, type: 3}
+  deathSoundEffect: {fileID: 8300000, guid: fea70cd6b4d111f43ae4e1f5c16aef82, type: 3}
+  resurrectionSoundEffect: {fileID: 8300000, guid: e793c1bb9909dc54a9c9d46949aa036c, type: 3}
   shaker: {fileID: 6918357154697179759}
   fadeAnimationDuration: 2
 --- !u!114 &6918357154697179759
@@ -724,4 +724,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forCharacter: {fileID: 1350857231127888729}
-  soundEffect: {fileID: 8300000, guid: 18ca6e1846f2d724f9787f1cc043e310, type: 3}
+  soundEffect: {fileID: 8300000, guid: fa9923d964079704e864bd1da73caa81, type: 3}
