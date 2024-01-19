@@ -338,10 +338,10 @@ public class ClassDataSO : ScriptableObject
                     description: "Shouts to intimidate nearby enemies, making them cower in fear for a turn.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     areaType: AreaType.radial,
-                    areaScaler : 1,
+                    areaScaler : 2,
                     range: 0,
                     cappedByCooldown: true,
-                    cooldownDuration: 5,
+                    cooldownDuration: 4,
                     requiresLOS:false
                 ),
                 new (
