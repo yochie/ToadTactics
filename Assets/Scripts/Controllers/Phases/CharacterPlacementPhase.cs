@@ -80,7 +80,8 @@ public class CharacterPlacementPhase : IGamePhase
                     remainingDuration = timerComponent.TurnDurationRemaining;
                 buffDurationsByUniqueID.Add(buff.UniqueID, remainingDuration);
             }
-            TurnOrderSlotInitData slotData = new(character.CharClassID, isAKing, itsHisTurn, maxHealth, characterBuffDataIDs, buffDurationsByUniqueID);
+            List<string> equipmentIDs = character.EquipmentIDsCopy;
+            TurnOrderSlotInitData slotData = new(character.CharClassID, isAKing, itsHisTurn, maxHealth, characterBuffDataIDs, buffDurationsByUniqueID, equipmentIDs);
             slotDataList.Add(slotData);
         }
 

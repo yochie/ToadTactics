@@ -92,7 +92,7 @@ public class DOTBuffSO : ScriptableObject, IAppliablBuffDataSO
     public Dictionary<string, string> GetBuffStatsDictionary()
     {
         Dictionary<string, string> statsDictionary = new();
-        statsDictionary.Add("Damage/turn", string.Format("{0} {1}", this.DOTDamage, this.DOTDamageType));
+        statsDictionary.Add("Damage per turn", string.Format("{0} {1}", this.DOTDamage, this.DOTDamageType));
         statsDictionary.Add("Duration", IBuffDataSO.GetDurationDescritpion(this));
         return statsDictionary;
     }

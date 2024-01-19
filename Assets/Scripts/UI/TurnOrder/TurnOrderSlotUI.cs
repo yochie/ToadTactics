@@ -15,6 +15,9 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     private GameObject buffList;
 
     [SerializeField]
+    private GameObject equipmentsList;
+
+    [SerializeField]
     private Image characterImage;
 
     [SerializeField]
@@ -40,7 +43,6 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
 
     [SerializeField]
     private float highlightScaling;
-
 
     private int holdsCharacterWithClassID = -1;
     public int HoldsCharacterWithClassID { get => this.holdsCharacterWithClassID; set { this.holdsCharacterWithClassID = value; } }
@@ -117,6 +119,26 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
         if (this.displayedBuffs == null)
             this.displayedBuffs = new();
         this.displayedBuffs.Add(buffUniqueID, buffIcon);
+    }
+
+    public void AddEquipmentIcon(string equipmentID)
+    {
+        this.equipmentsList.SetActive(true);
+        GameObject equipmentIcon = Instantiate(this.blankImagePrefab, this.equipmentsList.transform);
+        EquipmentSO equipmentData = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID);
+        equipmentIcon.GetComponent<Image>().sprite = equipmentData.Sprite;
+        TooltipContent tooltip = equipmentIcon.GetComponentInChildren<TooltipContent>(includeInactive: true);
+        tooltip.SetTitle(equipmentData.NameUI);
+        IStatModifier equipmentStats = equipmentData as IStatModifier;
+        Dictionary<string, string> statsDict = new();
+        if (equipmentStats == null)
+        {
+            Debug.Log("Equipment icon couldn't be displayed : doesn't implement stat modifier interface");
+        } else
+        {
+            statsDict = equipmentStats.GetStatModificationsDictionnary();
+        }
+        tooltip.FillWithDictionary(statsDict);
     }
 
     public void UpdateBuffIconDuration(int buffUniqueID, string buffDataID, int remainingDuration)

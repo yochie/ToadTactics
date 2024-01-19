@@ -63,6 +63,11 @@ public class TurnOrderHUD : MonoBehaviour
                 slot.AddBuffIcon(buffID, slotData.orderedBuffDataIDs[i], slotData.orderedBuffDurations[i]);
                 i++;
             }
+
+            foreach(string equipmentID in slotData.equipmentIDs)
+            {
+                slot.AddEquipmentIcon(equipmentID);
+            }
         }
     }
 

@@ -131,6 +131,14 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2034755897246866666, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: statValueLabelPrefab
+      value: 
+      objectReference: {fileID: 3710215941323495754, guid: 598fbaca70d5ed5479e8e743600d24f4, type: 3}
+    - target: {fileID: 2034755897246866666, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: statNameAsStringPrefab
+      value: 
+      objectReference: {fileID: 3710215941323495754, guid: 598fbaca70d5ed5479e8e743600d24f4, type: 3}
     - target: {fileID: 3260612930948240526, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -170,6 +178,42 @@ PrefabInstance:
     - target: {fileID: 3291687159900052420, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
       propertyPath: m_Name
       value: DraftableEquipmentPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_Spacing.x
+      value: 160.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_ChildAlignment
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_Padding.m_Bottom
+      value: 27
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_ChildForceExpandWidth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3356139578555448134, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
+      propertyPath: m_ChildForceExpandHeight
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4551028096178049990, guid: a7191c1fe767a6c4abf161cfb38ee3b9, type: 3}
       propertyPath: m_AnchorMax.y

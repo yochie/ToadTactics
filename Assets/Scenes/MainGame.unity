@@ -6841,7 +6841,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593404065087153995, guid: 9fa89177a66c29947a4be721cefe6ece, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -50
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 593404065087153995, guid: 9fa89177a66c29947a4be721cefe6ece, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6858,6 +6858,10 @@ PrefabInstance:
     - target: {fileID: 2702700573019022953, guid: 9fa89177a66c29947a4be721cefe6ece, type: 3}
       propertyPath: m_Name
       value: TurnOrderHUD
+      objectReference: {fileID: 0}
+    - target: {fileID: 2702700573019022953, guid: 9fa89177a66c29947a4be721cefe6ece, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6372158707585568752, guid: 9fa89177a66c29947a4be721cefe6ece, type: 3}
       propertyPath: m_Spacing

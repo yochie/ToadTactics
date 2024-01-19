@@ -15,7 +15,7 @@ internal class NecroAttackAction : DefaultAttackAction, IPrintableStats
     {
         Dictionary<string, string> toReturn = new();
         toReturn.Add("Self damage", Utility.DamageStatsToString(NECRO_SELF_DAMAGE, 1, NECRO_SELF_DAMAGE_TYPE));
-        toReturn.Add("Attacks/turn", ClassDataSO.Singleton.GetClassByID(NECRO_CLASS_ID).stats.attacksPerTurn.ToString());
+        toReturn.Add("Attacks per turn", ClassDataSO.Singleton.GetClassByID(NECRO_CLASS_ID).stats.attacksPerTurn.ToString());
         return toReturn;
     }
 

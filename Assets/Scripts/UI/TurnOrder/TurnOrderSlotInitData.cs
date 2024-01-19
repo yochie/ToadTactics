@@ -15,7 +15,10 @@ public readonly struct TurnOrderSlotInitData
     public readonly List<string> orderedBuffDataIDs;
     public readonly List<int> orderedBuffDurations;
 
-    public TurnOrderSlotInitData(int classID, bool isAKing, bool itsHisTurn, int maxHealth, Dictionary<int, string> buffDataIDByUniqueID, Dictionary<int, int> buffDurationByUniqueID)
+    public readonly List<string> equipmentIDs;
+
+
+    public TurnOrderSlotInitData(int classID, bool isAKing, bool itsHisTurn, int maxHealth, Dictionary<int, string> buffDataIDByUniqueID, Dictionary<int, int> buffDurationByUniqueID, List<string> equipmentIDs)
     {
         this.classID = classID;
         this.isAKing = isAKing;
@@ -28,6 +31,7 @@ public readonly struct TurnOrderSlotInitData
         {
             this.orderedBuffDurations.Add(buffDurationByUniqueID[orderedBuffID]);
         }
+        this.equipmentIDs = equipmentIDs;
     }
 }
 
