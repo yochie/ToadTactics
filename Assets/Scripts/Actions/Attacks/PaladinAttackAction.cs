@@ -37,7 +37,7 @@ internal class PaladinAttackAction : DefaultAttackAction, IPrintableStats
                                               critChance: 0,
                                               critMultiplier: 0,
                                               this.ActorCharacter.charClass.abilities.Single(ability => ability.stringID == "PaladinCrusader").interfaceName,
-                                              sender: this.RequestingClient); ;
+                                              sender: this.RequestingClient);
         }
     }
 
