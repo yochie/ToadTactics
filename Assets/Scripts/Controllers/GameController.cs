@@ -757,6 +757,12 @@ public class GameController : NetworkBehaviour
 
     public bool HeOwnsThisCharacter(int playerID, int classID)
     {
+        if (!this.DraftedCharacterOwners.ContainsKey(classID))
+        {
+            Debug.Log("Attempting to determine ownership of character that can't be found in drafted char list.");
+            return false;
+        }
+            
         if (this.DraftedCharacterOwners[classID] == playerID)
         {
             return true;

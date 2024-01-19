@@ -9,7 +9,10 @@ using UnityEngine.EventSystems;
 public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField]
-    private GameObject highlights;
+    private GameObject ownerHighlights;
+
+    [SerializeField]
+    private GameObject opponentHighlights;
 
     [SerializeField]
     private GameObject buffList;
@@ -50,12 +53,23 @@ public class TurnOrderSlotUI : MonoBehaviour, IPointerClickHandler
     //unique buffID => icon object
     private Dictionary<int, GameObject> displayedBuffs;
 
-    public void SetHighlight(bool highlighted)
+    public void SetHighlight(bool highlighted, bool isOwnedByLocalPlayer)
     {
-        this.highlights.SetActive(highlighted);
+        if (!highlighted)
+        {
+            this.ownerHighlights.SetActive(false);
+            this.opponentHighlights.SetActive(false);
+        } 
+        else if (highlighted && isOwnedByLocalPlayer)
+            this.ownerHighlights.SetActive(true);
+        else if (highlighted && !isOwnedByLocalPlayer)
+            this.opponentHighlights.SetActive(true);
 
-        if(highlighted)
+
+        if (highlighted)
+        {
             this.transform.localScale = new Vector3(this.highlightScaling, this.highlightScaling, 1f);
+        }
         else
             this.transform.localScale = Vector3.one;
 

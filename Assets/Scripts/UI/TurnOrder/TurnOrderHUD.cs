@@ -31,10 +31,11 @@ public class TurnOrderHUD : MonoBehaviour
         //Debug.Log("OnCharacterTurnChanged");
 
         //finds class ID for character whose turn it is
-        int newTurnCharacterId = GameController.Singleton.GetCharacterIDForTurn(newTurnIndex);
+        int newTurnCharacterID = GameController.Singleton.GetCharacterIDForTurn(newTurnIndex);
+        bool localPlayerOwnsCharacter = GameController.Singleton.HeOwnsThisCharacter(GameController.Singleton.LocalPlayer.playerID, newTurnCharacterID);
 
         //highlights turnOrderSlotUI for currently playing character
-        this.HighlightSlot(newTurnCharacterId);
+        this.HighlightSlot(newTurnCharacterID, localPlayerOwnsCharacter);
     }
 
     public void InitSlots(List<TurnOrderSlotInitData> slotDataList, List<int> sortedTurnOrder)
@@ -52,7 +53,8 @@ public class TurnOrderHUD : MonoBehaviour
             slot.SetSprite(ClassDataSO.Singleton.GetSpriteByClassID(classID));
             slot.HoldsCharacterWithClassID = classID;
 
-            slot.SetHighlight(slotData.itsHisTurn);
+            bool ownedByLocalPlayer = GameController.Singleton.HeOwnsThisCharacter(GameController.Singleton.LocalPlayer.playerID, slotData.classID);
+            slot.SetHighlight(slotData.itsHisTurn, ownedByLocalPlayer);
             slot.DisplayCrown(slotData.isAKing);
 
             slot.SetLifeDisplay(slotData.maxHealth, slotData.maxHealth);
@@ -156,11 +158,11 @@ public class TurnOrderHUD : MonoBehaviour
         }
     }
 
-    private void HighlightSlot(int classID)
+    private void HighlightSlot(int classID, bool localPlayerOwnsCharacter)
     {        
         foreach (TurnOrderSlotUI slot in this.turnOrderSlots)
         {     
-            slot.SetHighlight(slot.HoldsCharacterWithClassID == classID);
+            slot.SetHighlight(slot.HoldsCharacterWithClassID == classID, localPlayerOwnsCharacter);
         }
     }
 
