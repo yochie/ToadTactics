@@ -512,9 +512,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1746515970301449551 stripped
+--- !u!114 &744403293738471943 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7072066165543950987, guid: 123bc83ab50633e418d4314521e46735, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8092264202086555075, guid: 123bc83ab50633e418d4314521e46735, type: 3}
   m_PrefabInstance: {fileID: 8798302700423024580}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -564,7 +564,7 @@ MonoBehaviour:
   spriteImage: {fileID: 373503445745249947}
   nameLabel: {fileID: 1857312241423492523}
   descriptionLabel: {fileID: 4560051620206130234}
-  statsTable: {fileID: 1746515970301449551}
+  statsTable: {fileID: 744403293738471943}
   content: {fileID: 3397868060705881285}
 --- !u!114 &4560051620206130234 stripped
 MonoBehaviour:
