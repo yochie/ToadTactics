@@ -780,6 +780,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6231723356728580549, guid: 1790d0188f2efbf4792d126e08ac3ab9, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6341793760927272888, guid: 1790d0188f2efbf4792d126e08ac3ab9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1266,6 +1270,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EquipmentsTable
       objectReference: {fileID: 0}
+    - target: {fileID: 5106365551819950041, guid: e89efb3807f225d40a761cc81540972a, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7239068825709925231, guid: e89efb3807f225d40a761cc81540972a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1366,6 +1374,10 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 96245942274719918, guid: 5d340045098d0c84cbfdede479f6ef1d, type: 3}
       propertyPath: m_ChildForceExpandWidth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 708954868980348871, guid: 5d340045098d0c84cbfdede479f6ef1d, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4205592460277582719, guid: 5d340045098d0c84cbfdede479f6ef1d, type: 3}

@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 0.3
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &333757938534889548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354,7 +354,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 0.3
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &3743459641397269735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,22 +389,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7923049685031050704}
     m_Modifications:
-    - target: {fileID: 253427309801782836, guid: 831f84bd0aae2dd4ea12bcaf7c8155e2, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 253427309801782836, guid: 831f84bd0aae2dd4ea12bcaf7c8155e2, type: 3}
-      propertyPath: m_Color.b
-      value: 0.1231043
-      objectReference: {fileID: 0}
-    - target: {fileID: 253427309801782836, guid: 831f84bd0aae2dd4ea12bcaf7c8155e2, type: 3}
-      propertyPath: m_Color.g
-      value: 0.3584906
-      objectReference: {fileID: 0}
-    - target: {fileID: 253427309801782836, guid: 831f84bd0aae2dd4ea12bcaf7c8155e2, type: 3}
-      propertyPath: m_Color.r
-      value: 0.3063103
-      objectReference: {fileID: 0}
     - target: {fileID: 2275786378568462081, guid: f498fbd0ad72b7f4395b11f9eae37627, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -544,6 +528,22 @@ PrefabInstance:
     - target: {fileID: 5849492437451481063, guid: f498fbd0ad72b7f4395b11f9eae37627, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 253427309801782836, guid: 831f84bd0aae2dd4ea12bcaf7c8155e2, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 253427309801782836, guid: 831f84bd0aae2dd4ea12bcaf7c8155e2, type: 3}
+      propertyPath: m_Color.b
+      value: 0.1231043
+      objectReference: {fileID: 0}
+    - target: {fileID: 253427309801782836, guid: 831f84bd0aae2dd4ea12bcaf7c8155e2, type: 3}
+      propertyPath: m_Color.g
+      value: 0.3584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 253427309801782836, guid: 831f84bd0aae2dd4ea12bcaf7c8155e2, type: 3}
+      propertyPath: m_Color.r
+      value: 0.3063103
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1291445762653878652, guid: f498fbd0ad72b7f4395b11f9eae37627, type: 3}
