@@ -216,7 +216,7 @@ public class PlayerController : NetworkBehaviour
 
         GameController.Singleton.DraftCharacter(this.playerID, classID);
 
-        GameController.Singleton.CmdNextTurn();
+        GameController.Singleton.NextTurn();
     }
 
     [Command]
@@ -252,7 +252,7 @@ public class PlayerController : NetworkBehaviour
         {
             Debug.LogFormat("No more equipments to assign, ticking phase.");
             this.TargetRpcOnLocalPlayerAssignedAllEquipments(sender);
-            GameController.Singleton.CmdNextTurn();
+            GameController.Singleton.NextTurn();
         } else
         {
             //Debug.LogFormat("Displaying next equipment.");
@@ -287,7 +287,7 @@ public class PlayerController : NetworkBehaviour
         this.AddEquipmentIDToAssign(equipmentID);
         //throw event that updates UI elements
         this.RpcOnEquipmentDrafted(equipmentID, this.playerID);
-        GameController.Singleton.CmdNextTurn();
+        GameController.Singleton.NextTurn();
     }
 
     [TargetRpc]
@@ -333,7 +333,7 @@ public class PlayerController : NetworkBehaviour
         Map.Singleton.characterPositions[charIDToPlace] = destinationHex.coordinates;
 
         this.TargetRpcOnCharacterPlaced(target: this.connectionToClient, charIDToPlace);
-        GameController.Singleton.CmdNextTurn();
+        GameController.Singleton.NextTurn();
     }
 
     //withMap allows setting a more approriate parent in object hierarchy

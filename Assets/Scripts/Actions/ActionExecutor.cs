@@ -447,7 +447,7 @@ public class ActionExecutor : NetworkBehaviour
         }
         if (!source.HoldsACharacter())
         {
-            Debug.LogFormat("Ignoring ability attack preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            Debug.LogFormat("Ignoring ability attack preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, primaryTarget, primaryTarget.coordinates);
             return ActionEffectPreview.None();
         }
         PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
@@ -608,7 +608,7 @@ public class ActionExecutor : NetworkBehaviour
         if (!actor.HasRemainingActions() || actor.IsDead)
         {
             //TODO : set flag to end turn instead of calling function to avoid recursion
-            GameController.Singleton.CmdNextTurn();
+            GameController.Singleton.NextTurn();
             return;
         }
         else

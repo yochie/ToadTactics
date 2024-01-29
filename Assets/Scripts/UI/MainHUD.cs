@@ -291,7 +291,7 @@ public class MainHUD : NetworkBehaviour
 
     public void OnEndTurnButtonClicked()
     {
-        GameController.Singleton.CmdNextTurn();
+        GameController.Singleton.CmdEndMyTurn();
     }
 
     private Color GetSelectedColor(ControlMode controlMode)

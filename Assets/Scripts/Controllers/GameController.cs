@@ -312,10 +312,23 @@ public class GameController : NetworkBehaviour
 
     //Main game tick
     //Called at end of every turn for all gamemodes
-    [Command(requiresAuthority = false)]
-    public void CmdNextTurn()
+    [Server]
+    public void NextTurn()
     {
         this.currentPhaseObject.Tick();
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdEndMyTurn(NetworkConnectionToClient sender = null)
+    {
+        int senderPlayerID = sender.identity.GetComponent<PlayerController>().playerID;
+        if (!this.ItsThisPlayersTurn(senderPlayerID))
+        {
+            Debug.LogFormat("Player {0} attempted to end turn while it isn't his turn. Ignoring.", senderPlayerID);
+            return;
+        }
+        this.NextTurn();
+
     }
 
     [Server]

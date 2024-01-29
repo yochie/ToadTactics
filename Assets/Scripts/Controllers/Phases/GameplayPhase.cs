@@ -145,7 +145,7 @@ public class GameplayPhase : IGamePhase
         if (currentCharacter.IsDead || !currentCharacter.CanTakeTurns)
         {
             //skips turn
-            this.Controller.CmdNextTurn();
+            this.Controller.NextTurn();
             return;
         }
 
