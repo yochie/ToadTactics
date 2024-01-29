@@ -168,7 +168,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (GameController.Singleton.CurrentPhaseID != GamePhaseID.characterDraft)
         {
-            Debug.Log("Attempting to draft while it draft phase. Ignoring.");
+            Debug.Log("Attempting to draft while in wrong phase. Ignoring.");
             return;
         }
 
@@ -193,7 +193,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (GameController.Singleton.CurrentPhaseID != GamePhaseID.characterDraft)
         {
-            Debug.Log("Attempting to draft while it draft phase. Ignoring.");
+            Debug.Log("Attempting to draft while in wrong phase. Ignoring.");
             return;
         }
 
@@ -222,7 +222,20 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdAssignEquipment(string equipmentID, int classID, NetworkConnectionToClient sender = null)
     {
-        Debug.LogFormat("Assigning equipment {0} to {1} for player {2}", equipmentID, ClassDataSO.Singleton.GetClassByID(classID).name, sender.identity.GetComponent<PlayerController>().playerID);
+        if (GameController.Singleton.CurrentPhaseID != GamePhaseID.equipmentDraft)
+        {
+            Debug.Log("Attempting to assign equipment while in wrong phase. Ignoring.");
+            return;
+        }
+
+        PlayerController otherPlayer = GameController.Singleton.playerControllers[GameController.Singleton.OtherPlayer(this.playerID)];
+        if (this.HasAssignedEquipment(equipmentID) || otherPlayer.HasAssignedEquipment(equipmentID))
+        {
+            Debug.Log("Attempting to assign equipment that has already been assigned. Ignoring.");
+            return;
+        }
+
+        Debug.LogFormat("Player {2} assigned equipment {0} to {1}", equipmentID, ClassDataSO.Singleton.GetClassByID(classID).name, sender.identity.GetComponent<PlayerController>().playerID);
         this.assignedEquipments.Add(equipmentID, classID);
         PlayerCharacter charToUpdate = GameController.Singleton.PlayerCharactersByID[classID];
         charToUpdate.ApplyEquipment(equipmentID);
@@ -250,7 +263,27 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdDraftEquipment(string equipmentID)
     {
+        if (GameController.Singleton.CurrentPhaseID != GamePhaseID.equipmentDraft)
+        {
+            Debug.Log("Attempting to draft equipment while in wrong phase. Ignoring.");
+            return;
+        }
+
+        if (GameController.Singleton.PlayerTurn != this.playerID)
+        {
+            Debug.Log("Attempting to draft equipment while it isn't your turn. Ignoring.");
+            return;
+        }
+
+        PlayerController otherPlayer = GameController.Singleton.playerControllers[GameController.Singleton.OtherPlayer(this.playerID)];
+        if (this.HasDraftedEquipment(equipmentID) || otherPlayer.HasDraftedEquipment(equipmentID))
+        {
+            Debug.Log("Attempting to draft equipment that has already been drafted. Ignoring.");
+            return;
+        }
+
         Debug.LogFormat("Player {0} drafted equipment {1}", this.playerID, EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID).name);
+
         this.AddEquipmentIDToAssign(equipmentID);
         //throw event that updates UI elements
         this.RpcOnEquipmentDrafted(equipmentID, this.playerID);
@@ -264,18 +297,30 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdPlaceCharOnBoard(int charIDToPlace, Hex destinationHex, NetworkConnectionToClient sender = null)
+    public void CmdPlaceCharOnBoard(int charIDToPlace, Hex destinationHex)
     {
+        
+        if (!GameController.Singleton.DraftedCharacterOwners.ContainsKey(charIDToPlace))
+        {
+            Debug.LogFormat("Player {0} attempted to place character on board but couldn't find owner from drafted character owners.", this.playerID);
+            return;
+        }
         int ownerPlayerIndex = GameController.Singleton.DraftedCharacterOwners[charIDToPlace];
+
+        if (!GameController.Singleton.DraftedCharacterOwners.ContainsKey(charIDToPlace))
+        {
+            Debug.LogFormat("Player {0} attempted to place character {1} on board but couldn't find character by ID in gamecontroller.", this.playerID, charIDToPlace);
+            return;
+        }
         PlayerCharacter toPlace = GameController.Singleton.PlayerCharactersByID[charIDToPlace];
 
         //validate destination
         if (destinationHex == null ||
             !destinationHex.isStartingZone ||
             destinationHex.startZoneForPlayerIndex != ownerPlayerIndex ||
-            destinationHex.holdsCharacterWithClassID != -1)
+            destinationHex.HoldsACharacter())
         {
-            Debug.Log("Invalid character destination");
+            Debug.LogFormat("Player {0} attempted to place character on board but destination wasn't valid.", this.playerID);
             return;
         }
 
@@ -287,7 +332,7 @@ public class PlayerController : NetworkBehaviour
         destinationHex.holdsCharacterWithClassID = charIDToPlace;
         Map.Singleton.characterPositions[charIDToPlace] = destinationHex.coordinates;
 
-        this.TargetRpcOnCharacterPlaced(sender, charIDToPlace);
+        this.TargetRpcOnCharacterPlaced(target: this.connectionToClient, charIDToPlace);
         GameController.Singleton.CmdNextTurn();
     }
 
@@ -335,7 +380,7 @@ public class PlayerController : NetworkBehaviour
     #region Rpcs    
 
     [TargetRpc]
-    private void TargetRpcOnCharacterPlaced(NetworkConnectionToClient sender, int charClassID)
+    private void TargetRpcOnCharacterPlaced(NetworkConnectionToClient target, int charClassID)
     {
         this.onCharacterPlaced.Raise(charClassID);
     }
