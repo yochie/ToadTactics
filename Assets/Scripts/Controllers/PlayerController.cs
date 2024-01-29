@@ -299,7 +299,12 @@ public class PlayerController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdPlaceCharOnBoard(int charIDToPlace, Hex destinationHex)
     {
-        
+        if (GameController.Singleton.PlayerTurn != this.playerID)
+        {
+            Debug.LogFormat("Player {0} attempted to place character on board while it wasn't his turn. Ignoring.", this.playerID);
+            return;
+        }
+
         if (!GameController.Singleton.DraftedCharacterOwners.ContainsKey(charIDToPlace))
         {
             Debug.LogFormat("Player {0} attempted to place character on board but couldn't find owner from drafted character owners.", this.playerID);
