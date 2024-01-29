@@ -327,8 +327,13 @@ public class GameController : NetworkBehaviour
             Debug.LogFormat("Player {0} attempted to end turn while it isn't his turn. Ignoring.", senderPlayerID);
             return;
         }
-        this.NextTurn();
 
+        if (!(this.currentPhaseID == GamePhaseID.gameplay))
+        {
+            Debug.LogFormat("Player {0} attempted to end turn outside of gameplay phase. Ignoring.", senderPlayerID);
+            return;
+        }
+        this.NextTurn();
     }
 
     [Server]
