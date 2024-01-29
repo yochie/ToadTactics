@@ -154,7 +154,8 @@ public class LobbyController : NetworkBehaviour
     {
         if(isServer)
         {
-            GameController.Singleton.CmdChangeToScene("Draft");
+            this.startButton.interactable = false;
+            GameController.Singleton.ChangeToScene("Draft");
         }
     }
 

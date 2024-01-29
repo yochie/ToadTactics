@@ -199,8 +199,9 @@ public class GameController : NetworkBehaviour
 
     #region Scene management
     [Server]
-    public void CmdChangeToScene(string newSceneName)
+    public void ChangeToScene(string newSceneName)
     {
+        //Debug.LogFormat("Changing to scene {0}", newSceneName);
         //mark current scene as unloaded
         string currentScene = SceneManager.GetActiveScene().name;
         this.remoteAwokenScenes[currentScene] = false;
@@ -273,13 +274,14 @@ public class GameController : NetworkBehaviour
 
     private IEnumerator InitSceneOnceAllClientsReadyCoroutine(string sceneName)
     {
-        //Debug.Log("Waiting for scene to Awake on all clients");
+        Debug.Log("Waiting for scene to Awake on all clients");
         while (!SceneAwokenOnAllClients(sceneName))
         {
+            //Debug.Log("Waiting for scene to Awake on all clients");
             yield return null;
         }
 
-        //Debug.Log("Scene awoke, initing phase");
+        Debug.Log("Scene awoke on all clients, initing phase");
         this.NewScenePhaseInit(sceneName);
     }
 
@@ -423,7 +425,7 @@ public class GameController : NetworkBehaviour
         {
             //wait a little just for less abrupt transition
             //scene changed callback will set phase once all clients have loaded scene
-            this.StartCoroutine(this.WaitALittle(0.8f, () => { this.CmdChangeToScene("MainGame"); }));            
+            this.StartCoroutine(this.WaitALittle(0.8f, () => { this.ChangeToScene("MainGame"); }));            
         }
     }
 

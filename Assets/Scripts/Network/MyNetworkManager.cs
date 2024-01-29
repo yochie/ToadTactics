@@ -17,6 +17,8 @@ public class MyNetworkManager : NetworkManager
     // have to cast to this type everywhere.
     public static new MyNetworkManager singleton { get; private set; }
 
+    private IEnumerator WaitForTransitionCoroutine;
+
     /// <summary>
     /// Runs on both Server and Client
     /// Networking is NOT initialized when this fires
@@ -101,7 +103,7 @@ public class MyNetworkManager : NetworkManager
     /// currently this doesn't trigger on client whenever it is initiated by a stopHost() call since networked functionalities are shutdown before callback is reached
     public override void ServerChangeScene(string newSceneName)
     {
-        //Debug.LogFormat("Server changing scene to {0}", newSceneName);
+        Debug.LogFormat("Server changing scene to {0}", newSceneName);
         if (newSceneName == SceneManager.GetActiveScene().name)
             return;
 
@@ -118,25 +120,39 @@ public class MyNetworkManager : NetworkManager
         GameObject transitioner = GameObject.FindWithTag("SceneTransitioner");
         if (netTransitioner != null && GameController.Singleton != null)
         {
-            //Debug.Log("Found net transitioner");
+            Debug.Log("Found net transitioner");
             NetworkedSceneTransitioner netTransitionerComponent = netTransitioner.GetComponent<NetworkedSceneTransitioner>();
             if (!netTransitionerComponent.HasTriggered)
             {
                 netTransitionerComponent.RpcFadeout();
-                StartCoroutine(this.WaitForFadeouts(NetworkManager.singleton.numPlayers, () => base.ServerChangeScene(newSceneName)));
+                this.WaitForTransitionCoroutine = this.WaitForFadeouts(NetworkManager.singleton.numPlayers, () => base.ServerChangeScene(newSceneName));
+                StartCoroutine(this.WaitForTransitionCoroutine);
             } else
+            {
+                //Stop any coroutines waiting for fadeout and just force scene transition
+                //needed for cases where fadeout was already triggered but scene change wasn't handled
+                //this occurs when hooking up StopHost call after fadeout
+                this.StopCoroutine(this.WaitForTransitionCoroutine);
                 base.ServerChangeScene(newSceneName);
+            }
         }
         else if (transitioner != null)
         {
-            //Debug.Log("Found local transitioner");
+            Debug.Log("Found local transitioner");
 
             SceneTransitioner transitionerComponent = transitioner.GetComponent<SceneTransitioner>();
             //make sure fadeout hasnt already occured elsewhere (e.g. in networked transitioner)
             if (!transitionerComponent.FadeOutTriggered)
                 transitionerComponent.FadeOut(() => base.ServerChangeScene(newSceneName));
             else
+            {
+                //Stop any coroutines waiting for fadeout and just force scene transition
+                //needed for cases where fadeout was already triggered but scene change wasn't handled
+                //this occurs when hooking up StopHost call after fadeout
+                this.StopCoroutine(this.WaitForTransitionCoroutine);
+                transitionerComponent.StopAllCoroutines();
                 base.ServerChangeScene(newSceneName);
+            }
         }
         else
             base.ServerChangeScene(newSceneName);
@@ -169,9 +185,12 @@ public class MyNetworkManager : NetworkManager
     {
         if (GameController.Singleton == null)
             yield break; ;
-        
+
         while (GameController.Singleton.SceneFadeOutOnClients < numClients)
+        {
+            Debug.Log("Waiting for fadeouts");
             yield return null;
+        }
 
         GameController.Singleton.SceneFadeOutOnClients = 0;
         after();

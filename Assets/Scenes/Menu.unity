@@ -2400,9 +2400,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wrap: {fileID: 1891631877}
-  jitter: 1
-  jitterSpeed: 1
-  reliableLatency: 1000
+  jitter: 0.962
+  jitterSpeed: 8.16
+  reliableLatency: 577
   unreliableLoss: 0
   unreliableLatency: 0
   unreliableScramble: 0

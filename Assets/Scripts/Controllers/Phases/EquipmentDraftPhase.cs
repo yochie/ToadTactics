@@ -98,7 +98,7 @@ public class EquipmentDraftPhase : IGamePhase
         {
             //Should be called once both players tick after havin assigned all their own equipments
             Debug.Log("All equipments assigned. Starting new round.");
-            this.Controller.CmdChangeToScene("MainGame");
+            this.Controller.ChangeToScene("MainGame");
         }
     }
 

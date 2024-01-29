@@ -81,7 +81,7 @@ public class RoundEndScreen : MonoBehaviour
             //TODO : make it so both players have to click button, not just host
             this.continueButtonText.text = "Waiting for host";
         else
-            GameController.Singleton.CmdChangeToScene("EquipmentDraft");
+            GameController.Singleton.ChangeToScene("EquipmentDraft");
     }
 
     public void ToggleHideScreen()
