@@ -307,7 +307,7 @@ public class PlayerController : NetworkBehaviour
         }
         int ownerPlayerIndex = GameController.Singleton.DraftedCharacterOwners[charIDToPlace];
 
-        if (!GameController.Singleton.DraftedCharacterOwners.ContainsKey(charIDToPlace))
+        if (!GameController.Singleton.PlayerCharactersByID.ContainsKey(charIDToPlace))
         {
             Debug.LogFormat("Player {0} attempted to place character {1} on board but couldn't find character by ID in gamecontroller.", this.playerID, charIDToPlace);
             return;
