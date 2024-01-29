@@ -6,7 +6,7 @@ using TMPro;
 using System;
 using System.Linq;
 
-public class DraftUI : MonoBehaviour
+public class DraftUI : NetworkBehaviour
 {
     [SerializeField]
     private GameObject slotPrefab;
@@ -28,6 +28,18 @@ public class DraftUI : MonoBehaviour
     [SerializeField]
     private DiceRollPopup diceRollPopup;
 
+    [SerializeField]
+    private TextMeshProUGUI loadingMessage;
+
+    [SerializeField]
+    private GameObject draftGrid;
+    
+    [SerializeField]
+    private GameObject ownDraftedList;
+
+    [SerializeField]
+    private GameObject opponentDraftedList;
+
     private void Awake()
     {
         //just to avoid printing error when starting editor in wrong draft scene
@@ -37,35 +49,42 @@ public class DraftUI : MonoBehaviour
         GameController.Singleton.draftUI = this;
     }
 
-    [Server]
-    public void InitSlotContents(List<int> classIDsToDraft)
+    [ClientRpc]
+    public void RpcInitDraft(List<int> classIDsToDraft, int startingPlayerID)
     {
         int i = 0;
         foreach (DraftableCharacterPanelUI slot in draftableSlots)
         {
-            foreach (PlayerController player in GameController.Singleton.playerControllers)
-            {
-                slot.TargetRpcInitForDraft(player.connectionToClient, classIDsToDraft[i]);
-            }
+
+            slot.Init(classIDsToDraft[i], forKingAssignment:false);
+
             i++;
         }
+        this.loadingMessage.gameObject.SetActive(false);
+        this.draftGrid.SetActive(true);
+        this.ownDraftedList.SetActive(true);
+        this.opponentDraftedList.SetActive(true);
+        this.instructionLabel.gameObject.SetActive(true);
+
+        this.diceRollPopup.ShowRollOutcome(GameController.Singleton.LocalPlayer.playerID == startingPlayerID);
     }
 
-    internal void EnableDraftButtons(int startingPlayerID)
+    [TargetRpc]
+    internal void TargetRpcEnableDraftButtons(NetworkConnectionToClient target)
     {
-        NetworkConnectionToClient startingPlayerConnection = GameController.Singleton.GetConnectionForPlayerID(startingPlayerID);
         foreach (DraftableCharacterPanelUI slot in draftableSlots)
         {
-            slot.TargetRpcEnableDraftButton(startingPlayerConnection);
+            slot.EnableDraftButton();
         }
     }
 
-    internal void DiceRollPopup(int startingPlayerID)
+    //Called locally whenever a draft button is clicked to prevent additional invalid inputs
+    public void DisableDraftButtons()
     {
-        foreach(PlayerController player in GameController.Singleton.playerControllers)
+        foreach (DraftableCharacterPanelUI slot in draftableSlots)
         {
-            this.diceRollPopup.TargetRpcShowRollOutcome(player.connectionToClient, player.playerID == startingPlayerID);
-        }        
+            slot.SetButtonActiveState(enabled: false);
+        }
     }
 
     public void SetupKingSelection(List<int> classIDs)

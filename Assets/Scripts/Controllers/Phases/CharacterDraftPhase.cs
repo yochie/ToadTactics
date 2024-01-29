@@ -29,22 +29,20 @@ public class CharacterDraftPhase : IGamePhase
         }
 
         //will init slots using Rpcs (careful, async, need to set all state before)
-        this.Controller.draftUI.InitSlotContents(rolledIDs);
-
         int startingPlayerID = UnityEngine.Random.Range(0, Utility.NUM_PLAYERS);
-        this.Controller.StartCoroutine(RollDiceThenStartDraftCoroutine(startingPlayerID));
 
+        this.Controller.draftUI.RpcInitDraft(rolledIDs, startingPlayerID);
 
+        this.Controller.StartCoroutine(WaitForDiceThenRollStartDraftCoroutine(startingPlayerID));
     }
 
-    private IEnumerator RollDiceThenStartDraftCoroutine(int startingPlayerID)
+    private IEnumerator WaitForDiceThenRollStartDraftCoroutine(int startingPlayerID)
     {
-        this.Controller.draftUI.DiceRollPopup(startingPlayerID);
         while (this.Controller.DiceRollPopupPlayedOnClients < Utility.NUM_PLAYERS)
             yield return null;
 
-        this.Controller.draftUI.EnableDraftButtons(startingPlayerID);
-
+        NetworkConnectionToClient startingPlayerConnection = GameController.Singleton.GetConnectionForPlayerID(startingPlayerID);
+        this.Controller.draftUI.TargetRpcEnableDraftButtons(startingPlayerConnection);
         this.Controller.SetPlayerTurn(startingPlayerID);
     }
 

@@ -387,11 +387,15 @@ public class GameController : NetworkBehaviour
     }
 
     [Server]
-    public void CmdDraftCharacter(int draftedByPlayerID, int classID)
+    public void DraftCharacter(int draftedByPlayerID, int classID)
     {
+        if (this.CharacterHasBeenDrafted(classID))
+        {
+            Debug.Log("Character was already drafted.");
+            return;
+        }
+            
         this.DraftedCharacterOwners.Add(classID, draftedByPlayerID);
-
-        this.CmdNextTurn();
     }
 
     [Server]

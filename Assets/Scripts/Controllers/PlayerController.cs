@@ -166,23 +166,57 @@ public class PlayerController : NetworkBehaviour
     [Command]
     internal void CmdCrownCharacter(int classID, NetworkConnectionToClient sender = null)
     {
-        //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
+        if (GameController.Singleton.CurrentPhaseID != GamePhaseID.characterDraft)
+        {
+            Debug.Log("Attempting to draft while it draft phase. Ignoring.");
+            return;
+        }
+
+        if (this.kingClassID != -1)
+        {
+            Debug.Log("Attempting to crown character but you already have king. Ignoring.");
+            return;
+        }
+
+        Debug.LogFormat("Player {0} crowned character {1}", this.playerID, ClassDataSO.Singleton.GetClassByID(classID).name);
+
+        this.TargetRpcOnCharacterCrowned(sender, classID);
+
         this.kingClassID = classID;
 
         //notify GameController so that he changes scene once done
-        GameController.Singleton.CharacterCrowned();
-
-        this.TargetRpcOnCharacterCrowned(sender, classID);
+        GameController.Singleton.CharacterCrowned();        
     }
 
     [Command]
     public void CmdDraftCharacter(int classID)
     {
-        //update GameController (remember: dont update state asynchronously in events to avoir sync bugs)
-        GameController.Singleton.CmdDraftCharacter(this.playerID, classID);
+        if (GameController.Singleton.CurrentPhaseID != GamePhaseID.characterDraft)
+        {
+            Debug.Log("Attempting to draft while it draft phase. Ignoring.");
+            return;
+        }
+
+        if (GameController.Singleton.PlayerTurn != this.playerID)
+        {
+            Debug.Log("Attempting to draft while it isn't your turn. Ignoring.");
+            return;
+        }
+
+        if (GameController.Singleton.CharacterHasBeenDrafted(classID))
+        {
+            Debug.Log("Attempting to draft character that has already been drafted. Ignoring.");
+            return;
+        }
+
+        Debug.LogFormat("Player {0} drafted character {1}", this.playerID, ClassDataSO.Singleton.GetClassByID(classID).name);
 
         //throw event that updates UI elements
         this.RpcOnCharacterDrafted(this.playerID, classID);
+
+        GameController.Singleton.DraftCharacter(this.playerID, classID);
+
+        GameController.Singleton.CmdNextTurn();
     }
 
     [Command]

@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DiceRollPopup : NetworkBehaviour
+public class DiceRollPopup : MonoBehaviour
 {
     [SerializeField]
     TextMeshProUGUI label;
@@ -40,8 +40,7 @@ public class DiceRollPopup : NetworkBehaviour
     [SerializeField]
     Image bottomBorder;
 
-    [TargetRpc]
-    public void TargetRpcShowRollOutcome(NetworkConnectionToClient target, bool youStart)
+    public void ShowRollOutcome(bool youStart)
     {
 
         //Check char ownership instead of player turn to avoid race condition

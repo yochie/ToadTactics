@@ -626,6 +626,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 7672568473231537085, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
     - {fileID: 9131288757077428977, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
+    - {fileID: 3945601229937773186, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4412909939784334787, guid: 924991d8c5acca44c81df1d22b7aaeb5, type: 3}
@@ -717,9 +718,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ab7b3a63eb05842820d8c3cfb0b460, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   holdsClassID: 0
   spriteImage: {fileID: 900806280081852844}
   nameLabel: {fileID: 1182408529340252828}

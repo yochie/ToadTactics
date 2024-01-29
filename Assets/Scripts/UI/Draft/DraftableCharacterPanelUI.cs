@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class DraftableCharacterPanelUI : NetworkBehaviour
+public class DraftableCharacterPanelUI : MonoBehaviour
 {
     public int holdsClassID;
 
@@ -34,14 +34,13 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
     [SerializeField]
     private Image grayOutPanel;
 
+    [SerializeField]
+    private DraftUI draftUI;
+
+    //used to ignore late characterDrafted events once weve already setup king assignment
     private bool assigningKing = false;
 
     #region Startup
-    [TargetRpc]
-    public void TargetRpcInitForDraft(NetworkConnectionToClient target, int classID)
-    {
-        this.Init(classID);
-    }
 
     public void Init(int classID, bool forKingAssignment = false)
     {
@@ -61,9 +60,9 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
         {
             this.statsTable.RenderCharacterStatsForKingAssignment(classData.stats);
             //hides draft buttons
-            this.SetButtonActiveState(state: false, asKingCandidate: false);
+            this.SetButtonActiveState(enabled: false, asKingCandidate: false);
             //displays crown buttons
-            this.SetButtonActiveState(state: true, asKingCandidate: true);
+            this.SetButtonActiveState(enabled: true, asKingCandidate: true);
         }
         else {
             this.statsTable.RenderCharacterStats(classData.stats, isAKing: false);
@@ -72,10 +71,9 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
         }
     }
 
-    [TargetRpc]
-    internal void TargetRpcEnableDraftButton(NetworkConnectionToClient target)
+    internal void EnableDraftButton()
     {
-        this.SetButtonActiveState(state: true);
+        this.SetButtonActiveState(enabled: true);
     }
 
     #endregion
@@ -93,7 +91,7 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
     //handler for event
     public void OnCharacterCrowned(int classID)
     {
-        this.SetButtonActiveState(state: false, asKingCandidate: true);
+        this.SetButtonActiveState(enabled: false, asKingCandidate: true);
     }
 
     public void OnLocalPlayerTurnStart()
@@ -112,23 +110,24 @@ public class DraftableCharacterPanelUI : NetworkBehaviour
     //called by button
     public void DraftCharacter()
     {
+        //Server will validate to avoid bad/repeated inputs, no need to disable local input ui immediately
         GameController.Singleton.LocalPlayer.CmdDraftCharacter(this.holdsClassID);
     }
 
     //called by button
-
     public void CrownCharacter()
     {
+        //Server will validate to avoid bad/repeated inputs, no need to disable local input ui immediately
         GameController.Singleton.LocalPlayer.CmdCrownCharacter(this.holdsClassID);
     }
 
     #endregion
 
-    internal void SetButtonActiveState(bool state, bool asKingCandidate = false)
+    internal void SetButtonActiveState(bool enabled, bool asKingCandidate = false)
     {
         if (asKingCandidate)
-            this.crownButton.gameObject.SetActive(state);
+            this.crownButton.gameObject.SetActive(enabled);
         else
-            this.draftButton.gameObject.SetActive(state);
+            this.draftButton.gameObject.SetActive(enabled);
     }
 }

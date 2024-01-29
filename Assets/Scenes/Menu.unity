@@ -2292,7 +2292,7 @@ MonoBehaviour:
   port: 7777
   DualMode: 1
   NoDelay: 1
-  Interval: 10
+  Interval: 100
   Timeout: 10000
   RecvBufferSize: 7361536
   SendBufferSize: 7361536
@@ -2339,7 +2339,7 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/Scenes/Menu.unity
   onlineScene: Assets/Scenes/Lobby.unity
-  transport: {fileID: 1891631877}
+  transport: {fileID: 1891631881}
   networkAddress: localhost
   maxConnections: 2
   authenticator: {fileID: 0}
@@ -2400,12 +2400,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wrap: {fileID: 1891631877}
-  jitter: 0.02
+  jitter: 1
   jitterSpeed: 1
-  reliableLatency: 100
-  unreliableLoss: 2
-  unreliableLatency: 100
-  unreliableScramble: 2
+  reliableLatency: 1000
+  unreliableLoss: 0
+  unreliableLatency: 0
+  unreliableScramble: 0
 --- !u!1 &1987820076
 GameObject:
   m_ObjectHideFlags: 0
