@@ -42,30 +42,43 @@ public class ActionExecutor : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdMoveChar(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
-        if (movingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || dest == null)
         {
-            Debug.LogFormat("Couldn't perform move from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            Debug.Log("Ignoring move : source or dest hex is null");
             return;
         }
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring move from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            return;
+        }
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
         moveAction.SetupPath();
         this.TryAction(moveAction, isFullAction: true, startingMode: ControlMode.move);
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdPreviewMoveTo(Hex source, Hex destination, NetworkConnectionToClient sender = null)
+    public void CmdPreviewMoveTo(Hex source, Hex dest, NetworkConnectionToClient sender = null)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
-        if (movingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || dest == null)
         {
-            Debug.Log("Previewing move from source without character... should not happen.");
+            Debug.Log("Ignoring move preview : source or dest hex is null");
             return;
         }
-        
-        IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, destination);
+
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring move preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            return;
+        }
+
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        IMoveAction moveAction = ActionFactory.CreateMoveAction(sender, playerID, movingCharacter, movingCharacter.CurrentStats, source, dest);
 
         moveAction.SetupPath();
         if (!moveAction.ServerValidate())
@@ -79,14 +92,21 @@ public class ActionExecutor : NetworkBehaviour
                            Hex dest,              
                            NetworkConnectionToClient sender)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
-        if (movingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || dest == null)
         {
-            Debug.LogFormat("Couldn't perform custom move from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            Debug.Log("Ignoring custom move : source or dest hex is null");
             return false;
         }
 
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring custom move from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            return false;
+        }
+
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         CustomMoveAction moveAction = ActionFactory.CreateCustomMoveAction(sender, playerID, movingCharacter, source, dest);
         moveAction.SetupPath();
         bool success = this.TryAction(moveAction, isFullAction: false, startingMode: ControlMode.move);
@@ -98,13 +118,21 @@ public class ActionExecutor : NetworkBehaviour
                            Hex dest,
                            NetworkConnectionToClient sender)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
-        if (movingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || dest == null)
         {
-            Debug.LogFormat("Couldn't preview custom move from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            Debug.Log("Ignoring custom move preview : source or dest hex is null");
             return ActionEffectPreview.None();
         }
+
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring custom move preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, dest, dest.coordinates);
+            return ActionEffectPreview.None();
+        }
+
+        PlayerCharacter movingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         CustomMoveAction moveAction = ActionFactory.CreateCustomMoveAction(sender, playerID, movingCharacter, source, dest);
         moveAction.SetupPath();
         return moveAction.PreviewEffect();
@@ -114,13 +142,21 @@ public class ActionExecutor : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdAttack(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        if (attackingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || target == null)
         {
-            Debug.LogFormat("Couldn't perform attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring attack : source or target hex is null");
             return;
         }
+
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring attack from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            return;
+        }
+
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
         List<IAttackEnhancer> attackEnhancers = attackAction.ActorCharacter.GetAttackEnhancers();
         foreach (IAttackEnhancer attackEnhancer in attackEnhancers)
@@ -145,16 +181,24 @@ public class ActionExecutor : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdPreviewAttackAt(Hex source, Hex destination, NetworkConnectionToClient sender = null)
+    public void CmdPreviewAttackAt(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        if (attackingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || target == null)
         {
-            Debug.LogFormat("Couldn't preview attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring attack preview : source or target hex is null");
             return;
         }
-        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, destination);
+
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring attack preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            return;
+        }
+
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        IAttackAction attackAction = ActionFactory.CreateAttackAction(sender, playerID, attackingCharacter, attackingCharacter.CurrentStats, source, target);
 
         List<IAttackEnhancer> attackEnhancers = attackAction.ActorCharacter.GetAttackEnhancers();
         foreach (IAttackEnhancer attackEnhancer in attackEnhancers)
@@ -172,13 +216,21 @@ public class ActionExecutor : NetworkBehaviour
     [Command(requiresAuthority = false)]
     internal void CmdUseBallista(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        if (attackingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || target == null)
         {
-            Debug.LogFormat("Couldn't perform ballista use from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring ballista attack : source or target hex is null");
             return;
         }
+
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring ballista attack from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            return;
+        }
+
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
         IAttackAction attackAction = ActionFactory.CreateBallistaAttackAction(sender,
                                                                             playerID,
                                                                             attackingCharacter,
@@ -215,13 +267,21 @@ public class ActionExecutor : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdPreviewUseBallista(Hex source, Hex target, NetworkConnectionToClient sender = null)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        if (attackingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || target == null)
         {
-            Debug.LogFormat("Couldn't perform ballista use preview from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring ballista attack preview : source or target hex is null");
             return;
         }
+
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring ballista attack preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            return;
+        }
+
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
         IAttackAction attackAction = ActionFactory.CreateBallistaAttackAction(sender,
                                                                                     playerID,
                                                                                     attackingCharacter,
@@ -249,44 +309,56 @@ public class ActionExecutor : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdReloadBallista(Hex ballistaHex, ControlMode currentControlMode, NetworkConnectionToClient sender = null)
     {
+        if(ballistaHex == null)
+        {
+            Debug.Log("Ballista reload validation failed : source hex is null");
+        }
+
         if (!ballistaHex.HoldsACharacter())
         {
-            Debug.Log("Ballista reload attempt without character in place");
+            Debug.Log("Ballista reload validation failed : Ballista reload attempt without character in place");
             return;
         }
         PlayerCharacter actor = ballistaHex.GetHeldCharacterObject();
-        if (actor == null)
-        {
-            Debug.LogFormat("Couldn't perform ballista reload from {0} ({1}), it contains no character.", ballistaHex, ballistaHex.coordinates);
-            return;
-        }
         if (!actor.HasAvailableAttacks())
         {
-            Debug.Log("Ballista reload attempt without character attacks remaining");
+            Debug.Log("Ballista reload validation failed : Ballista reload attempt without character attacks remaining");
             return;
         }
-        if (!ballistaHex.HoldsABallista() || !ballistaHex.BallistaNeedsReload())
+        if (!ballistaHex.HoldsABallista())
         {
-            Debug.Log("Ballista reloaded for invalid selected Hex");
+            Debug.Log("Ballista reload validation failed : No ballista at this position");
             return;
         }
+
+        if (!ballistaHex.BallistaNeedsReload())
+        {
+            Debug.Log("Ballista reload validation failed : Ballista doesn't need reload");
+            return;
+        }
+
         this.RpcOnCharacterReloadedBallista(actor.CharClassID);
         ballistaHex.ReloadBallista();
         actor.UsedAttack();
         this.FinishAction(actor, sender, currentControlMode);
-
     }
 
     [Command(requiresAuthority = false)]
     internal void CmdUseAbility(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
-        if (usingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || target == null)
         {
-            Debug.LogFormat("Couldn't ability use from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring ability use : source or target hex is null");
             return;
         }
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring ability use from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            return;
+        }
+        PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, playerID, usingCharacter, abilityStats, source, target);
         //TODO : fix double validation
         //required to trigger ability animation before targets take damage animation
@@ -302,13 +374,19 @@ public class ActionExecutor : NetworkBehaviour
     [Command(requiresAuthority = false)]
     internal void CmdPreviewAbilityAt(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender = null)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
-        if (usingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || target == null)
         {
-            Debug.LogFormat("Couldn't preview ability use from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring ability preview : source or target hex is null");
             return;
         }
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring ability preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            return;
+        }
+        PlayerCharacter usingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         IAbilityAction abilityAction = ActionFactory.CreateAbilityAction(sender, playerID, usingCharacter, abilityStats, source, target);
         if (!abilityAction.ServerValidate())
             return;
@@ -322,13 +400,20 @@ public class ActionExecutor : NetworkBehaviour
     [Server]
     public void AbilityAttack(Hex source, Hex target, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        if (attackingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || target == null)
         {
-            Debug.LogFormat("Couldn't perform ability attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring ability attack : source or target hex is null");
             return;
         }
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring ability attack from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            return;
+        }
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+
         CustomAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(sender,
                                                                                    playerID,
                                                                                    attackingCharacter,
@@ -337,6 +422,7 @@ public class ActionExecutor : NetworkBehaviour
                                                                                    source,
                                                                                    target);
         //TODO : fix double validation
+        //required to trigger  animation before targets take damage animation
         if (abilityAttackAction.ServerValidate())
         {
             int attackedCharacterId = -1;
@@ -346,22 +432,26 @@ public class ActionExecutor : NetworkBehaviour
                 attackedCharacterId = attackedCharacter == null ? -1 : attackedCharacter.CharClassID;
             }
             OnCharacterAttacksServerSide.Raise(attackingCharacter.CharClassID, attackedCharacterId);
-            //this.RpcOnCharacterAttacks(attackingCharacter.CharClassID);
         }
         bool actionSuccess = this.TryAction(abilityAttackAction, isFullAction : false);
 
     }
 
-
     internal ActionEffectPreview GetAbilityAttackPreview(Hex source, Hex primaryTarget, CharacterAbilityStats abilityStats, NetworkConnectionToClient sender)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        if (attackingCharacter == null)
+        //Do some very basic validation before creating action
+        if (source == null || primaryTarget == null)
         {
-            Debug.LogFormat("Couldn't preview ability attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring ability attack preview : source or target hex is null");
             return ActionEffectPreview.None();
         }
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring ability attack preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, target, target.coordinates);
+            return ActionEffectPreview.None();
+        }
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
         CustomAttackAction abilityAttackAction = ActionFactory.CreateAbilityAttackAction(
                                                                  sender,
                                                                  playerID,
@@ -390,13 +480,19 @@ public class ActionExecutor : NetworkBehaviour
                                string damageSourceName,
                                NetworkConnectionToClient sender)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        if (attackingCharacter == null)
+        if (source == null || primaryTarget == null)
         {
-            Debug.LogFormat("Couldn't perform custom attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring custom attack : source or target hex is null");
             return;
         }
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring custom attack from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, primaryTarget, primaryTarget.coordinates);
+            return;
+        }
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+
         CustomAttackAction customAttackAction = ActionFactory.CreateCustomAttackAction(
                                                                  sender,
                                                                  playerID,
@@ -432,13 +528,19 @@ public class ActionExecutor : NetworkBehaviour
                                string damageSourceName,
                                NetworkConnectionToClient sender)
     {
-        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
-        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
-        if (attackingCharacter == null)
+        if (source == null || primaryTarget == null)
         {
-            Debug.LogFormat("Couldn't preview custom attack from {0} ({1}), it contains no character.", source, source.coordinates);
+            Debug.Log("Ignoring custom attack preview : source or target hex is null");
             return ActionEffectPreview.None();
         }
+        if (!source.HoldsACharacter())
+        {
+            Debug.LogFormat("Ignoring custom attack preview from {0} ({1}) to {2} ({3}), source contains no character.", source, source.coordinates, primaryTarget, primaryTarget.coordinates);
+            return ActionEffectPreview.None();
+        }
+        PlayerCharacter attackingCharacter = source.GetHeldCharacterObject();
+        int playerID = sender.identity.gameObject.GetComponent<PlayerController>().playerID;
+
         CustomAttackAction customAttackAction = ActionFactory.CreateCustomAttackAction(
                                                                  sender,
                                                                  playerID,
