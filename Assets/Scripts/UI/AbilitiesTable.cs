@@ -163,6 +163,9 @@ public class AbilitiesTable : MonoBehaviour
         if (areaOneLiner != "")
             abilityStatsDictionary.Add("Target", areaOneLiner);
 
+        if (ability.knockback > 0)
+            abilityStatsDictionary.Add("Knockback", ability.knockback.ToString());
+
         string usesPerRound = ability.usesPerRound == -1 ? "" : string.Format("{0}/round", ability.usesPerRound);
         if (usesPerRound != "")
             abilityStatsDictionary.Add("Uses", usesPerRound);

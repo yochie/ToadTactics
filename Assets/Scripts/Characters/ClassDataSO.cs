@@ -335,7 +335,7 @@ public class ClassDataSO : ScriptableObject
                 new (
                     stringID: "WarriorRoot",
                     interfaceName: "Intimidating Shout",
-                    description: "Shouts to intimidate nearby enemies, making them cower in fear for a turn.",
+                    description: "Shouts to intimidate nearby enemies, knocking them back and making them cower in fear for a turn.",
                     allowedAbilityTargets: new List<TargetType>(){ TargetType.self },
                     areaType: AreaType.radial,
                     areaScaler : 1,
