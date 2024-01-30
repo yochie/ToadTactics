@@ -13,6 +13,9 @@ public class ActionPreviewer : MonoBehaviour
 
     internal void PreviewActionEffect(ActionEffectPreview actionEffect)
     {
+        //clear any previously displayed previews
+        //required because Unhovering hex hiding of preivew might happen before the preview was displayed
+        this.RemoveActionPreview();
         foreach(EffectOnCharacter effect in actionEffect.effectOnCharacters)
         {
             int classID = effect.classID;
