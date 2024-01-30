@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class DraftableEquipmentSlotUI : NetworkBehaviour
+public class DraftableEquipmentSlotUI : MonoBehaviour
 {
     public string holdsEquipmentID;
 
@@ -35,23 +35,8 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
         Debug.LogFormat("{0} has awoken", this);
     }
 
-    [TargetRpc]
-    public void TargetRpcInitForDraft(NetworkConnectionToClient target, string equipmentID, bool itsYourTurn, int index)
+    public void Init(string equipmentID)
     {
-        this.Init(equipmentID, itsYourTurn, index);
-    }
-
-    public void Init(string equipmentID, bool itsYourTurn, int index)
-    {
-        //register to Equipment Draft UI on each client
-        GameController.Singleton.equipmentDraftUI.RegisterSpawnedSlot(this);
-        GameObject addingToList = null;
-        if (index < GameController.Singleton.numEquipmentsDraftedBetweenRounds / 2)
-            addingToList = GameController.Singleton.equipmentDraftUI.DraftEquipmentPanelsFirstRow;
-        else
-            addingToList = GameController.Singleton.equipmentDraftUI.DraftEquipmentPanelsSecondRow;
-
-        this.transform.SetParent(addingToList.transform, false);
         this.holdsEquipmentID = equipmentID;
 
         EquipmentSO equipmentData = EquipmentDataSO.Singleton.GetEquipmentByID(equipmentID);
@@ -66,22 +51,20 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
             this.statsTable.RenderForStatEquipment(statEquipment);
         }
 
-        //shows draft buttons if its your turn
-        this.SetButtonActiveState(state: itsYourTurn);
+        this.SetButtonActiveState(enabled: false);
     }
 
     #endregion
 
     #region Events
-    //redundant with Update in draft UI, but might avoid issues when that update takes too much time by triggering earlier
-    public void OnEquipmentDrafted(string equipmentID, int playerID)
-    {
-        if (this.holdsEquipmentID != equipmentID)
-            return;
+    //public void OnEquipmentDrafted(string equipmentID, int playerID)
+    //{
+    //    if (this.holdsEquipmentID != equipmentID)
+    //        return;
 
-        this.grayOutPanel.gameObject.SetActive(true);
-        this.SetButtonActiveState(false);
-    }
+    //    this.grayOutPanel.gameObject.SetActive(true);
+    //    this.SetButtonActiveState(false);
+    //}
 
     //called by button
     public void DraftEquipment()
@@ -92,9 +75,14 @@ public class DraftableEquipmentSlotUI : NetworkBehaviour
     #endregion
 
     #region Utility
-    internal void SetButtonActiveState(bool state)
+    internal void SetButtonActiveState(bool enabled)
     {
-            this.draftButton.SetActive(state);
+            this.draftButton.SetActive(enabled);
+    }
+
+    public void GrayOut()
+    {
+        this.grayOutPanel.gameObject.SetActive(true);
     }
     #endregion
 }

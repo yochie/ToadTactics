@@ -453,7 +453,7 @@ public class PlayerController : NetworkBehaviour
         return true;
     }
 
-    internal List<string> GetDraftedEquipmentIDs()
+    internal List<string> GetDraftedEquipmentIDsClone()
     {
         List<string> copy = new(this.equipmentIDsToAssign);
         return copy;

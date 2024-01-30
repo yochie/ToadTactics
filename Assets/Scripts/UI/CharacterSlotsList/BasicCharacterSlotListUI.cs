@@ -9,9 +9,12 @@ public class BasicCharacterSlotListUI : MonoBehaviour
     [SerializeField]
     protected BasicCharacterSlotUI slotPrefab;
 
+    [SerializeField]
+    protected GameObject slotParent;
+
     public void AddBasicSlotToList(int classID)
     {        
-        BasicCharacterSlotUI basicSlot = Instantiate(this.slotPrefab, this.transform);
+        BasicCharacterSlotUI basicSlot = Instantiate(this.slotPrefab, this.slotParent.transform);
         basicSlot.InitForClassID(classID);
         this.slotList.Add(basicSlot);
     }

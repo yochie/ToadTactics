@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 110651761229220715, guid: e9a58510302918c479b59004c80acce9, type: 3}
+  slotParent: {fileID: 1811524998586410824}
   inputHandler: {fileID: 0}
   <IsForSelf>k__BackingField: 0
 --- !u!114 &6210398621114142290

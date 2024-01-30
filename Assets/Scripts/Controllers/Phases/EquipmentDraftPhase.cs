@@ -33,7 +33,6 @@ public class EquipmentDraftPhase : IGamePhase
         Debug.Log("Initializing equipment draft phase");
         this.Name = name;
         this.Controller = controller;
-        this.Controller.SetPlayerTurn(this.startingPlayerID);
 
         GameController.Singleton.RpcLoopMenuSongs();
 
@@ -53,9 +52,6 @@ public class EquipmentDraftPhase : IGamePhase
        
         this.assigningEquipments = false;
 
-        //will init slots using Rpcs (careful, async, need to set all state before)
-        this.Controller.equipmentDraftUI.InitSlotsForDraft(rolledIDs);
-
         //create characters anew to display correct stats
         this.Controller.ClearPlayerCharacters();
         foreach (PlayerController player in this.Controller.playerControllers)
@@ -67,13 +63,17 @@ public class EquipmentDraftPhase : IGamePhase
             }
         }
 
-        foreach (PlayerController player in Controller.playerControllers)
+        foreach (PlayerController player in this.Controller.playerControllers)
         {
             List<int> ownedCharacterIDs = this.Controller.GetCharacterIDsOwnedByPlayer(player.playerID);
             List<int> opponentCharacterIDs = this.Controller.GetCharacterIDsOwnedByPlayer(this.Controller.OtherPlayer(player.playerID));
-            player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
-            player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);
+            this.Controller.equipmentDraftUI.TargetRpcInitForDraft(player.connectionToClient, rolledIDs, youStart: player.playerID == this.startingPlayerID, ownedCharacterIDs, opponentCharacterIDs);
+
+            //player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
+            //player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);          
         }
+
+        this.Controller.SetPlayerTurn(this.startingPlayerID);
     }
 
     [Server]
@@ -81,11 +81,9 @@ public class EquipmentDraftPhase : IGamePhase
     {
         if (!this.assigningEquipments && !this.AllEquipmentsDrafted())
         {
-            //Debug.Log("Drafting equipment turn swap.");
+            this.UpdateDraftUI(playerThatJustDraftedID: this.Controller.PlayerTurn);
 
             this.Controller.SwapPlayerTurn();
-
-            this.UpdateDraftUI();
         }
         else if (!this.assigningEquipments && this.AllEquipmentsDrafted())
         {
@@ -135,24 +133,20 @@ public class EquipmentDraftPhase : IGamePhase
     }
 
     [Server]
-    private void UpdateDraftUI()
+    private void UpdateDraftUI(int playerThatJustDraftedID)
     {
-        int currentPlayerID = GameController.Singleton.PlayerTurn;
-        NetworkConnectionToClient currentPlayerClient = GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
-        NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
-
+        //merge both players drafted list
         List<string> allDraftedEquipments = new();
         foreach (PlayerController pc in this.Controller.playerControllers)
         {
-            foreach (string equipID in pc.GetDraftedEquipmentIDs())
-            {
-                allDraftedEquipments.Add(equipID);
-            }
-                
+            allDraftedEquipments = allDraftedEquipments.Concat(pc.GetDraftedEquipmentIDsClone()).ToList();
         }
 
-        this.Controller.equipmentDraftUI.TargetRpcUpdateDraftSlotsForTurn(target: currentPlayerClient, itsYourTurn: true, alreadyDrafted: allDraftedEquipments);
-        this.Controller.equipmentDraftUI.TargetRpcUpdateDraftSlotsForTurn(target: waitingPlayerClient, itsYourTurn: false, alreadyDrafted: allDraftedEquipments);
+        foreach(PlayerController player in this.Controller.playerControllers)
+        {
+            bool yourTurn = player.playerID != playerThatJustDraftedID;
+            this.Controller.equipmentDraftUI.TargetRpcUpdateDraftSlotsForTurn(target: player.connectionToClient, itsYourTurn: yourTurn, alreadyDrafted: allDraftedEquipments);
+        }
     }
 
     [Server]

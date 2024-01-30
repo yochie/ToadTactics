@@ -10,7 +10,7 @@ public class EquipmentDraftUI : NetworkBehaviour
 {
 
     [SerializeField]
-    private GameObject draftableEquipmentPanelPrefab;
+    private DraftableEquipmentSlotUI draftableEquipmentPanelPrefab;
 
     [SerializeField]
     private GameObject assignmentEquipmentPanelPrefab;
@@ -18,14 +18,20 @@ public class EquipmentDraftUI : NetworkBehaviour
     [SerializeField]
     private GameObject assignmentCharacterPanelPrefab;
 
-    [field: SerializeField]
-    public GameObject DraftEquipmentPanelsFirstRow { get; private set; }
-
-    [field: SerializeField]
-    public GameObject DraftEquipmentPanelsSecondRow { get; private set; }
+    [SerializeField]
+    private GameObject draftEquipmentPanelsFirstRow;
 
     [SerializeField]
-    private GameObject DraftContainer;
+    private GameObject draftEquipmentPanelsSecondRow;
+
+    [SerializeField]
+    private EquipmentDraftCharacterListUI ownCharacterList;
+
+    [SerializeField]
+    private EquipmentDraftCharacterListUI opponentCharacterList;
+
+    [SerializeField]
+    private GameObject draftContainer;
 
     [field: SerializeField]
     public  GameObject AssignmentEquipmentPanelRow { get; private set; }
@@ -42,6 +48,9 @@ public class EquipmentDraftUI : NetworkBehaviour
     [SerializeField]
     private MessagePopup messagePopup;
 
+    [SerializeField]
+    private GameObject loadingMessage;
+
 
     private List<DraftableEquipmentSlotUI> draftableSlots;
 
@@ -53,47 +62,52 @@ public class EquipmentDraftUI : NetworkBehaviour
     private void Awake()
     {
         Debug.Log("Awaking equipment draft UI");
-        //just to avoid printing error when starting editor in wrong draft scene
-        //Gamecontroller should always exist otherwise
-        if (GameController.Singleton == null)
-            return;
-        GameController.Singleton.equipmentDraftUI = this;
+        if (GameController.Singleton != null)            
+            GameController.Singleton.equipmentDraftUI = this;
     }
 
-    //TODO: move net code to phase object, keep this UI only as RPC
-    [Server]
-    public void InitSlotsForDraft(List<string> equipmentIDsToDraft)
+    [TargetRpc]
+    public void TargetRpcInitForDraft(NetworkConnectionToClient target, List<string> equipmentIDsToDraft, bool youStart, List<int> ownedCharacterIDs, List<int> opponentCharacterIDs)
     {
-        int currentPlayerID = GameController.Singleton.PlayerTurn;
-        NetworkConnectionToClient currentPlayerClient = GameController.Singleton.GetConnectionForPlayerID(currentPlayerID);
-        NetworkConnectionToClient waitingPlayerClient = GameController.Singleton.GetConnectionForPlayerID(GameController.Singleton.OtherPlayer(currentPlayerID));
+
+        this.ownCharacterList.Init(ownedCharacterIDs);
+        this.opponentCharacterList.Init(opponentCharacterIDs);
+        this.SetInstructionForTurn(yourTurn: youStart);
+
         int i = 0;
+        this.draftableSlots = new();
         foreach (string equipmentID in equipmentIDsToDraft)
         {
-            GameObject slotObject = Instantiate(this.draftableEquipmentPanelPrefab, this.DraftEquipmentPanelsFirstRow.transform);
-            DraftableEquipmentSlotUI slot = slotObject.GetComponent<DraftableEquipmentSlotUI>();
-            NetworkServer.Spawn(slot.gameObject);
-            //Debug.Log("Spawned DraftableEquipmentSlot");
-            slot.TargetRpcInitForDraft(target: currentPlayerClient, equipmentID: equipmentIDsToDraft[i], itsYourTurn: true, index: i);
-            slot.TargetRpcInitForDraft(target: waitingPlayerClient, equipmentID: equipmentIDsToDraft[i], itsYourTurn: false, index: i);
+            DraftableEquipmentSlotUI slot = Instantiate(this.draftableEquipmentPanelPrefab, this.draftEquipmentPanelsFirstRow.transform);
+            GameObject row;
+            if (i < GameController.Singleton.numEquipmentsDraftedBetweenRounds / 2)
+                row = this.draftEquipmentPanelsFirstRow;
+            else
+                row = this.draftEquipmentPanelsSecondRow;
+            slot.transform.SetParent(row.transform, worldPositionStays: false);
+            slot.Init(equipmentID);
+            if (youStart)
+                slot.SetButtonActiveState(enabled: youStart);
+            this.draftableSlots.Add(slot);
             i++;
         }
-    }
-
-    //called by slots in their init
-    internal void RegisterSpawnedSlot(DraftableEquipmentSlotUI slot)
-    {
-        if (this.draftableSlots == null)
-            this.draftableSlots = new();
-        this.draftableSlots.Add(slot);
+        this.loadingMessage.SetActive(false);
+        this.ownCharacterList.gameObject.SetActive(true);
+        this.opponentCharacterList.gameObject.SetActive(true);
+        this.instructionLabel.gameObject.SetActive(true);
     }
 
     [TargetRpc]
     internal void TargetRpcUpdateDraftSlotsForTurn(NetworkConnectionToClient target, bool itsYourTurn, List<string> alreadyDrafted)
     {
-        foreach(DraftableEquipmentSlotUI slot in this.draftableSlots)
+        foreach (DraftableEquipmentSlotUI slot in this.draftableSlots)
         {
-            if (itsYourTurn && !alreadyDrafted.Contains(slot.holdsEquipmentID))
+            bool slotHasBeenDrafted = alreadyDrafted.Contains(slot.holdsEquipmentID);
+
+            if (slotHasBeenDrafted)
+                slot.GrayOut();
+
+            if (itsYourTurn && !slotHasBeenDrafted)
                 slot.SetButtonActiveState(true);
             else
                 slot.SetButtonActiveState(false);
@@ -105,7 +119,7 @@ public class EquipmentDraftUI : NetworkBehaviour
     {
         Action afterTransition = () =>
         {
-            this.DraftContainer.SetActive(false);
+            this.draftContainer.SetActive(false);
             this.AssignmentContainer.SetActive(true);
 
             this.currentlyAssigningEquipmentID = firstEquipmentID;
@@ -163,10 +177,6 @@ public class EquipmentDraftUI : NetworkBehaviour
         this.instructionLabel.text = "Waiting for opponent";
     }
 
-    public void OnLocalPlayerTurnStart()
-    {
-        this.instructionLabel.text = "Pick an equipment";
-    }
 
     [TargetRpc]
     internal void TargetRPCUpdateCharacterStats(NetworkConnectionToClient sender, int classID, CharacterStats currentStats, bool isKing)
@@ -174,10 +184,19 @@ public class EquipmentDraftUI : NetworkBehaviour
         AssignmentCharacterPanelUI panel = this.assignmentCharacterPanels.Single(panel => panel.IsForCharID(classID));
         panel.UpdateStats(currentStats, isKing);
     }
+    public void OnLocalPlayerTurnStart()
+    {
+        this.SetInstructionForTurn(yourTurn: true);
+    }
 
     public void OnLocalPlayerTurnEnd()
     {
-        this.instructionLabel.text = "Waiting for opponent";
+        this.SetInstructionForTurn(yourTurn: false);
+    }
+
+    private void SetInstructionForTurn(bool yourTurn)
+    {
+        this.instructionLabel.text = yourTurn ? "Pick an equipment" : "Waiting for opponent";
     }
 
     [TargetRpc]
