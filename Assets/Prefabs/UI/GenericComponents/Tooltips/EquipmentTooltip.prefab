@@ -32,6 +32,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1466267373327376301, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
+      propertyPath: statNameAsStringPrefab
+      value: 
+      objectReference: {fileID: 3004807203773765816, guid: eaaf129a122ea5b4b857c27cc67d4b84, type: 3}
+    - target: {fileID: 1730824324852942936, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2676787386437638089, guid: c82d0b19d867d814794d99b9c10c0ab7, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
