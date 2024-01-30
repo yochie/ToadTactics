@@ -58,12 +58,13 @@ public class CharacterPlacementPhase : IGamePhase
             character.ApplyAbilityBuffsForRoundStart();
         }
 
-        //setup turn order list
+        //setup turn order master list on gamecontroller
         foreach (PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
         {
             this.Controller.AddCharToTurnOrder(character.CharClassID);
         }
 
+        //Setup turn order slots data 
         List<TurnOrderSlotInitData> slotDataList = new();
         foreach (PlayerCharacter character in this.Controller.PlayerCharactersByID.Values)
         {
@@ -84,17 +85,15 @@ public class CharacterPlacementPhase : IGamePhase
             TurnOrderSlotInitData slotData = new(character.CharClassID, isAKing, itsHisTurn, maxHealth, characterBuffDataIDs, buffDurationsByUniqueID, equipmentIDs);
             slotDataList.Add(slotData);
         }
-
         this.Controller.RpcInitTurnOrderHud(slotDataList, this.Controller.SortedTurnOrder.Values.ToList());
 
         foreach(PlayerController player in Controller.playerControllers)
         {
             List<int> ownedCharacterIDs = this.Controller.GetCharacterIDsOwnedByPlayer(player.playerID);
             List<int> opponentCharacterIDs = this.Controller.GetCharacterIDsOwnedByPlayer(this.Controller.OtherPlayer(player.playerID));
-            player.TargetRpcInitOwnCharacterSlotsList(ownedCharacterIDs);
-            player.TargetRpcInitOpponentCharacterSlotsList(opponentCharacterIDs);
             //TODO: change once starting player is actually random
             bool isStartingPlayer = player.playerID == 0 ? true : false;
+            MainHUD.Singleton.TargetRpcSetupCharacterLists(player.connectionToClient, ownedCharacterIDs, opponentCharacterIDs);
             MainHUD.Singleton.TargetRpcEnablePlacementInstruction(player.connectionToClient, yourTurn: isStartingPlayer);
         }
 

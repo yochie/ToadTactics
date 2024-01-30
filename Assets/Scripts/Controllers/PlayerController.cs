@@ -100,19 +100,6 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    [TargetRpc]
-    internal void TargetRpcInitOwnCharacterSlotsList(List<int> classIDs)
-    {
-        GameController.Singleton.OwnCharacterSlotList.Init(classIDs);
-    }
-
-    [TargetRpc]
-    internal void TargetRpcInitOpponentCharacterSlotsList(List<int> classIDs)
-    {
-        GameController.Singleton.OpponentCharacterSlotList.Init(classIDs);
-    }
-
-
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();

@@ -47,6 +47,13 @@ public class MainHUD : NetworkBehaviour
     [SerializeField]
     private ColorPaletteSO colorPalette;
 
+    [SerializeField]
+    private GameplayCharacterSlotListUI ownCharacterList;
+    
+    [SerializeField]
+    private GameplayCharacterSlotListUI opponentCharacterList;
+
+
     private Dictionary<ControlMode, GameObject> gameplayButtons;
     
     public static MainHUD Singleton { get; set; }
@@ -59,6 +66,14 @@ public class MainHUD : NetworkBehaviour
         this.gameplayButtons.Add(ControlMode.attack, this.attackButton);
         this.gameplayButtons.Add(ControlMode.useAbility, this.abilityButton);
         this.gameplayButtons.Add(ControlMode.useBallista, this.ballistaButton);
+    }
+
+
+    [TargetRpc]
+    internal void TargetRpcSetupCharacterLists(NetworkConnectionToClient target, List<int> ownCharacterIDs, List<int> opponentCharacterIDs)
+    {
+        this.ownCharacterList.Init(ownCharacterIDs);
+        this.opponentCharacterList.Init(opponentCharacterIDs);
     }
 
     [TargetRpc]
@@ -139,9 +154,8 @@ public class MainHUD : NetworkBehaviour
     {
         GameObject buttonObject = this.gameplayButtons[controlMode];
         buttonObject.GetComponent<Button>().interactable = false;
-
-        //buttonObject.GetComponent<Image>().color = this.GetUnselectedColor();
     }
+
 
     private void SetInteractableGameplayButton(ControlMode mode, bool interactable)
     {

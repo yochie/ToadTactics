@@ -54,10 +54,6 @@ public class GameController : NetworkBehaviour
 
     public PlayerController NonLocalPlayer { get; set; }
 
-    public BasicCharacterSlotListUI OwnCharacterSlotList { get; internal set; }
-
-    public BasicCharacterSlotListUI OpponentCharacterSlotList { get; internal set; }
-
     //Only filled on server
     public IGamePhase currentPhaseObject;
     private int lastRoundLoserID;

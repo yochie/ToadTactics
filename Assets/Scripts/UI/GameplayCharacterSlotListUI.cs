@@ -12,15 +12,6 @@ public class GameplayCharacterSlotListUI : BasicCharacterSlotListUI, IOwnedByPla
     [field: SerializeField]
     public bool IsForSelf { get; set; }
 
-    private void Awake()
-    {
-        if(this.IsForSelf)
-            GameController.Singleton.OwnCharacterSlotList = this;
-        else
-            GameController.Singleton.OpponentCharacterSlotList = this;
-
-    }
-
     public void OnCharacterPlaced(int classID)
     {
         foreach (GameplayCharacterSlotUI slot in this.slotList)
