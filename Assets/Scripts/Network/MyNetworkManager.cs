@@ -188,7 +188,7 @@ public class MyNetworkManager : NetworkManager
 
         while (GameController.Singleton.SceneFadeOutOnClients < numClients)
         {
-            Debug.Log("Waiting for fadeouts");
+            //Debug.Log("Waiting for fadeouts");
             yield return null;
         }
 
