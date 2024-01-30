@@ -2267,7 +2267,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1891631880}
   - component: {fileID: 1891631879}
-  - component: {fileID: 1891631878}
   - component: {fileID: 1891631877}
   - component: {fileID: 1891631881}
   m_Layer: 0
@@ -2306,20 +2305,6 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
---- !u!114 &1891631878
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1891631876}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0
 --- !u!114 &1891631879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2339,7 +2324,7 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/Scenes/Menu.unity
   onlineScene: Assets/Scenes/Lobby.unity
-  transport: {fileID: 1891631881}
+  transport: {fileID: 1891631877}
   networkAddress: localhost
   maxConnections: 2
   authenticator: {fileID: 0}
@@ -2394,7 +2379,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1891631876}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 96b149f511061407fb54895c057b7736, type: 3}
   m_Name: 
