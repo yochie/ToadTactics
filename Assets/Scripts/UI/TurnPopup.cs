@@ -25,6 +25,9 @@ public class TurnPopup : MonoBehaviour
     Transform endPosition;
 
     [SerializeField]
+    Transform startPosition;
+
+    [SerializeField]
     AudioClip wooshSound;
 
     public void OnLocalPlayerTurnStart()
@@ -53,7 +56,7 @@ public class TurnPopup : MonoBehaviour
         this.label.color = labelColor;
         float elapsedSeconds = 0f;
         Vector3 screenCenterPosition = Vector3.zero;
-        Vector3 startPosition = this.popup.transform.localPosition;
+        this.popup.transform.localPosition = this.startPosition.localPosition;
 
         AudioManager.Singleton.PlaySoundEffect(this.wooshSound);
         while (elapsedSeconds < slideDurationSeconds)
@@ -75,7 +78,7 @@ public class TurnPopup : MonoBehaviour
         }
 
         this.background.SetActive(false);
-        this.popup.transform.localPosition = startPosition;
+        this.popup.transform.localPosition = this.startPosition.localPosition;
         this.popup.SetActive(false);
     }
 }
