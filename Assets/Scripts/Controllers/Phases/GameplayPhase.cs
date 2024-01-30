@@ -56,13 +56,16 @@ public class GameplayPhase : IGamePhase
     [Server]
     public void Tick()
     {
-        this.EndOfTurn();
+        bool roundEnded = this.EndOfTurn();
+
+        if (roundEnded)
+            return;
 
         this.IncrementTurnOrder();
 
         this.StartOfTurn();
     }
-    private void EndOfTurn()
+    private bool EndOfTurn()
     {
         int lastTurnCharacterID = this.Controller.GetCharacterIDForTurn();
         if (lastTurnCharacterID == -1)
@@ -80,23 +83,31 @@ public class GameplayPhase : IGamePhase
         {           
             Debug.Log("The king is dead. Long live the king.");
             GameController.Singleton.EndRound(looserID: deadKingOwnerID);
-            return;
+            this.UpdateLifeDisplay();
+            return true;
         }
 
         lastTurnCharacter.TickCooldownsForTurn();
 
         this.ApplyHazardDamageForTurnEnd(lastTurnCharacter);
 
-        if(lastTurnCharacter.IsDead && lastTurnCharacter.IsKing)
+        //update life on all chars because it might have been changed by buffs or hazards
+        this.UpdateLifeDisplay();
+
+        if (lastTurnCharacter.IsDead && lastTurnCharacter.IsKing)
         {
             Debug.Log("The king is dead. Long live the king.");
             GameController.Singleton.EndRound(looserID: lastTurnCharacter.OwnerID);
-            return;
+            return true;
         }
 
-        //update life on all chars because it might have been changed by buffs or hazards
+        return false;
+    }
+
+    private void UpdateLifeDisplay()
+    {
         //execution order of RPCs is undetermined but should not matter since they are independent from eachother
-        foreach(PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
+        foreach (PlayerCharacter character in GameController.Singleton.PlayerCharactersByID.Values)
         {
             character.RpcOnCharacterLifeChanged(character.CurrentLife, character.CurrentStats.maxHealth);
         }
