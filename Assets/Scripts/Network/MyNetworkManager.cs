@@ -149,7 +149,8 @@ public class MyNetworkManager : NetworkManager
                 //Stop any coroutines waiting for fadeout and just force scene transition
                 //needed for cases where fadeout was already triggered but scene change wasn't handled
                 //this occurs when hooking up StopHost call after fadeout
-                this.StopCoroutine(this.WaitForTransitionCoroutine);
+                if(this.WaitForTransitionCoroutine != null)
+                    this.StopCoroutine(this.WaitForTransitionCoroutine);
                 transitionerComponent.StopAllCoroutines();
                 base.ServerChangeScene(newSceneName);
             }
